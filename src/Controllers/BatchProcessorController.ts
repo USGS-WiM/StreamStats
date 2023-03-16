@@ -52,10 +52,12 @@ module StreamStats.Controllers {
         public flowStatsList: Array<any>;
         public selectedRegion: string;
         public flowStatsAllChecked: boolean;
-        public regionStatsList: Array<any>;
-        public parameterListBP: Array<any>;
+        public selectedFlowStatsList: Array<any>;
+        public availableParamList: Array<any>;
         public flowStatChecked: boolean;
-        public requiredParamList: Array<any>
+        public selectedParamList: Array<any>
+        public parametersAllChecked: boolean;
+        public regionParamList: Array<any>;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -67,10 +69,13 @@ module StreamStats.Controllers {
             this.modalService = modalService;
             this.selectedBatchProcessorTabName = "submitBatch";
             this.nssService = nssService;
-            this.regionStatsList = [];
-            this.requiredParamList = [];
+            this.selectedFlowStatsList = [];
+            this.selectedParamList = [];
+            this.availableParamList = [];
+            this.regionParamList = [];
             this.flowStatsAllChecked = true;
             this.flowStatChecked = true;
+            this.parametersAllChecked = true;
             this.init();  
         }  
         
@@ -100,7 +105,7 @@ module StreamStats.Controllers {
         }
         
         // send selected region code and retrieve flows stats list
-        public getFlowStats(rcode:string): void {
+        public getFlowStatsAndParams(rcode:string): void {
             
             this.nssService.getFlowStatsList(rcode).then(
                 // set flowStatsList to values of promised response
@@ -108,67 +113,107 @@ module StreamStats.Controllers {
 
             )
 
+            this.loadParametersByRegionBP(rcode).then(
+                response => { this.availableParamList = response; }
+            );
+            
         }
 
-        // uncheck/check all flow statistics
-        public toggleflowStatsAllChecked(): void {
+        public setRegionStats(statisticsGroup: any) {
+            console.log("statisticsGroup", statisticsGroup)
 
-            this.flowStatsList.forEach((parameter) => {
+            var checkStatisticsGroup = this.checkArrayForObj(this.selectedFlowStatsList, statisticsGroup);
 
-                var statisticGroupID = parameter.statisticGroupID
+            //if toggled remove selected parameter set
+            if (checkStatisticsGroup != -1) {
+                var preventRemoval = false;
 
-                var paramCheck = this.checkArrayForObj(this.regionStatsList, statisticGroupID);
-
-                if (this.flowStatsAllChecked) {
-
-                    //if its not there add it
-                    if (paramCheck == -1) this.regionStatsList.push(statisticGroupID);
-                    parameter.checked = true;
-                    this.flowStatChecked = true; //checking of cbBasinChar
+                // if Flow Duration Curve Transfer Method (FDCTM) is selected, prevent Flow-Duration Statistics from being de-selected
+                if (this.selectedFlowStatsList.filter((selectedStatisticsGroup) => selectedStatisticsGroup.statisticGroupName == "Flow-Duration Curve Transfer Method").length > 0 && statisticsGroup.statisticGroupName == "Flow-Duration Statistics") {
+                    preventRemoval = true;
                 }
-                else {
 
-                    //remove it only if checked
-                    if (paramCheck > -1) {
-                        this.regionStatsList.splice(paramCheck, 1);
-                        //this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
-                        parameter.checked = false;
-                        this.flowStatChecked = false; //unchecking of cbBasinChar
+                if (!preventRemoval) {
+                    //remove this statisticsGroup from the list
+                    this.selectedFlowStatsList.splice(checkStatisticsGroup, 1);
+
+                    // if no selected scenarios, clear studyareaparameter list
+                    if (this.selectedFlowStatsList.length == 0) {
+                        this.selectedParamList = [];
+
+                        this.availableParamList.forEach((parameter) => {
+                            parameter.checked = false;
+                            parameter.toggleable = true;
+                        });
+                    }
+                }
+                
+            }
+
+            //add it to the list and get its required parameters
+            else {
+                this.selectedFlowStatsList.push(statisticsGroup);
+
+                // if Flow Duration Curve Transfer Method (FDCTM) was selected, also select Flow-Duration Statistics
+                if (typeof statisticsGroup.statisticGroupID != 'number' && statisticsGroup.statisticGroupID.indexOf('fdctm')) {
+                    // see if the Flow-Duration Statistics group has been selected already and select it if not
+                    var statisticsGroupFDS = this.selectedFlowStatsList.filter((statisticsGroup) => statisticsGroup.statisticGroupName == "Flow-Duration Statistics")[0];
+                    var checkStatisticsGroupFDS = this.checkArrayForObj(this.selectedFlowStatsList, statisticsGroupFDS);
+                    if (checkStatisticsGroupFDS == -1) {
+                        this.selectedFlowStatsList.push(statisticsGroupFDS);
                     }
                 }
 
+                // load parameters for selected flowStats
+                this.loadParametersByStatisticsGroupBP(statisticsGroup.regressionRegions);
+                
 
-            });
+            }
+            console.log("setRegionStats_selectedFlowStatsList", this.selectedFlowStatsList)
+            console.log("setRegionStats_selectedParamList", this.selectedParamList)
+        }
 
-            // toggle switch
-            this.flowStatsAllChecked = !this.flowStatsAllChecked;
+        public loadParametersByStatisticsGroupBP(regressionRegions: Array<any>): void {
+
+            regressionRegions.forEach((regressionRegion) => {
+
+                regressionRegion.parameters.forEach((parameter) => {
+                    this.selectedParamList.push(parameter.code);
+                    // console.log("loadParametersByStatisticsGroupBPcode", parameter.code)
+                });
+            }); 
+            console.log("loadParametersByStatisticsGroupBP_selectedParamList", this.selectedParamList)
         }
 
         public updateRegionStatsList(statistic: any) {
 
             var statisticGroupID = statistic.statisticGroupID;
 
-            var index = this.regionStatsList.indexOf(statisticGroupID);
+            var index = this.selectedFlowStatsList.indexOf(statisticGroupID);
 
             if (!statistic.checked && index > -1) {
                 //remove it
                 statistic.checked = false;
-                this.regionStatsList.splice(index, 1);
+                this.selectedFlowStatsList.splice(index, 1);
+                // console.log("splice", this.selectedFlowStatsList)
             }
             else if (statistic.checked && index == -1) {
                 //add it
                 statistic.checked = true;
-                this.regionStatsList.push(statisticGroupID);
+                this.selectedFlowStatsList.push(statisticGroupID);
+                // console.log("push", this.selectedFlowStatsList)
             }
             // calling this makes select all the default when any are unchecked
             this.checkStats();
+            // this.addRemoveDRNAREA();
+            // console.log("updateRegionStatsList", this.requiredParamList)
 
         }
 
         public checkStats() {
             // change select all stats toggle to match if all stats are checked or not
             let allChecked = true;
-            for (let stat of this.regionStatsList) {
+            for (let stat of this.selectedFlowStatsList) {
                 if (!stat.checked) {
                     allChecked = false;
                 }
@@ -183,49 +228,129 @@ module StreamStats.Controllers {
         }
 
 
+        // public addRemoveDRNAREA() {
+        //     if (this.selectedFlowStatsList.length < 0) {
+                
+        //         this.requiredParamList.push("DRNAREA");
+        //         console.log("addRemovepush", this.requiredParamList)
+        //     } else {
+        //         // var index = this.requiredParamList.indexOf("DRNAREA");
+        //         // this.requiredParamList.splice(index, 1);
+        //         // console.log("addRemovesplice", this.requiredParamList)
+        //         this.requiredParamList = [];
+        //     }
+            
+        // }
+
         // load parameters for regions once selected
-        public getRegionParameters(rcode: string): void {
+        // public getRegionParameters(rcode: string): void {
 
-            this.getParametersByRegionBP(rcode).then(
-                // set flowStatsList to values of promised response
-                response => { this.parameterListBP = response; },
+        //     this.getParametersByRegionBP(rcode).then(
+        //         // set flowStatsList to values of promised response
+        //         response => { this.regionParamList = response; },
                 
-            );
+        //     );
+        // }
+
+        // create array of required parameters based on selected flow statistics
+        // codes may appear mutliple times
+        // public setRequiredParameters(statistic: any) {
+
+        //     var regressionRegions = statistic.regressionRegions;
+            
+        //     // bore down to each parameter and add code to this.requiredParamList
+        //     regressionRegions.forEach((regRegion) => {
+                
+        //         regRegion.parameters.forEach((parameter) => {
+
+        //             var code = parameter.code;
+
+        //             var index = this.requiredParamList.indexOf(code);
+
+        //             if (!statistic.checked && index > -1) {
+        //                 //remove it
+        //                 this.requiredParamList.splice(index, 1);
+        //                 // console.log("setRequiredSplice", this.requiredParamList)
+        //             }
+        //             else if (statistic.checked) {
+        //                 //add it
+        //                 this.requiredParamList.push(code);
+        //                 // console.log("setRequiredPush", this.requiredParamList)
+        //             }
+        //         })
+                
+        //     })
+
+            // if (this.requiredParamList.indexOf("DRNAREA") == -1) {
+            //     this.requiredParamList.push("DRNAREA");
+            // }
+            // this.requiredParamList = this.requiredParamList.filter((item, i, ar) => ar.indexOf(item) === i); // in ECM6 this is a Set
+
+            // console.log("setRequiredParameters", this.requiredParamList);
+        //     this.setParamToggleable();
+        // }
+
+        // set parameters to checked and not toggleable if in requiredParamList
+        // private setParamToggleable(): void { 
+        //     this.regionParamList.forEach((parameter) => {
+        //         var index = this.requiredParamList.indexOf(parameter.code);
+        //         if (index > -1) {
+        //             parameter.checked = true;
+        //             parameter.toggleable = false;
+        //         }
+        //         else {
+        //             parameter.checked = false;
+        //             parameter.toggleable = true;
+        //         }
+        //     })
+        // }
+
+        // update selectedParamList
+        public updateSelectedParamList(parameter: any) {
+
+            //console.log('in updatestudyarea parameter', parameter);
+
+            //dont mess with certain parameters
+            if (parameter.toggleable == false) {
+                // this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
+                parameter.checked = true;
+                return;
+            }
+
+            var index = this.selectedParamList.indexOf(parameter);
+
+            if (!parameter.checked && index > -1) {
+                //remove it
+                this.selectedParamList.splice(index, 1);
+                // console.log("updateParamsSplice", this.parameterListBP)
+            }
+            else if(parameter.checked && index == -1) {
+                //add it
+                this.selectedParamList.push(parameter);
+                // console.log("updateParamsPush", this.parameterListBP)
+            }
+            // this.checkParameters();
+
         }
 
-        // get count of how many times parameter shows up in selected flowStats
-        // build array of multiples for each required param
-        public buildRequiredParameters(statistic: any) {
-
-            var regressionRegions = statistic.regressionRegions;
-
-            // console.log(regressionRegions)
-
-            regressionRegions.forEach((regRegion) => {
-                
-                regRegion.parameters.forEach((parameter) => {
-
-                    var code = parameter.code;
-
-                    var index = this.requiredParamList.indexOf(code);
-
-                    if (!statistic.checked && index > -1) {
-                        //remove it
-                        this.requiredParamList.splice(index, 1);
-                    }
-                    else if (statistic.checked) {
-                        //add it
-                        this.requiredParamList.push(code);
-                    }
-                })
-            })
-
-            console.log(this.requiredParamList);
-        }
-
+        // public checkParameters() {
+        //     // change select all parameters toggle to match if all params are checked or not
+        //     let allChecked = true;
+        //     for (let param of this.parameterListBP) {
+        //         if (!param.checked) {
+        //             allChecked = false;
+        //         }
+        //     }
+        //     if (allChecked) {
+        //         this.multipleParameterSelectorAdd = false;
+        //     } else {
+        //         this.multipleParameterSelectorAdd = true;
+        //     }
+        // }
+            
         // Service methods
         // get basin characteristics list for region and nation
-        public getParametersByRegionBP(rcode: string): ng.IPromise<any> {
+        public loadParametersByRegionBP(rcode: string): ng.IPromise<any> {
 
             if (!rcode) return;
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSAvailableParams'].format(rcode);
@@ -234,21 +359,44 @@ module StreamStats.Controllers {
             // console.log(request)
             return this.Execute(request).then(
                 (response: any) => {
-                    // create array to return
-                    var paramRaw = [];
 
-                    response.data.parameters.forEach((parameter) => {
-                        
-                        parameter.checked = false;
-                        parameter.toggleable = true;
+                    if (response.data.parameters && response.data.parameters.length > 0) {
+                        // this.streamStatsAvailable = true;
 
-                        paramRaw.push(parameter);
-                    });
-                    // console.log("paramRaw", paramRaw);
+                        // create array to return
+                        var paramRaw = [];
 
+                        response.data.parameters.forEach((parameter) => {
+                            
+                            
+                            try {
+                                var param = {
+                                    code: parameter.code,
+                                    description: parameter.description,
+                                    checked: false,
+                                    toggleable: true
+                                }
+                                paramRaw.push(param);
+                            }
+
+                            catch (e) {
+                                alert(e)
+
+                        }    
+                        });
+
+                    }
+
+                    else {
+                        // this.streamStatsAvailable = false;
+                        // this.toaster.pop('error', "No parameters available for this region", "Please select another region");
+                    }
                     return paramRaw;
                 }, (error) => {
-                    
+                    // console.log('Bad response from the regression service');
+                    // this.streamStatsAvailable = false;
+                    // this.toaster.pop('warning', "StreamStats not available here at this time", "", 5000);
+
                 }).finally(() => {
                 });
         }
@@ -268,6 +416,100 @@ module StreamStats.Controllers {
             };
             return -1;
         }
+        // this.selectedParamList
+        // this.availableParamList
+        private addParameterToSelectedParamList(paramCode): boolean {
+            try {
+                for (var i = 0; i < this.availableParamList.length; i++) {
+                    let p: Services.IParameter = this.availableParamList[i];
+
+                    if (p.code.toUpperCase() === paramCode.toUpperCase() && this.checkArrayForObj(this.selectedParamList, p) == -1) {
+                        this.selectedParamList.push(p);
+                        p['checked'] = true;
+                        p['toggleable'] = false;
+                        break;
+                    }//endif
+                }//next i
+
+            } catch (e) {
+                return false;
+            }
+
+
+        }
+
+        // uncheck/check all flow statistics
+        public toggleflowStatsAllChecked(): void {
+
+            this.flowStatsList.forEach((parameter) => {
+
+                var statisticGroupID = parameter.statisticGroupID
+
+                var paramCheck = this.checkArrayForObj(this.selectedFlowStatsList, statisticGroupID);
+
+                if (this.flowStatsAllChecked) {
+
+                    //if its not there add it
+                    if (paramCheck == -1) this.selectedFlowStatsList.push(statisticGroupID);
+                    parameter.checked = true;
+                    this.flowStatChecked = true; //checking of cbBasinChar
+                    // console.log("togglePush", this.regionStatsList)
+                    
+                }
+                else {
+
+                    //remove it only if checked
+                    if (paramCheck > -1) {
+                        this.selectedFlowStatsList.splice(paramCheck, 1);
+                        //this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
+                        parameter.checked = false;
+                        this.flowStatChecked = false; //unchecking of cbBasinChar
+                        // this.setRequiredParameters(parameter);
+                        // console.log("toggleSplice", this.regionStatsList)
+                    }
+
+                    // this.requiredParamList = [];
+                    // console.log("toggleSplice", this.requiredParamList)
+                }
+            })
+                ;
+
+            // toggle switch
+            this.flowStatsAllChecked = !this.flowStatsAllChecked;
+        }
+
+        // public toggleParametersAllChecked(): void {
+
+        //     this.flowStatsList.forEach((parameter) => {
+
+        //         var statisticGroupID = parameter.statisticGroupID
+
+        //         var paramCheck = this.checkArrayForObj(this.regionStatsList, statisticGroupID);
+
+        //         if (this.flowStatsAllChecked) {
+
+        //             //if its not there add it
+        //             if (paramCheck == -1) this.regionStatsList.push(statisticGroupID);
+        //             parameter.checked = true;
+        //             this.flowStatChecked = true; //checking of cbBasinChar
+        //         }
+        //         else {
+
+        //             //remove it only if checked
+        //             if (paramCheck > -1) {
+        //                 this.regionStatsList.splice(paramCheck, 1);
+        //                 //this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
+        //                 parameter.checked = false;
+        //                 this.flowStatChecked = false; //unchecking of cbBasinChar
+        //             }
+        //         }
+
+
+        //     });
+
+        //     // toggle switch
+        //     this.parametersAllChecked = !this.parametersAllChecked;
+        // }
 
     }//end  class
 
