@@ -496,23 +496,27 @@ var StreamStats;
                     data.shift().split('\t');
                     data.shift();
                     do {
-                        var dataRow = data.shift().split('\t');
-                        var stringDate = parseInt(dataRow[5]) + '/' + parseInt(dataRow[6]) + '/' + 2022;
+                        var nonArrayDataRow = data.shift().split('\t');
+                        var finalIndex = _this_1.dailyFlow.length - 1;
+                        var finalDate = new Date(_this_1.dailyFlow[finalIndex].dateTime);
+                        var finalYear = finalDate.getUTCFullYear();
+                        var stringDate = parseInt(nonArrayDataRow[5]) + '/' + parseInt(nonArrayDataRow[6]) + '/' + finalYear;
                         var date = new Date(stringDate);
                         var meanPercentiles = {
                             date: date.toUTCString(),
-                            begin_yr: parseInt(dataRow[7]),
-                            end_yr: parseInt(dataRow[8]),
-                            min_va: parseInt(dataRow[13]),
-                            p10_va: parseInt(dataRow[16]),
-                            p25_va: parseInt(dataRow[18]),
-                            p75_va: parseInt(dataRow[20]),
-                            p90_va: parseInt(dataRow[22]),
-                            max_va: parseInt(dataRow[11])
+                            begin_yr: parseInt(nonArrayDataRow[7]),
+                            end_yr: parseInt(nonArrayDataRow[8]),
+                            min_va: parseInt(nonArrayDataRow[13]),
+                            p10_va: parseInt(nonArrayDataRow[16]),
+                            p25_va: parseInt(nonArrayDataRow[18]),
+                            p75_va: parseInt(nonArrayDataRow[20]),
+                            p90_va: parseInt(nonArrayDataRow[22]),
+                            max_va: parseInt(nonArrayDataRow[11])
                         };
                         meanPercentileStats.push(meanPercentiles);
                     } while (data.length > 0);
                     _this_1.meanPercent = meanPercentileStats;
+                    console.log('mean perc 1', meanPercentileStats);
                     _this_1.formatData();
                 });
             };
