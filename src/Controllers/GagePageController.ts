@@ -965,38 +965,7 @@ module StreamStats.Controllers {
                         x: 0,
                         y: 0
                     },
-                    // buttons: [{
-                    //     type: 'month',
-                    //     count: 1,
-                    //     text: '1m',
-                    //     title: 'View 1 month'
-                    // }, {
-                    //     type: 'month',
-                    //     count: 3,
-                    //     text: '3m',
-                    //     title: 'View 3 months'
-                    // }, {
-                    //     type: 'month',
-                    //     count: 6,
-                    //     text: '6m',
-                    //     title: 'View 6 months'
-                    // }, {
-                    //     type: 'ytd',
-                    //     count: null,
-                    //     text: 'YTD',
-                    //     title: 'View year to date'
-                    // }, {
-                    //     type: 'year',
-                    //     count: 1,
-                    //     text: '1y',
-                    //     title: 'View 1 year'
-                    // }, {
-                    //     type: 'all',
-                    //     count: null,
-                    //     text: 'All',
-                    //     title: 'View all'
-                    // }],
-                    selected: 5,
+                    selected: 3,
                     buttonPosition: {
                         align: 'right',
                         x: 0,
@@ -1059,16 +1028,16 @@ module StreamStats.Controllers {
                     name    : 'Annual Peak Streamflow',
                     showInNavigator: false,
                     tooltip: {
-                        headerFormat:'<b>Annual Peak Streamflow</b>',
+                        headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Latest Year',
                         pointFormatter: function(){
-                            if (this.formattedPeakDates !== null){
-                                let waterYear = this.x.getUTCFullYear();
-                                if (this.x.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                            if (this.formattedPeakDatesOnYear !== null){
+                                let waterYear = this.realDate.getUTCFullYear();
+                                if (this.realDate.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
                                     waterYear += 1; // adding a year to dates that fall into the next water year
                                 };
-                                let UTCday = this.x.getUTCDate();
-                                let year = this.x.getUTCFullYear();
-                                let month = this.x.getUTCMonth();
+                                let UTCday = this.realDate.getUTCDate();
+                                let year = this.realDate.getUTCFullYear();
+                                let month = this.realDate.getUTCMonth();
                                     month += 1; // adding a month to the UTC months (which are zero-indexed)
                                 let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
                                 return '<br>Date: <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
@@ -1079,7 +1048,7 @@ module StreamStats.Controllers {
                     type    : 'scatter',
                     color   : 'black',
                     fillOpacity: null, 
-                    data    : this.formattedPeakDates,
+                    data    : this.formattedPeakDatesOnYear,
                     linkedTo: null,
                     marker: {
                         symbol: 'circle',
@@ -1091,16 +1060,16 @@ module StreamStats.Controllers {
                     name    : 'Annual Peak Streamflow (Date Estimated)',
                     showInNavigator: true,
                     tooltip: {
-                        headerFormat:'<b>Annual Peak Streamflow</b>',
+                        headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Latest Year',
                         pointFormatter: function(){
-                            if (this.formattedPeakDates !== null){
-                                let waterYear = this.x.getUTCFullYear();
-                                if (this.x.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                            if (this.formattedEstPeakDatesOnYear !== null){
+                                let waterYear = this.realDate.getUTCFullYear();
+                                if (this.realDate.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
                                     waterYear += 1; // adding a year to dates that fall into the next water year
                                 };
-                                let UTCday = this.x.getUTCDate();
-                                let year = this.x.getUTCFullYear();
-                                let month = this.x.getUTCMonth();
+                                let UTCday = this.realDate.getUTCDate();
+                                let year = this.realDate.getUTCFullYear();
+                                let month = this.realDate.getUTCMonth();
                                     month += 1; // adding a month to the UTC months (which are zero-indexed)
                                 let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
                                 return '<br>Date (estimated): <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
@@ -1111,7 +1080,7 @@ module StreamStats.Controllers {
                     type    : 'scatter',
                     color   : 'red',
                     fillOpacity: null, 
-                    data    : this.formattedEstPeakDates,
+                    data    : this.formattedEstPeakDatesOnYear,
                     linkedTo: null,
                     marker: {
                         symbol: 'square',
@@ -1266,7 +1235,7 @@ module StreamStats.Controllers {
                 }
             };
         //checkbox to plot peaks on one year (2022 for now)
-        public peaksOnYear = false; 
+        public peaksOnYear = true; 
         public togglePeakYear () {
             let chart = $('#chart1').highcharts();
             if (this.peaksOnYear) {
