@@ -789,6 +789,7 @@ var StreamStats;
                             color: '#add8f2',
                             fillOpacity: null,
                             data: this.formattedDailyFlow,
+                            linkedTo: null,
                             marker: {
                                 symbol: '',
                                 radius: 3
@@ -821,6 +822,7 @@ var StreamStats;
                             color: 'black',
                             fillOpacity: null,
                             data: this.formattedPeakDates,
+                            linkedTo: null,
                             marker: {
                                 symbol: 'circle',
                                 radius: 3
@@ -853,6 +855,7 @@ var StreamStats;
                             color: 'red',
                             fillOpacity: null,
                             data: this.formattedEstPeakDates,
+                            linkedTo: null,
                             marker: {
                                 symbol: 'square',
                                 radius: 3
@@ -860,26 +863,7 @@ var StreamStats;
                             showInLegend: this.formattedEstPeakDates.length > 0
                         },
                         {
-                            name: 'Annual Exceedance Probability',
-                            showInNavigator: false,
-                            tooltip: {
-                                headerFormat: null,
-                                pointFormatter: function () {
-                                }
-                            },
-                            turboThreshold: 0,
-                            type: null,
-                            color: 'black',
-                            fillOpacity: null,
-                            data: null,
-                            marker: {
-                                symbol: 'line',
-                                radius: 0.1
-                            },
-                            showInLegend: this.formattedFloodFreq.length > 0
-                        },
-                        {
-                            name: 'p 0-10 %',
+                            name: 'Shaded Daily Statistics',
                             showInNavigator: false,
                             tooltip: {
                                 headerFormat: null,
@@ -892,6 +876,7 @@ var StreamStats;
                             color: '#8B0000',
                             fillOpacity: 0.2,
                             data: this.formattedP0to10,
+                            linkedTo: null,
                             marker: {
                                 symbol: null,
                                 radius: null
@@ -912,11 +897,12 @@ var StreamStats;
                             color: '#B8860B',
                             fillOpacity: 0.2,
                             data: this.formattedP10to25,
+                            linkedTo: ':previous',
                             marker: {
                                 symbol: null,
                                 radius: null
                             },
-                            showInLegend: this.formattedP10to25.length > 0
+                            showInLegend: false
                         },
                         {
                             name: 'p 25-75 %',
@@ -932,11 +918,12 @@ var StreamStats;
                             color: '#006400',
                             fillOpacity: 0.2,
                             data: this.formattedP25to75,
+                            linkedTo: ':previous',
                             marker: {
                                 symbol: null,
                                 radius: null
                             },
-                            showInLegend: this.formattedP25to75.length > 0
+                            showInLegend: false
                         },
                         {
                             name: 'p 75-90 %',
@@ -952,11 +939,12 @@ var StreamStats;
                             color: '#008B8B',
                             fillOpacity: 0.2,
                             data: this.formattedP75to90,
+                            linkedTo: ':previous',
                             marker: {
                                 symbol: null,
                                 radius: null
                             },
-                            showInLegend: this.formattedP75to90.length > 0
+                            showInLegend: false
                         },
                         {
                             name: 'p 90-100 %',
@@ -972,11 +960,32 @@ var StreamStats;
                             color: '#0000FF',
                             fillOpacity: 0.2,
                             data: this.formattedP90to100,
+                            linkedTo: ':previous',
                             marker: {
                                 symbol: null,
                                 radius: null
                             },
-                            showInLegend: this.formattedP90to100.length > 0
+                            showInLegend: false
+                        },
+                        {
+                            name: 'Annual Exceedance Probability',
+                            showInNavigator: false,
+                            tooltip: {
+                                headerFormat: null,
+                                pointFormatter: function () {
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: null,
+                            color: 'black',
+                            fillOpacity: null,
+                            data: null,
+                            linkedTo: null,
+                            marker: {
+                                symbol: 'line',
+                                radius: 0.1
+                            },
+                            showInLegend: this.formattedFloodFreq.length > 0
                         }
                     ]
                 };
