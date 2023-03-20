@@ -482,13 +482,21 @@ var StreamStats;
                     }
                     ;
                     _this_1.dailyFlow = dailyValues;
-                    _this_1.getShadedDailyStats();
+                    _this_1.getNWSForecast();
                 });
+            };
+            GagePageController.prototype.getNWSForecast = function () {
+                var self = this;
+                var nwisCode = this.gage.code;
+                this.$http.get('./data/gageNumberCrossWalk.json').then(function (response) {
+                    self.crossWalk = response.data;
+                    var url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + self.crossWalk[nwisCode];
+                });
+                this.getShadedDailyStats();
             };
             GagePageController.prototype.getShadedDailyStats = function () {
                 var _this_1 = this;
                 var url = 'https://waterservices.usgs.gov/nwis/stat/?format=rdb,1.0&indent=on&sites=' + this.gage.code + '&statReportType=daily&statTypeCd=all&parameterCd=00060';
-                console.log('shaded url', url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var meanPercentileStats = [];
@@ -516,7 +524,6 @@ var StreamStats;
                         meanPercentileStats.push(meanPercentiles);
                     } while (data.length > 0);
                     _this_1.meanPercent = meanPercentileStats;
-                    console.log('mean perc 1', meanPercentileStats);
                     _this_1.formatData();
                 });
             };
@@ -713,7 +720,6 @@ var StreamStats;
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
-                console.log(this.formattedP0to10);
                 this.chartConfig = {
                     chart: {
                         height: 550,

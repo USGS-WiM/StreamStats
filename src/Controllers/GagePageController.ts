@@ -163,6 +163,7 @@ module StreamStats.Controllers {
         public statCitationList;
         public charCitationList;
         public statIds;
+        public crossWalk: Object;
         public statIdsChar;
         public showPreferred = false;
         public multiselectOptions = {
@@ -674,25 +675,25 @@ module StreamStats.Controllers {
                     else {
                         dailyValues = 0
                     };
-                    this.dailyFlow = dailyValues
-                    this.getShadedDailyStats();
+                    this.dailyFlow = dailyValues;
+                    this.getNWSForecast();
                 }); 
             }
 
-        // public getNWSForecast() {
-        //     var crossWalk = 'https://www.weather.gov/source/aprfc/crossWalk.json';
-        //     // const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(crossWalk, true, WiM.Services.Helpers.methodType.GET, 'json');
-        //     // this.Execute(request).then(
-        //     //     (response: any) => {
-        //     //         console.log(response);
-        //     //     }); 
-        //     var url =  "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage="+ this.gage.code
-        //     this.getShadedDailyStats();
-        // }
+        public getNWSForecast() {
+            var self = this //(not sure if youll need this)
+            var nwisCode = this.gage.code
+                this.$http.get('./data/gageNumberCrossWalk.json').then(function(response) {
+                self.crossWalk = response.data
+                var url =  "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage="+ self.crossWalk[nwisCode];
+            });
+
+            this.getShadedDailyStats();
+        }
         
         public getShadedDailyStats() {
             var url = 'https://waterservices.usgs.gov/nwis/stat/?format=rdb,1.0&indent=on&sites=' + this.gage.code + '&statReportType=daily&statTypeCd=all&parameterCd=00060';
-            console.log('shaded url', url);
+            //console.log('shaded url', url);
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
@@ -725,7 +726,7 @@ module StreamStats.Controllers {
                         meanPercentileStats.push(meanPercentiles);
                     } while (data.length > 0);
                     this.meanPercent = meanPercentileStats;
-                    console.log('mean perc 1', meanPercentileStats);
+                    //console.log('mean perc 1', meanPercentileStats);
                     //console.log('xxx', this.meanPercent)
                     this.formatData();
                 });
@@ -939,7 +940,7 @@ module StreamStats.Controllers {
             //console.log('estimated peak plot data', this.formattedEstPeakDates);
             //console.log('daily flow plot data', this.formattedDailyFlow);
             //console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear)
-            console.log(this.formattedP0to10);
+            //console.log(this.formattedP0to10);
             this.chartConfig = {
                 chart: {
                     height: 550,
