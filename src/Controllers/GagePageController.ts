@@ -190,10 +190,10 @@ module StreamStats.Controllers {
         public peakValuePlot: any;
         public annualFlowPlot: any;
         public peakValues: any;
-        public dischargeObj = undefined; // ethan
-        public ratingCurve = undefined; // ethan
-        public measuredObj = undefined; // ethan
-        public USGSMeasured = undefined; // ethan
+        public dischargeObj = undefined; // Stage vs. Discharge Plot
+        public ratingCurve = undefined; // Stage vs. Discharge Plot
+        public measuredObj = undefined; // Stage vs. Discharge Plot
+        public USGSMeasured = undefined; // Stage vs. Discharge Plot
         public floodFreq = undefined;
         public peakDates = undefined;
         public estPeakDates = undefined;
@@ -205,11 +205,8 @@ module StreamStats.Controllers {
         public formattedEstPeakDates = [];
         public formattedDailyFlow = [];
         public dailyRange = [];
-        public formattedDischargePeakDates = []; // ethan
-        public formattedDischargeObj = []; // ethan
-        public formattedRatingCurve = []; // ethan
-        public formattedUSGSMeasured = []; // ethan
-        public ageQualityData = 'age'; //ethan
+        public formattedDischargePeakDates = []; // Stage vs. Discharge Plot
+        public ageQualityData = 'age'; //Stage vs. Discharge Plot
         public dailyValuesOnly = [];
 
         //Constructor
@@ -629,7 +626,6 @@ module StreamStats.Controllers {
                             peak_va: parseInt(dataRow[4]),
                             peak_stage: parseFloat(dataRow[6])
                         };
-                        // console.log('peak obj', peakObj)
                         peakValues.push(peakObj)
                         //making a new array of invalid dates (dates with month or day of '00') that will be 'estimated' (changed to '01')
                         const estPeakObj = {
@@ -698,7 +694,7 @@ module StreamStats.Controllers {
                     this.dailyFlow = dailyValues
                     this.getRatingCurve();
                 }); 
-            }      
+            }
 
         public getRatingCurve() {
             const url = 'https://waterdata.usgs.gov/nwisweb/get_ratings?site_no=' + this.gage.code + '&file_type=exsa'
@@ -706,7 +702,7 @@ module StreamStats.Controllers {
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             
             this.dischargeObj = [];
-            // console.log('discharge data', dischargeObj)
+            console.log('discharge data', this.dischargeObj)
 
             this.Execute(request).then(
                 (response: any) => {
@@ -716,14 +712,6 @@ module StreamStats.Controllers {
                     data.shift().split('\t');
                     //console.log('data with shift', data)
                     data.shift();
-                    // console.log('another data shift', data)
-                    // let dataRow = data.shift().split('\t');
-                    // console.log('datarow splits', dataRow)
-                    // debugger;
-
-                    // push obj into an empty array here
-
-                    
                     // console.log('discharge data', dischargeObj)
                     data.forEach(row => {
                         let dataRow = row.split('\t')
@@ -735,8 +723,7 @@ module StreamStats.Controllers {
                         this.dischargeObj.push(object) 
                    });
                    // console.log('this.discharge obj 1st one', this.dischargeObj)
-                    // console.log(dischargeObj)
-                        // console.log('dischargeObj', dischargeValue)
+                    // console.log('dischargeObj', dischargeValue)
                 }, (error) => {
                     // console.log(error)
                     // this.ratingCurve = this.dischargeObj;
@@ -751,7 +738,7 @@ module StreamStats.Controllers {
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             
             this.measuredObj = [];
-
+            console.log('is measured obj have data', this.measuredObj)
             this.Execute(request).then(
                 (response: any) => {
                     // console.log('response usgsmeasured', response)
@@ -1135,16 +1122,13 @@ module StreamStats.Controllers {
 public getCorrectColor(date): string {
     let days = (new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24)
         if (days <= 31) {
-            console.log("first month", days)
+            // console.log("first month", days)
             return 'red'; // orange
         } else if (days <= 365) {
-            console.log("first year", days)
             return 'orange'; // orange    
         } else if (days <= 730) {
-            console.log("second year", days)
             return "#0000cdcc"; // blue
         } else {
-            console.log("any other year", days)
             return "#0000cd4d"; // light blue
         }
 }
@@ -1220,7 +1204,7 @@ public createDischargePlot(): void {
                 symbol: 'square',
                 radius: 2.5
             },
-            showInLegend: this.dischargeObj.length > 0
+            showInLegend: this.dischargeObj.length > 5
         },
         {
             name    : 'Annual Peaks',
@@ -1275,7 +1259,7 @@ public createDischargePlot(): void {
                 symbol: 'diamond',
                 radius: 3
             },
-            showInLegend: this.measuredObj.length > 0
+            showInLegend: !this.measuredObj.every(item => isNaN(item.y)) 
         }] 
     } 
 }
@@ -1459,11 +1443,11 @@ public createDailyRasterPlot(): void {
 
         //radio to show age in discharge plot
         // public ageQualityData = true; // starts with it checked
-        public toggleData (dataType) {
-            console.log('this is age data')
+        public toggleDischargeData (dataType) {
+            // console.log('this is age data')
             let chart = $('#chart3').highcharts();
-            console.log('this is chart data', chart)
-            console.log('this is measuredObj data', this.measuredObj)
+            // console.log('this is chart data', chart)
+            // console.log('this is measuredObj data', this.measuredObj)
             if (dataType === 'age') {
                 this.measuredObj.forEach(row => {
                     row.color = row.ageColor
@@ -1474,7 +1458,7 @@ public createDailyRasterPlot(): void {
                         row.color = row.qualityColor
                     });
             };
-            
+        }
             // to be used to create a slide based on month or year
             // scope.slider_draggable_range = {
             //     minValue: 1,

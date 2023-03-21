@@ -103,9 +103,6 @@ var StreamStats;
                 _this_1.formattedDailyFlow = [];
                 _this_1.dailyRange = [];
                 _this_1.formattedDischargePeakDates = [];
-                _this_1.formattedDischargeObj = [];
-                _this_1.formattedRatingCurve = [];
-                _this_1.formattedUSGSMeasured = [];
                 _this_1.ageQualityData = 'age';
                 _this_1.dailyValuesOnly = [];
                 _this_1.plotlines = true;
@@ -496,6 +493,7 @@ var StreamStats;
                 var url = 'https://waterdata.usgs.gov/nwisweb/get_ratings?site_no=' + this.gage.code + '&file_type=exsa';
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.dischargeObj = [];
+                console.log('discharge data', this.dischargeObj);
                 this.Execute(request).then(function (response) {
                     var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
                     data.shift().split('\t');
@@ -518,6 +516,7 @@ var StreamStats;
                 var url = 'https://waterdata.usgs.gov/nwis/measurements?site_no=' + this.gage.code + '&agency_cd=USGS&format=rdb_expanded';
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.measuredObj = [];
+                console.log('is measured obj have data', this.measuredObj);
                 this.Execute(request).then(function (response) {
                     var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
                     data.shift().split('\t');
@@ -827,19 +826,15 @@ var StreamStats;
             GagePageController.prototype.getCorrectColor = function (date) {
                 var days = (new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24);
                 if (days <= 31) {
-                    console.log("first month", days);
                     return 'red';
                 }
                 else if (days <= 365) {
-                    console.log("first year", days);
                     return 'orange';
                 }
                 else if (days <= 730) {
-                    console.log("second year", days);
                     return "#0000cdcc";
                 }
                 else {
-                    console.log("any other year", days);
                     return "#0000cd4d";
                 }
             };
@@ -911,7 +906,7 @@ var StreamStats;
                                 symbol: 'square',
                                 radius: 2.5
                             },
-                            showInLegend: this.dischargeObj.length > 0
+                            showInLegend: this.dischargeObj.length > 5
                         },
                         {
                             name: 'Annual Peaks',
@@ -966,7 +961,7 @@ var StreamStats;
                                 symbol: 'diamond',
                                 radius: 3
                             },
-                            showInLegend: this.measuredObj.length > 0
+                            showInLegend: !this.measuredObj.every(function (item) { return isNaN(item.y); })
                         }
                     ]
                 };
@@ -1151,11 +1146,8 @@ var StreamStats;
                 }
             };
             ;
-            GagePageController.prototype.toggleData = function (dataType) {
-                console.log('this is age data');
+            GagePageController.prototype.toggleDischargeData = function (dataType) {
                 var chart = $('#chart3').highcharts();
-                console.log('this is chart data', chart);
-                console.log('this is measuredObj data', this.measuredObj);
                 if (dataType === 'age') {
                     this.measuredObj.forEach(function (row) {
                         row.color = row.ageColor;

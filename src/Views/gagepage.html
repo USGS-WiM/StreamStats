@@ -224,7 +224,7 @@
                     <div ng-if="!vm.chartConfig" class="panel panel-default reportSpinner">
                         &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
                     </div>
-                    <center>
+                    <!-- <center>
                     <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.chartConfig">
                         <input type="checkbox" ng-if="vm.formattedFloodFreq.length > 0" id="yesAEPLines" name="yesAEPLines" ng-model="vm.plotlines" ng-change="vm.togglePlotLines()" checked>
                         <label for="yesAEPLines" ng-if="vm.formattedFloodFreq.length > 0"> AEP Plot Lines&nbsp;&nbsp;</label>
@@ -239,22 +239,21 @@
                         </div>
                         <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.heatChartConfig">
                             <highchart id="chart2" config="vm.heatChartConfig"></highchart>
-                        </center>
-                    </div>
-                    <div ng-if="!vm.dischargeChartConfig" class="panel panel-default reportSpinner">
-                        &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
-                    </div>
-                    <div class="panel panel-default" ng-if="vm.dischargeChartConfig">
-                        <center>
+                        </div>
+                    </center> -->
+                    <center>
+                        <div ng-if="!vm.dischargeChartConfig" class="panel panel-default reportSpinner">
+                            &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
+                        </div>
+                        <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.dischargeChartConfig">
                         <input type="checkbox" id="logScaleDischarge" name="logScaleDischarge" ng-model="vm.logScaleDischarge" ng-change="vm.toggleLogLinearDischarge()">
                         <label for="logScaleDischarge" > Log Scale</label>
                         
-                        <input type="radio" id="ageData" name="ageQualityData" ng-model="vm.ageQualityData" value="age" ng-change="vm.toggleData('age')"> 
+                        <input type="radio" id="ageData" name="ageQualityData" ng-model="vm.ageQualityData" value="age" ng-change="vm.toggleDischargeData('age')"> 
                         <label for="ageData"> Age</label>
 
-                        <input type="radio" id="qualityData" name="ageQualityData" ng-model="vm.ageQualityData" value="quality" ng-change="vm.toggleData('quality')"> 
+                        <input type="radio" id="qualityData" name="ageQualityData" ng-model="vm.ageQualityData" value="quality" ng-change="vm.toggleDischargeData('quality')"> 
                         <label for="qualityData" > Quality</label>
-
                         <!-- <div class="group-wrapper">
                             <label>Start Year:</label>
                             <input type="number" name="sdate" ng-model="vm.StartYear" min="vm.YearRange.floor" max="vm.YearRange.ceil" required>
@@ -274,9 +273,10 @@
 
 
                         <!-- <rzslider rz-slider-model="slider_draggable_range.minValue" rz-slider-high="slider_draggable_range.maxValue" rz-slider-options="slider_draggable_range.options"></rzslider> -->
-
-
-                        <br><highchart id="chart3" config="vm.dischargeChartConfig"></highchart><br>
+                        <highchart id="chart3" config="vm.dischargeChartConfig"></highchart>
+                        </div>
+<!-- 
+                            <highchart id="chart3" config="vm.dischargeChartConfig"></highchart> -->
                         </center> 
                     </div>
                 </div>
