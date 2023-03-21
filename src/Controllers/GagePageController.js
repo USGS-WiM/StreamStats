@@ -694,7 +694,7 @@ var StreamStats;
                                 enabled: true,
                                 zIndex: 3,
                                 pointFormatter: function () {
-                                    if (this.x.getUTCFullYear() == startDate_1.getUTCFullYear()) {
+                                    if (this.x.getUTCFullYear() == endDate_1.getUTCFullYear()) {
                                         return formattedName + '% AEP';
                                     }
                                 }

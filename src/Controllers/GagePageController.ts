@@ -909,7 +909,7 @@ module StreamStats.Controllers {
                                 enabled: true,
                                 zIndex: 3,
                                 pointFormatter: function() { 
-                                    if (this.x.getUTCFullYear() == startDate.getUTCFullYear()) {
+                                    if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
                                         return formattedName + '% AEP'
                                     }
                                 } 
