@@ -776,34 +776,6 @@ var StreamStats;
                     },
                     series: [
                         {
-                            name: 'Daily Streamflow',
-                            showInNavigator: true,
-                            tooltip: {
-                                headerFormat: '<b>Daily Streamflow</b>',
-                                pointFormatter: function () {
-                                    if (this.formattedPeakDates !== null) {
-                                        var UTCday = this.x.getUTCDate();
-                                        var year = this.x.getUTCFullYear();
-                                        var month = this.x.getUTCMonth();
-                                        month += 1;
-                                        var formattedUTCDailyDate = month + '/' + UTCday + '/' + year;
-                                        return '<br>Date: <b>' + formattedUTCDailyDate + '</b><br>Value: <b>' + this.y + ' ft³/s';
-                                    }
-                                }
-                            },
-                            turboThreshold: 0,
-                            type: 'line',
-                            color: '#add8f2',
-                            fillOpacity: null,
-                            data: this.formattedDailyFlow,
-                            linkedTo: null,
-                            marker: {
-                                symbol: '',
-                                radius: 3
-                            },
-                            showInLegend: this.formattedDailyFlow.length > 0
-                        },
-                        {
                             name: 'Annual Peak Streamflow',
                             showInNavigator: false,
                             tooltip: {
@@ -828,6 +800,7 @@ var StreamStats;
                             type: 'scatter',
                             color: 'black',
                             fillOpacity: null,
+                            lineWidth: null,
                             data: this.formattedPeakDatesOnYear,
                             linkedTo: null,
                             marker: {
@@ -861,6 +834,7 @@ var StreamStats;
                             type: 'scatter',
                             color: 'red',
                             fillOpacity: null,
+                            lineWidth: null,
                             data: this.formattedEstPeakDatesOnYear,
                             linkedTo: null,
                             marker: {
@@ -882,6 +856,7 @@ var StreamStats;
                             type: 'arearange',
                             color: '#8B0000',
                             fillOpacity: 0.2,
+                            lineWidth: 0,
                             data: this.formattedP0to10,
                             linkedTo: null,
                             marker: {
@@ -903,6 +878,7 @@ var StreamStats;
                             type: 'arearange',
                             color: '#B8860B',
                             fillOpacity: 0.2,
+                            lineWidth: 0,
                             data: this.formattedP10to25,
                             linkedTo: ':previous',
                             marker: {
@@ -924,6 +900,7 @@ var StreamStats;
                             type: 'arearange',
                             color: '#006400',
                             fillOpacity: 0.2,
+                            lineWidth: 0,
                             data: this.formattedP25to75,
                             linkedTo: ':previous',
                             marker: {
@@ -945,6 +922,7 @@ var StreamStats;
                             type: 'arearange',
                             color: '#008B8B',
                             fillOpacity: 0.2,
+                            lineWidth: 0,
                             data: this.formattedP75to90,
                             linkedTo: ':previous',
                             marker: {
@@ -966,6 +944,7 @@ var StreamStats;
                             type: 'arearange',
                             color: '#0000FF',
                             fillOpacity: 0.2,
+                            lineWidth: 0,
                             data: this.formattedP90to100,
                             linkedTo: ':previous',
                             marker: {
@@ -973,6 +952,35 @@ var StreamStats;
                                 radius: null
                             },
                             showInLegend: false
+                        },
+                        {
+                            name: 'Daily Streamflow',
+                            showInNavigator: true,
+                            tooltip: {
+                                headerFormat: '<b>Daily Streamflow</b>',
+                                pointFormatter: function () {
+                                    if (this.formattedPeakDates !== null) {
+                                        var UTCday = this.x.getUTCDate();
+                                        var year = this.x.getUTCFullYear();
+                                        var month = this.x.getUTCMonth();
+                                        month += 1;
+                                        var formattedUTCDailyDate = month + '/' + UTCday + '/' + year;
+                                        return '<br>Date: <b>' + formattedUTCDailyDate + '</b><br>Value: <b>' + this.y + ' ft³/s';
+                                    }
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: 'line',
+                            color: '#1434A4',
+                            fillOpacity: null,
+                            lineWidth: 1.5,
+                            data: this.formattedDailyFlow,
+                            linkedTo: null,
+                            marker: {
+                                symbol: '',
+                                radius: 3
+                            },
+                            showInLegend: this.formattedDailyFlow.length > 0
                         },
                         {
                             name: 'Annual Exceedance Probability',
@@ -986,6 +994,7 @@ var StreamStats;
                             type: null,
                             color: 'black',
                             fillOpacity: null,
+                            lineWidth: null,
                             data: null,
                             linkedTo: null,
                             marker: {
@@ -1025,10 +1034,10 @@ var StreamStats;
                 if (this.peaksOnYear) {
                     var finalIndex = this.formattedDailyFlow.length - 1;
                     var finalYear = (this.formattedDailyFlow[finalIndex].x).getUTCFullYear();
-                    chart.series[1].update({ data: this.formattedPeakDatesOnYear });
-                    chart.series[2].update({ data: this.formattedEstPeakDatesOnYear });
+                    chart.series[0].update({ data: this.formattedPeakDatesOnYear });
+                    chart.series[1].update({ data: this.formattedEstPeakDatesOnYear });
                     chart.rangeSelector.update({ selected: 3 });
-                    chart.series[1].update({ tooltip: {
+                    chart.series[0].update({ tooltip: {
                             headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Latest Year',
                             pointFormatter: function () {
                                 if (this.formattedPeakDatesOnYear !== null) {
@@ -1046,7 +1055,7 @@ var StreamStats;
                                 }
                             }
                         } });
-                    chart.series[2].update({ tooltip: {
+                    chart.series[1].update({ tooltip: {
                             headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Latest Year',
                             pointFormatter: function () {
                                 if (this.formattedEstPeakDatesOnYear !== null) {
@@ -1066,10 +1075,10 @@ var StreamStats;
                         } });
                 }
                 else {
-                    chart.series[1].update({ data: this.formattedPeakDates });
-                    chart.series[2].update({ data: this.formattedEstPeakDates });
+                    chart.series[0].update({ data: this.formattedPeakDates });
+                    chart.series[1].update({ data: this.formattedEstPeakDates });
                     chart.rangeSelector.update({ selected: 5 });
-                    chart.series[1].update({ tooltip: {
+                    chart.series[0].update({ tooltip: {
                             headerFormat: '<b>Annual Peak Streamflow</b>',
                             pointFormatter: function () {
                                 if (this.formattedPeakDates !== null) {
@@ -1087,7 +1096,7 @@ var StreamStats;
                                 }
                             }
                         } });
-                    chart.series[2].update({ tooltip: {
+                    chart.series[1].update({ tooltip: {
                             headerFormat: '<b>Annual Peak Streamflow</b>',
                             pointFormatter: function () {
                                 if (this.formattedEstPeakDates !== null) {

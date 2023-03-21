@@ -223,7 +223,7 @@ module StreamStats.Controllers {
                         xAxis: {  type: string, title: {text: string}, custom: { allowNegativeLog: Boolean }},
                         yAxis: { title: {text: string}, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
                         series: { name: string; showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
-                                fillOpacity: number, data: number[], linkedTo: string, marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
+                                fillOpacity: number, lineWidth: number, data: number[], linkedTo: string, marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
         constructor($scope: IGagePageControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
@@ -998,34 +998,6 @@ module StreamStats.Controllers {
                 },
                 series  : [
                 {
-                    name    : 'Daily Streamflow',
-                    showInNavigator: true,
-                    tooltip: {
-                        headerFormat:'<b>Daily Streamflow</b>',
-                        pointFormatter: function(){
-                            if (this.formattedPeakDates !== null){
-                                let UTCday = this.x.getUTCDate();
-                                let year = this.x.getUTCFullYear();
-                                let month = this.x.getUTCMonth();
-                                    month += 1; // adding a month to the UTC months (which are zero-indexed)
-                                let formattedUTCDailyDate = month + '/' + UTCday + '/' + year;
-                                return '<br>Date: <b>'  + formattedUTCDailyDate + '</b><br>Value: <b>' + this.y + ' ft³/s'
-                            }
-                        }
-                    },
-                    turboThreshold: 0, 
-                    type    : 'line',
-                    color   : '#add8f2',
-                    fillOpacity: null, 
-                    data    : this.formattedDailyFlow,
-                    linkedTo: null,
-                    marker: {
-                        symbol: '',
-                        radius: 3
-                    },
-                    showInLegend: this.formattedDailyFlow.length > 0
-                },
-                {
                     name    : 'Annual Peak Streamflow',
                     showInNavigator: false,
                     tooltip: {
@@ -1049,6 +1021,7 @@ module StreamStats.Controllers {
                     type    : 'scatter',
                     color   : 'black',
                     fillOpacity: null, 
+                    lineWidth: null,
                     data    : this.formattedPeakDatesOnYear,
                     linkedTo: null,
                     marker: {
@@ -1081,6 +1054,7 @@ module StreamStats.Controllers {
                     type    : 'scatter',
                     color   : 'red',
                     fillOpacity: null, 
+                    lineWidth: null,
                     data    : this.formattedEstPeakDatesOnYear,
                     linkedTo: null,
                     marker: {
@@ -1102,6 +1076,7 @@ module StreamStats.Controllers {
                     type: 'arearange',
                     color: '#8B0000',
                     fillOpacity: 0.2, 
+                    lineWidth: 0,
                     data: this.formattedP0to10,
                     linkedTo: null,
                     marker: {
@@ -1123,6 +1098,7 @@ module StreamStats.Controllers {
                     type: 'arearange',
                     color: '#B8860B',
                     fillOpacity: 0.2, 
+                    lineWidth: 0,
                     data: this.formattedP10to25,
                     linkedTo: ':previous',
                     marker: {
@@ -1144,6 +1120,7 @@ module StreamStats.Controllers {
                     type: 'arearange',
                     color: '#006400',
                     fillOpacity: 0.2, 
+                    lineWidth: 0,
                     data: this.formattedP25to75,
                     linkedTo: ':previous',
                     marker: {
@@ -1165,6 +1142,7 @@ module StreamStats.Controllers {
                     type: 'arearange',
                     color: '#008B8B',
                     fillOpacity: 0.2, 
+                    lineWidth: 0,
                     data: this.formattedP75to90,
                     linkedTo: ':previous',
                     marker: {
@@ -1186,6 +1164,7 @@ module StreamStats.Controllers {
                     type: 'arearange',
                     color: '#0000FF',
                     fillOpacity: 0.2, 
+                    lineWidth: 0,
                     data: this.formattedP90to100,
                     linkedTo: ':previous',
                     marker: {
@@ -1193,6 +1172,36 @@ module StreamStats.Controllers {
                         radius: null
                     },
                     showInLegend: false
+                },
+                {
+                    name    : 'Daily Streamflow',
+                    showInNavigator: true,
+                    tooltip: {
+                        headerFormat:'<b>Daily Streamflow</b>',
+                        pointFormatter: function(){
+                            if (this.formattedPeakDates !== null){
+                                let UTCday = this.x.getUTCDate();
+                                let year = this.x.getUTCFullYear();
+                                let month = this.x.getUTCMonth();
+                                    month += 1; // adding a month to the UTC months (which are zero-indexed)
+                                let formattedUTCDailyDate = month + '/' + UTCday + '/' + year;
+                                return '<br>Date: <b>'  + formattedUTCDailyDate + '</b><br>Value: <b>' + this.y + ' ft³/s'
+                            }
+                        }
+                    },
+                    turboThreshold: 0, 
+                    type    : 'line',
+                    color   : '#1434A4',
+                    //color   : '#add8f2',
+                    fillOpacity: null, 
+                    lineWidth: 1.5,
+                    data    : this.formattedDailyFlow,
+                    linkedTo: null,
+                    marker: {
+                        symbol: '',
+                        radius: 3
+                    },
+                    showInLegend: this.formattedDailyFlow.length > 0
                 },
                 {
                     name: 'Annual Exceedance Probability',
@@ -1206,6 +1215,7 @@ module StreamStats.Controllers {
                     type: null,
                     color: 'black',
                     fillOpacity: null, 
+                    lineWidth: null,
                     data: null,
                     linkedTo: null,
                     marker: {
@@ -1237,8 +1247,6 @@ module StreamStats.Controllers {
             }
         }
 
-
-
         //checkbox for change linear to log scale
         public logScale = false; 
         public toggleLogLinear () {
@@ -1256,10 +1264,10 @@ module StreamStats.Controllers {
             if (this.peaksOnYear) {
                 var finalIndex = this.formattedDailyFlow.length-1;
                 var finalYear = (this.formattedDailyFlow[finalIndex].x).getUTCFullYear();
-                chart.series[1].update({ data: this.formattedPeakDatesOnYear });
-                chart.series[2].update({ data: this.formattedEstPeakDatesOnYear});
+                chart.series[0].update({ data: this.formattedPeakDatesOnYear });
+                chart.series[1].update({ data: this.formattedEstPeakDatesOnYear});
                 chart.rangeSelector.update({ selected: 3 });
-                chart.series[1].update( {tooltip: {
+                chart.series[0].update( {tooltip: {
                     headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Latest Year',
                     pointFormatter: function(){
                         if (this.formattedPeakDatesOnYear !== null){
@@ -1276,7 +1284,7 @@ module StreamStats.Controllers {
                         }
                     }
                 } })
-                chart.series[2].update( {tooltip: {
+                chart.series[1].update( {tooltip: {
                     headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Latest Year',
                     pointFormatter: function(){
                         if (this.formattedEstPeakDatesOnYear !== null){
@@ -1294,10 +1302,10 @@ module StreamStats.Controllers {
                     }
                 } })
             } else {
-                chart.series[1].update({ data: this.formattedPeakDates });
-                chart.series[2].update({ data: this.formattedEstPeakDates});
+                chart.series[0].update({ data: this.formattedPeakDates });
+                chart.series[1].update({ data: this.formattedEstPeakDates});
                 chart.rangeSelector.update({ selected: 5 });
-                chart.series[1].update({ tooltip: {
+                chart.series[0].update({ tooltip: {
                     headerFormat:'<b>Annual Peak Streamflow</b>',
                     pointFormatter: function(){
                         if (this.formattedPeakDates !== null){
@@ -1314,7 +1322,7 @@ module StreamStats.Controllers {
                         }
                     }
                 }})
-                chart.series[2].update({ tooltip: {
+                chart.series[1].update({ tooltip: {
                     headerFormat:'<b>Annual Peak Streamflow</b>',
                     pointFormatter: function(){
                         if (this.formattedEstPeakDates !== null){
