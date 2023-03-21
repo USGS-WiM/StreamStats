@@ -105,6 +105,7 @@ var StreamStats;
                 _this_1.formattedEstPeakDates = [];
                 _this_1.formattedDailyFlow = [];
                 _this_1.dailyDatesOnly = [];
+                _this_1.showAEP = true;
                 _this_1.logScale = false;
                 _this_1.peaksOnYear = true;
                 $scope.vm = _this_1;
@@ -991,13 +992,23 @@ var StreamStats;
                                 symbol: 'line',
                                 radius: 0.1
                             },
-                            showInLegend: this.formattedFloodFreq.length > 0
+                            showInLegend: false
                         }
                     ]
                 };
                 this.formattedFloodFreq.forEach(function (formattedFloodFreqItem) {
                     _this_1.chartConfig.series.push(formattedFloodFreqItem);
                 });
+            };
+            GagePageController.prototype.toggleAEPlines = function () {
+                var chart = $('#chart1').highcharts();
+                var AEPseries = chart.series[8];
+                if (this.showAEP) {
+                    AEPseries.show();
+                }
+                else {
+                    AEPseries.hide();
+                }
             };
             GagePageController.prototype.toggleLogLinear = function () {
                 var chart = $('#chart1').highcharts();

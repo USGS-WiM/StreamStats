@@ -1212,7 +1212,7 @@ module StreamStats.Controllers {
                         symbol: 'line',
                         radius: 0.1
                     },
-                    showInLegend: this.formattedFloodFreq.length > 0 
+                    showInLegend: false
                 }
             ] 
             } 
@@ -1225,16 +1225,30 @@ module StreamStats.Controllers {
 
         }
 
+        //checkbox for turning on and off AEP lines
+        public showAEP = true;
+        public toggleAEPlines () {
+            let chart = $('#chart1').highcharts();
+            let AEPseries = chart.series[8]
+            if (this.showAEP) {
+                AEPseries.show();
+            } else {
+                AEPseries.hide();
+            }
+        }
+
+
+
         //checkbox for change linear to log scale
         public logScale = false; 
-            public toggleLogLinear () {
-                let chart = $('#chart1').highcharts();
-                if (this.logScale) {
-                    chart.yAxis[0].update({ type: 'logarithmic' });
-                } else {
-                    chart.yAxis[0].update({ type: 'linear' });
-                }
-            };
+        public toggleLogLinear () {
+            let chart = $('#chart1').highcharts();
+            if (this.logScale) {
+                chart.yAxis[0].update({ type: 'logarithmic' });
+            } else {
+                chart.yAxis[0].update({ type: 'linear' });
+            }
+        };
         //checkbox to plot peaks on one year (2022 for now)
         public peaksOnYear = true; 
         public togglePeakYear () {
