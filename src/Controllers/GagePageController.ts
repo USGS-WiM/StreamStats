@@ -208,6 +208,10 @@ module StreamStats.Controllers {
         public formattedDischargePeakDates = []; // Stage vs. Discharge Plot
         public ageQualityData = 'age'; //Stage vs. Discharge Plot
         public dailyValuesOnly = [];
+        public monthSliderOptions: any; //Stage vs. Discharge Plot
+        public startMonth: number; //Stage vs. Discharge Plot
+        public endMonth: number; //Stage vs. Discharge Plot
+
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -1149,6 +1153,17 @@ public createDischargePlot(): void {
     // console.log('peak value plot data', this.formattedPeakDates);
     // console.log('estimated peak plot data', this.formattedEstPeakDates);
     // console.log('this.discharge obj 2nd one', this.dischargeObj)
+        // Set up month slider
+        this.startMonth = 1;
+        this.endMonth = 12;
+        this.monthSliderOptions = { 
+            floor: 1, 
+            ceil:12, 
+            draggableRange: true, 
+            noSwitching: true, 
+            showTicks: false
+        };
+        
     this.dischargeChartConfig = {
         chart: {
             height: 450,

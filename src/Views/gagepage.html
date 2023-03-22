@@ -254,6 +254,12 @@
 
                         <input type="radio" id="qualityData" name="ageQualityData" ng-model="vm.ageQualityData" value="quality" ng-change="vm.toggleDischargeData('quality')"> 
                         <label for="qualityData" > Quality</label>
+                        
+                        <!-- Start Month Slider -->
+                        <br><span style="width:50%">Plot USGS Measurements Between Months:</span>
+                        <rzslider class="rzSlider" style="width:50%" rz-slider-model="vm.startMonth" rz-slider-high="vm.endMonth" rz-slider-options="vm.monthSliderOptions"></rzslider><br>
+                         <!-- End Month Slider -->
+
                         <!-- <div class="group-wrapper">
                             <label>Start Year:</label>
                             <input type="number" name="sdate" ng-model="vm.StartYear" min="vm.YearRange.floor" max="vm.YearRange.ceil" required>

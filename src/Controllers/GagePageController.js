@@ -851,6 +851,15 @@ var StreamStats;
                 return "#FFA200";
             };
             GagePageController.prototype.createDischargePlot = function () {
+                this.startMonth = 1;
+                this.endMonth = 12;
+                this.monthSliderOptions = {
+                    floor: 1,
+                    ceil: 12,
+                    draggableRange: true,
+                    noSwitching: true,
+                    showTicks: false
+                };
                 this.dischargeChartConfig = {
                     chart: {
                         height: 450,
