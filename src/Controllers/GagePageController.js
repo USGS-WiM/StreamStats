@@ -490,7 +490,6 @@ var StreamStats;
             GagePageController.prototype.getNWSForecast = function () {
                 var self = this;
                 var url = undefined;
-                var forecastData = [];
                 var nwisCode = this.gage.code;
                 this.$http.get('./data/gageNumberCrossWalk.json').then(function (response) {
                     self.crossWalk = response.data;
@@ -501,13 +500,14 @@ var StreamStats;
                         var xmlDocument = new DOMParser().parseFromString(response.data, "text/xml");
                         var forecastData = xmlDocument.querySelectorAll("forecast");
                         var smallerData = forecastData[0].childNodes;
+                        var forecastArray = [];
                         smallerData.forEach(function (datum) {
                             var forecastObj = {
-                                date: new Date(datum.childNodes[0].textContent),
-                                stage: parseFloat(datum.childNodes[1].textContent),
-                                flow: parseFloat(datum.childNodes[2].textContent)
+                                x: new Date(datum.childNodes[0].textContent),
+                                y: parseFloat(datum.childNodes[2].textContent)
                             };
-                            console.log('obj', forecastObj);
+                            forecastArray.push(forecastObj);
+                            self.NWSforecast = forecastArray;
                         });
                         self.getShadedDailyStats();
                     });
@@ -752,6 +752,7 @@ var StreamStats;
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
+                console.log('outside', this.NWSforecast);
                 this.chartConfig = {
                     chart: {
                         height: 550,
@@ -1012,6 +1013,35 @@ var StreamStats;
                                 radius: 3
                             },
                             showInLegend: this.formattedDailyFlow.length > 0
+                        },
+                        {
+                            name: 'NWS Forecast',
+                            showInNavigator: false,
+                            tooltip: {
+                                headerFormat: '<b>NWS Forecast</b>',
+                                pointFormatter: function () {
+                                    if (this.formattedPeakDates !== null) {
+                                        var UTCday = this.x.getUTCDate();
+                                        var year = this.x.getUTCFullYear();
+                                        var month = this.x.getUTCMonth();
+                                        month += 1;
+                                        var formattedUTCDailyDate = month + '/' + UTCday + '/' + year;
+                                        return '<br>Date: <b>' + formattedUTCDailyDate + '</b><br>Value: <b>' + this.y + ' ft³/s';
+                                    }
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: 'line',
+                            color: 'purple',
+                            fillOpacity: null,
+                            lineWidth: 1.5,
+                            data: this.NWSforecast,
+                            linkedTo: null,
+                            marker: {
+                                symbol: '',
+                                radius: 3
+                            },
+                            showInLegend: this.NWSforecast.length > 0
                         },
                         {
                             name: 'Annual Exceedance Probability',

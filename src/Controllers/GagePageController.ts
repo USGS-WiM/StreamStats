@@ -684,7 +684,6 @@ module StreamStats.Controllers {
         public getNWSForecast() {
             var self = this;
             var url = undefined;
-            let forecastData = [];
             var nwisCode = this.gage.code
                 this.$http.get('./data/gageNumberCrossWalk.json').then(function(response) {
                 self.crossWalk = response.data
@@ -697,20 +696,19 @@ module StreamStats.Controllers {
                         const xmlDocument = new DOMParser().parseFromString(response.data, "text/xml")
                         const forecastData = xmlDocument.querySelectorAll("forecast");
                         const smallerData = forecastData[0].childNodes;
-                        
+                        let forecastArray = [];
                         smallerData.forEach(datum => {
                             const forecastObj = {
-                                date: new Date(datum.childNodes[0].textContent),
-                                stage: parseFloat(datum.childNodes[1].textContent),
-                                flow: parseFloat(datum.childNodes[2].textContent)
+                                x: new Date(datum.childNodes[0].textContent),
+                                //stage: parseFloat(datum.childNodes[1].textContent),
+                                y: parseFloat(datum.childNodes[2].textContent)
                             }
-                            console.log('obj', forecastObj);
+                            forecastArray.push(forecastObj);
+                            self.NWSforecast = forecastArray;
                         })
-                        
                         self.getShadedDailyStats();
                     });
                 });
-                //console.log(this.crossWalk);
             }
         
         public getShadedDailyStats() {
@@ -976,6 +974,7 @@ module StreamStats.Controllers {
             //console.log('daily flow plot data', this.formattedDailyFlow);
             //console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear)
             //console.log(this.formattedP0to10);
+            console.log('outside', this.NWSforecast)
             this.chartConfig = {
                 chart: {
                     height: 550,
@@ -1237,6 +1236,36 @@ module StreamStats.Controllers {
                         radius: 3
                     },
                     showInLegend: this.formattedDailyFlow.length > 0
+                },
+                {
+                    name    : 'NWS Forecast',
+                    showInNavigator: false,
+                    tooltip: {
+                        headerFormat:'<b>NWS Forecast</b>',
+                        pointFormatter: function(){
+                            if (this.formattedPeakDates !== null){
+                                let UTCday = this.x.getUTCDate();
+                                let year = this.x.getUTCFullYear();
+                                let month = this.x.getUTCMonth();
+                                    month += 1; // adding a month to the UTC months (which are zero-indexed)
+                                let formattedUTCDailyDate = month + '/' + UTCday + '/' + year;
+                                return '<br>Date: <b>'  + formattedUTCDailyDate + '</b><br>Value: <b>' + this.y + ' ft³/s'
+                            }
+                        }
+                    },
+                    turboThreshold: 0, 
+                    type    : 'line',
+                    color   : 'purple',
+                    //color   : '#add8f2',
+                    fillOpacity: null, 
+                    lineWidth: 1.5,
+                    data    : this.NWSforecast,
+                    linkedTo: null,
+                    marker: {
+                        symbol: '',
+                        radius: 3
+                    },
+                    showInLegend: this.NWSforecast.length > 0
                 },
                 {
                     name: 'Annual Exceedance Probability',
