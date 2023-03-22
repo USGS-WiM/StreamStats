@@ -91,6 +91,7 @@ var StreamStats;
                 _this_1.peakDates = undefined;
                 _this_1.estPeakDates = undefined;
                 _this_1.dailyFlow = undefined;
+                _this_1.NWSforecast = undefined;
                 _this_1.meanPercentileStats = undefined;
                 _this_1.meanPercent = undefined;
                 _this_1.formattedP0to10 = [];
@@ -423,14 +424,14 @@ var StreamStats;
                             agency_cd: dataRow[0],
                             site_no: dataRow[1],
                             peak_dt: dataRow[2],
-                            peak_va: parseInt(dataRow[4])
+                            peak_va: parseFloat(dataRow[4])
                         };
                         peakValues.push(peakObj);
                         var estPeakObj = {
                             agency_cd: dataRow[0],
                             site_no: dataRow[1],
                             peak_dt: dataRow[2].replaceAll('-00', '-01'),
-                            peak_va: parseInt(dataRow[4])
+                            peak_va: parseFloat(dataRow[4])
                         };
                         if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00' || peakObj.peak_dt[5] + peakObj.peak_dt[6] === '00') {
                             estPeakValues.push(estPeakObj);
@@ -488,12 +489,29 @@ var StreamStats;
             };
             GagePageController.prototype.getNWSForecast = function () {
                 var self = this;
+                var url = undefined;
+                var forecastData = [];
                 var nwisCode = this.gage.code;
                 this.$http.get('./data/gageNumberCrossWalk.json').then(function (response) {
                     self.crossWalk = response.data;
-                    var url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + self.crossWalk[nwisCode];
+                    url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + self.crossWalk[nwisCode];
+                    console.log(url);
+                    var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
+                    self.Execute(request).then(function (response) {
+                        var xmlDocument = new DOMParser().parseFromString(response.data, "text/xml");
+                        var forecastData = xmlDocument.querySelectorAll("forecast");
+                        var smallerData = forecastData[0].childNodes;
+                        smallerData.forEach(function (datum) {
+                            var forecastObj = {
+                                date: new Date(datum.childNodes[0].textContent),
+                                stage: parseFloat(datum.childNodes[1].textContent),
+                                flow: parseFloat(datum.childNodes[2].textContent)
+                            };
+                            console.log('obj', forecastObj);
+                        });
+                        self.getShadedDailyStats();
+                    });
                 });
-                this.getShadedDailyStats();
             };
             GagePageController.prototype.getShadedDailyStats = function () {
                 var _this_1 = this;
@@ -509,18 +527,18 @@ var StreamStats;
                         var finalIndex = _this_1.dailyFlow.length - 1;
                         var finalDate = new Date(_this_1.dailyFlow[finalIndex].dateTime);
                         var finalYear = finalDate.getUTCFullYear();
-                        var stringDate = parseInt(nonArrayDataRow[5]) + '/' + parseInt(nonArrayDataRow[6]) + '/' + finalYear;
+                        var stringDate = parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + finalYear;
                         var date = new Date(stringDate);
                         var meanPercentiles = {
                             date: date.toUTCString(),
-                            begin_yr: parseInt(nonArrayDataRow[7]),
-                            end_yr: parseInt(nonArrayDataRow[8]),
-                            min_va: parseInt(nonArrayDataRow[13]),
-                            p10_va: parseInt(nonArrayDataRow[16]),
-                            p25_va: parseInt(nonArrayDataRow[18]),
-                            p75_va: parseInt(nonArrayDataRow[20]),
-                            p90_va: parseInt(nonArrayDataRow[22]),
-                            max_va: parseInt(nonArrayDataRow[11])
+                            begin_yr: parseFloat(nonArrayDataRow[7]),
+                            end_yr: parseFloat(nonArrayDataRow[8]),
+                            min_va: parseFloat(nonArrayDataRow[13]),
+                            p10_va: parseFloat(nonArrayDataRow[16]),
+                            p25_va: parseFloat(nonArrayDataRow[18]),
+                            p75_va: parseFloat(nonArrayDataRow[20]),
+                            p90_va: parseFloat(nonArrayDataRow[22]),
+                            max_va: parseFloat(nonArrayDataRow[11])
                         };
                         meanPercentileStats.push(meanPercentiles);
                     } while (data.length > 0);
@@ -555,8 +573,8 @@ var StreamStats;
                 }
                 if (this.dailyFlow) {
                     this.dailyFlow.forEach(function (dailyObj) {
-                        if (parseInt(dailyObj.value) !== -999999) {
-                            _this_1.formattedDailyFlow.push({ x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value) });
+                        if (parseFloat(dailyObj.value) !== -999999) {
+                            _this_1.formattedDailyFlow.push({ x: new Date(dailyObj.dateTime), y: parseFloat(dailyObj.value) });
                             _this_1.dailyDatesOnly.push(new Date(dailyObj.dateTime));
                         }
                     });
@@ -734,7 +752,6 @@ var StreamStats;
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
-                console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear);
                 this.chartConfig = {
                     chart: {
                         height: 550,

@@ -195,6 +195,7 @@ module StreamStats.Controllers {
         public peakDates = undefined;
         public estPeakDates = undefined;
         public dailyFlow = undefined;
+        public NWSforecast = undefined;
         public meanPercentileStats = undefined;
         public meanPercent = undefined;
         public formattedP0to10 = [];
@@ -609,7 +610,7 @@ module StreamStats.Controllers {
                             agency_cd: dataRow[0], 
                             site_no: dataRow[1],
                             peak_dt: dataRow[2],
-                            peak_va: parseInt(dataRow[4])
+                            peak_va: parseFloat(dataRow[4])
                         };
                         peakValues.push(peakObj)
                         //making a new array of invalid dates (dates with month or day of '00') that will be 'estimated' (changed to '01')
@@ -617,7 +618,7 @@ module StreamStats.Controllers {
                             agency_cd: dataRow[0], 
                             site_no: dataRow[1],
                             peak_dt: dataRow[2].replaceAll('-00','-01'),
-                            peak_va: parseInt(dataRow[4])
+                            peak_va: parseFloat(dataRow[4])
                         };
                         if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00' || peakObj.peak_dt[5] + peakObj.peak_dt[6] === '00') {
                             estPeakValues.push(estPeakObj) //pushing invalid dates to a new array
@@ -664,7 +665,7 @@ module StreamStats.Controllers {
         //Pull in data for daily flow values
         public getDailyFlow() {
             var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01';
-            // console.log('GetDailyFlowURL', url);
+            //console.log('GetDailyFlowURL', url);
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
@@ -681,15 +682,36 @@ module StreamStats.Controllers {
             }
 
         public getNWSForecast() {
-            var self = this //(not sure if youll need this)
+            var self = this;
+            var url = undefined;
+            let forecastData = [];
             var nwisCode = this.gage.code
                 this.$http.get('./data/gageNumberCrossWalk.json').then(function(response) {
                 self.crossWalk = response.data
-                var url =  "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage="+ self.crossWalk[nwisCode];
-            });
-
-            this.getShadedDailyStats();
-        }
+                //console.log(self.crossWalk);
+                url =  "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage="+ self.crossWalk[nwisCode];
+                console.log(url);
+                const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
+                self.Execute(request).then(
+                    (response: any) => {
+                        const xmlDocument = new DOMParser().parseFromString(response.data, "text/xml")
+                        const forecastData = xmlDocument.querySelectorAll("forecast");
+                        const smallerData = forecastData[0].childNodes;
+                        
+                        smallerData.forEach(datum => {
+                            const forecastObj = {
+                                date: new Date(datum.childNodes[0].textContent),
+                                stage: parseFloat(datum.childNodes[1].textContent),
+                                flow: parseFloat(datum.childNodes[2].textContent)
+                            }
+                            console.log('obj', forecastObj);
+                        })
+                        
+                        self.getShadedDailyStats();
+                    });
+                });
+                //console.log(this.crossWalk);
+            }
         
         public getShadedDailyStats() {
             var url = 'https://waterservices.usgs.gov/nwis/stat/?format=rdb,1.0&indent=on&sites=' + this.gage.code + '&statReportType=daily&statTypeCd=all&parameterCd=00060';
@@ -709,19 +731,19 @@ module StreamStats.Controllers {
                         var finalIndex = this.dailyFlow.length-1;
                         var finalDate = new Date(this.dailyFlow[finalIndex].dateTime)
                         var finalYear = finalDate.getUTCFullYear();
-                        let stringDate = parseInt(nonArrayDataRow[5]) + '/' + parseInt(nonArrayDataRow[6]) + '/' + finalYear;
+                        let stringDate = parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + finalYear;
                         let date = new Date(stringDate);
                         //console.log(date);
                         const meanPercentiles = {
                             date: date.toUTCString(),
-                            begin_yr: parseInt(nonArrayDataRow[7]),
-                            end_yr: parseInt(nonArrayDataRow[8]),
-                            min_va: parseInt(nonArrayDataRow[13]),
-                            p10_va: parseInt(nonArrayDataRow[16]),
-                            p25_va: parseInt(nonArrayDataRow[18]),
-                            p75_va: parseInt(nonArrayDataRow[20]),
-                            p90_va: parseInt(nonArrayDataRow[22]),
-                            max_va: parseInt(nonArrayDataRow[11])
+                            begin_yr: parseFloat(nonArrayDataRow[7]),
+                            end_yr: parseFloat(nonArrayDataRow[8]),
+                            min_va: parseFloat(nonArrayDataRow[13]),
+                            p10_va: parseFloat(nonArrayDataRow[16]),
+                            p25_va: parseFloat(nonArrayDataRow[18]),
+                            p75_va: parseFloat(nonArrayDataRow[20]),
+                            p90_va: parseFloat(nonArrayDataRow[22]),
+                            max_va: parseFloat(nonArrayDataRow[11])
                         }
                         meanPercentileStats.push(meanPercentiles);
                     } while (data.length > 0);
@@ -761,8 +783,8 @@ module StreamStats.Controllers {
             }
             if (this.dailyFlow) {
                 this.dailyFlow.forEach(dailyObj => {
-                    if (parseInt(dailyObj.value) !== -999999) {
-                    this.formattedDailyFlow.push({x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value)})
+                    if (parseFloat(dailyObj.value) !== -999999) {
+                    this.formattedDailyFlow.push({x: new Date(dailyObj.dateTime), y: parseFloat(dailyObj.value)})
                     this.dailyDatesOnly.push(new Date(dailyObj.dateTime))
                 }
                 });
@@ -952,7 +974,7 @@ module StreamStats.Controllers {
             //console.log('peak value plot data', this.formattedPeakDates);
             //console.log('estimated peak plot data', this.formattedEstPeakDates);
             //console.log('daily flow plot data', this.formattedDailyFlow);
-            console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear)
+            //console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear)
             //console.log(this.formattedP0to10);
             this.chartConfig = {
                 chart: {
