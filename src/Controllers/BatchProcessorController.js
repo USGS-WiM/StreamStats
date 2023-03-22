@@ -31,9 +31,6 @@ var StreamStats;
                 _this.selectedParamList = [];
                 _this.availableParamList = [];
                 _this.regionParamList = [];
-                _this.flowStatsAllChecked = true;
-                _this.flowStatChecked = true;
-                _this.parametersAllChecked = true;
                 _this.init();
                 return _this;
             }
@@ -46,8 +43,6 @@ var StreamStats;
             BatchProcessorController.prototype.getRegions = function () {
                 var _this = this;
                 this.nssService.getRegionList().then(function (response) { _this.regionList = response; });
-                this.flowStatsAllChecked = true;
-                this.flowStatChecked = false;
             };
             BatchProcessorController.prototype.getFlowStatsAndParams = function (rcode) {
                 var _this = this;
@@ -82,62 +77,42 @@ var StreamStats;
                             this.selectedFlowStatsList.push(statisticsGroupFDS);
                         }
                     }
-                    this.loadParametersByStatisticsGroupBP(statisticsGroup.regressionRegions);
+                    this.setParamCheck(statisticsGroup.regressionRegions);
                 }
-                console.log("setRegionStats_selectedFlowStatsList", this.selectedFlowStatsList);
-                console.log("setRegionStats_selectedParamList", this.selectedParamList);
             };
-            BatchProcessorController.prototype.loadParametersByStatisticsGroupBP = function (regressionRegions) {
+            BatchProcessorController.prototype.setParamCheck = function (regressionRegions) {
                 var _this = this;
                 regressionRegions.forEach(function (regressionRegion) {
                     regressionRegion.parameters.forEach(function (parameter) {
-                        _this.selectedParamList.push(parameter.code);
+                        var paramCode = parameter.code;
+                        for (var i = 0; i < _this.availableParamList.length; i++) {
+                            var p = _this.availableParamList[i];
+                            if (p.code.toUpperCase() === paramCode.toUpperCase()) {
+                                p['checked'] = true;
+                                p['toggleable'] = false;
+                                break;
+                            }
+                        }
                     });
                 });
-                console.log("loadParametersByStatisticsGroupBP_selectedParamList", this.selectedParamList);
-            };
-            BatchProcessorController.prototype.updateRegionStatsList = function (statistic) {
-                var statisticGroupID = statistic.statisticGroupID;
-                var index = this.selectedFlowStatsList.indexOf(statisticGroupID);
-                if (!statistic.checked && index > -1) {
-                    statistic.checked = false;
-                    this.selectedFlowStatsList.splice(index, 1);
-                }
-                else if (statistic.checked && index == -1) {
-                    statistic.checked = true;
-                    this.selectedFlowStatsList.push(statisticGroupID);
-                }
-                this.checkStats();
-            };
-            BatchProcessorController.prototype.checkStats = function () {
-                var allChecked = true;
-                for (var _i = 0, _a = this.selectedFlowStatsList; _i < _a.length; _i++) {
-                    var stat = _a[_i];
-                    if (!stat.checked) {
-                        allChecked = false;
-                    }
-                }
-                if (allChecked) {
-                    this.flowStatsAllChecked = false;
-                    this.flowStatChecked = false;
-                }
-                else {
-                    this.flowStatsAllChecked = true;
-                    this.flowStatChecked = true;
-                }
             };
             BatchProcessorController.prototype.updateSelectedParamList = function (parameter) {
                 if (parameter.toggleable == false) {
+                    console.log("Can't unselect");
                     parameter.checked = true;
                     return;
                 }
-                var index = this.selectedParamList.indexOf(parameter);
+                var paramCode = parameter.code;
+                var index = this.selectedParamList.indexOf(paramCode);
                 if (!parameter.checked && index > -1) {
                     this.selectedParamList.splice(index, 1);
+                    console.log("updateParamsSplice", this.selectedParamList);
                 }
                 else if (parameter.checked && index == -1) {
-                    this.selectedParamList.push(parameter);
+                    this.selectedParamList.push(paramCode);
+                    console.log("updateParamsPush", this.selectedParamList);
                 }
+                console.log("updateSelectedParamList", this.selectedParamList);
             };
             BatchProcessorController.prototype.loadParametersByRegionBP = function (rcode) {
                 if (!rcode)
@@ -197,27 +172,6 @@ var StreamStats;
                 catch (e) {
                     return false;
                 }
-            };
-            BatchProcessorController.prototype.toggleflowStatsAllChecked = function () {
-                var _this = this;
-                this.flowStatsList.forEach(function (parameter) {
-                    var statisticGroupID = parameter.statisticGroupID;
-                    var paramCheck = _this.checkArrayForObj(_this.selectedFlowStatsList, statisticGroupID);
-                    if (_this.flowStatsAllChecked) {
-                        if (paramCheck == -1)
-                            _this.selectedFlowStatsList.push(statisticGroupID);
-                        parameter.checked = true;
-                        _this.flowStatChecked = true;
-                    }
-                    else {
-                        if (paramCheck > -1) {
-                            _this.selectedFlowStatsList.splice(paramCheck, 1);
-                            parameter.checked = false;
-                            _this.flowStatChecked = false;
-                        }
-                    }
-                });
-                this.flowStatsAllChecked = !this.flowStatsAllChecked;
             };
             BatchProcessorController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', '$modalInstance'];
             return BatchProcessorController;
