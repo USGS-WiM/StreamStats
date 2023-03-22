@@ -767,9 +767,22 @@ module StreamStats.Controllers {
                 }
                 });
             }
+            //checking for the latest year between the peaks and the daily flow
+            let finalPeakorDailyDate = new Date('January 1, 1800') // assign way in past
+            if (this.formattedPeakDates.length > 0) {
+                var finalPeakIndex = this.formattedPeakDates.length-1;
+                if (this.formattedPeakDates[finalPeakIndex].x > finalPeakorDailyDate) {
+                    finalPeakorDailyDate = this.formattedPeakDates[finalPeakIndex].x
+                }
+            }
+            if (this.formattedDailyFlow.length > 0) {
+                var finalDailyIndex = this.formattedDailyFlow.length-1;
+                if (this.formattedDailyFlow[finalDailyIndex].x > finalPeakorDailyDate) {
+                    finalPeakorDailyDate = this.formattedDailyFlow[finalDailyIndex].x
+                }
+            }
             var finalIndex = this.formattedDailyFlow.length-1;
-            var finalYear = (this.formattedDailyFlow[finalIndex].x).getUTCFullYear(); //currently using the final daily flow point as latest year, but sometimes gage has more recent peaks
-            
+            var finalYear = (finalPeakorDailyDate).getUTCFullYear(); //currently using the final daily flow point as latest year, but sometimes gage has more recent peaks
             //return an array with a date each day between first recording and last
             function dateRange(startDate, endDate, steps = 1) {
                 const dateArray = [];
@@ -939,7 +952,7 @@ module StreamStats.Controllers {
             //console.log('peak value plot data', this.formattedPeakDates);
             //console.log('estimated peak plot data', this.formattedEstPeakDates);
             //console.log('daily flow plot data', this.formattedDailyFlow);
-            //console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear)
+            console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear)
             //console.log(this.formattedP0to10);
             this.chartConfig = {
                 chart: {

@@ -561,8 +561,21 @@ var StreamStats;
                         }
                     });
                 }
+                var finalPeakorDailyDate = new Date('January 1, 1800');
+                if (this.formattedPeakDates.length > 0) {
+                    var finalPeakIndex = this.formattedPeakDates.length - 1;
+                    if (this.formattedPeakDates[finalPeakIndex].x > finalPeakorDailyDate) {
+                        finalPeakorDailyDate = this.formattedPeakDates[finalPeakIndex].x;
+                    }
+                }
+                if (this.formattedDailyFlow.length > 0) {
+                    var finalDailyIndex = this.formattedDailyFlow.length - 1;
+                    if (this.formattedDailyFlow[finalDailyIndex].x > finalPeakorDailyDate) {
+                        finalPeakorDailyDate = this.formattedDailyFlow[finalDailyIndex].x;
+                    }
+                }
                 var finalIndex = this.formattedDailyFlow.length - 1;
-                var finalYear = (this.formattedDailyFlow[finalIndex].x).getUTCFullYear();
+                var finalYear = (finalPeakorDailyDate).getUTCFullYear();
                 function dateRange(startDate, endDate, steps) {
                     if (steps === void 0) { steps = 1; }
                     var dateArray = [];
@@ -721,6 +734,7 @@ var StreamStats;
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
+                console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear);
                 this.chartConfig = {
                     chart: {
                         height: 550,
