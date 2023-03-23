@@ -493,24 +493,30 @@ var StreamStats;
                 var nwisCode = this.gage.code;
                 this.$http.get('./data/gageNumberCrossWalk.json').then(function (response) {
                     self.crossWalk = response.data;
-                    url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + self.crossWalk[nwisCode];
-                    console.log(url);
-                    var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
-                    self.Execute(request).then(function (response) {
-                        var xmlDocument = new DOMParser().parseFromString(response.data, "text/xml");
-                        var forecastData = xmlDocument.querySelectorAll("forecast");
-                        var smallerData = forecastData[0].childNodes;
-                        var forecastArray = [];
-                        smallerData.forEach(function (datum) {
-                            var forecastObj = {
-                                x: new Date(datum.childNodes[0].textContent),
-                                y: parseFloat(datum.childNodes[2].textContent)
-                            };
-                            forecastArray.push(forecastObj);
-                            self.NWSforecast = forecastArray;
+                    var NWScode = self.crossWalk[nwisCode];
+                    if (NWScode !== undefined) {
+                        url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + NWScode;
+                        console.log(url);
+                        var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
+                        self.Execute(request).then(function (response) {
+                            var xmlDocument = new DOMParser().parseFromString(response.data, "text/xml");
+                            var forecastData = xmlDocument.querySelectorAll("forecast");
+                            var smallerData = forecastData[0].childNodes;
+                            var forecastArray = [];
+                            smallerData.forEach(function (datum) {
+                                var forecastObj = {
+                                    x: new Date(datum.childNodes[0].textContent),
+                                    y: parseFloat(datum.childNodes[2].textContent)
+                                };
+                                forecastArray.push(forecastObj);
+                                self.NWSforecast = forecastArray;
+                            });
+                            self.getShadedDailyStats();
                         });
+                    }
+                    else {
                         self.getShadedDailyStats();
-                    });
+                    }
                 });
             };
             GagePageController.prototype.getShadedDailyStats = function () {
@@ -1041,7 +1047,7 @@ var StreamStats;
                                 symbol: '',
                                 radius: 3
                             },
-                            showInLegend: this.NWSforecast.length > 0
+                            showInLegend: this.NWSforecast !== undefined
                         },
                         {
                             name: 'Annual Exceedance Probability',
@@ -1072,7 +1078,7 @@ var StreamStats;
             };
             GagePageController.prototype.toggleAEPlines = function () {
                 var chart = $('#chart1').highcharts();
-                var AEPseries = chart.series[8];
+                var AEPseries = chart.series[9];
                 if (this.showAEP) {
                     AEPseries.show();
                 }

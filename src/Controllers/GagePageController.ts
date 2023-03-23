@@ -687,9 +687,12 @@ module StreamStats.Controllers {
             var nwisCode = this.gage.code
                 this.$http.get('./data/gageNumberCrossWalk.json').then(function(response) {
                 self.crossWalk = response.data
+                var NWScode = self.crossWalk[nwisCode];
+                if (NWScode !== undefined) {
                 //console.log(self.crossWalk);
-                url =  "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage="+ self.crossWalk[nwisCode];
+                url =  "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage="+ NWScode;
                 console.log(url);
+                
                 const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
                 self.Execute(request).then(
                     (response: any) => {
@@ -706,10 +709,14 @@ module StreamStats.Controllers {
                             forecastArray.push(forecastObj);
                             self.NWSforecast = forecastArray;
                         })
+                    
                         self.getShadedDailyStats();
                     });
+                } else {
+                    self.getShadedDailyStats();
+                }
                 });
-            }
+        }
         
         public getShadedDailyStats() {
             var url = 'https://waterservices.usgs.gov/nwis/stat/?format=rdb,1.0&indent=on&sites=' + this.gage.code + '&statReportType=daily&statTypeCd=all&parameterCd=00060';
@@ -1256,7 +1263,6 @@ module StreamStats.Controllers {
                     turboThreshold: 0, 
                     type    : 'line',
                     color   : 'purple',
-                    //color   : '#add8f2',
                     fillOpacity: null, 
                     lineWidth: 1.5,
                     data    : this.NWSforecast,
@@ -1265,7 +1271,7 @@ module StreamStats.Controllers {
                         symbol: '',
                         radius: 3
                     },
-                    showInLegend: this.NWSforecast.length > 0
+                    showInLegend: this.NWSforecast !== undefined
                 },
                 {
                     name: 'Annual Exceedance Probability',
@@ -1303,7 +1309,7 @@ module StreamStats.Controllers {
         public showAEP = true;
         public toggleAEPlines () {
             let chart = $('#chart1').highcharts();
-            let AEPseries = chart.series[8]
+            let AEPseries = chart.series[9]
             if (this.showAEP) {
                 AEPseries.show();
             } else {
