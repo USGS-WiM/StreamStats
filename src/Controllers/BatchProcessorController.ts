@@ -30,9 +30,9 @@ module StreamStats.Controllers {
     }
 
     interface IModal {
-        Close():void
+        Close(): void
     }
-    
+
     interface IBatchProcessorController extends IModal {
     }
 
@@ -46,23 +46,25 @@ module StreamStats.Controllers {
         public selectedBatchProcessorTabName: string;
         public displayMessage: string;
         public isValid: boolean;
-        public AppVersion: string;  
+        public AppVersion: string;
         public submitBatchInfo: string;
         public regionList: Object;
         public flowStatsList: Array<any>;
         public selectedRegion: string;
+        public flowStatsAllChecked: boolean;
         public selectedFlowStatsList: Array<any>;
         public availableParamList: Array<any>;
         public flowStatChecked: boolean;
         public selectedParamList: Array<any>
         public parametersAllChecked: boolean;
+        public flowStatisticsAllChecked: boolean;
         public regionParamList: Array<any>;
         public showBasinCharacterstics: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', '$modalInstance'];
-        constructor($scope: IBatchProcessorControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, nssService: Services.InssService, modal:ng.ui.bootstrap.IModalServiceInstance) {
+        constructor($scope: IBatchProcessorControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, nssService: Services.InssService, modal: ng.ui.bootstrap.IModalServiceInstance) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
             this.modalInstance = modal;
@@ -73,18 +75,20 @@ module StreamStats.Controllers {
             this.selectedParamList = [];
             this.availableParamList = [];
             this.regionParamList = [];
+            // this.flowStatsAllChecked = true;
             this.flowStatChecked = false;
             this.parametersAllChecked = true;
-            this.init();  
-        }  
-        
+            this.flowStatisticsAllChecked = true;
+            this.init();
+        }
+
         //Methods  
         //-+-+-+-+-+-+-+-+-+-+-+-
 
         public Close(): void {
             this.modalInstance.dismiss('cancel')
         }
-       
+
         // used for switching between tabs
         public selectBatchProcessorTab(tabname: string): void {
             this.selectedBatchProcessorTabName = tabname;
@@ -100,10 +104,10 @@ module StreamStats.Controllers {
 
             );
         }
-        
+
         // send selected region code and retrieve flows stats list
-        public getFlowStatsAndParams(rcode:string): void {
-            
+        public getFlowStatsAndParams(rcode: string): void {
+
             this.nssService.getFlowStatsList(rcode).then(
                 // set flowStatsList to values of promised response
                 response => { this.flowStatsList = response; }
@@ -113,34 +117,30 @@ module StreamStats.Controllers {
             this.loadParametersByRegionBP(rcode).then(
                 response => { this.availableParamList = response; }
             );
-            
+
         }
 
         public setRegionStats(statisticsGroup: Array<any>): void {
-
+            
             var checkStatisticsGroup = this.checkArrayForObj(this.selectedFlowStatsList, statisticsGroup);
 
             //if toggled remove selected parameter set
             if (checkStatisticsGroup != -1) {
-                var preventRemoval = false;
+                //remove this statisticsGroup from the list
+                this.selectedFlowStatsList.splice(checkStatisticsGroup, 1);
 
-                if (!preventRemoval) {
-                    //remove this statisticsGroup from the list
-                    this.selectedFlowStatsList.splice(checkStatisticsGroup, 1);
+                // set statisticsGroup.checked to false
+                statisticsGroup['checked'] = false;
+                // if no selected scenarios, clear studyareaparameter list
+                if (this.selectedFlowStatsList.length == 0) {
+                    this.selectedParamList = [];
 
-                    // set statisticsGroup.checked to false
-                    statisticsGroup['checked'] = false;
-                    // if no selected scenarios, clear studyareaparameter list
-                    if (this.selectedFlowStatsList.length == 0) {
-                        this.selectedParamList = [];
-
-                        this.availableParamList.forEach((parameter) => {
-                            parameter.checked = false;
-                            parameter.toggleable = true;
-                        });
-                    }
+                    this.availableParamList.forEach((parameter) => {
+                        parameter.checked = false;
+                        parameter.toggleable = true;
+                    });
                 }
-                
+
             }
 
             //add it to the list and get its required parameters
@@ -152,8 +152,8 @@ module StreamStats.Controllers {
 
                 // make sure DNRAREA is in selectedParamList
                 this.addParameterToSelectedParamList("DRNAREA");
-                
-                
+
+
             }
             // update this.selectedParamList with parameters from selected flowStats
             this.onSelectedStatisticsGroupChanged();
@@ -179,14 +179,17 @@ module StreamStats.Controllers {
                         }
                     }
                 });
-            }); 
+            });
         }
 
-        
+
         public onSelectedStatisticsGroupChanged(): void {
-            
+
             //loop over whole statisticsgroups
             this.selectedFlowStatsList.forEach((statisticsGroup) => {
+
+                // set checked to true
+                statisticsGroup.checked = true;
 
                 if (statisticsGroup.regressionRegions) {
 
@@ -228,12 +231,12 @@ module StreamStats.Controllers {
 
                                 //select it
                                 this.addParameterToSelectedParamList(param.code);
-                                }
-                            });// next param
-                        });// next regressionRegion
-                    }//end if
-                });//next statisticgroup
-            }
+                            }
+                        });// next param
+                    });// next regressionRegion
+                }//end if
+            });//next statisticgroup
+        }
 
         public checkStats(): void {
 
@@ -244,11 +247,25 @@ module StreamStats.Controllers {
                 this.flowStatChecked = false;
                 this.showBasinCharacterstics = false;
             }
+            // change select all stats toggle to match if all stats are checked or not
+            let allChecked = true;
+            for (let stat of this.flowStatsList) {
+                if (!stat.checked) {
+                    allChecked = false;
+                }
+            }
+            if (allChecked) {
+                // this.flowStatsAllChecked = false;
+                // this.flowStatChecked = false;
+            } else {
+                // this.flowStatsAllChecked = true;
+                // this.flowStatChecked = true;
+            }
         }
 
         // update selectedParamList
         public updateSelectedParamList(parameter: Array<any>): void {
-
+            
             //dont mess with certain parameters
             if (parameter['toggleable'] == false) {
                 parameter['checked'] = true;
@@ -262,17 +279,15 @@ module StreamStats.Controllers {
                 //remove it
                 this.selectedParamList.splice(index, 1);
             }
-            else if(parameter['checked'] && index == -1) {
+            else if (parameter['checked'] && index == -1) {
                 //add it
                 this.selectedParamList.push(paramCode);
             }
 
-            // check if all parameters are selected
             this.checkParameters();
 
         }
 
-        // check if all parameters are selected
         public checkParameters(): void {
             // change select all parameters toggle to match if all params are checked or not
             let allChecked = true;
@@ -288,12 +303,27 @@ module StreamStats.Controllers {
             }
         }
 
+        public toggleFlowStatisticsAllChecked(): void {
+            if (this.flowStatisticsAllChecked) {
+                this.flowStatisticsAllChecked = false;
+                this.flowStatsList.forEach((flowStat) => {
+                    flowStat.checked = false;
+                    this.setRegionStats(flowStat)
+                });
+            } else {
+                this.flowStatisticsAllChecked = true;
+                this.flowStatsList.forEach((flowStat) => {
+                    flowStat.checked = true;
+                    this.setRegionStats(flowStat)
+                });
+            }
+        }
 
         // controls button to select/unselect all parameters
         public toggleParametersAllChecked(): void {
 
             this.availableParamList.forEach((parameter) => {
-
+                
                 var paramCheck = this.checkArrayForObj(this.selectedParamList, parameter.code);
 
                 if (this.parametersAllChecked) {
@@ -318,7 +348,7 @@ module StreamStats.Controllers {
             // toggle switch
             this.parametersAllChecked = !this.parametersAllChecked;
         }
-            
+
         // Service methods
         // get basin characteristics list for region and nation
         public loadParametersByRegionBP(rcode: string): ng.IPromise<any> {
@@ -337,8 +367,8 @@ module StreamStats.Controllers {
                         var paramRaw = [];
 
                         response.data.parameters.forEach((parameter) => {
-                            
-                            
+
+
                             try {
                                 var param = {
                                     code: parameter.code,
@@ -352,7 +382,7 @@ module StreamStats.Controllers {
                             catch (e) {
                                 alert(e)
 
-                        }    
+                            }
                         });
 
                     }
@@ -377,7 +407,7 @@ module StreamStats.Controllers {
             this.AppVersion = configuration.version;
             this.getRegions();
         }
-        
+
         private checkArrayForObj(arr, obj): number {
             for (var i = 0; i < arr.length; i++) {
                 if (angular.equals(arr[i], obj)) {

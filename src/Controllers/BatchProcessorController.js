@@ -33,6 +33,7 @@ var StreamStats;
                 _this.regionParamList = [];
                 _this.flowStatChecked = false;
                 _this.parametersAllChecked = true;
+                _this.flowStatisticsAllChecked = true;
                 _this.init();
                 return _this;
             }
@@ -54,31 +55,18 @@ var StreamStats;
             BatchProcessorController.prototype.setRegionStats = function (statisticsGroup) {
                 var checkStatisticsGroup = this.checkArrayForObj(this.selectedFlowStatsList, statisticsGroup);
                 if (checkStatisticsGroup != -1) {
-                    var preventRemoval = false;
-                    if (this.selectedFlowStatsList.filter(function (selectedStatisticsGroup) { return selectedStatisticsGroup.statisticGroupName == "Flow-Duration Curve Transfer Method"; }).length > 0 && statisticsGroup['statisticGroupName'] == "Flow-Duration Statistics") {
-                        preventRemoval = true;
-                    }
-                    if (!preventRemoval) {
-                        this.selectedFlowStatsList.splice(checkStatisticsGroup, 1);
-                        statisticsGroup['checked'] = false;
-                        if (this.selectedFlowStatsList.length == 0) {
-                            this.selectedParamList = [];
-                            this.availableParamList.forEach(function (parameter) {
-                                parameter.checked = false;
-                                parameter.toggleable = true;
-                            });
-                        }
+                    this.selectedFlowStatsList.splice(checkStatisticsGroup, 1);
+                    statisticsGroup['checked'] = false;
+                    if (this.selectedFlowStatsList.length == 0) {
+                        this.selectedParamList = [];
+                        this.availableParamList.forEach(function (parameter) {
+                            parameter.checked = false;
+                            parameter.toggleable = true;
+                        });
                     }
                 }
                 else {
                     this.selectedFlowStatsList.push(statisticsGroup);
-                    if (typeof statisticsGroup['statisticGroupID'] != 'number' && statisticsGroup['statisticGroupID'].indexOf('fdctm')) {
-                        var statisticsGroupFDS = this.selectedFlowStatsList.filter(function (statisticsGroup) { return statisticsGroup.statisticGroupName == "Flow-Duration Statistics"; })[0];
-                        var checkStatisticsGroupFDS = this.checkArrayForObj(this.selectedFlowStatsList, statisticsGroupFDS);
-                        if (checkStatisticsGroupFDS == -1) {
-                            this.selectedFlowStatsList.push(statisticsGroupFDS);
-                        }
-                    }
                     this.setParamCheck(statisticsGroup['regressionRegions']);
                     this.addParameterToSelectedParamList("DRNAREA");
                 }
@@ -104,6 +92,7 @@ var StreamStats;
             BatchProcessorController.prototype.onSelectedStatisticsGroupChanged = function () {
                 var _this = this;
                 this.selectedFlowStatsList.forEach(function (statisticsGroup) {
+                    statisticsGroup.checked = true;
                     if (statisticsGroup.regressionRegions) {
                         statisticsGroup.regressionRegions.forEach(function (regressionRegion) {
                             regressionRegion.parameters.forEach(function (param) {
@@ -146,6 +135,17 @@ var StreamStats;
                     this.flowStatChecked = false;
                     this.showBasinCharacterstics = false;
                 }
+                var allChecked = true;
+                for (var _i = 0, _a = this.flowStatsList; _i < _a.length; _i++) {
+                    var stat = _a[_i];
+                    if (!stat.checked) {
+                        allChecked = false;
+                    }
+                }
+                if (allChecked) {
+                }
+                else {
+                }
             };
             BatchProcessorController.prototype.updateSelectedParamList = function (parameter) {
                 if (parameter['toggleable'] == false) {
@@ -175,6 +175,23 @@ var StreamStats;
                 }
                 else {
                     this.parametersAllChecked = true;
+                }
+            };
+            BatchProcessorController.prototype.toggleFlowStatisticsAllChecked = function () {
+                var _this = this;
+                if (this.flowStatisticsAllChecked) {
+                    this.flowStatisticsAllChecked = false;
+                    this.flowStatsList.forEach(function (flowStat) {
+                        flowStat.checked = false;
+                        _this.setRegionStats(flowStat);
+                    });
+                }
+                else {
+                    this.flowStatisticsAllChecked = true;
+                    this.flowStatsList.forEach(function (flowStat) {
+                        flowStat.checked = true;
+                        _this.setRegionStats(flowStat);
+                    });
                 }
             };
             BatchProcessorController.prototype.toggleParametersAllChecked = function () {
