@@ -505,14 +505,17 @@ var StreamStats;
                             var xmlDocument = new DOMParser().parseFromString(response.data, "text/xml");
                             var forecastData = xmlDocument.querySelectorAll("forecast");
                             if (forecastData[0] !== undefined) {
-                                var smallerData = forecastData[0].childNodes;
+                                var smallerData_1 = forecastData[0].childNodes;
                                 var forecastArray_1 = [];
-                                smallerData.forEach(function (datum) {
+                                smallerData_1.forEach(function (datum) {
                                     if (datum.childNodes[0] !== undefined) {
                                         var forecastObj = {
                                             x: new Date(datum.childNodes[0].textContent),
                                             y: parseFloat(datum.childNodes[2].textContent)
                                         };
+                                        if ((smallerData_1[2].childNodes[2].getAttribute("units")) === 'kcfs') {
+                                            forecastObj.y *= 1000;
+                                        }
                                         forecastArray_1.push(forecastObj);
                                         self.NWSforecast = forecastArray_1;
                                     }

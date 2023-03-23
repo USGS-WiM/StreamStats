@@ -711,6 +711,9 @@ module StreamStats.Controllers {
                                     //stage: parseFloat(datum.childNodes[1].textContent),
                                     y: parseFloat(datum.childNodes[2].textContent)
                                 }
+                                if ((smallerData[2].childNodes[2].getAttribute("units")) === 'kcfs') {
+                                    forecastObj.y *= 1000
+                                }
                                 forecastArray.push(forecastObj);
                                 self.NWSforecast = forecastArray;
                             }
