@@ -51,13 +51,13 @@ module StreamStats.Controllers {
         public regionList: Object;
         public flowStatsList: Array<any>;
         public selectedRegion: string;
-        public flowStatsAllChecked: boolean;
         public selectedFlowStatsList: Array<any>;
         public availableParamList: Array<any>;
         public flowStatChecked: boolean;
         public selectedParamList: Array<any>
         public parametersAllChecked: boolean;
         public regionParamList: Array<any>;
+        public showBasinCharacterstics: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -73,7 +73,6 @@ module StreamStats.Controllers {
             this.selectedParamList = [];
             this.availableParamList = [];
             this.regionParamList = [];
-            // this.flowStatsAllChecked = true;
             this.flowStatChecked = false;
             this.parametersAllChecked = true;
             this.init();  
@@ -100,8 +99,6 @@ module StreamStats.Controllers {
                 response => { this.regionList = response; }
 
             );
-            // this.flowStatsAllChecked = true;
-            // this.flowStatChecked = false;
         }
         
         // send selected region code and retrieve flows stats list
@@ -155,8 +152,6 @@ module StreamStats.Controllers {
             else {
                 this.selectedFlowStatsList.push(statisticsGroup);
 
-                // set statisticsGroup.checked to true
-                // statisticsGroup.checked = true;
                 // if Flow Duration Curve Transfer Method (FDCTM) was selected, also select Flow-Duration Statistics
                 if (typeof statisticsGroup['statisticGroupID'] != 'number' && statisticsGroup['statisticGroupID'].indexOf('fdctm')) {
                     // see if the Flow-Duration Statistics group has been selected already and select it if not
@@ -204,197 +199,73 @@ module StreamStats.Controllers {
 
         
         public onSelectedStatisticsGroupChanged(): void {
-
+            
             //loop over whole statisticsgroups
             this.selectedFlowStatsList.forEach((statisticsGroup) => {
-                    
-                // set checked to true
-                statisticsGroup.checked = true;
 
-                    if (statisticsGroup.regressionRegions) {
+                if (statisticsGroup.regressionRegions) {
 
-                        //get their parameters
-                        statisticsGroup.regressionRegions.forEach((regressionRegion) => {
+                    //get their parameters
+                    statisticsGroup.regressionRegions.forEach((regressionRegion) => {
 
-                            //loop over list of state/region parameters to see if there is a match
-                            regressionRegion.parameters.forEach((param) => {
+                        //loop over list of state/region parameters to see if there is a match
+                        regressionRegion.parameters.forEach((param) => {
 
-                                var found = false;
-                                for (var i = 0; i < this.availableParamList.length; i++) {
-                                    var parameter = this.availableParamList[i];
-                                    if (parameter.code.toLowerCase() == param.code.toLowerCase()) {
-                                        console.log('PARAM FOUND', param.Code)
-                                        this.addParameterToSelectedParamList(param.code);
-                                        found = true;
-                                        break;
-                                    }//end if
-                                }//next iparam
-
-                                if (!found) {
-                                    console.log('PARAM NOT FOUND', param.Code)
-                                    // this.toaster.pop('warning', "Missing Parameter: " + param.code, "The selected scenario requires a parameter not available in this State/Region.  The value for this parameter will need to be entered manually.", 0);
-
-                                    //add to region parameterList
-                                    var newParam = {
-                                        name: param.name,
-                                        description: param.description,
-                                        code: param.code,
-                                        unit: param.unitType.unit,
-                                        value: null,
-                                        regulatedValue: null,
-                                        unRegulatedValue: null,
-                                        loaded: null,
-                                        checked: false,
-                                        toggleable: true
-                                    }
-
-                                    //push the param that was not in the original regionService paramaterList
-                                    this.availableParamList.push(newParam);
-
-                                    //select it
+                            var found = false;
+                            for (var i = 0; i < this.availableParamList.length; i++) {
+                                var parameter = this.availableParamList[i];
+                                if (parameter.code.toLowerCase() == param.code.toLowerCase()) {
                                     this.addParameterToSelectedParamList(param.code);
+                                    found = true;
+                                    break;
+                                }//end if
+                            }//next iparam
+
+                            if (!found) {
+                                // this.toaster.pop('warning', "Missing Parameter: " + param.code, "The selected scenario requires a parameter not available in this State/Region.  The value for this parameter will need to be entered manually.", 0);
+
+                                //add to region parameterList
+                                var newParam = {
+                                    name: param.name,
+                                    description: param.description,
+                                    code: param.code,
+                                    unit: param.unitType.unit,
+                                    value: null,
+                                    regulatedValue: null,
+                                    unRegulatedValue: null,
+                                    loaded: null,
+                                    checked: false,
+                                    toggleable: true
+                                }
+
+                                //push the param that was not in the original regionService paramaterList
+                                this.availableParamList.push(newParam);
+
+                                //select it
+                                this.addParameterToSelectedParamList(param.code);
                                 }
                             });// next param
                         });// next regressionRegion
                     }//end if
                 });//next statisticgroup
-                console.log("onSelectedStatisticsGroupChanged_selectedParamList", this.selectedParamList);
             }
-
-        // public updateRegionStatsList(statistic: any) {
-
-        //     var statisticGroupID = statistic.statisticGroupID;
-
-        //     var index = this.selectedFlowStatsList.indexOf(statisticGroupID);
-
-        //     if (!statistic.checked && index > -1) {
-        //         //remove it
-        //         statistic.checked = false;
-        //         this.selectedFlowStatsList.splice(index, 1);
-        //         // console.log("splice", this.selectedFlowStatsList)
-        //     }
-        //     else if (statistic.checked && index == -1) {
-        //         //add it
-        //         statistic.checked = true;
-        //         this.selectedFlowStatsList.push(statisticGroupID);
-        //         // console.log("push", this.selectedFlowStatsList)
-        //     }
-        //     // calling this makes select all the default when any are unchecked
-        //     this.checkStats();
-        //     // this.addRemoveDRNAREA();
-        //     // console.log("updateRegionStatsList", this.requiredParamList)
-
-        // }
 
         public checkStats(): void {
 
             if (this.selectedFlowStatsList.length > 0) {
                 this.flowStatChecked = true;
+                this.showBasinCharacterstics = true;
             } else {
                 this.flowStatChecked = false;
-            }
-            // change select all stats toggle to match if all stats are checked or not
-            let allChecked = true;
-            for (let stat of this.flowStatsList) {
-                if (!stat.checked) {
-                    allChecked = false;
-                }
-            }
-            if (allChecked) {
-                // this.flowStatsAllChecked = false;
-                // this.flowStatChecked = false;
-            } else {
-                // this.flowStatsAllChecked = true;
-                // this.flowStatChecked = true;
+                this.showBasinCharacterstics = false;
             }
         }
-
-
-        // public addRemoveDRNAREA() {
-        //     if (this.selectedFlowStatsList.length < 0) {
-                
-        //         this.requiredParamList.push("DRNAREA");
-        //         console.log("addRemovepush", this.requiredParamList)
-        //     } else {
-        //         // var index = this.requiredParamList.indexOf("DRNAREA");
-        //         // this.requiredParamList.splice(index, 1);
-        //         // console.log("addRemovesplice", this.requiredParamList)
-        //         this.requiredParamList = [];
-        //     }
-            
-        // }
-
-        // load parameters for regions once selected
-        // public getRegionParameters(rcode: string): void {
-
-        //     this.getParametersByRegionBP(rcode).then(
-        //         // set flowStatsList to values of promised response
-        //         response => { this.regionParamList = response; },
-                
-        //     );
-        // }
-
-        // create array of required parameters based on selected flow statistics
-        // codes may appear mutliple times
-        // public setRequiredParameters(statistic: any) {
-
-        //     var regressionRegions = statistic.regressionRegions;
-            
-        //     // bore down to each parameter and add code to this.requiredParamList
-        //     regressionRegions.forEach((regRegion) => {
-                
-        //         regRegion.parameters.forEach((parameter) => {
-
-        //             var code = parameter.code;
-
-        //             var index = this.requiredParamList.indexOf(code);
-
-        //             if (!statistic.checked && index > -1) {
-        //                 //remove it
-        //                 this.requiredParamList.splice(index, 1);
-        //                 // console.log("setRequiredSplice", this.requiredParamList)
-        //             }
-        //             else if (statistic.checked) {
-        //                 //add it
-        //                 this.requiredParamList.push(code);
-        //                 // console.log("setRequiredPush", this.requiredParamList)
-        //             }
-        //         })
-                
-        //     })
-
-            // if (this.requiredParamList.indexOf("DRNAREA") == -1) {
-            //     this.requiredParamList.push("DRNAREA");
-            // }
-            // this.requiredParamList = this.requiredParamList.filter((item, i, ar) => ar.indexOf(item) === i); // in ECM6 this is a Set
-
-            // console.log("setRequiredParameters", this.requiredParamList);
-        //     this.setParamToggleable();
-        // }
-
-        // set parameters to checked and not toggleable if in requiredParamList
-        // private setParamToggleable(): void { 
-        //     this.regionParamList.forEach((parameter) => {
-        //         var index = this.requiredParamList.indexOf(parameter.code);
-        //         if (index > -1) {
-        //             parameter.checked = true;
-        //             parameter.toggleable = false;
-        //         }
-        //         else {
-        //             parameter.checked = false;
-        //             parameter.toggleable = true;
-        //         }
-        //     })
-        // }
 
         // update selectedParamList
         public updateSelectedParamList(parameter: Array<any>): void {
 
-            // console.log('in updatestudyarea parameter', parameter);
-
             //dont mess with certain parameters
             if (parameter['toggleable'] == false) {
-                console.log("Can't unselect")
                 parameter['checked'] = true;
                 return;
             }
@@ -405,18 +276,18 @@ module StreamStats.Controllers {
             if (!parameter['checked'] && index > -1) {
                 //remove it
                 this.selectedParamList.splice(index, 1);
-                console.log("updateParamsSplice", this.selectedParamList)
             }
             else if(parameter['checked'] && index == -1) {
                 //add it
                 this.selectedParamList.push(paramCode);
-                console.log("updateParamsPush", this.selectedParamList)
             }
-            console.log("updateSelectedParamList", this.selectedParamList)
+
+            // check if all parameters are selected
             this.checkParameters();
 
         }
 
+        // check if all parameters are selected
         public checkParameters(): void {
             // change select all parameters toggle to match if all params are checked or not
             let allChecked = true;
@@ -431,6 +302,37 @@ module StreamStats.Controllers {
                 this.parametersAllChecked = true;
             }
         }
+
+
+        // controls button to select/unselect all parameters
+        public toggleParametersAllChecked(): void {
+
+            this.availableParamList.forEach((parameter) => {
+
+                var paramCheck = this.checkArrayForObj(this.selectedParamList, parameter.code);
+
+                if (this.parametersAllChecked) {
+
+                    //if its not there add it
+                    if (paramCheck == -1) this.selectedParamList.push(parameter.code);
+                    parameter.checked = true;
+                }
+                else {
+
+                    //remove it only if toggleable
+                    if (paramCheck > -1 && parameter.toggleable) {
+                        this.selectedParamList.splice(paramCheck, 1);
+                        //this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
+                        parameter.checked = false;
+                    }
+                }
+
+
+            });
+
+            // toggle switch
+            this.parametersAllChecked = !this.parametersAllChecked;
+        }
             
         // Service methods
         // get basin characteristics list for region and nation
@@ -440,7 +342,6 @@ module StreamStats.Controllers {
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSAvailableParams'].format(rcode);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
-            // console.log(request)
             return this.Execute(request).then(
                 (response: any) => {
 
@@ -485,39 +386,6 @@ module StreamStats.Controllers {
                 });
         }
 
-        // controls button to select/unselect all parameters
-        public toggleParametersAllChecked(): void {
-
-            this.availableParamList.forEach((parameter) => {
-
-                //console.log('length of configuration.alwaysSelectedParameters: ', configuration.alwaysSelectedParameters.length);
-
-                var paramCheck = this.checkArrayForObj(this.selectedParamList, parameter.code);
-
-                if (this.parametersAllChecked) {
-
-                    //if its not there add it
-                    if (paramCheck == -1) this.selectedParamList.push(parameter.code);
-                    parameter.checked = true;
-                }
-                else {
-
-                    //remove it only if toggleable
-                    if (paramCheck > -1 && parameter.toggleable) {
-                        this.selectedParamList.splice(paramCheck, 1);
-                        //this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
-                        parameter.checked = false;
-                    }
-                }
-
-
-            });
-
-            // toggle switch
-            this.parametersAllChecked = !this.parametersAllChecked;
-
-            console.log("toggleParametersAllChecked", this.selectedParamList)
-        }
         // Helper Methods
         // -+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
@@ -554,48 +422,6 @@ module StreamStats.Controllers {
 
 
         }
-
-        // uncheck/check all flow statistics
-        // public toggleflowStatsAllChecked(): void {
-
-        //     this.flowStatsList.forEach((parameter) => {
-
-        //         var statisticGroupID = parameter.statisticGroupID
-
-        //         var paramCheck = this.checkArrayForObj(this.selectedFlowStatsList, statisticGroupID);
-
-        //         if (this.flowStatsAllChecked) {
-
-        //             //if its not there add it
-        //             if (paramCheck == -1) this.selectedFlowStatsList.push(statisticGroupID);
-        //             parameter.checked = true;
-        //             this.flowStatChecked = true; //checking of cbBasinChar
-        //             // console.log("togglePush", this.regionStatsList)
-                    
-        //         }
-        //         else {
-
-        //             //remove it only if checked
-        //             if (paramCheck > -1) {
-        //                 this.selectedFlowStatsList.splice(paramCheck, 1);
-        //                 //this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
-        //                 parameter.checked = false;
-        //                 this.flowStatChecked = false; //unchecking of cbBasinChar
-        //                 // this.setRequiredParameters(parameter);
-        //                 // console.log("toggleSplice", this.regionStatsList)
-        //             }
-
-        //             // this.requiredParamList = [];
-        //             // console.log("toggleSplice", this.requiredParamList)
-        //         }
-        //     })
-        //         ;
-
-        //     // toggle switch
-        //     this.flowStatsAllChecked = !this.flowStatsAllChecked;
-        // }
-
-        
 
     }//end  class
 

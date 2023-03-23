@@ -104,7 +104,6 @@ var StreamStats;
             BatchProcessorController.prototype.onSelectedStatisticsGroupChanged = function () {
                 var _this = this;
                 this.selectedFlowStatsList.forEach(function (statisticsGroup) {
-                    statisticsGroup.checked = true;
                     if (statisticsGroup.regressionRegions) {
                         statisticsGroup.regressionRegions.forEach(function (regressionRegion) {
                             regressionRegion.parameters.forEach(function (param) {
@@ -112,14 +111,12 @@ var StreamStats;
                                 for (var i = 0; i < _this.availableParamList.length; i++) {
                                     var parameter = _this.availableParamList[i];
                                     if (parameter.code.toLowerCase() == param.code.toLowerCase()) {
-                                        console.log('PARAM FOUND', param.Code);
                                         _this.addParameterToSelectedParamList(param.code);
                                         found = true;
                                         break;
                                     }
                                 }
                                 if (!found) {
-                                    console.log('PARAM NOT FOUND', param.Code);
                                     var newParam = {
                                         name: param.name,
                                         description: param.description,
@@ -139,30 +136,19 @@ var StreamStats;
                         });
                     }
                 });
-                console.log("onSelectedStatisticsGroupChanged_selectedParamList", this.selectedParamList);
             };
             BatchProcessorController.prototype.checkStats = function () {
                 if (this.selectedFlowStatsList.length > 0) {
                     this.flowStatChecked = true;
+                    this.showBasinCharacterstics = true;
                 }
                 else {
                     this.flowStatChecked = false;
-                }
-                var allChecked = true;
-                for (var _i = 0, _a = this.flowStatsList; _i < _a.length; _i++) {
-                    var stat = _a[_i];
-                    if (!stat.checked) {
-                        allChecked = false;
-                    }
-                }
-                if (allChecked) {
-                }
-                else {
+                    this.showBasinCharacterstics = false;
                 }
             };
             BatchProcessorController.prototype.updateSelectedParamList = function (parameter) {
                 if (parameter['toggleable'] == false) {
-                    console.log("Can't unselect");
                     parameter['checked'] = true;
                     return;
                 }
@@ -170,13 +156,10 @@ var StreamStats;
                 var index = this.selectedParamList.indexOf(paramCode);
                 if (!parameter['checked'] && index > -1) {
                     this.selectedParamList.splice(index, 1);
-                    console.log("updateParamsSplice", this.selectedParamList);
                 }
                 else if (parameter['checked'] && index == -1) {
                     this.selectedParamList.push(paramCode);
-                    console.log("updateParamsPush", this.selectedParamList);
                 }
-                console.log("updateSelectedParamList", this.selectedParamList);
                 this.checkParameters();
             };
             BatchProcessorController.prototype.checkParameters = function () {
@@ -193,6 +176,24 @@ var StreamStats;
                 else {
                     this.parametersAllChecked = true;
                 }
+            };
+            BatchProcessorController.prototype.toggleParametersAllChecked = function () {
+                var _this = this;
+                this.availableParamList.forEach(function (parameter) {
+                    var paramCheck = _this.checkArrayForObj(_this.selectedParamList, parameter.code);
+                    if (_this.parametersAllChecked) {
+                        if (paramCheck == -1)
+                            _this.selectedParamList.push(parameter.code);
+                        parameter.checked = true;
+                    }
+                    else {
+                        if (paramCheck > -1 && parameter.toggleable) {
+                            _this.selectedParamList.splice(paramCheck, 1);
+                            parameter.checked = false;
+                        }
+                    }
+                });
+                this.parametersAllChecked = !this.parametersAllChecked;
             };
             BatchProcessorController.prototype.loadParametersByRegionBP = function (rcode) {
                 if (!rcode)
@@ -223,25 +224,6 @@ var StreamStats;
                 }, function (error) {
                 }).finally(function () {
                 });
-            };
-            BatchProcessorController.prototype.toggleParametersAllChecked = function () {
-                var _this = this;
-                this.availableParamList.forEach(function (parameter) {
-                    var paramCheck = _this.checkArrayForObj(_this.selectedParamList, parameter.code);
-                    if (_this.parametersAllChecked) {
-                        if (paramCheck == -1)
-                            _this.selectedParamList.push(parameter.code);
-                        parameter.checked = true;
-                    }
-                    else {
-                        if (paramCheck > -1 && parameter.toggleable) {
-                            _this.selectedParamList.splice(paramCheck, 1);
-                            parameter.checked = false;
-                        }
-                    }
-                });
-                this.parametersAllChecked = !this.parametersAllChecked;
-                console.log("toggleParametersAllChecked", this.selectedParamList);
             };
             BatchProcessorController.prototype.init = function () {
                 this.AppVersion = configuration.version;

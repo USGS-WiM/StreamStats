@@ -18,7 +18,7 @@
             <div id="selectRegionID">
                 <label>Select State / Region:</label>
                 <select ng-model="vm.selectedRegion" ng-options="region.code as region.name for region in vm.regionList track by region.code"
-                ng-change="vm.getFlowStatsAndParams(vm.selectedRegion); vm.flowStatsAllChecked=false"></select>
+                ng-change="vm.getFlowStatsAndParams(vm.selectedRegion)"></select>
             </div>
             <!-- checkboxes for different work -->
             <div>                
@@ -29,28 +29,21 @@
                     <input id="cbFlowStats" type="checkbox" display="inline-block" ng-model="cbFlowStats">
                     <label class="chx" for="cbFlowStats">&nbsp;Compute Flow Statistics&nbsp;&nbsp;&nbsp;&nbsp;</label>
                     
-                    <input id="cbBasinChar" type="checkbox" display="inline-block" ng-model="cbBasinChar" ng-click="vm.showBasinCharacterstics = !vm.showBasinCharacterstics" ng-checked="vm.flowStatChecked"  ng-disabled="vm.flowStatChecked"> <!-- ng-checked="vm.flowStatChecked"  ng-disabled="vm.flowStatChecked"-->
+                    <input id="cbBasinChar" type="checkbox" display="inline-block" ng-model="cbBasinChar" ng-click="vm.showBasinCharacterstics = !vm.showBasinCharacterstics" ng-checked="vm.flowStatChecked"  ng-disabled="vm.flowStatChecked">
                     <label class="chx" for="cbBasinChar">&nbsp;Compute Basin Characteristics</label>                  
                 </span>
             </div>
             <!-- select flow statistics -->
-            <div ng-if="cbFlowStats" > <!-- ng-init="vm.flowStatChecked = false" ng-init="vm.flowStatsAllChecked = true" -->
+            <div ng-if="cbFlowStats" ng-init="vm.flowStatChecked = false">
                 <h3>Select Flow Statistics</h3>
-                <!-- button to check/uncheck all -->
-                <!-- <button class="btn-blue fullwidth" ng-class="!vm.flowStatsAllChecked ? 'btn-black': 'btn-blue'"
-                    ng-click="vm.toggleflowStatsAllChecked()">
-                    <span ng-if="vm.flowStatsAllChecked">Select All Flow Statistics</span>
-                    <span ng-if="!vm.flowStatsAllChecked">Unselect All Flow Statistics</span>
-                </button> -->
                 <!-- create list of flow stats checkboxes -->
                 <div ng-repeat="flowStat in vm.flowStatsList">
                     <input id="{{flowStat.statisticGroupName}}" ng-model="flowStat.checked" ng-change="vm.setRegionStats(flowStat)" type="checkbox" display="inline-block">
                     <label class="chx" for="{{flowStat.statisticGroupName}}"> {{flowStat.statisticGroupName}} {{flowStat.name}}</label>
                 </div>
             </div>
-
             <!-- select parameters -->
-            <div ng-show="vm.flowStatChecked || vm.showBasinCharacterstics"> ng-init="vm.showBasinCharacterstics = false"
+            <div ng-show="vm.flowStatChecked || vm.showBasinCharacterstics">
                 <h3>Select Basin Characteristics</h3>
                 <!-- button to check/uncheck all -->
                 <button class="btn-blue fullwidth" ng-class="!vm.parametersAllChecked ? 'btn-black': 'btn-blue'"
@@ -78,7 +71,7 @@
                         </tr>
                     </tbody>
                 </table>
-            <p>{{ vm.selectedParamList }}</p>
+            
         </div>
         <!-- End submit batch -->
 
