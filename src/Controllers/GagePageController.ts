@@ -676,7 +676,12 @@ module StreamStats.Controllers {
                     else {
                         dailyValues = 0
                     };
-                    this.dailyFlow = dailyValues;
+                    if (dailyValues !== 0) {
+                    const filteredDaily = dailyValues.filter(item => {
+                        return (parseFloat(item.value) !== -999999)
+                    });
+                    this.dailyFlow = filteredDaily;
+                    }
                     this.getNWSForecast();
                 }); 
             }
@@ -696,9 +701,11 @@ module StreamStats.Controllers {
                         (response: any) => {
                             const xmlDocument = new DOMParser().parseFromString(response.data, "text/xml")
                             const forecastData = xmlDocument.querySelectorAll("forecast");
+                            if (forecastData[0] !== undefined) {
                             const smallerData = forecastData[0].childNodes;
                             let forecastArray = [];
                             smallerData.forEach(datum => {
+                                if (datum.childNodes[0] !== undefined) {
                                 const forecastObj = {
                                     x: new Date(datum.childNodes[0].textContent),
                                     //stage: parseFloat(datum.childNodes[1].textContent),
@@ -706,7 +713,9 @@ module StreamStats.Controllers {
                                 }
                                 forecastArray.push(forecastObj);
                                 self.NWSforecast = forecastArray;
+                            }
                             })
+                        }
                             self.getShadedDailyStats();
                         }
                     );
@@ -724,9 +733,9 @@ module StreamStats.Controllers {
                 (response: any) => {
                     const meanPercentileStats = [];
                     const data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") });
+                    if (data.length > 0) {
                     data.shift().split('\t');
                     data.shift();
-                    //console.log('data', data);
                     do {
                         //let dataRow = data;
                         //console.log('dataRow', dataRow)
@@ -736,7 +745,6 @@ module StreamStats.Controllers {
                         var finalYear = finalDate.getUTCFullYear();
                         let stringDate = parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + finalYear;
                         let date = new Date(stringDate);
-                        //console.log(date);
                         const meanPercentiles = {
                             date: date.toUTCString(),
                             begin_yr: parseFloat(nonArrayDataRow[7]),
@@ -750,6 +758,7 @@ module StreamStats.Controllers {
                         }
                         meanPercentileStats.push(meanPercentiles);
                     } while (data.length > 0);
+                }
                     this.meanPercent = meanPercentileStats;
                     this.formatData();
                 });
@@ -976,7 +985,7 @@ module StreamStats.Controllers {
             //console.log('estimated peak plot data', this.formattedEstPeakDates);
             //console.log('daily flow plot data', this.formattedDailyFlow);
             //console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear)
-            //console.log(this.formattedP0to10);
+            //console.log(this.formattedP90to100);
             //console.log('NWS Forecast', this.NWSforecast)
             this.chartConfig = {
                 chart: {
@@ -1101,7 +1110,34 @@ module StreamStats.Controllers {
                     showInLegend: this.formattedEstPeakDates.length > 0 //still showing up in legend if y is NaN
                 },
                 {
-                    name: 'Shaded Daily Statistics', // P 0-10%
+                    name: 'Shaded Daily Statistics', //P 90 - 100 %
+                    showInNavigator: false,
+                    tooltip: {
+                        headerFormat:'<b>P 90-100 %</b>',
+                        pointFormatter: function(){
+                            let UTCday = this.x.getUTCDate();
+                            let year = this.x.getUTCFullYear();
+                            let month = this.x.getUTCMonth();
+                                month += 1; // adding a month to the UTC months (which are zero-indexed)
+                            let formattedUTCDate = month + '/' + UTCday + '/' + year;
+                            return '<br>Date: <b>'  + formattedUTCDate + '</b><br>90th percentile: <b>' + this.low + ' ft³/s</b><br>Max: <b>' + this.high + ' ft³/s'
+                        }
+                    },
+                    turboThreshold: 0, 
+                    type: 'arearange',
+                    color: '#0000FF',
+                    fillOpacity: 0.2, 
+                    lineWidth: 0,
+                    data: this.formattedP90to100,
+                    linkedTo: null,
+                    marker: {
+                        symbol: null,
+                        radius: null
+                    },
+                    showInLegend: this.formattedP90to100.length > 0
+                },
+                {
+                    name: 'P 0-10%',
                     showInNavigator: false,
                     tooltip: {
                         headerFormat:'<b>P 0-10 %</b>',
@@ -1120,12 +1156,12 @@ module StreamStats.Controllers {
                     fillOpacity: 0.2, 
                     lineWidth: 0,
                     data: this.formattedP0to10,
-                    linkedTo: null,
+                    linkedTo: ':previous',
                     marker: {
-                        symbol: 'triangle',
+                        symbol: null,
                         radius: null
                     },
-                    showInLegend: this.formattedP0to10.length > 0 
+                    showInLegend: false
                 },
                 {
                     name: 'p 10-25 %',
@@ -1209,33 +1245,6 @@ module StreamStats.Controllers {
                     showInLegend: false
                 },
                 {
-                    name: 'p 90-100 %',
-                    showInNavigator: false,
-                    tooltip: {
-                        headerFormat:'<b>P 90-100 %</b>',
-                        pointFormatter: function(){
-                            let UTCday = this.x.getUTCDate();
-                            let year = this.x.getUTCFullYear();
-                            let month = this.x.getUTCMonth();
-                                month += 1; // adding a month to the UTC months (which are zero-indexed)
-                            let formattedUTCDate = month + '/' + UTCday + '/' + year;
-                            return '<br>Date: <b>'  + formattedUTCDate + '</b><br>90th percentile: <b>' + this.low + ' ft³/s</b><br>Max: <b>' + this.high + ' ft³/s'
-                        }
-                    },
-                    turboThreshold: 0, 
-                    type: 'arearange',
-                    color: '#0000FF',
-                    fillOpacity: 0.2, 
-                    lineWidth: 0,
-                    data: this.formattedP90to100,
-                    linkedTo: ':previous',
-                    marker: {
-                        symbol: null,
-                        radius: null
-                    },
-                    showInLegend: false
-                },
-                {
                     name    : 'Daily Streamflow',
                     showInNavigator: true,
                     tooltip: {
@@ -1260,7 +1269,7 @@ module StreamStats.Controllers {
                     data    : this.formattedDailyFlow,
                     linkedTo: null,
                     marker: {
-                        symbol: '',
+                        symbol: 'circle',
                         radius: 3
                     },
                     showInLegend: this.formattedDailyFlow.length > 0

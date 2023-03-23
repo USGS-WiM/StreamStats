@@ -483,7 +483,12 @@ var StreamStats;
                         dailyValues = 0;
                     }
                     ;
-                    _this_1.dailyFlow = dailyValues;
+                    if (dailyValues !== 0) {
+                        var filteredDaily = dailyValues.filter(function (item) {
+                            return (parseFloat(item.value) !== -999999);
+                        });
+                        _this_1.dailyFlow = filteredDaily;
+                    }
                     _this_1.getNWSForecast();
                 });
             };
@@ -499,16 +504,20 @@ var StreamStats;
                         self.Execute(request).then(function (response) {
                             var xmlDocument = new DOMParser().parseFromString(response.data, "text/xml");
                             var forecastData = xmlDocument.querySelectorAll("forecast");
-                            var smallerData = forecastData[0].childNodes;
-                            var forecastArray = [];
-                            smallerData.forEach(function (datum) {
-                                var forecastObj = {
-                                    x: new Date(datum.childNodes[0].textContent),
-                                    y: parseFloat(datum.childNodes[2].textContent)
-                                };
-                                forecastArray.push(forecastObj);
-                                self.NWSforecast = forecastArray;
-                            });
+                            if (forecastData[0] !== undefined) {
+                                var smallerData = forecastData[0].childNodes;
+                                var forecastArray_1 = [];
+                                smallerData.forEach(function (datum) {
+                                    if (datum.childNodes[0] !== undefined) {
+                                        var forecastObj = {
+                                            x: new Date(datum.childNodes[0].textContent),
+                                            y: parseFloat(datum.childNodes[2].textContent)
+                                        };
+                                        forecastArray_1.push(forecastObj);
+                                        self.NWSforecast = forecastArray_1;
+                                    }
+                                });
+                            }
                             self.getShadedDailyStats();
                         });
                     }
@@ -524,28 +533,30 @@ var StreamStats;
                 this.Execute(request).then(function (response) {
                     var meanPercentileStats = [];
                     var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
-                    data.shift().split('\t');
-                    data.shift();
-                    do {
-                        var nonArrayDataRow = data.shift().split('\t');
-                        var finalIndex = _this_1.dailyFlow.length - 1;
-                        var finalDate = new Date(_this_1.dailyFlow[finalIndex].dateTime);
-                        var finalYear = finalDate.getUTCFullYear();
-                        var stringDate = parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + finalYear;
-                        var date = new Date(stringDate);
-                        var meanPercentiles = {
-                            date: date.toUTCString(),
-                            begin_yr: parseFloat(nonArrayDataRow[7]),
-                            end_yr: parseFloat(nonArrayDataRow[8]),
-                            min_va: parseFloat(nonArrayDataRow[13]),
-                            p10_va: parseFloat(nonArrayDataRow[16]),
-                            p25_va: parseFloat(nonArrayDataRow[18]),
-                            p75_va: parseFloat(nonArrayDataRow[20]),
-                            p90_va: parseFloat(nonArrayDataRow[22]),
-                            max_va: parseFloat(nonArrayDataRow[11])
-                        };
-                        meanPercentileStats.push(meanPercentiles);
-                    } while (data.length > 0);
+                    if (data.length > 0) {
+                        data.shift().split('\t');
+                        data.shift();
+                        do {
+                            var nonArrayDataRow = data.shift().split('\t');
+                            var finalIndex = _this_1.dailyFlow.length - 1;
+                            var finalDate = new Date(_this_1.dailyFlow[finalIndex].dateTime);
+                            var finalYear = finalDate.getUTCFullYear();
+                            var stringDate = parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + finalYear;
+                            var date = new Date(stringDate);
+                            var meanPercentiles = {
+                                date: date.toUTCString(),
+                                begin_yr: parseFloat(nonArrayDataRow[7]),
+                                end_yr: parseFloat(nonArrayDataRow[8]),
+                                min_va: parseFloat(nonArrayDataRow[13]),
+                                p10_va: parseFloat(nonArrayDataRow[16]),
+                                p25_va: parseFloat(nonArrayDataRow[18]),
+                                p75_va: parseFloat(nonArrayDataRow[20]),
+                                p90_va: parseFloat(nonArrayDataRow[22]),
+                                max_va: parseFloat(nonArrayDataRow[11])
+                            };
+                            meanPercentileStats.push(meanPercentiles);
+                        } while (data.length > 0);
+                    }
                     _this_1.meanPercent = meanPercentileStats;
                     _this_1.formatData();
                 });
@@ -882,6 +893,33 @@ var StreamStats;
                             name: 'Shaded Daily Statistics',
                             showInNavigator: false,
                             tooltip: {
+                                headerFormat: '<b>P 90-100 %</b>',
+                                pointFormatter: function () {
+                                    var UTCday = this.x.getUTCDate();
+                                    var year = this.x.getUTCFullYear();
+                                    var month = this.x.getUTCMonth();
+                                    month += 1;
+                                    var formattedUTCDate = month + '/' + UTCday + '/' + year;
+                                    return '<br>Date: <b>' + formattedUTCDate + '</b><br>90th percentile: <b>' + this.low + ' ft³/s</b><br>Max: <b>' + this.high + ' ft³/s';
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: 'arearange',
+                            color: '#0000FF',
+                            fillOpacity: 0.2,
+                            lineWidth: 0,
+                            data: this.formattedP90to100,
+                            linkedTo: null,
+                            marker: {
+                                symbol: null,
+                                radius: null
+                            },
+                            showInLegend: this.formattedP90to100.length > 0
+                        },
+                        {
+                            name: 'P 0-10%',
+                            showInNavigator: false,
+                            tooltip: {
                                 headerFormat: '<b>P 0-10 %</b>',
                                 pointFormatter: function () {
                                     var UTCday = this.x.getUTCDate();
@@ -898,12 +936,12 @@ var StreamStats;
                             fillOpacity: 0.2,
                             lineWidth: 0,
                             data: this.formattedP0to10,
-                            linkedTo: null,
+                            linkedTo: ':previous',
                             marker: {
-                                symbol: 'triangle',
+                                symbol: null,
                                 radius: null
                             },
-                            showInLegend: this.formattedP0to10.length > 0
+                            showInLegend: false
                         },
                         {
                             name: 'p 10-25 %',
@@ -987,33 +1025,6 @@ var StreamStats;
                             showInLegend: false
                         },
                         {
-                            name: 'p 90-100 %',
-                            showInNavigator: false,
-                            tooltip: {
-                                headerFormat: '<b>P 90-100 %</b>',
-                                pointFormatter: function () {
-                                    var UTCday = this.x.getUTCDate();
-                                    var year = this.x.getUTCFullYear();
-                                    var month = this.x.getUTCMonth();
-                                    month += 1;
-                                    var formattedUTCDate = month + '/' + UTCday + '/' + year;
-                                    return '<br>Date: <b>' + formattedUTCDate + '</b><br>90th percentile: <b>' + this.low + ' ft³/s</b><br>Max: <b>' + this.high + ' ft³/s';
-                                }
-                            },
-                            turboThreshold: 0,
-                            type: 'arearange',
-                            color: '#0000FF',
-                            fillOpacity: 0.2,
-                            lineWidth: 0,
-                            data: this.formattedP90to100,
-                            linkedTo: ':previous',
-                            marker: {
-                                symbol: null,
-                                radius: null
-                            },
-                            showInLegend: false
-                        },
-                        {
                             name: 'Daily Streamflow',
                             showInNavigator: true,
                             tooltip: {
@@ -1037,7 +1048,7 @@ var StreamStats;
                             data: this.formattedDailyFlow,
                             linkedTo: null,
                             marker: {
-                                symbol: '',
+                                symbol: 'circle',
                                 radius: 3
                             },
                             showInLegend: this.formattedDailyFlow.length > 0
