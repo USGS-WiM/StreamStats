@@ -50,7 +50,6 @@ var StreamStats;
                 this.loadParametersByRegionBP(rcode).then(function (response) { _this.availableParamList = response; });
             };
             BatchProcessorController.prototype.setRegionStats = function (statisticsGroup) {
-                console.log("statisticsGroup", statisticsGroup);
                 var checkStatisticsGroup = this.checkArrayForObj(this.selectedFlowStatsList, statisticsGroup);
                 if (checkStatisticsGroup != -1) {
                     var preventRemoval = false;
@@ -78,7 +77,9 @@ var StreamStats;
                         }
                     }
                     this.setParamCheck(statisticsGroup.regressionRegions);
+                    this.addParameterToSelectedParamList("DRNAREA");
                 }
+                this.onSelectedStatisticsGroupChanged();
             };
             BatchProcessorController.prototype.setParamCheck = function (regressionRegions) {
                 var _this = this;
@@ -95,6 +96,45 @@ var StreamStats;
                         }
                     });
                 });
+            };
+            BatchProcessorController.prototype.onSelectedStatisticsGroupChanged = function () {
+                var _this = this;
+                this.selectedFlowStatsList.forEach(function (statisticsGroup) {
+                    if (statisticsGroup.regressionRegions) {
+                        statisticsGroup.regressionRegions.forEach(function (regressionRegion) {
+                            regressionRegion.parameters.forEach(function (param) {
+                                var found = false;
+                                for (var i = 0; i < _this.availableParamList.length; i++) {
+                                    var parameter = _this.availableParamList[i];
+                                    if (parameter.code.toLowerCase() == param.code.toLowerCase()) {
+                                        console.log('PARAM FOUND', param.Code);
+                                        _this.addParameterToSelectedParamList(param.code);
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if (!found) {
+                                    console.log('PARAM NOT FOUND', param.Code);
+                                    var newParam = {
+                                        name: param.name,
+                                        description: param.description,
+                                        code: param.code,
+                                        unit: param.unitType.unit,
+                                        value: null,
+                                        regulatedValue: null,
+                                        unRegulatedValue: null,
+                                        loaded: null,
+                                        checked: false,
+                                        toggleable: true
+                                    };
+                                    _this.availableParamList.push(newParam);
+                                    _this.addParameterToSelectedParamList(param.code);
+                                }
+                            });
+                        });
+                    }
+                });
+                console.log("onSelectedStatisticsGroupChanged_selectedParamList", this.selectedParamList);
             };
             BatchProcessorController.prototype.updateSelectedParamList = function (parameter) {
                 if (parameter.toggleable == false) {
@@ -161,8 +201,8 @@ var StreamStats;
                 try {
                     for (var i = 0; i < this.availableParamList.length; i++) {
                         var p = this.availableParamList[i];
-                        if (p.code.toUpperCase() === paramCode.toUpperCase() && this.checkArrayForObj(this.selectedParamList, p) == -1) {
-                            this.selectedParamList.push(p);
+                        if (p.code.toUpperCase() === paramCode.toUpperCase() && this.checkArrayForObj(this.selectedParamList, p.code) == -1) {
+                            this.selectedParamList.push(p.code);
                             p['checked'] = true;
                             p['toggleable'] = false;
                             break;

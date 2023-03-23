@@ -120,7 +120,6 @@ module StreamStats.Controllers {
         }
 
         public setRegionStats(statisticsGroup: any) {
-            console.log("statisticsGroup", statisticsGroup)
 
             var checkStatisticsGroup = this.checkArrayForObj(this.selectedFlowStatsList, statisticsGroup);
 
@@ -164,15 +163,19 @@ module StreamStats.Controllers {
                     }
                 }
 
-                // load parameters for selected flowStats
+                // edit checked/toggleable for availableParamList
                 this.setParamCheck(statisticsGroup.regressionRegions);
+
+                // make sure DNRAREA is in selectedParamList
+                this.addParameterToSelectedParamList("DRNAREA");
                 
                 
             }
-            // console.log("setRegionStats_selectedFlowStatsList", this.selectedFlowStatsList)
-            // console.log("setRegionStats_selectedParamList", this.selectedParamList)
+            // update this.selectedParamList with parameters from selected flowStats
+            this.onSelectedStatisticsGroupChanged();
         }
 
+        // set params in availableParamList to checked
         private setParamCheck(regressionRegions: Array<any>): void {
 
             regressionRegions.forEach((regressionRegion) => {
@@ -186,16 +189,67 @@ module StreamStats.Controllers {
                             p['checked'] = true;
                             p['toggleable'] = false;
                             break;
-                        }//endif
-                    }//next i
-
-                    // this.selectedParamList.push(parameter.code);
-                    // console.log("loadParametersByStatisticsGroupBPcode", parameter.code)
-
+                        }
+                    }
                 });
             }); 
-            // console.log("loadParametersByStatisticsGroupBP_availableParamList", this.availableParamList)
         }
+
+        
+        public onSelectedStatisticsGroupChanged(): void {
+
+                //loop over whole statisticsgroups
+                this.selectedFlowStatsList.forEach((statisticsGroup) => {
+
+                    if (statisticsGroup.regressionRegions) {
+
+                        //get their parameters
+                        statisticsGroup.regressionRegions.forEach((regressionRegion) => {
+
+                            //loop over list of state/region parameters to see if there is a match
+                            regressionRegion.parameters.forEach((param) => {
+
+                                var found = false;
+                                for (var i = 0; i < this.availableParamList.length; i++) {
+                                    var parameter = this.availableParamList[i];
+                                    if (parameter.code.toLowerCase() == param.code.toLowerCase()) {
+                                        console.log('PARAM FOUND', param.Code)
+                                        this.addParameterToSelectedParamList(param.code);
+                                        found = true;
+                                        break;
+                                    }//end if
+                                }//next iparam
+
+                                if (!found) {
+                                    console.log('PARAM NOT FOUND', param.Code)
+                                    // this.toaster.pop('warning', "Missing Parameter: " + param.code, "The selected scenario requires a parameter not available in this State/Region.  The value for this parameter will need to be entered manually.", 0);
+
+                                    //add to region parameterList
+                                    var newParam = {
+                                        name: param.name,
+                                        description: param.description,
+                                        code: param.code,
+                                        unit: param.unitType.unit,
+                                        value: null,
+                                        regulatedValue: null,
+                                        unRegulatedValue: null,
+                                        loaded: null,
+                                        checked: false,
+                                        toggleable: true
+                                    }
+
+                                    //push the param that was not in the original regionService paramaterList
+                                    this.availableParamList.push(newParam);
+
+                                    //select it
+                                    this.addParameterToSelectedParamList(param.code);
+                                }
+                            });// next param
+                        });// next regressionRegion
+                    }//end if
+                });//next statisticgroup
+                console.log("onSelectedStatisticsGroupChanged_selectedParamList", this.selectedParamList);
+            }
 
         // public updateRegionStatsList(statistic: any) {
 
@@ -432,15 +486,14 @@ module StreamStats.Controllers {
             return -1;
         }
 
-        // this.selectedParamList
-        // this.availableParamList
+        // add parameter to selectedParamList
         private addParameterToSelectedParamList(paramCode): boolean {
             try {
                 for (var i = 0; i < this.availableParamList.length; i++) {
-                    let p: Services.IParameter = this.availableParamList[i];
+                    let p = this.availableParamList[i];
 
-                    if (p.code.toUpperCase() === paramCode.toUpperCase() && this.checkArrayForObj(this.selectedParamList, p) == -1) {
-                        this.selectedParamList.push(p);
+                    if (p.code.toUpperCase() === paramCode.toUpperCase() && this.checkArrayForObj(this.selectedParamList, p.code) == -1) {
+                        this.selectedParamList.push(p.code);
                         p['checked'] = true;
                         p['toggleable'] = false;
                         break;
