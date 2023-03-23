@@ -489,14 +489,12 @@ var StreamStats;
             };
             GagePageController.prototype.getNWSForecast = function () {
                 var self = this;
-                var url = undefined;
                 var nwisCode = this.gage.code;
                 this.$http.get('./data/gageNumberCrossWalk.json').then(function (response) {
                     self.crossWalk = response.data;
                     var NWScode = self.crossWalk[nwisCode];
                     if (NWScode !== undefined) {
-                        url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + NWScode;
-                        console.log(url);
+                        var url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + NWScode;
                         var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
                         self.Execute(request).then(function (response) {
                             var xmlDocument = new DOMParser().parseFromString(response.data, "text/xml");
@@ -758,7 +756,6 @@ var StreamStats;
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
-                console.log('outside', this.NWSforecast);
                 this.chartConfig = {
                     chart: {
                         height: 550,
@@ -849,7 +846,7 @@ var StreamStats;
                         },
                         {
                             name: 'Annual Peak Streamflow (Date Estimated)',
-                            showInNavigator: true,
+                            showInNavigator: false,
                             tooltip: {
                                 headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Latest Year',
                                 pointFormatter: function () {
@@ -885,9 +882,14 @@ var StreamStats;
                             name: 'Shaded Daily Statistics',
                             showInNavigator: false,
                             tooltip: {
-                                headerFormat: null,
+                                headerFormat: '<b>P 0-10 %</b>',
                                 pointFormatter: function () {
-                                    return '<br>Date: <b>' + this.x + '</b><br>Min: <b>' + this.low + ' ft³/s</b><br>10th percentile: <b>' + this.high;
+                                    var UTCday = this.x.getUTCDate();
+                                    var year = this.x.getUTCFullYear();
+                                    var month = this.x.getUTCMonth();
+                                    month += 1;
+                                    var formattedUTCDate = month + '/' + UTCday + '/' + year;
+                                    return '<br>Date: <b>' + formattedUTCDate + '</b><br>Min: <b>' + this.low + ' ft³/s</b><br>10th percentile: <b>' + this.high + ' ft³/s';
                                 }
                             },
                             turboThreshold: 0,
@@ -898,7 +900,7 @@ var StreamStats;
                             data: this.formattedP0to10,
                             linkedTo: null,
                             marker: {
-                                symbol: null,
+                                symbol: 'triangle',
                                 radius: null
                             },
                             showInLegend: this.formattedP0to10.length > 0
@@ -907,9 +909,14 @@ var StreamStats;
                             name: 'p 10-25 %',
                             showInNavigator: false,
                             tooltip: {
-                                headerFormat: null,
+                                headerFormat: '<b>P 10-25 %</b>',
                                 pointFormatter: function () {
-                                    return '<br>Date: <b>' + this.x + '</b><br>Min: <b>' + this.low + ' ft³/s</b><br>10th percentile: <b>' + this.high;
+                                    var UTCday = this.x.getUTCDate();
+                                    var year = this.x.getUTCFullYear();
+                                    var month = this.x.getUTCMonth();
+                                    month += 1;
+                                    var formattedUTCDate = month + '/' + UTCday + '/' + year;
+                                    return '<br>Date: <b>' + formattedUTCDate + '</b><br>10th percentile: <b>' + this.low + ' ft³/s</b><br>25th percentile: <b>' + this.high + ' ft³/s';
                                 }
                             },
                             turboThreshold: 0,
@@ -929,9 +936,14 @@ var StreamStats;
                             name: 'p 25-75 %',
                             showInNavigator: false,
                             tooltip: {
-                                headerFormat: null,
+                                headerFormat: '<b>P 25-75 %</b>',
                                 pointFormatter: function () {
-                                    return '<br>Date: <b>' + this.x + '</b><br>Min: <b>' + this.low + ' ft³/s</b><br>10th percentile: <b>' + this.high;
+                                    var UTCday = this.x.getUTCDate();
+                                    var year = this.x.getUTCFullYear();
+                                    var month = this.x.getUTCMonth();
+                                    month += 1;
+                                    var formattedUTCDate = month + '/' + UTCday + '/' + year;
+                                    return '<br>Date: <b>' + formattedUTCDate + '</b><br>25th percentile: <b>' + this.low + ' ft³/s</b><br>75th percentile: <b>' + this.high + ' ft³/s';
                                 }
                             },
                             turboThreshold: 0,
@@ -951,9 +963,14 @@ var StreamStats;
                             name: 'p 75-90 %',
                             showInNavigator: false,
                             tooltip: {
-                                headerFormat: null,
+                                headerFormat: '<b>P 75-90 %</b>',
                                 pointFormatter: function () {
-                                    return '<br>Date: <b>' + this.x + '</b><br>Min: <b>' + this.low + ' ft³/s</b><br>10th percentile: <b>' + this.high;
+                                    var UTCday = this.x.getUTCDate();
+                                    var year = this.x.getUTCFullYear();
+                                    var month = this.x.getUTCMonth();
+                                    month += 1;
+                                    var formattedUTCDate = month + '/' + UTCday + '/' + year;
+                                    return '<br>Date: <b>' + formattedUTCDate + '</b><br>75th percentile: <b>' + this.low + ' ft³/s</b><br>90th percentile: <b>' + this.high + ' ft³/s';
                                 }
                             },
                             turboThreshold: 0,
@@ -973,9 +990,14 @@ var StreamStats;
                             name: 'p 90-100 %',
                             showInNavigator: false,
                             tooltip: {
-                                headerFormat: null,
+                                headerFormat: '<b>P 90-100 %</b>',
                                 pointFormatter: function () {
-                                    return '<br>Date: <b>' + this.x + '</b><br>Min: <b>' + this.low + ' ft³/s</b><br>10th percentile: <b>' + this.high;
+                                    var UTCday = this.x.getUTCDate();
+                                    var year = this.x.getUTCFullYear();
+                                    var month = this.x.getUTCMonth();
+                                    month += 1;
+                                    var formattedUTCDate = month + '/' + UTCday + '/' + year;
+                                    return '<br>Date: <b>' + formattedUTCDate + '</b><br>90th percentile: <b>' + this.low + ' ft³/s</b><br>Max: <b>' + this.high + ' ft³/s';
                                 }
                             },
                             turboThreshold: 0,

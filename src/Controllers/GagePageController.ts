@@ -683,35 +683,33 @@ module StreamStats.Controllers {
 
         public getNWSForecast() {
             var self = this;
-            var url = undefined;
+            //var url = undefined;
             var nwisCode = this.gage.code
                 this.$http.get('./data/gageNumberCrossWalk.json').then(function(response) {
                 self.crossWalk = response.data
                 var NWScode = self.crossWalk[nwisCode];
                 if (NWScode !== undefined) {
-                //console.log(self.crossWalk);
-                url =  "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage="+ NWScode;
-                console.log(url);
-                
-                const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
-                self.Execute(request).then(
-                    (response: any) => {
-                        const xmlDocument = new DOMParser().parseFromString(response.data, "text/xml")
-                        const forecastData = xmlDocument.querySelectorAll("forecast");
-                        const smallerData = forecastData[0].childNodes;
-                        let forecastArray = [];
-                        smallerData.forEach(datum => {
-                            const forecastObj = {
-                                x: new Date(datum.childNodes[0].textContent),
-                                //stage: parseFloat(datum.childNodes[1].textContent),
-                                y: parseFloat(datum.childNodes[2].textContent)
-                            }
-                            forecastArray.push(forecastObj);
-                            self.NWSforecast = forecastArray;
-                        })
-                    
-                        self.getShadedDailyStats();
-                    });
+                    var url =  "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage="+ NWScode;
+                    //console.log('NWS forecast url', url)
+                    const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
+                    self.Execute(request).then(
+                        (response: any) => {
+                            const xmlDocument = new DOMParser().parseFromString(response.data, "text/xml")
+                            const forecastData = xmlDocument.querySelectorAll("forecast");
+                            const smallerData = forecastData[0].childNodes;
+                            let forecastArray = [];
+                            smallerData.forEach(datum => {
+                                const forecastObj = {
+                                    x: new Date(datum.childNodes[0].textContent),
+                                    //stage: parseFloat(datum.childNodes[1].textContent),
+                                    y: parseFloat(datum.childNodes[2].textContent)
+                                }
+                                forecastArray.push(forecastObj);
+                                self.NWSforecast = forecastArray;
+                            })
+                            self.getShadedDailyStats();
+                        }
+                    );
                 } else {
                     self.getShadedDailyStats();
                 }
@@ -753,8 +751,6 @@ module StreamStats.Controllers {
                         meanPercentileStats.push(meanPercentiles);
                     } while (data.length > 0);
                     this.meanPercent = meanPercentileStats;
-                    //console.log('mean perc 1', meanPercentileStats);
-                    //console.log('xxx', this.meanPercent)
                     this.formatData();
                 });
             
@@ -981,7 +977,7 @@ module StreamStats.Controllers {
             //console.log('daily flow plot data', this.formattedDailyFlow);
             //console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear)
             //console.log(this.formattedP0to10);
-            console.log('outside', this.NWSforecast)
+            //console.log('NWS Forecast', this.NWSforecast)
             this.chartConfig = {
                 chart: {
                     height: 550,
@@ -1073,7 +1069,7 @@ module StreamStats.Controllers {
                 },
                 {
                     name    : 'Annual Peak Streamflow (Date Estimated)',
-                    showInNavigator: true,
+                    showInNavigator: false,
                     tooltip: {
                         headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Latest Year',
                         pointFormatter: function(){
@@ -1105,12 +1101,17 @@ module StreamStats.Controllers {
                     showInLegend: this.formattedEstPeakDates.length > 0 //still showing up in legend if y is NaN
                 },
                 {
-                    name: 'Shaded Daily Statistics',
+                    name: 'Shaded Daily Statistics', // P 0-10%
                     showInNavigator: false,
                     tooltip: {
-                        headerFormat: null,
+                        headerFormat:'<b>P 0-10 %</b>',
                         pointFormatter: function(){
-                            return '<br>Date: <b>'  + this.x + '</b><br>Min: <b>' + this.low + ' ft³/s</b><br>10th percentile: <b>' + this.high
+                            let UTCday = this.x.getUTCDate();
+                            let year = this.x.getUTCFullYear();
+                            let month = this.x.getUTCMonth();
+                                month += 1; // adding a month to the UTC months (which are zero-indexed)
+                            let formattedUTCDate = month + '/' + UTCday + '/' + year;
+                            return '<br>Date: <b>'  + formattedUTCDate + '</b><br>Min: <b>' + this.low + ' ft³/s</b><br>10th percentile: <b>' + this.high + ' ft³/s'
                         }
                     },
                     turboThreshold: 0, 
@@ -1121,7 +1122,7 @@ module StreamStats.Controllers {
                     data: this.formattedP0to10,
                     linkedTo: null,
                     marker: {
-                        symbol: null,
+                        symbol: 'triangle',
                         radius: null
                     },
                     showInLegend: this.formattedP0to10.length > 0 
@@ -1130,9 +1131,14 @@ module StreamStats.Controllers {
                     name: 'p 10-25 %',
                     showInNavigator: false,
                     tooltip: {
-                        headerFormat: null,
+                        headerFormat:'<b>P 10-25 %</b>',
                         pointFormatter: function(){
-                            return '<br>Date: <b>'  + this.x + '</b><br>Min: <b>' + this.low + ' ft³/s</b><br>10th percentile: <b>' + this.high
+                            let UTCday = this.x.getUTCDate();
+                            let year = this.x.getUTCFullYear();
+                            let month = this.x.getUTCMonth();
+                                month += 1; // adding a month to the UTC months (which are zero-indexed)
+                            let formattedUTCDate = month + '/' + UTCday + '/' + year;
+                            return '<br>Date: <b>'  + formattedUTCDate + '</b><br>10th percentile: <b>' + this.low + ' ft³/s</b><br>25th percentile: <b>' + this.high + ' ft³/s'
                         }
                     },
                     turboThreshold: 0, 
@@ -1152,9 +1158,14 @@ module StreamStats.Controllers {
                     name: 'p 25-75 %',
                     showInNavigator: false,
                     tooltip: {
-                        headerFormat: null,
+                        headerFormat:'<b>P 25-75 %</b>',
                         pointFormatter: function(){
-                            return '<br>Date: <b>'  + this.x + '</b><br>Min: <b>' + this.low + ' ft³/s</b><br>10th percentile: <b>' + this.high
+                            let UTCday = this.x.getUTCDate();
+                            let year = this.x.getUTCFullYear();
+                            let month = this.x.getUTCMonth();
+                                month += 1; // adding a month to the UTC months (which are zero-indexed)
+                            let formattedUTCDate = month + '/' + UTCday + '/' + year;
+                            return '<br>Date: <b>'  + formattedUTCDate + '</b><br>25th percentile: <b>' + this.low + ' ft³/s</b><br>75th percentile: <b>' + this.high + ' ft³/s'
                         }
                     },
                     turboThreshold: 0, 
@@ -1174,9 +1185,14 @@ module StreamStats.Controllers {
                     name: 'p 75-90 %',
                     showInNavigator: false,
                     tooltip: {
-                        headerFormat: null,
+                        headerFormat:'<b>P 75-90 %</b>',
                         pointFormatter: function(){
-                            return '<br>Date: <b>'  + this.x + '</b><br>Min: <b>' + this.low + ' ft³/s</b><br>10th percentile: <b>' + this.high
+                            let UTCday = this.x.getUTCDate();
+                            let year = this.x.getUTCFullYear();
+                            let month = this.x.getUTCMonth();
+                                month += 1; // adding a month to the UTC months (which are zero-indexed)
+                            let formattedUTCDate = month + '/' + UTCday + '/' + year;
+                            return '<br>Date: <b>'  + formattedUTCDate + '</b><br>75th percentile: <b>' + this.low + ' ft³/s</b><br>90th percentile: <b>' + this.high + ' ft³/s'
                         }
                     },
                     turboThreshold: 0, 
@@ -1196,9 +1212,14 @@ module StreamStats.Controllers {
                     name: 'p 90-100 %',
                     showInNavigator: false,
                     tooltip: {
-                        headerFormat: null,
+                        headerFormat:'<b>P 90-100 %</b>',
                         pointFormatter: function(){
-                            return '<br>Date: <b>'  + this.x + '</b><br>Min: <b>' + this.low + ' ft³/s</b><br>10th percentile: <b>' + this.high
+                            let UTCday = this.x.getUTCDate();
+                            let year = this.x.getUTCFullYear();
+                            let month = this.x.getUTCMonth();
+                                month += 1; // adding a month to the UTC months (which are zero-indexed)
+                            let formattedUTCDate = month + '/' + UTCday + '/' + year;
+                            return '<br>Date: <b>'  + formattedUTCDate + '</b><br>90th percentile: <b>' + this.low + ' ft³/s</b><br>Max: <b>' + this.high + ' ft³/s'
                         }
                     },
                     turboThreshold: 0, 
