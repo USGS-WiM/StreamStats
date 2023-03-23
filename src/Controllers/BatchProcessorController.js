@@ -31,6 +31,7 @@ var StreamStats;
                 _this.selectedParamList = [];
                 _this.availableParamList = [];
                 _this.regionParamList = [];
+                _this.parametersAllChecked = true;
                 _this.init();
                 return _this;
             }
@@ -153,6 +154,22 @@ var StreamStats;
                     console.log("updateParamsPush", this.selectedParamList);
                 }
                 console.log("updateSelectedParamList", this.selectedParamList);
+                this.checkParameters();
+            };
+            BatchProcessorController.prototype.checkParameters = function () {
+                var allChecked = true;
+                for (var _i = 0, _a = this.availableParamList; _i < _a.length; _i++) {
+                    var param = _a[_i];
+                    if (!param.checked) {
+                        allChecked = false;
+                    }
+                }
+                if (allChecked) {
+                    this.parametersAllChecked = false;
+                }
+                else {
+                    this.parametersAllChecked = true;
+                }
             };
             BatchProcessorController.prototype.loadParametersByRegionBP = function (rcode) {
                 if (!rcode)
@@ -183,6 +200,24 @@ var StreamStats;
                 }, function (error) {
                 }).finally(function () {
                 });
+            };
+            BatchProcessorController.prototype.toggleParametersAllChecked = function () {
+                var _this = this;
+                this.availableParamList.forEach(function (parameter) {
+                    var paramCheck = _this.checkArrayForObj(_this.selectedParamList, parameter.code);
+                    if (_this.parametersAllChecked) {
+                        if (paramCheck == -1)
+                            _this.selectedParamList.push(parameter.code);
+                        parameter.checked = true;
+                    }
+                    else {
+                        if (paramCheck > -1 && parameter.toggleable) {
+                            _this.selectedParamList.splice(paramCheck, 1);
+                            parameter.checked = false;
+                        }
+                    }
+                });
+                this.parametersAllChecked = !this.parametersAllChecked;
             };
             BatchProcessorController.prototype.init = function () {
                 this.AppVersion = configuration.version;

@@ -75,7 +75,7 @@ module StreamStats.Controllers {
             this.regionParamList = [];
             // this.flowStatsAllChecked = true;
             // this.flowStatChecked = true;
-            // this.parametersAllChecked = true;
+            this.parametersAllChecked = true;
             this.init();  
         }  
         
@@ -398,24 +398,24 @@ module StreamStats.Controllers {
                 console.log("updateParamsPush", this.selectedParamList)
             }
             console.log("updateSelectedParamList", this.selectedParamList)
-            // this.checkParameters();
+            this.checkParameters();
 
         }
 
-        // public checkParameters() {
-        //     // change select all parameters toggle to match if all params are checked or not
-        //     let allChecked = true;
-        //     for (let param of this.parameterListBP) {
-        //         if (!param.checked) {
-        //             allChecked = false;
-        //         }
-        //     }
-        //     if (allChecked) {
-        //         this.multipleParameterSelectorAdd = false;
-        //     } else {
-        //         this.multipleParameterSelectorAdd = true;
-        //     }
-        // }
+        public checkParameters() {
+            // change select all parameters toggle to match if all params are checked or not
+            let allChecked = true;
+            for (let param of this.availableParamList) {
+                if (!param.checked) {
+                    allChecked = false;
+                }
+            }
+            if (allChecked) {
+                this.parametersAllChecked = false;
+            } else {
+                this.parametersAllChecked = true;
+            }
+        }
             
         // Service methods
         // get basin characteristics list for region and nation
@@ -470,6 +470,37 @@ module StreamStats.Controllers {
                 });
         }
 
+        // controls button to select/unselect all parameters
+        public toggleParametersAllChecked(): void {
+
+            this.availableParamList.forEach((parameter) => {
+
+                //console.log('length of configuration.alwaysSelectedParameters: ', configuration.alwaysSelectedParameters.length);
+
+                var paramCheck = this.checkArrayForObj(this.selectedParamList, parameter.code);
+
+                if (this.parametersAllChecked) {
+
+                    //if its not there add it
+                    if (paramCheck == -1) this.selectedParamList.push(parameter.code);
+                    parameter.checked = true;
+                }
+                else {
+
+                    //remove it only if toggleable
+                    if (paramCheck > -1 && parameter.toggleable) {
+                        this.selectedParamList.splice(paramCheck, 1);
+                        //this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
+                        parameter.checked = false;
+                    }
+                }
+
+
+            });
+
+            // toggle switch
+            this.parametersAllChecked = !this.parametersAllChecked;
+        }
         // Helper Methods
         // -+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
@@ -547,38 +578,7 @@ module StreamStats.Controllers {
         //     this.flowStatsAllChecked = !this.flowStatsAllChecked;
         // }
 
-        // public toggleParametersAllChecked(): void {
-
-        //     this.flowStatsList.forEach((parameter) => {
-
-        //         var statisticGroupID = parameter.statisticGroupID
-
-        //         var paramCheck = this.checkArrayForObj(this.regionStatsList, statisticGroupID);
-
-        //         if (this.flowStatsAllChecked) {
-
-        //             //if its not there add it
-        //             if (paramCheck == -1) this.regionStatsList.push(statisticGroupID);
-        //             parameter.checked = true;
-        //             this.flowStatChecked = true; //checking of cbBasinChar
-        //         }
-        //         else {
-
-        //             //remove it only if checked
-        //             if (paramCheck > -1) {
-        //                 this.regionStatsList.splice(paramCheck, 1);
-        //                 //this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
-        //                 parameter.checked = false;
-        //                 this.flowStatChecked = false; //unchecking of cbBasinChar
-        //             }
-        //         }
-
-
-        //     });
-
-        //     // toggle switch
-        //     this.parametersAllChecked = !this.parametersAllChecked;
-        // }
+        
 
     }//end  class
 
