@@ -124,11 +124,6 @@ module StreamStats.Controllers {
             if (checkStatisticsGroup != -1) {
                 var preventRemoval = false;
 
-                // if Flow Duration Curve Transfer Method (FDCTM) is selected, prevent Flow-Duration Statistics from being de-selected
-                if (this.selectedFlowStatsList.filter((selectedStatisticsGroup) => selectedStatisticsGroup.statisticGroupName == "Flow-Duration Curve Transfer Method").length > 0 && statisticsGroup['statisticGroupName'] == "Flow-Duration Statistics") {
-                    preventRemoval = true;
-                }
-
                 if (!preventRemoval) {
                     //remove this statisticsGroup from the list
                     this.selectedFlowStatsList.splice(checkStatisticsGroup, 1);
@@ -151,16 +146,6 @@ module StreamStats.Controllers {
             //add it to the list and get its required parameters
             else {
                 this.selectedFlowStatsList.push(statisticsGroup);
-
-                // if Flow Duration Curve Transfer Method (FDCTM) was selected, also select Flow-Duration Statistics
-                if (typeof statisticsGroup['statisticGroupID'] != 'number' && statisticsGroup['statisticGroupID'].indexOf('fdctm')) {
-                    // see if the Flow-Duration Statistics group has been selected already and select it if not
-                    var statisticsGroupFDS = this.selectedFlowStatsList.filter((statisticsGroup) => statisticsGroup.statisticGroupName == "Flow-Duration Statistics")[0];
-                    var checkStatisticsGroupFDS = this.checkArrayForObj(this.selectedFlowStatsList, statisticsGroupFDS);
-                    if (checkStatisticsGroupFDS == -1) {
-                        this.selectedFlowStatsList.push(statisticsGroupFDS);
-                    }
-                }
 
                 // edit checked/toggleable for availableParamList
                 this.setParamCheck(statisticsGroup['regressionRegions']);
