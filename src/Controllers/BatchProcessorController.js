@@ -31,6 +31,7 @@ var StreamStats;
                 _this.selectedParamList = [];
                 _this.availableParamList = [];
                 _this.regionParamList = [];
+                _this.flowStatChecked = false;
                 _this.parametersAllChecked = true;
                 _this.init();
                 return _this;
@@ -54,11 +55,12 @@ var StreamStats;
                 var checkStatisticsGroup = this.checkArrayForObj(this.selectedFlowStatsList, statisticsGroup);
                 if (checkStatisticsGroup != -1) {
                     var preventRemoval = false;
-                    if (this.selectedFlowStatsList.filter(function (selectedStatisticsGroup) { return selectedStatisticsGroup.statisticGroupName == "Flow-Duration Curve Transfer Method"; }).length > 0 && statisticsGroup.statisticGroupName == "Flow-Duration Statistics") {
+                    if (this.selectedFlowStatsList.filter(function (selectedStatisticsGroup) { return selectedStatisticsGroup.statisticGroupName == "Flow-Duration Curve Transfer Method"; }).length > 0 && statisticsGroup['statisticGroupName'] == "Flow-Duration Statistics") {
                         preventRemoval = true;
                     }
                     if (!preventRemoval) {
                         this.selectedFlowStatsList.splice(checkStatisticsGroup, 1);
+                        statisticsGroup['checked'] = false;
                         if (this.selectedFlowStatsList.length == 0) {
                             this.selectedParamList = [];
                             this.availableParamList.forEach(function (parameter) {
@@ -70,17 +72,18 @@ var StreamStats;
                 }
                 else {
                     this.selectedFlowStatsList.push(statisticsGroup);
-                    if (typeof statisticsGroup.statisticGroupID != 'number' && statisticsGroup.statisticGroupID.indexOf('fdctm')) {
+                    if (typeof statisticsGroup['statisticGroupID'] != 'number' && statisticsGroup['statisticGroupID'].indexOf('fdctm')) {
                         var statisticsGroupFDS = this.selectedFlowStatsList.filter(function (statisticsGroup) { return statisticsGroup.statisticGroupName == "Flow-Duration Statistics"; })[0];
                         var checkStatisticsGroupFDS = this.checkArrayForObj(this.selectedFlowStatsList, statisticsGroupFDS);
                         if (checkStatisticsGroupFDS == -1) {
                             this.selectedFlowStatsList.push(statisticsGroupFDS);
                         }
                     }
-                    this.setParamCheck(statisticsGroup.regressionRegions);
+                    this.setParamCheck(statisticsGroup['regressionRegions']);
                     this.addParameterToSelectedParamList("DRNAREA");
                 }
                 this.onSelectedStatisticsGroupChanged();
+                this.checkStats();
             };
             BatchProcessorController.prototype.setParamCheck = function (regressionRegions) {
                 var _this = this;
@@ -101,6 +104,7 @@ var StreamStats;
             BatchProcessorController.prototype.onSelectedStatisticsGroupChanged = function () {
                 var _this = this;
                 this.selectedFlowStatsList.forEach(function (statisticsGroup) {
+                    statisticsGroup.checked = true;
                     if (statisticsGroup.regressionRegions) {
                         statisticsGroup.regressionRegions.forEach(function (regressionRegion) {
                             regressionRegion.parameters.forEach(function (param) {
@@ -137,19 +141,38 @@ var StreamStats;
                 });
                 console.log("onSelectedStatisticsGroupChanged_selectedParamList", this.selectedParamList);
             };
+            BatchProcessorController.prototype.checkStats = function () {
+                if (this.selectedFlowStatsList.length > 0) {
+                    this.flowStatChecked = true;
+                }
+                else {
+                    this.flowStatChecked = false;
+                }
+                var allChecked = true;
+                for (var _i = 0, _a = this.flowStatsList; _i < _a.length; _i++) {
+                    var stat = _a[_i];
+                    if (!stat.checked) {
+                        allChecked = false;
+                    }
+                }
+                if (allChecked) {
+                }
+                else {
+                }
+            };
             BatchProcessorController.prototype.updateSelectedParamList = function (parameter) {
-                if (parameter.toggleable == false) {
+                if (parameter['toggleable'] == false) {
                     console.log("Can't unselect");
-                    parameter.checked = true;
+                    parameter['checked'] = true;
                     return;
                 }
-                var paramCode = parameter.code;
+                var paramCode = parameter['code'];
                 var index = this.selectedParamList.indexOf(paramCode);
-                if (!parameter.checked && index > -1) {
+                if (!parameter['checked'] && index > -1) {
                     this.selectedParamList.splice(index, 1);
                     console.log("updateParamsSplice", this.selectedParamList);
                 }
-                else if (parameter.checked && index == -1) {
+                else if (parameter['checked'] && index == -1) {
                     this.selectedParamList.push(paramCode);
                     console.log("updateParamsPush", this.selectedParamList);
                 }
@@ -218,6 +241,7 @@ var StreamStats;
                     }
                 });
                 this.parametersAllChecked = !this.parametersAllChecked;
+                console.log("toggleParametersAllChecked", this.selectedParamList);
             };
             BatchProcessorController.prototype.init = function () {
                 this.AppVersion = configuration.version;

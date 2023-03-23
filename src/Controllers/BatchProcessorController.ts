@@ -74,7 +74,7 @@ module StreamStats.Controllers {
             this.availableParamList = [];
             this.regionParamList = [];
             // this.flowStatsAllChecked = true;
-            // this.flowStatChecked = true;
+            this.flowStatChecked = false;
             this.parametersAllChecked = true;
             this.init();  
         }  
@@ -119,7 +119,7 @@ module StreamStats.Controllers {
             
         }
 
-        public setRegionStats(statisticsGroup: any) {
+        public setRegionStats(statisticsGroup: Array<any>): void {
 
             var checkStatisticsGroup = this.checkArrayForObj(this.selectedFlowStatsList, statisticsGroup);
 
@@ -128,7 +128,7 @@ module StreamStats.Controllers {
                 var preventRemoval = false;
 
                 // if Flow Duration Curve Transfer Method (FDCTM) is selected, prevent Flow-Duration Statistics from being de-selected
-                if (this.selectedFlowStatsList.filter((selectedStatisticsGroup) => selectedStatisticsGroup.statisticGroupName == "Flow-Duration Curve Transfer Method").length > 0 && statisticsGroup.statisticGroupName == "Flow-Duration Statistics") {
+                if (this.selectedFlowStatsList.filter((selectedStatisticsGroup) => selectedStatisticsGroup.statisticGroupName == "Flow-Duration Curve Transfer Method").length > 0 && statisticsGroup['statisticGroupName'] == "Flow-Duration Statistics") {
                     preventRemoval = true;
                 }
 
@@ -136,6 +136,8 @@ module StreamStats.Controllers {
                     //remove this statisticsGroup from the list
                     this.selectedFlowStatsList.splice(checkStatisticsGroup, 1);
 
+                    // set statisticsGroup.checked to false
+                    statisticsGroup['checked'] = false;
                     // if no selected scenarios, clear studyareaparameter list
                     if (this.selectedFlowStatsList.length == 0) {
                         this.selectedParamList = [];
@@ -153,8 +155,10 @@ module StreamStats.Controllers {
             else {
                 this.selectedFlowStatsList.push(statisticsGroup);
 
+                // set statisticsGroup.checked to true
+                // statisticsGroup.checked = true;
                 // if Flow Duration Curve Transfer Method (FDCTM) was selected, also select Flow-Duration Statistics
-                if (typeof statisticsGroup.statisticGroupID != 'number' && statisticsGroup.statisticGroupID.indexOf('fdctm')) {
+                if (typeof statisticsGroup['statisticGroupID'] != 'number' && statisticsGroup['statisticGroupID'].indexOf('fdctm')) {
                     // see if the Flow-Duration Statistics group has been selected already and select it if not
                     var statisticsGroupFDS = this.selectedFlowStatsList.filter((statisticsGroup) => statisticsGroup.statisticGroupName == "Flow-Duration Statistics")[0];
                     var checkStatisticsGroupFDS = this.checkArrayForObj(this.selectedFlowStatsList, statisticsGroupFDS);
@@ -164,7 +168,7 @@ module StreamStats.Controllers {
                 }
 
                 // edit checked/toggleable for availableParamList
-                this.setParamCheck(statisticsGroup.regressionRegions);
+                this.setParamCheck(statisticsGroup['regressionRegions']);
 
                 // make sure DNRAREA is in selectedParamList
                 this.addParameterToSelectedParamList("DRNAREA");
@@ -173,6 +177,9 @@ module StreamStats.Controllers {
             }
             // update this.selectedParamList with parameters from selected flowStats
             this.onSelectedStatisticsGroupChanged();
+
+            // handle impacts of flowStat.checked
+            this.checkStats();
         }
 
         // set params in availableParamList to checked
@@ -198,8 +205,11 @@ module StreamStats.Controllers {
         
         public onSelectedStatisticsGroupChanged(): void {
 
-                //loop over whole statisticsgroups
-                this.selectedFlowStatsList.forEach((statisticsGroup) => {
+            //loop over whole statisticsgroups
+            this.selectedFlowStatsList.forEach((statisticsGroup) => {
+                    
+                // set checked to true
+                statisticsGroup.checked = true;
 
                     if (statisticsGroup.regressionRegions) {
 
@@ -276,22 +286,28 @@ module StreamStats.Controllers {
 
         // }
 
-        // public checkStats() {
-        //     // change select all stats toggle to match if all stats are checked or not
-        //     let allChecked = true;
-        //     for (let stat of this.selectedFlowStatsList) {
-        //         if (!stat.checked) {
-        //             allChecked = false;
-        //         }
-        //     }
-        //     if (allChecked) {
-        //         this.flowStatsAllChecked = false;
-        //         this.flowStatChecked = false;
-        //     } else {
-        //         this.flowStatsAllChecked = true;
-        //         this.flowStatChecked = true;
-        //     }
-        // }
+        public checkStats(): void {
+
+            if (this.selectedFlowStatsList.length > 0) {
+                this.flowStatChecked = true;
+            } else {
+                this.flowStatChecked = false;
+            }
+            // change select all stats toggle to match if all stats are checked or not
+            let allChecked = true;
+            for (let stat of this.flowStatsList) {
+                if (!stat.checked) {
+                    allChecked = false;
+                }
+            }
+            if (allChecked) {
+                // this.flowStatsAllChecked = false;
+                // this.flowStatChecked = false;
+            } else {
+                // this.flowStatsAllChecked = true;
+                // this.flowStatChecked = true;
+            }
+        }
 
 
         // public addRemoveDRNAREA() {
@@ -372,27 +388,26 @@ module StreamStats.Controllers {
         // }
 
         // update selectedParamList
-        public updateSelectedParamList(parameter: any) {
+        public updateSelectedParamList(parameter: Array<any>): void {
 
             // console.log('in updatestudyarea parameter', parameter);
 
             //dont mess with certain parameters
-            if (parameter.toggleable == false) {
+            if (parameter['toggleable'] == false) {
                 console.log("Can't unselect")
-                // this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
-                parameter.checked = true;
+                parameter['checked'] = true;
                 return;
             }
 
-            var paramCode = parameter.code
+            var paramCode = parameter['code']
             var index = this.selectedParamList.indexOf(paramCode);
 
-            if (!parameter.checked && index > -1) {
+            if (!parameter['checked'] && index > -1) {
                 //remove it
                 this.selectedParamList.splice(index, 1);
                 console.log("updateParamsSplice", this.selectedParamList)
             }
-            else if(parameter.checked && index == -1) {
+            else if(parameter['checked'] && index == -1) {
                 //add it
                 this.selectedParamList.push(paramCode);
                 console.log("updateParamsPush", this.selectedParamList)
@@ -402,7 +417,7 @@ module StreamStats.Controllers {
 
         }
 
-        public checkParameters() {
+        public checkParameters(): void {
             // change select all parameters toggle to match if all params are checked or not
             let allChecked = true;
             for (let param of this.availableParamList) {
@@ -500,6 +515,8 @@ module StreamStats.Controllers {
 
             // toggle switch
             this.parametersAllChecked = !this.parametersAllChecked;
+
+            console.log("toggleParametersAllChecked", this.selectedParamList)
         }
         // Helper Methods
         // -+-+-+-+-+-+-+-+-+-+-+-
@@ -508,7 +525,7 @@ module StreamStats.Controllers {
             this.getRegions();
         }
         
-        private checkArrayForObj(arr, obj) {
+        private checkArrayForObj(arr, obj): number {
             for (var i = 0; i < arr.length; i++) {
                 if (angular.equals(arr[i], obj)) {
                     return i;
