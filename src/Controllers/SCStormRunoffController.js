@@ -424,6 +424,9 @@ var StreamStats;
                 _this.prfSegments = [];
                 _this.addFlowSegmentOpen = false;
                 _this.usle = false;
+                _this.countyNames = [];
+                _this.coverNames = [];
+                _this.practiceNames = [];
                 _this.stormponds = false;
                 _this.max_depth = 10;
                 _this.Orif1_Coeff = 0.6;
@@ -433,10 +436,7 @@ var StreamStats;
                 _this.OS_BCWeir_Coeff = 3;
                 _this.OS_Weir_Ex = 1.5;
                 _this.pondsediment = false;
-                _this.countyNames = [];
                 _this.soilNames = [];
-                _this.coverNames = [];
-                _this.practiceNames = [];
                 _this.DHourStormOptions = [{
                         "name": "1-Hour",
                         "value": 1,
@@ -1115,7 +1115,6 @@ var StreamStats;
                     _this.showResultsSynthetic = true;
                     _this.canContinueSynthetic = true;
                 }, function (error) {
-                    console.log(error);
                     _this.toaster.pop('error', "There was an HTTP error calculating results.", error.data.detail, 0);
                 }).finally(function () {
                 });
