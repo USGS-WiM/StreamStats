@@ -206,7 +206,6 @@ module StreamStats.Controllers {
         public formattedDailyFlow = [];
         public dailyRange = [];
         public formattedDischargePeakDates = []; // Stage vs. Discharge Plot
-        public ageQualityData = 'age'; //Stage vs. Discharge Plot
         public dailyValuesOnly = [];
 
         //Constructor
@@ -225,11 +224,12 @@ module StreamStats.Controllers {
                         chart: { height: number, width: number, zooming: {type: string} },
                         title: { text: string, align: string},
                         subtitle: { text: string, align: string},  
-                        xAxis: {  type: string, title: {text: string}, custom: {allowNegativeLog: boolean}},
+                        rangeSelector: { enabled: boolean, inputPosition: {align: string, x: number, y: number}, selected: number, buttonPosition: {align: string, x: number, y: number}},
+                        navigator: { enabled: boolean},  
+                        xAxis: {  type: string, min: number, max: number, title: {text: string}, custom: { allowNegativeLog: Boolean }},
                         yAxis: { title: {text: string}, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
                         series: { name: string; showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
-                        data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; 
-                    };
+                        data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
         heatChartConfig: { chart: { height: number, width: number, zooming: {type: string} },
                         title: { text: string, align: string},
                         subtitle: { text: string, align: string},  
@@ -761,9 +761,9 @@ module StreamStats.Controllers {
                             control: dataRow[13],
                             x: parseFloat(dataRow[9]),
                             y: parseFloat(dataRow[8]),
-                            qualityColor: this.getCorrectQualityColor(dataRow[10]),
-                            color: this.getCorrectColor (new Date(dataRow[3])),
-                            ageColor: this.getCorrectColor (new Date(dataRow[3]))
+                            qualityColor: this.stageDischargeQualityColor(dataRow[10]),
+                            color: this.stageDischargeAgeColor (new Date(dataRow[3])),
+                            ageColor: this.stageDischargeAgeColor (new Date(dataRow[3]))
                             // time: this.dateTime (dataRow[3]),
                             // color: this.getQualityCorrectColor (dataRow[10])
                         };
@@ -810,8 +810,8 @@ module StreamStats.Controllers {
         //                     control: dataRow[13],
         //                     x: parseFloat(dataRow[9]),
         //                     y: parseFloat(dataRow[8]),
-        //                     qualityColor: this.getCorrectQualityColor(dataRow[10]),
-        //                     color: this.getCorrectColor (new Date(dataRow[3]))
+        //                     qualityColor: this.stageDischargeQualityColor(dataRow[10]),
+        //                     color: this.stageDischargeAgeColor (new Date(dataRow[3]))
         //                     // time: this.dateTime (dataRow[3]),
         //                     // color: this.getQualityCorrectColor (dataRow[10])
         //                 };
@@ -972,7 +972,7 @@ module StreamStats.Controllers {
         public createAnnualFlowPlot(): void {
             //console.log('peak value plot data', this.formattedPeakDates);
             //onsole.log('estimated peak plot data', this.formattedEstPeakDates);
-            //console.log('daily flow plot data', this.formattedDailyFlow);
+            console.log('daily flow plot data', this.formattedDailyFlow);
             this.chartConfig = {
                 chart: {
                     height: 550,
@@ -1119,7 +1119,7 @@ module StreamStats.Controllers {
             });
         }
 
-public getCorrectColor(date): string {
+public stageDischargeAgeColor(date): string {
     let days = (new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24)
         if (days <= 31) {
             // console.log("first month", days)
@@ -1133,7 +1133,7 @@ public getCorrectColor(date): string {
         }
 }
 
-public getCorrectQualityColor(quality) {
+public stageDischargeQualityColor(quality) {
     if (quality === "Good") {
       return "#2ED017";
     } else if (quality === "Fair") {
@@ -1221,7 +1221,7 @@ public createDischargePlot(): void {
                         let discharge = this.x;
                         let stage = this.y;
                         let peakDate = this.date
-                        return '<br>Date <b>' + peakDate +  '<br>Peak <b>' + discharge + ' cfs' + '<br>at stage <b>' + stage + ' ft'
+                        return '<br>Date: <b>' + peakDate +  '</b></br>Peak: <b>' + discharge + ' cfs</b></br>at stage <b>' + stage + ' ft</b></br>'
                     }
                 }
             },
@@ -1238,7 +1238,7 @@ public createDischargePlot(): void {
         {
             name    : 'USGS Measured',
             showInNavigator: false,
-            tooltip: { headerFormat:'<b>USGS Measured</b>',
+            tooltip: { headerFormat:'<b>USGS Measured Discharge</b>',
                 pointFormatter: function(){
                     if (this.measuredObj !== null){
                         let dateTime = this.dateTime;
@@ -1247,7 +1247,7 @@ public createDischargePlot(): void {
                         let control = this.control;
                         let discharge = this.x;
                         let stage = this.y;
-                        return '<br><b>' + dateTime + ' ' + timeZone + '<br>Gage Height: <b>' + stage + ' ft' + '<br>Discharge: <b>' + discharge + ' cfs' + '<br>Quality: <b>' + quality + '<br>Control: <b>' + control
+                        return '<br> Date: <b>' + dateTime + ' ' + timeZone + '</b></br>Gage Height: <b>' + stage + ' ft</b></br>' + 'Discharge: <b>' + discharge + ' cfs</b></br>' + 'Quality: <b>' + quality + '</b></br>Control: <b>' + control + '</b></br>'
                     }
                 }
             },
@@ -1442,7 +1442,6 @@ public createDailyRasterPlot(): void {
 
 
         //radio to show age in discharge plot
-        // public ageQualityData = true; // starts with it checked
         public toggleDischargeData (dataType) {
             // console.log('this is age data')
             let chart = $('#chart3').highcharts();

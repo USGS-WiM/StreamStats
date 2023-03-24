@@ -103,7 +103,6 @@ var StreamStats;
                 _this_1.formattedDailyFlow = [];
                 _this_1.dailyRange = [];
                 _this_1.formattedDischargePeakDates = [];
-                _this_1.ageQualityData = 'age';
                 _this_1.dailyValuesOnly = [];
                 _this_1.plotlines = true;
                 _this_1.logScale = false;
@@ -530,9 +529,9 @@ var StreamStats;
                             control: dataRow[13],
                             x: parseFloat(dataRow[9]),
                             y: parseFloat(dataRow[8]),
-                            qualityColor: _this_1.getCorrectQualityColor(dataRow[10]),
-                            color: _this_1.getCorrectColor(new Date(dataRow[3])),
-                            ageColor: _this_1.getCorrectColor(new Date(dataRow[3]))
+                            qualityColor: _this_1.stageDischargeQualityColor(dataRow[10]),
+                            color: _this_1.stageDischargeAgeColor(new Date(dataRow[3])),
+                            ageColor: _this_1.stageDischargeAgeColor(new Date(dataRow[3]))
                         };
                         _this_1.measuredObj.push(object);
                     });
@@ -675,6 +674,7 @@ var StreamStats;
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
+                console.log('daily flow plot data', this.formattedDailyFlow);
                 this.chartConfig = {
                     chart: {
                         height: 550,
@@ -823,7 +823,7 @@ var StreamStats;
                     _this_1.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem);
                 });
             };
-            GagePageController.prototype.getCorrectColor = function (date) {
+            GagePageController.prototype.stageDischargeAgeColor = function (date) {
                 var days = (new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24);
                 if (days <= 31) {
                     return 'red';
@@ -838,7 +838,7 @@ var StreamStats;
                     return "#0000cd4d";
                 }
             };
-            GagePageController.prototype.getCorrectQualityColor = function (quality) {
+            GagePageController.prototype.stageDischargeQualityColor = function (quality) {
                 if (quality === "Good") {
                     return "#2ED017";
                 }
@@ -923,7 +923,7 @@ var StreamStats;
                                         var discharge = this.x;
                                         var stage = this.y;
                                         var peakDate = this.date;
-                                        return '<br>Date <b>' + peakDate + '<br>Peak <b>' + discharge + ' cfs' + '<br>at stage <b>' + stage + ' ft';
+                                        return '<br>Date: <b>' + peakDate + '</b></br>Peak: <b>' + discharge + ' cfs</b></br>at stage <b>' + stage + ' ft</b></br>';
                                     }
                                 }
                             },
@@ -940,7 +940,7 @@ var StreamStats;
                         {
                             name: 'USGS Measured',
                             showInNavigator: false,
-                            tooltip: { headerFormat: '<b>USGS Measured</b>',
+                            tooltip: { headerFormat: '<b>USGS Measured Discharge</b>',
                                 pointFormatter: function () {
                                     if (this.measuredObj !== null) {
                                         var dateTime = this.dateTime;
@@ -949,7 +949,7 @@ var StreamStats;
                                         var control = this.control;
                                         var discharge = this.x;
                                         var stage = this.y;
-                                        return '<br><b>' + dateTime + ' ' + timeZone + '<br>Gage Height: <b>' + stage + ' ft' + '<br>Discharge: <b>' + discharge + ' cfs' + '<br>Quality: <b>' + quality + '<br>Control: <b>' + control;
+                                        return '<br> Date: <b>' + dateTime + ' ' + timeZone + '</b></br>Gage Height: <b>' + stage + ' ft</b></br>' + 'Discharge: <b>' + discharge + ' cfs</b></br>' + 'Quality: <b>' + quality + '</b></br>Control: <b>' + control + '</b></br>';
                                     }
                                 }
                             },
