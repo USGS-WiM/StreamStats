@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased](https://github.com/USGS-WiM/StreamStats/tree/dev)
   
 ### Added 
+- Google analytic tag for querying Propser
 
 ### Changed  
+- Enabled edit basin button for all local delineations
 
 ### Deprecated 
 
