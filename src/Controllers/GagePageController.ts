@@ -425,6 +425,7 @@ module StreamStats.Controllers {
                 (response: any) => {
                     if (!this.checkForCharStatisticGroup(response.data.id)) this.filteredStatGroupsChar.push(response.data);
                 });
+                console.log(this.filteredStatGroupsChar)
         }
 
         public checkForStatisticGroup(id: number) {
@@ -646,12 +647,12 @@ module StreamStats.Controllers {
                 (response: any) => {
                     const data = response.data
                     // create a lookup array for desired AEP IDs
-                    const lookup = [9, 852, 8, 4, 7, 3, 6, 1, 501, 5, 2, 500, 851, 1438, 818, 2311, 2312, 2313, 2314, 2315, 2316, 2317, 2318];
+                    const AEPlookup = [9, 852, 8, 4, 7, 3, 6, 1, 501, 5, 2, 500, 851, 1438, 818, 2311, 2312, 2313, 2314, 2315, 2316, 2317, 2318];
                     let chartData = [];
                     do {
                         var IDs = data.statistics
                         for (let item of IDs) {
-                            if(lookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
+                            if(AEPlookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
                                 chartData.push(item);
                             } 
                         }
@@ -665,7 +666,7 @@ module StreamStats.Controllers {
         //Pull in data for daily flow values
         public getDailyFlow() {
             var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01';
-            //console.log('GetDailyFlowURL', url);
+            console.log('GetDailyFlowURL', url);
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
@@ -829,11 +830,7 @@ module StreamStats.Controllers {
                 }
                 return dateArray;
             }
-            let dates = dateRange(this.formattedDailyFlow[0].x, this.formattedDailyFlow[finalIndex].x);
-            //format the arrays (all dates in range and all dates with a recorded value) to be compared to each other
-            dates = dates.map(date => (date.getUTCMonth() + 1) + "/" + date.getUTCDate() + "/" + date.getUTCFullYear());
-            let observedDates = this.dailyDatesOnly.map(observedDate => (observedDate.getUTCMonth() + 1) + "/" + observedDate.getUTCDate() + "/" + observedDate.getUTCFullYear());
-            //find the difference between the two arrays (which dates are in the dates array but not the observedDates array)
+            let dates;
             function difference(a1, a2) {
                 var result = [];
                 for (var i = 0; i < a1.length; i++) {
@@ -843,11 +840,20 @@ module StreamStats.Controllers {
                 }
                 return result;
             }
+            if (this.formattedDailyFlow.length > 0) {
+            dates = dateRange(this.formattedDailyFlow[0].x, this.formattedDailyFlow[finalIndex].x);
+            //format the arrays (all dates in range and all dates with a recorded value) to be compared to each other
+            dates = dates.map(date => (date.getUTCMonth() + 1) + "/" + date.getUTCDate() + "/" + date.getUTCFullYear());
+            
+            let observedDates = this.dailyDatesOnly.map(observedDate => (observedDate.getUTCMonth() + 1) + "/" + observedDate.getUTCDate() + "/" + observedDate.getUTCFullYear());
+            //find the difference between the two arrays (which dates are in the dates array but not the observedDates array)
+
             let differences = difference(dates, observedDates)
             //add the difference dates to the plot data with null values so that there can be breaks in the line when there are no recordings
             differences.forEach(date => this.formattedDailyFlow.push({x: date, y: null}))
+        
             this.formattedDailyFlow.sort((a, b) => a.x - b.x);
-
+            }
             if (this.peakDates) {
                 this.peakDates.forEach(peakOnYear => {
                     let adjustedDate = new Date(peakOnYear.peak_dt);
@@ -1365,8 +1371,8 @@ module StreamStats.Controllers {
         public togglePeakYear () {
             let chart = $('#chart1').highcharts();
             if (this.peaksOnYear) {
-                var finalIndex = this.formattedDailyFlow.length-1;
-                var finalYear = (this.formattedDailyFlow[finalIndex].x).getUTCFullYear();
+                //var finalIndex = this.formattedDailyFlow.length-1;
+                //var finalYear = (this.formattedDailyFlow[finalIndex].x).getUTCFullYear();
                 chart.series[0].update({ data: this.formattedPeakDatesOnYear });
                 chart.series[1].update({ data: this.formattedEstPeakDatesOnYear});
                 chart.rangeSelector.update({ selected: 3 });

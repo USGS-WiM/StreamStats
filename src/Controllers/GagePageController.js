@@ -274,6 +274,7 @@ var StreamStats;
                     if (!_this_1.checkForCharStatisticGroup(response.data.id))
                         _this_1.filteredStatGroupsChar.push(response.data);
                 });
+                console.log(this.filteredStatGroupsChar);
             };
             GagePageController.prototype.checkForStatisticGroup = function (id) {
                 var found = this.gage.statisticsgroups.some(function (el) { return el.id === id; });
@@ -454,13 +455,13 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var data = response.data;
-                    var lookup = [9, 852, 8, 4, 7, 3, 6, 1, 501, 5, 2, 500, 851, 1438, 818, 2311, 2312, 2313, 2314, 2315, 2316, 2317, 2318];
+                    var AEPlookup = [9, 852, 8, 4, 7, 3, 6, 1, 501, 5, 2, 500, 851, 1438, 818, 2311, 2312, 2313, 2314, 2315, 2316, 2317, 2318];
                     var chartData = [];
                     do {
                         var IDs = data.statistics;
                         for (var _i = 0, IDs_1 = IDs; _i < IDs_1.length; _i++) {
                             var item = IDs_1[_i];
-                            if (lookup.indexOf(item.regressionTypeID) >= 0 && item.isPreferred == true) {
+                            if (AEPlookup.indexOf(item.regressionTypeID) >= 0 && item.isPreferred == true) {
                                 chartData.push(item);
                             }
                         }
@@ -473,6 +474,7 @@ var StreamStats;
             GagePageController.prototype.getDailyFlow = function () {
                 var _this_1 = this;
                 var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01';
+                console.log('GetDailyFlowURL', url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var data = response.data.value.timeSeries;
@@ -622,9 +624,7 @@ var StreamStats;
                     }
                     return dateArray;
                 }
-                var dates = dateRange(this.formattedDailyFlow[0].x, this.formattedDailyFlow[finalIndex].x);
-                dates = dates.map(function (date) { return (date.getUTCMonth() + 1) + "/" + date.getUTCDate() + "/" + date.getUTCFullYear(); });
-                var observedDates = this.dailyDatesOnly.map(function (observedDate) { return (observedDate.getUTCMonth() + 1) + "/" + observedDate.getUTCDate() + "/" + observedDate.getUTCFullYear(); });
+                var dates;
                 function difference(a1, a2) {
                     var result = [];
                     for (var i = 0; i < a1.length; i++) {
@@ -634,9 +634,14 @@ var StreamStats;
                     }
                     return result;
                 }
-                var differences = difference(dates, observedDates);
-                differences.forEach(function (date) { return _this_1.formattedDailyFlow.push({ x: date, y: null }); });
-                this.formattedDailyFlow.sort(function (a, b) { return a.x - b.x; });
+                if (this.formattedDailyFlow.length > 0) {
+                    dates = dateRange(this.formattedDailyFlow[0].x, this.formattedDailyFlow[finalIndex].x);
+                    dates = dates.map(function (date) { return (date.getUTCMonth() + 1) + "/" + date.getUTCDate() + "/" + date.getUTCFullYear(); });
+                    var observedDates = this.dailyDatesOnly.map(function (observedDate) { return (observedDate.getUTCMonth() + 1) + "/" + observedDate.getUTCDate() + "/" + observedDate.getUTCFullYear(); });
+                    var differences = difference(dates, observedDates);
+                    differences.forEach(function (date) { return _this_1.formattedDailyFlow.push({ x: date, y: null }); });
+                    this.formattedDailyFlow.sort(function (a, b) { return a.x - b.x; });
+                }
                 if (this.peakDates) {
                     this.peakDates.forEach(function (peakOnYear) {
                         var adjustedDate = new Date(peakOnYear.peak_dt);
@@ -1135,8 +1140,6 @@ var StreamStats;
             GagePageController.prototype.togglePeakYear = function () {
                 var chart = $('#chart1').highcharts();
                 if (this.peaksOnYear) {
-                    var finalIndex = this.formattedDailyFlow.length - 1;
-                    var finalYear = (this.formattedDailyFlow[finalIndex].x).getUTCFullYear();
                     chart.series[0].update({ data: this.formattedPeakDatesOnYear });
                     chart.series[1].update({ data: this.formattedEstPeakDatesOnYear });
                     chart.rangeSelector.update({ selected: 3 });

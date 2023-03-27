@@ -226,12 +226,15 @@
                     </div>
                     <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.chartConfig">
                         <center>
-                        <input type="checkbox" ng-if="vm.formattedFloodFreq.length > 0" id="toggleAEP" name="toggleAEP" ng-model="vm.showAEP" ng-change="vm.toggleAEPlines()" checked>
-                        <label for="toggleAEP" ng-if="vm.formattedFloodFreq.length > 0"> Show Flood Statistics&nbsp;&nbsp;</label>
-                        <input type="checkbox" ng-if="vm.formattedPeakDates.length > 0" id="togglePeaks" name="togglePeaks" ng-model="vm.peaksOnYear" ng-change="vm.togglePeakYear()" checked>
-                        <label for="togglePeaks" ng-if="vm.formattedPeakDates.length > 0"> Plot Peaks on Latest Year&nbsp;&nbsp;</label>
-                        <input type="checkbox" ng-if="vm.formattedDailyFlow.length > 0" id="logScale" name="logScale" ng-model="vm.logScale" ng-change="vm.toggleLogLinear()" checked>
-                        <label for="logScale" ng-if="vm.formattedDailyFlow.length > 0"> Log Scale</label>
+                        <div class="plot-filters">
+                            <input type="checkbox" ng-if="vm.formattedFloodFreq.length > 0" id="toggleAEP" name="toggleAEP" ng-model="vm.showAEP" ng-change="vm.toggleAEPlines()" checked>
+                            <label for="toggleAEP" ng-if="vm.formattedFloodFreq.length > 0"> Show Flood Statistics:</label>
+                            <div id="gageFloodStatsSelect" ng-dropdown-multiselect="" options="vm.filteredStatGroupsChar" selected-model="vm.selectedStatGroupsChar"></div>&nbsp;&nbsp;&nbsp;                      
+                            <input type="checkbox" ng-if="vm.formattedPeakDates.length > 0" id="togglePeaks" name="togglePeaks" ng-model="vm.peaksOnYear" ng-change="vm.togglePeakYear()" checked>
+                            <label for="togglePeaks" ng-if="vm.formattedPeakDates.length > 0"> Plot Peaks on Latest Year&nbsp;&nbsp;</label>
+                            <input type="checkbox" ng-if="vm.formattedDailyFlow.length > 0" id="logScale" name="logScale" ng-model="vm.logScale" ng-change="vm.toggleLogLinear()" checked>
+                            <label for="logScale" ng-if="vm.formattedDailyFlow.length > 0"> Log Scale</label>
+                        </div>
                         <br><highchart id="chart1" config="vm.chartConfig"></highchart><br>
                         </center>
                     </div>

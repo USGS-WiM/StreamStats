@@ -1921,9 +1921,37 @@ input[name=distanceValue] {
     padding-left: 0px !important;
 }
 
+#gageFloodStatsSelect {
+    margin: 0px;
+    padding: 0px;
+    display: inline-block;
+}
+
+#gageFloodStatsSelect button {
+    background-color:#e0e3e6;
+}
+
+#gageFloodStatsSelect ul, #gageFloodStatsSelect ul li {
+    padding: 0px;
+    padding-left: 0px !important;
+}
+
+#gageFloodStatsSelect dropdown-menu {
+    padding-left: 0px !important;
+}
+
 .panel .panel-default {
     padding-top: 5px;
     padding-left: 5px;
+}
+
+.highcharts-range-selector {
+    background: white !important;
+    margin-left: 12% !important;
+    margin-bottom: unset !important;
+    margin-right: unset !important;
+    margin-top: unset !important;
+    top: 74px !important;
 }
 
 .stat-filters{
@@ -1936,7 +1964,6 @@ input[name=distanceValue] {
     margin-top: 7px;
     font-size: 14px;
 }
-
 .stat-table-title {
     padding: 10px;
 }
