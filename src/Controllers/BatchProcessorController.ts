@@ -214,16 +214,11 @@ module StreamStats.Controllers {
 
                                 //add to region parameterList
                                 var newParam = {
-                                    name: param.name,
-                                    description: param.description,
                                     code: param.code,
-                                    unit: param.unitType.unit,
-                                    value: null,
-                                    regulatedValue: null,
-                                    unRegulatedValue: null,
-                                    loaded: null,
+                                    description: param.description,
                                     checked: false,
                                     toggleable: true
+
                                 }
 
                                 //push the param that was not in the original regionService paramaterList
