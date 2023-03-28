@@ -383,7 +383,8 @@ module StreamStats.Controllers {
 
         public submitBasinEdits() {
             //ga event
-            gtag('event', 'BasinEditor', { 'Type': 'SubmitEdits'});
+            var latLong = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + ',' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5);
+            gtag('event', 'BasinEditor', { 'Type': 'SubmitEdits', 'Location': latLong });
 
             this.studyAreaService.showEditToolbar = false;
 
