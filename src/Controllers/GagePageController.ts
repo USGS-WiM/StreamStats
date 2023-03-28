@@ -425,7 +425,6 @@ module StreamStats.Controllers {
                 (response: any) => {
                     if (!this.checkForCharStatisticGroup(response.data.id)) this.filteredStatGroupsChar.push(response.data);
                 });
-                console.log(this.filteredStatGroupsChar)
         }
 
         public checkForStatisticGroup(id: number) {
@@ -647,17 +646,77 @@ module StreamStats.Controllers {
                 (response: any) => {
                     const data = response.data
                     // create a lookup array for desired AEP IDs
-                    const AEPlookup = [9, 852, 8, 4, 7, 3, 6, 1, 501, 5, 2, 500, 851, 1438, 818, 2311, 2312, 2313, 2314, 2315, 2316, 2317, 2318];
-                    let chartData = [];
+                    const AEPlookup = [9, 852, 8, 4, 7, 3, 6, 1, 501, 5, 2, 500, 851, 1438, 818];
+                    const altAEPlookup = [2311, 2312, 2313, 2314, 2315, 2316, 2317, 2318]
+                    const oneDayLookup = [820,819,84,1130,1138,1696,1139,1699,1140,1702,1141,1705,1737,85,1142,82,1759,1143,1756,909,596,83];
+                    const sevenDayLookup = [1167,822,821,1423,92,1131,1433,1159,1976,1160,1979,1161,1982,1162,1985,536,1165,1424,93,537,1163,90,535,1432,1425,2030,1164,2026,1426,1166,1427,589,91,1428,1429,1430,1431];
+                    const fourteenDayLookup = [829,823,96,539,97,540,94,538,1670,828,95];
+                    const thirtyDayLookup = [1176,830,824,100,542,1168,1825,1169,1827,1170,1830,1171,1833,1174,101,543,1172,98,541,1875,1173,1872,1175,657,99];
+                    const contrOneDayLookup = [1712,1744,1753,1766,1773];
+                    const contrSevenDayLookup = [1992,2015,2039,2048];
+                    const contrFourteenDayLookup = [1645,1652,1662,1669,1677,1683];
+                    const contrThirtyDayLookup = [1837,1861,1882,1891];
+                    const weightedOneDayLookup = [1698,1701,1704,1707,1732,1736,1746,1755,1758,1775];
+                    const weightedSevenDayLookup = [1978,1981,1984,1987,2001,2005,2007,2017,2025,2028,2041,2050];
+                    const weightedThirtyDayLookup = [1829,1832,1835,1852,1854,1863,1871,1874,1884,1893,1845];
+                    let AEPchartData = [];
+                    let altAEPchartData = [];
+                    let oneDayChartData = [];
+                    let sevenDayChartData = [];
+                    let fourteenDayChartData = [];
+                    let thirtyDayChartData = [];
+                    let contrOneDayChartData = [];
+                    let contrSevenDayChartData = [];
+                    let contrFourteenDayChartData = [];
+                    let contrThirtyDayChartData = [];
+                    let weightedOneDayChartData = [];
+                    let weightedSevenDayChartData = [];
+                    let weightedThirtyDayChartData = [];
                     do {
                         var IDs = data.statistics
                         for (let item of IDs) {
                             if(AEPlookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
-                                chartData.push(item);
+                                AEPchartData.push(item);
+                            }
+                            if(altAEPlookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
+                                altAEPchartData.push(item);
+                            }
+                            if(oneDayLookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
+                                oneDayChartData.push(item);
                             } 
+                            if(sevenDayLookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
+                                sevenDayChartData.push(item);
+                            }          
+                            if(fourteenDayLookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
+                                fourteenDayChartData.push(item);
+                            }
+                            if(thirtyDayLookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
+                                thirtyDayChartData.push(item);
+                            }  
+                            if(contrOneDayLookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
+                                contrOneDayChartData.push(item);
+                            }    
+                            if(contrSevenDayLookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
+                                contrSevenDayChartData.push(item);
+                            }
+                            if(contrFourteenDayLookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
+                                contrFourteenDayChartData.push(item);
+                            }
+                            if(contrThirtyDayLookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
+                                contrThirtyDayChartData.push(item);
+                            }
+                            if(weightedOneDayLookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
+                                weightedOneDayChartData.push(item);
+                            }
+                            if(weightedSevenDayLookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
+                                weightedSevenDayChartData.push(item);
+                            }
+                            if(weightedThirtyDayLookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
+                                weightedThirtyDayChartData.push(item);
+                            }
                         }
                 } while (data.length > 0);
-                this.floodFreq = chartData
+                this.floodFreq = AEPchartData
             }).finally(() => {
                 this.getDailyFlow();
             });
@@ -666,7 +725,7 @@ module StreamStats.Controllers {
         //Pull in data for daily flow values
         public getDailyFlow() {
             var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01';
-            console.log('GetDailyFlowURL', url);
+            //console.log('GetDailyFlowURL', url);
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
