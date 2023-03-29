@@ -48,16 +48,22 @@ module StreamStats.Controllers {
         public isValid: boolean;
         public AppVersion: string;
         public submitBatchInfo: string;
+
+        // Regions
         public regionList: Object;
-        public flowStatsList: Array<any>;
         public selectedRegion: string;
+
+        // Flow Stats
+        public flowStatsList: Array<any>;
         public flowStatsAllChecked: boolean;
         public selectedFlowStatsList: Array<Object>;
-        public availableParamList: Array<Object>;
         public flowStatChecked: boolean;
+        public flowStatisticsAllChecked: boolean;
+
+        // Parameters/basin characteristics
+        public availableParamList: Array<Object>;
         public selectedParamList: Array<Object>
         public parametersAllChecked: boolean;
-        public flowStatisticsAllChecked: boolean;
         public regionParamList: Array<Object>;
         public showBasinCharacteristics: boolean;
 
@@ -209,7 +215,7 @@ module StreamStats.Controllers {
             
             var checkStatisticsGroup = this.checkArrayForObj(this.selectedFlowStatsList, statisticsGroup);
 
-            //if toggled remove selected parameter set
+            //if toggled remove selected flow stats set
             if (checkStatisticsGroup != -1) {
                 //remove this statisticsGroup from the list
                 this.selectedFlowStatsList.splice(checkStatisticsGroup, 1);
@@ -328,22 +334,6 @@ module StreamStats.Controllers {
                 // this.flowStatChecked = false;
                 this.showBasinCharacteristics = false;
             }
-            // change select all stats toggle to match if all stats are checked or not
-            let allChecked = true;
-            for (let stat of this.flowStatsList) {
-                if (!stat['checked']) {
-                    allChecked = false;
-                }
-            }
-            if (allChecked) {
-                // this.flowStatsAllChecked = false;
-                // this.flowStatChecked = false;
-                // this.showBasinCharacteristics = false;
-            } else {
-                // this.flowStatsAllChecked = true;
-                // this.flowStatChecked = true;
-                // this.showBasinCharacteristics = true;
-            }
         }
 
         // update selectedParamList
@@ -366,7 +356,7 @@ module StreamStats.Controllers {
                 //add it
                 this.selectedParamList.push(paramCode);
             }
-
+            console.log("selectedParamList", this.selectedParamList)
             this.checkParameters();
 
         }
@@ -409,7 +399,7 @@ module StreamStats.Controllers {
 
             this.availableParamList.forEach((parameter) => {
                 
-                var paramCheck = this.checkArrayForObj(this.selectedParamList, parameter['code']);
+                var paramCheck = this.selectedParamList.indexOf(parameter['code'])
 
                 if (this.parametersAllChecked) {
 
@@ -429,6 +419,7 @@ module StreamStats.Controllers {
 
 
             });
+            console.log("toggleParametersAllChecked", this.selectedParamList)
 
             // toggle switch
             this.parametersAllChecked = !this.parametersAllChecked;

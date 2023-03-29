@@ -129,17 +129,6 @@ var StreamStats;
                 else {
                     this.showBasinCharacteristics = false;
                 }
-                var allChecked = true;
-                for (var _i = 0, _a = this.flowStatsList; _i < _a.length; _i++) {
-                    var stat = _a[_i];
-                    if (!stat['checked']) {
-                        allChecked = false;
-                    }
-                }
-                if (allChecked) {
-                }
-                else {
-                }
             };
             BatchProcessorController.prototype.updateSelectedParamList = function (parameter) {
                 if (parameter['toggleable'] == false) {
@@ -154,6 +143,7 @@ var StreamStats;
                 else if (parameter['checked'] && index == -1) {
                     this.selectedParamList.push(paramCode);
                 }
+                console.log("selectedParamList", this.selectedParamList);
                 this.checkParameters();
             };
             BatchProcessorController.prototype.checkParameters = function () {
@@ -191,7 +181,7 @@ var StreamStats;
             BatchProcessorController.prototype.toggleParametersAllChecked = function () {
                 var _this = this;
                 this.availableParamList.forEach(function (parameter) {
-                    var paramCheck = _this.checkArrayForObj(_this.selectedParamList, parameter['code']);
+                    var paramCheck = _this.selectedParamList.indexOf(parameter['code']);
                     if (_this.parametersAllChecked) {
                         if (paramCheck == -1)
                             _this.selectedParamList.push(parameter['code']);
@@ -204,6 +194,7 @@ var StreamStats;
                         }
                     }
                 });
+                console.log("toggleParametersAllChecked", this.selectedParamList);
                 this.parametersAllChecked = !this.parametersAllChecked;
             };
             BatchProcessorController.prototype.loadParametersByRegionBP = function (rcode) {
