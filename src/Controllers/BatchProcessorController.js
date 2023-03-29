@@ -116,6 +116,12 @@ var StreamStats;
             };
             BatchProcessorController.prototype.onSelectedStatisticsGroupChanged = function () {
                 var _this = this;
+                console.log(this.selectedParamList);
+                this.availableParamList.forEach(function (param) {
+                    param.checked = false;
+                    param.toggleable = true;
+                });
+                this.selectedParamList = [];
                 this.selectedFlowStatsList.forEach(function (statisticsGroup) {
                     statisticsGroup['checked'] = true;
                     if (statisticsGroup['regressionRegions']) {
@@ -144,6 +150,7 @@ var StreamStats;
                         });
                     }
                 });
+                console.log(this.selectedParamList);
             };
             BatchProcessorController.prototype.checkStats = function () {
                 if (this.selectedFlowStatsList.length > 0) {

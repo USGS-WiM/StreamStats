@@ -317,6 +317,14 @@ module StreamStats.Controllers {
 
         public onSelectedStatisticsGroupChanged(): void {
 
+            console.log(this.selectedParamList);
+            this.availableParamList.forEach(param => {
+                param.checked = false;
+                param.toggleable = true;
+            })
+
+            this.selectedParamList = [];
+
             //loop over whole statisticsgroups
             this.selectedFlowStatsList.forEach((statisticsGroup) => {
 
@@ -363,6 +371,8 @@ module StreamStats.Controllers {
                     });// next regressionRegion
                 }//end if
             });//next statisticgroup
+
+            console.log(this.selectedParamList);
         }
 
         public checkStats(): void {
