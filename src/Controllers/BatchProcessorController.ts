@@ -144,94 +144,6 @@ module StreamStats.Controllers {
             // allFlowStatsSelectedToggle is false if the "Unselect All Flow Statistics" button was clicked
             // allFlowStatsSelectedToggle is null if no button was clicked
 
-            
-            // if (allFlowStatsToggle) {
-            //     console.log("allFlowStatsToggle", statisticsGroup);
-            //     var checkStatisticsGroup = this.checkArrayForObj(this.selectedFlowStatsList, statisticsGroup);
-
-            //     //if toggled remove selected parameter set
-            //     if (checkStatisticsGroup != -1) {
-            //         //remove this statisticsGroup from the list
-            //         this.selectedFlowStatsList.splice(checkStatisticsGroup, 1);
-
-            //         // set statisticsGroup.checked to false
-            //         // statisticsGroup['checked'] = false;
-            //         // if no selected scenarios, clear studyareaparameter list
-            //         if (this.selectedFlowStatsList.length == 0) {
-            //             this.selectedParamList = [];
-
-            //             this.availableParamList.forEach((parameter) => {
-            //                 parameter.checked = false;
-            //                 parameter.toggleable = true;
-            //             });
-            //         }
-
-            //     }
-
-                //add it to the list and get its required parameters
-                // else {
-                //     this.selectedFlowStatsList.push(statisticsGroup);
-
-                //     // edit checked/toggleable for availableParamList
-                //     this.setParamCheck(statisticsGroup['regressionRegions']);
-
-                //     // make sure DNRAREA is in selectedParamList
-                //     this.addParameterToSelectedParamList("DRNAREA");
-
-
-                // }
-                // // update this.selectedParamList with parameters from selected flowStats
-                // this.onSelectedStatisticsGroupChanged();
-
-                // // handle impacts of flowStat.checked
-                // this.checkStats();
-            // }
-            // else {
-            //     console.log("!allFlowStatsToggle", statisticsGroup);
-            //     var checkStatisticsGroup = this.checkArrayForObj(this.selectedFlowStatsList, statisticsGroup);
-
-                //if toggled remove selected parameter set
-                // if (checkStatisticsGroup != -1) {
-                //     //remove this statisticsGroup from the list
-                //     this.selectedFlowStatsList.splice(checkStatisticsGroup, 1);
-
-                //     // set statisticsGroup.checked to false
-                //     statisticsGroup['checked'] = false;
-                //     // if no selected scenarios, clear studyareaparameter list
-                //     if (this.selectedFlowStatsList.length == 0) {
-                //         this.selectedParamList = [];
-
-                //         this.availableParamList.forEach((parameter) => {
-                //             parameter.checked = false;
-                //             parameter.toggleable = true;
-                //         });
-                //     }
-
-                // }
-
-                //add it to the list and get its required parameters
-                // else {
-                //     this.selectedFlowStatsList.push(statisticsGroup);
-
-                //     // edit checked/toggleable for availableParamList
-                //     this.setParamCheck(statisticsGroup['regressionRegions']);
-
-                //     // make sure DNRAREA is in selectedParamList
-                //     this.addParameterToSelectedParamList("DRNAREA");
-
-
-                // }
-                // update this.selectedParamList with parameters from selected flowStats
-                // this.onSelectedStatisticsGroupChanged();
-
-                // // handle impacts of flowStat.checked
-                // this.checkStats();
-            // }
-            // update this.selectedParamList with parameters from selected flowStats
-       
-            
-
-
             var checkStatisticsGroup = this.checkArrayForObj(this.selectedFlowStatsList, statisticsGroup);
 
             // If no "Select/Unselect All Flow Statistics" button was clicked...
@@ -394,7 +306,7 @@ module StreamStats.Controllers {
                 //add it
                 this.selectedParamList.push(paramCode);
             }
-            // console.log("selectedParamList", this.selectedParamList)
+
             this.checkParameters();
 
         }
@@ -421,14 +333,12 @@ module StreamStats.Controllers {
                     flowStat['checked'] = true;
                     this.setRegionStats(flowStat, true)
                 });
-                // console.log("flowStatsAllChecked", this.flowStatsList)
             } else {                
                 this.flowStatsAllChecked = true;
                 this.flowStatsList.forEach((flowStat) => {
                     flowStat['checked'] = false;
                     this.setRegionStats(flowStat, false)
                 });
-                // console.log("!flowStatsAllChecked", this.flowStatsList)
             }
         }
 
@@ -457,7 +367,6 @@ module StreamStats.Controllers {
 
 
             });
-            // console.log("toggleParametersAllChecked", this.selectedParamList);
 
             // toggle switch
             this.parametersAllChecked = !this.parametersAllChecked;
@@ -475,8 +384,7 @@ module StreamStats.Controllers {
                 (response: any) => {
 
                     if (response.data.parameters && response.data.parameters.length > 0) {
-                        // this.streamStatsAvailable = true;
-                        // console.log("response", response.data.parameters);
+
                         // create array to return
                         var paramRaw = [];
 
