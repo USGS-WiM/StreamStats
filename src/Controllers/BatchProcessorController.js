@@ -58,11 +58,7 @@ var StreamStats;
             };
             BatchProcessorController.prototype.setRegionStats = function (statisticsGroup, allFlowStatsSelectedToggle) {
                 if (allFlowStatsSelectedToggle === void 0) { allFlowStatsSelectedToggle = null; }
-                console.log(statisticsGroup);
-                console.log(allFlowStatsSelectedToggle);
                 var checkStatisticsGroup = this.checkArrayForObj(this.selectedFlowStatsList, statisticsGroup);
-                console.log(checkStatisticsGroup);
-                console.log(allFlowStatsSelectedToggle);
                 if (allFlowStatsSelectedToggle == null) {
                     if (checkStatisticsGroup != -1) {
                         this.selectedFlowStatsList.splice(checkStatisticsGroup, 1);
@@ -77,22 +73,17 @@ var StreamStats;
                     else {
                         this.selectedFlowStatsList.push(statisticsGroup);
                         this.setParamCheck(statisticsGroup['regressionRegions']);
-                        console.log(this.selectedFlowStatsList);
                     }
                 }
                 else if (allFlowStatsSelectedToggle == true) {
-                    console.log("here");
                     if (checkStatisticsGroup == -1) {
-                        console.log("here2");
                         this.selectedFlowStatsList.push(statisticsGroup);
                         this.setParamCheck(statisticsGroup['regressionRegions']);
-                        console.log(this.selectedFlowStatsList);
                     }
                 }
                 else if (allFlowStatsSelectedToggle == false) {
                     if (checkStatisticsGroup != -1) {
                         this.selectedFlowStatsList.splice(checkStatisticsGroup, 1);
-                        console.log(this.selectedFlowStatsList);
                     }
                 }
                 this.onSelectedStatisticsGroupChanged();
@@ -116,7 +107,6 @@ var StreamStats;
             };
             BatchProcessorController.prototype.onSelectedStatisticsGroupChanged = function () {
                 var _this = this;
-                console.log(this.selectedParamList);
                 this.availableParamList.forEach(function (param) {
                     param.checked = false;
                     param.toggleable = true;
@@ -150,7 +140,6 @@ var StreamStats;
                         });
                     }
                 });
-                console.log(this.selectedParamList);
             };
             BatchProcessorController.prototype.checkStats = function () {
                 if (this.selectedFlowStatsList.length > 0) {
@@ -173,7 +162,6 @@ var StreamStats;
                 else if (parameter.checked && index == -1) {
                     this.selectedParamList.push(paramCode);
                 }
-                console.log("selectedParamList", this.selectedParamList);
                 this.checkParameters();
             };
             BatchProcessorController.prototype.checkParameters = function () {
@@ -198,7 +186,6 @@ var StreamStats;
                     this.flowStatsList.forEach(function (flowStat) {
                         flowStat['checked'] = true;
                         _this.setRegionStats(flowStat, true);
-                        console.log(_this.selectedFlowStatsList);
                     });
                 }
                 else {
@@ -206,7 +193,6 @@ var StreamStats;
                     this.flowStatsList.forEach(function (flowStat) {
                         flowStat['checked'] = false;
                         _this.setRegionStats(flowStat, false);
-                        console.log(_this.selectedFlowStatsList);
                     });
                 }
             };
@@ -226,7 +212,6 @@ var StreamStats;
                         }
                     }
                 });
-                console.log("toggleParametersAllChecked", this.selectedParamList);
                 this.parametersAllChecked = !this.parametersAllChecked;
             };
             BatchProcessorController.prototype.loadParametersByRegionBP = function (rcode) {
@@ -236,7 +221,6 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 return this.Execute(request).then(function (response) {
                     if (response.data.parameters && response.data.parameters.length > 0) {
-                        console.log("response", response.data.parameters);
                         var paramRaw = [];
                         response.data.parameters.forEach(function (parameter) {
                             try {

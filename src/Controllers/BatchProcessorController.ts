@@ -144,8 +144,6 @@ module StreamStats.Controllers {
             // allFlowStatsSelectedToggle is false if the "Unselect All Flow Statistics" button was clicked
             // allFlowStatsSelectedToggle is null if no button was clicked
 
-            console.log(statisticsGroup);
-            console.log(allFlowStatsSelectedToggle);
             
             // if (allFlowStatsToggle) {
             //     console.log("allFlowStatsToggle", statisticsGroup);
@@ -235,8 +233,6 @@ module StreamStats.Controllers {
 
 
             var checkStatisticsGroup = this.checkArrayForObj(this.selectedFlowStatsList, statisticsGroup);
-            console.log(checkStatisticsGroup);
-            console.log(allFlowStatsSelectedToggle);
 
             if (allFlowStatsSelectedToggle == null) {
 
@@ -263,27 +259,22 @@ module StreamStats.Controllers {
 
                     // edit checked/toggleable for availableParamList
                     this.setParamCheck(statisticsGroup['regressionRegions']);
-                    console.log(this.selectedFlowStatsList);
 
                     // make sure DNRAREA is in selectedParamList
                     // this.addParameterToSelectedParamList("DRNAREA"); // uncomment if want to forcibly add DRNAREA to selectedParamList
 
                 }
             } else if (allFlowStatsSelectedToggle == true) {
-                console.log("here");
                 if (checkStatisticsGroup == -1) {
-                    console.log("here2");
                     this.selectedFlowStatsList.push(statisticsGroup);
 
                     // edit checked/toggleable for availableParamList
                     this.setParamCheck(statisticsGroup['regressionRegions']);
-                    console.log(this.selectedFlowStatsList);
                 } 
 
             } else if (allFlowStatsSelectedToggle == false) {
                 if (checkStatisticsGroup != -1) {
                     this.selectedFlowStatsList.splice(checkStatisticsGroup, 1);
-                    console.log(this.selectedFlowStatsList);
                 }
 
             }
@@ -317,7 +308,6 @@ module StreamStats.Controllers {
 
         public onSelectedStatisticsGroupChanged(): void {
 
-            console.log(this.selectedParamList);
             this.availableParamList.forEach(param => {
                 param.checked = false;
                 param.toggleable = true;
@@ -372,7 +362,6 @@ module StreamStats.Controllers {
                 }//end if
             });//next statisticgroup
 
-            console.log(this.selectedParamList);
         }
 
         public checkStats(): void {
@@ -406,7 +395,7 @@ module StreamStats.Controllers {
                 //add it
                 this.selectedParamList.push(paramCode);
             }
-            console.log("selectedParamList", this.selectedParamList)
+            // console.log("selectedParamList", this.selectedParamList)
             this.checkParameters();
 
         }
@@ -432,7 +421,6 @@ module StreamStats.Controllers {
                 this.flowStatsList.forEach((flowStat) => {
                     flowStat['checked'] = true;
                     this.setRegionStats(flowStat, true)
-                    console.log(this.selectedFlowStatsList);
                 });
                 // console.log("flowStatsAllChecked", this.flowStatsList)
             } else {                
@@ -440,7 +428,6 @@ module StreamStats.Controllers {
                 this.flowStatsList.forEach((flowStat) => {
                     flowStat['checked'] = false;
                     this.setRegionStats(flowStat, false)
-                    console.log(this.selectedFlowStatsList);
                 });
                 // console.log("!flowStatsAllChecked", this.flowStatsList)
             }
@@ -471,7 +458,7 @@ module StreamStats.Controllers {
 
 
             });
-            console.log("toggleParametersAllChecked", this.selectedParamList)
+            // console.log("toggleParametersAllChecked", this.selectedParamList);
 
             // toggle switch
             this.parametersAllChecked = !this.parametersAllChecked;
@@ -490,7 +477,7 @@ module StreamStats.Controllers {
 
                     if (response.data.parameters && response.data.parameters.length > 0) {
                         // this.streamStatsAvailable = true;
-                        console.log("response", response.data.parameters)
+                        // console.log("response", response.data.parameters);
                         // create array to return
                         var paramRaw = [];
 
