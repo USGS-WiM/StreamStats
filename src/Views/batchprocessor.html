@@ -36,12 +36,12 @@
 
                     <input id="cbBasinChar" type="checkbox" display="inline-block" ng-model="cbBasinChar"
                         ng-click="cbBasinChar = !cbBasinChar"
-                        ng-checked="vm.showBasinCharacterstics || cbBasinChar" ng-disabled="vm.showBasinCharacterstics">
+                        ng-checked="vm.showBasinCharacteristics || cbBasinChar" ng-disabled="vm.showBasinCharacteristics">
                     <label class="chx" for="cbBasinChar">&nbsp;Compute Basin Characteristics</label>
                 </span>
             </div>
             <!-- select flow statistics -->
-            <div ng-if="cbFlowStats" style="padding-top: 15px;"><!-- ng-init="vm.flowStatsAllChecked = false"-->
+            <div ng-if="cbFlowStats" style="padding-top: 15px;" class="well well-sm"><!-- ng-init="vm.flowStatsAllChecked = false"-->
                 <h3>Select Flow Statistics</h3>
                 <!-- button to check/uncheck all -->
                 <button class="btn-blue fullwidth" ng-class="btn-blue" ng-click="vm.toggleFlowStatisticsAllChecked()">
@@ -75,7 +75,7 @@
                 </div> -->
             </div>
             <!-- select parameters -->
-            <div ng-show="vm.showBasinCharacterstics || cbBasinChar" style="padding-top: 15px;">
+            <div ng-show="vm.showBasinCharacteristics || cbBasinChar" style="padding-top: 15px;" class="well well-sm">
                 <h3>Select Basin Characteristics</h3>
                 <!-- button to check/uncheck all -->
                 <button class="btn-blue fullwidth" ng-class="!vm.parametersAllChecked ? 'btn-black': 'btn-blue'"
@@ -96,7 +96,7 @@
                         <tr>
                             <td>
                                 <checkbox large ng-model="parameter.checked"
-                                    ng-change="vm.updateSelectedParamList(parameter)">
+                                    ng-change="vm.updateSelectedParamList(parameter)" ng-disabled="!parameter.toggleable">
                                 </checkbox>
                             </td>
                             <td><span>&nbsp;&nbsp;{{parameter.code}}</span></td>

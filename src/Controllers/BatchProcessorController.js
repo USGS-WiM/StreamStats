@@ -33,7 +33,7 @@ var StreamStats;
                 _this.regionParamList = [];
                 _this.flowStatsAllChecked = true;
                 _this.parametersAllChecked = true;
-                _this.showBasinCharacterstics = false;
+                _this.showBasinCharacteristics = false;
                 _this.init();
                 return _this;
             }
@@ -58,20 +58,19 @@ var StreamStats;
                 if (checkStatisticsGroup != -1) {
                     this.selectedFlowStatsList.splice(checkStatisticsGroup, 1);
                     if (allFlowStatsToggle = false) {
-                        statisticsGroup['checked'] = true;
+                        statisticsGroup['checked'] = false;
                     }
                     if (this.selectedFlowStatsList.length == 0) {
                         this.selectedParamList = [];
                         this.availableParamList.forEach(function (parameter) {
-                            parameter.checked = false;
-                            parameter.toggleable = true;
+                            parameter['checked'] = false;
+                            parameter['toggleable'] = true;
                         });
                     }
                 }
                 else {
                     this.selectedFlowStatsList.push(statisticsGroup);
                     this.setParamCheck(statisticsGroup['regressionRegions']);
-                    this.addParameterToSelectedParamList("DRNAREA");
                 }
                 this.onSelectedStatisticsGroupChanged();
                 this.checkStats();
@@ -83,7 +82,7 @@ var StreamStats;
                         var paramCode = parameter.code;
                         for (var i = 0; i < _this.availableParamList.length; i++) {
                             var p = _this.availableParamList[i];
-                            if (p.code.toUpperCase() === paramCode.toUpperCase()) {
+                            if (p['code'].toUpperCase() === paramCode.toUpperCase()) {
                                 p['checked'] = true;
                                 p['toggleable'] = false;
                                 break;
@@ -95,14 +94,14 @@ var StreamStats;
             BatchProcessorController.prototype.onSelectedStatisticsGroupChanged = function () {
                 var _this = this;
                 this.selectedFlowStatsList.forEach(function (statisticsGroup) {
-                    statisticsGroup.checked = true;
-                    if (statisticsGroup.regressionRegions) {
-                        statisticsGroup.regressionRegions.forEach(function (regressionRegion) {
+                    statisticsGroup['checked'] = true;
+                    if (statisticsGroup['regressionRegions']) {
+                        statisticsGroup['regressionRegions'].forEach(function (regressionRegion) {
                             regressionRegion.parameters.forEach(function (param) {
                                 var found = false;
                                 for (var i = 0; i < _this.availableParamList.length; i++) {
                                     var parameter = _this.availableParamList[i];
-                                    if (parameter.code.toLowerCase() == param.code.toLowerCase()) {
+                                    if (parameter['code'].toLowerCase() == param.code.toLowerCase()) {
                                         _this.addParameterToSelectedParamList(param.code);
                                         found = true;
                                         break;
@@ -125,15 +124,15 @@ var StreamStats;
             };
             BatchProcessorController.prototype.checkStats = function () {
                 if (this.selectedFlowStatsList.length > 0) {
-                    this.showBasinCharacterstics = true;
+                    this.showBasinCharacteristics = true;
                 }
                 else {
-                    this.showBasinCharacterstics = false;
+                    this.showBasinCharacteristics = false;
                 }
                 var allChecked = true;
                 for (var _i = 0, _a = this.flowStatsList; _i < _a.length; _i++) {
                     var stat = _a[_i];
-                    if (!stat.checked) {
+                    if (!stat['checked']) {
                         allChecked = false;
                     }
                 }
@@ -161,7 +160,7 @@ var StreamStats;
                 var allChecked = true;
                 for (var _i = 0, _a = this.availableParamList; _i < _a.length; _i++) {
                     var param = _a[_i];
-                    if (!param.checked) {
+                    if (!param['checked']) {
                         allChecked = false;
                     }
                 }
@@ -192,16 +191,16 @@ var StreamStats;
             BatchProcessorController.prototype.toggleParametersAllChecked = function () {
                 var _this = this;
                 this.availableParamList.forEach(function (parameter) {
-                    var paramCheck = _this.checkArrayForObj(_this.selectedParamList, parameter.code);
+                    var paramCheck = _this.checkArrayForObj(_this.selectedParamList, parameter['code']);
                     if (_this.parametersAllChecked) {
                         if (paramCheck == -1)
-                            _this.selectedParamList.push(parameter.code);
-                        parameter.checked = true;
+                            _this.selectedParamList.push(parameter['code']);
+                        parameter['checked'] = true;
                     }
                     else {
-                        if (paramCheck > -1 && parameter.toggleable) {
+                        if (paramCheck > -1 && parameter['toggleable']) {
                             _this.selectedParamList.splice(paramCheck, 1);
-                            parameter.checked = false;
+                            parameter['checked'] = false;
                         }
                     }
                 });
@@ -254,8 +253,8 @@ var StreamStats;
                 try {
                     for (var i = 0; i < this.availableParamList.length; i++) {
                         var p = this.availableParamList[i];
-                        if (p.code.toUpperCase() === paramCode.toUpperCase() && this.checkArrayForObj(this.selectedParamList, p.code) == -1) {
-                            this.selectedParamList.push(p.code);
+                        if (p['code'].toUpperCase() === paramCode.toUpperCase() && this.checkArrayForObj(this.selectedParamList, p['code']) == -1) {
+                            this.selectedParamList.push(p['code']);
                             p['checked'] = true;
                             p['toggleable'] = false;
                             break;

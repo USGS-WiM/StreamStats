@@ -52,14 +52,14 @@ module StreamStats.Controllers {
         public flowStatsList: Array<any>;
         public selectedRegion: string;
         public flowStatsAllChecked: boolean;
-        public selectedFlowStatsList: Array<any>;
-        public availableParamList: Array<any>;
+        public selectedFlowStatsList: Array<Object>;
+        public availableParamList: Array<Object>;
         public flowStatChecked: boolean;
-        public selectedParamList: Array<any>
+        public selectedParamList: Array<Object>
         public parametersAllChecked: boolean;
         public flowStatisticsAllChecked: boolean;
-        public regionParamList: Array<any>;
-        public showBasinCharacterstics: boolean;
+        public regionParamList: Array<Object>;
+        public showBasinCharacteristics: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -78,7 +78,7 @@ module StreamStats.Controllers {
             this.flowStatsAllChecked = true;
             // this.flowStatChecked = false;
             this.parametersAllChecked = true;
-            this.showBasinCharacterstics = false;
+            this.showBasinCharacteristics = false;
             this.init();
         }
 
@@ -216,15 +216,15 @@ module StreamStats.Controllers {
 
                 if (allFlowStatsToggle = false) {
                     // set statisticsGroup.checked to false
-                    statisticsGroup['checked'] = true;
+                    statisticsGroup['checked'] = false;
                 }
                 // if no selected scenarios, clear studyareaparameter list
                 if (this.selectedFlowStatsList.length == 0) {
                     this.selectedParamList = [];
 
                     this.availableParamList.forEach((parameter) => {
-                        parameter.checked = false;
-                        parameter.toggleable = true;
+                        parameter['checked'] = false;
+                        parameter['toggleable'] = true;
                     });
                 }
 
@@ -238,7 +238,7 @@ module StreamStats.Controllers {
                 this.setParamCheck(statisticsGroup['regressionRegions']);
 
                 // make sure DNRAREA is in selectedParamList
-                this.addParameterToSelectedParamList("DRNAREA");
+                // this.addParameterToSelectedParamList("DRNAREA"); // uncomment if want to forcibly add DRNAREA to selectedParamList
 
 
             }
@@ -258,7 +258,7 @@ module StreamStats.Controllers {
                     for (var i = 0; i < this.availableParamList.length; i++) {
                         let p = this.availableParamList[i];
 
-                        if (p.code.toUpperCase() === paramCode.toUpperCase()) {
+                        if (p['code'].toUpperCase() === paramCode.toUpperCase()) {
                             p['checked'] = true;
                             p['toggleable'] = false;
                             break;
@@ -275,12 +275,12 @@ module StreamStats.Controllers {
             this.selectedFlowStatsList.forEach((statisticsGroup) => {
 
                 // set checked to true
-                statisticsGroup.checked = true;
+                statisticsGroup['checked'] = true;
 
-                if (statisticsGroup.regressionRegions) {
+                if (statisticsGroup['regressionRegions']) {
 
                     //get their parameters
-                    statisticsGroup.regressionRegions.forEach((regressionRegion) => {
+                    statisticsGroup['regressionRegions'].forEach((regressionRegion) => {
 
                         //loop over list of state/region parameters to see if there is a match
                         regressionRegion.parameters.forEach((param) => {
@@ -288,7 +288,7 @@ module StreamStats.Controllers {
                             var found = false;
                             for (var i = 0; i < this.availableParamList.length; i++) {
                                 var parameter = this.availableParamList[i];
-                                if (parameter.code.toLowerCase() == param.code.toLowerCase()) {
+                                if (parameter['code'].toLowerCase() == param.code.toLowerCase()) {
                                     this.addParameterToSelectedParamList(param.code);
                                     found = true;
                                     break;
@@ -323,26 +323,26 @@ module StreamStats.Controllers {
 
             if (this.selectedFlowStatsList.length > 0) {
                 // this.flowStatChecked = true;
-                this.showBasinCharacterstics = true;
+                this.showBasinCharacteristics = true;
             } else {
                 // this.flowStatChecked = false;
-                this.showBasinCharacterstics = false;
+                this.showBasinCharacteristics = false;
             }
             // change select all stats toggle to match if all stats are checked or not
             let allChecked = true;
             for (let stat of this.flowStatsList) {
-                if (!stat.checked) {
+                if (!stat['checked']) {
                     allChecked = false;
                 }
             }
             if (allChecked) {
                 // this.flowStatsAllChecked = false;
                 // this.flowStatChecked = false;
-                // this.showBasinCharacterstics = false;
+                // this.showBasinCharacteristics = false;
             } else {
                 // this.flowStatsAllChecked = true;
                 // this.flowStatChecked = true;
-                // this.showBasinCharacterstics = true;
+                // this.showBasinCharacteristics = true;
             }
         }
 
@@ -375,7 +375,7 @@ module StreamStats.Controllers {
             // change select all parameters toggle to match if all params are checked or not
             let allChecked = true;
             for (let param of this.availableParamList) {
-                if (!param.checked) {
+                if (!param['checked']) {
                     allChecked = false;
                 }
             }
@@ -409,21 +409,21 @@ module StreamStats.Controllers {
 
             this.availableParamList.forEach((parameter) => {
                 
-                var paramCheck = this.checkArrayForObj(this.selectedParamList, parameter.code);
+                var paramCheck = this.checkArrayForObj(this.selectedParamList, parameter['code']);
 
                 if (this.parametersAllChecked) {
 
                     //if its not there add it
-                    if (paramCheck == -1) this.selectedParamList.push(parameter.code);
-                    parameter.checked = true;
+                    if (paramCheck == -1) this.selectedParamList.push(parameter['code']);
+                    parameter['checked'] = true;
                 }
                 else {
 
                     //remove it only if toggleable
-                    if (paramCheck > -1 && parameter.toggleable) {
+                    if (paramCheck > -1 && parameter['toggleable']) {
                         this.selectedParamList.splice(paramCheck, 1);
                         //this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
-                        parameter.checked = false;
+                        parameter['checked'] = false;
                     }
                 }
 
@@ -508,8 +508,8 @@ module StreamStats.Controllers {
                 for (var i = 0; i < this.availableParamList.length; i++) {
                     let p = this.availableParamList[i];
 
-                    if (p.code.toUpperCase() === paramCode.toUpperCase() && this.checkArrayForObj(this.selectedParamList, p.code) == -1) {
-                        this.selectedParamList.push(p.code);
+                    if (p['code'].toUpperCase() === paramCode.toUpperCase() && this.checkArrayForObj(this.selectedParamList, p['code']) == -1) {
+                        this.selectedParamList.push(p['code']);
                         p['checked'] = true;
                         p['toggleable'] = false;
                         break;
