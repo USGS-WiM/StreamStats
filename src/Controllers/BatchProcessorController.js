@@ -56,25 +56,35 @@ var StreamStats;
                 this.nssService.getFlowStatsList(rcode).then(function (response) { _this.flowStatsList = response; });
                 this.loadParametersByRegionBP(rcode).then(function (response) { _this.availableParamList = response; });
             };
-            BatchProcessorController.prototype.setRegionStats = function (statisticsGroup, allFlowStatsToggle) {
-                if (allFlowStatsToggle === void 0) { allFlowStatsToggle = false; }
+            BatchProcessorController.prototype.setRegionStats = function (statisticsGroup, allFlowStatsSelectedToggle) {
+                if (allFlowStatsSelectedToggle === void 0) { allFlowStatsSelectedToggle = null; }
                 var checkStatisticsGroup = this.checkArrayForObj(this.selectedFlowStatsList, statisticsGroup);
-                if (checkStatisticsGroup != -1) {
-                    this.selectedFlowStatsList.splice(checkStatisticsGroup, 1);
-                    if (allFlowStatsToggle = false) {
-                        statisticsGroup['checked'] = false;
+                if (allFlowStatsSelectedToggle == null) {
+                    if (checkStatisticsGroup != -1) {
+                        this.selectedFlowStatsList.splice(checkStatisticsGroup, 1);
+                        if (this.selectedFlowStatsList.length == 0) {
+                            this.selectedParamList = [];
+                            this.availableParamList.forEach(function (parameter) {
+                                parameter.checked = false;
+                                parameter.toggleable = true;
+                            });
+                        }
                     }
-                    if (this.selectedFlowStatsList.length == 0) {
-                        this.selectedParamList = [];
-                        this.availableParamList.forEach(function (parameter) {
-                            parameter.checked = false;
-                            parameter.toggleable = true;
-                        });
+                    else {
+                        this.selectedFlowStatsList.push(statisticsGroup);
+                        this.setParamCheck(statisticsGroup['regressionRegions']);
                     }
                 }
-                else {
-                    this.selectedFlowStatsList.push(statisticsGroup);
-                    this.setParamCheck(statisticsGroup['regressionRegions']);
+                else if (allFlowStatsSelectedToggle == true) {
+                    if (checkStatisticsGroup == -1) {
+                        this.selectedFlowStatsList.push(statisticsGroup);
+                        this.setParamCheck(statisticsGroup['regressionRegions']);
+                    }
+                }
+                else if (allFlowStatsSelectedToggle == false) {
+                    if (checkStatisticsGroup != -1) {
+                        this.selectedFlowStatsList.splice(checkStatisticsGroup, 1);
+                    }
                 }
                 this.onSelectedStatisticsGroupChanged();
                 this.checkStats();
@@ -97,6 +107,11 @@ var StreamStats;
             };
             BatchProcessorController.prototype.onSelectedStatisticsGroupChanged = function () {
                 var _this = this;
+                this.availableParamList.forEach(function (param) {
+                    param.checked = false;
+                    param.toggleable = true;
+                });
+                this.selectedParamList = [];
                 this.selectedFlowStatsList.forEach(function (statisticsGroup) {
                     statisticsGroup['checked'] = true;
                     if (statisticsGroup['regressionRegions']) {
@@ -147,7 +162,6 @@ var StreamStats;
                 else if (parameter.checked && index == -1) {
                     this.selectedParamList.push(paramCode);
                 }
-                console.log("selectedParamList", this.selectedParamList);
                 this.checkParameters();
             };
             BatchProcessorController.prototype.checkParameters = function () {
@@ -178,7 +192,7 @@ var StreamStats;
                     this.flowStatsAllChecked = true;
                     this.flowStatsList.forEach(function (flowStat) {
                         flowStat['checked'] = false;
-                        _this.setRegionStats(flowStat, true);
+                        _this.setRegionStats(flowStat, false);
                     });
                 }
             };
@@ -198,7 +212,6 @@ var StreamStats;
                         }
                     }
                 });
-                console.log("toggleParametersAllChecked", this.selectedParamList);
                 this.parametersAllChecked = !this.parametersAllChecked;
             };
             BatchProcessorController.prototype.loadParametersByRegionBP = function (rcode) {
@@ -208,7 +221,6 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 return this.Execute(request).then(function (response) {
                     if (response.data.parameters && response.data.parameters.length > 0) {
-                        console.log("response", response.data.parameters);
                         var paramRaw = [];
                         response.data.parameters.forEach(function (parameter) {
                             try {
