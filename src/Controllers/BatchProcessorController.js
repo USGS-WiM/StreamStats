@@ -18,6 +18,11 @@ var StreamStats;
     var Controllers;
     (function (Controllers) {
         'use string';
+        var Parameter = (function () {
+            function Parameter() {
+            }
+            return Parameter;
+        }());
         var BatchProcessorController = (function (_super) {
             __extends(BatchProcessorController, _super);
             function BatchProcessorController($scope, $http, modalService, nssService, modal) {
@@ -30,7 +35,6 @@ var StreamStats;
                 _this.selectedFlowStatsList = [];
                 _this.selectedParamList = [];
                 _this.availableParamList = [];
-                _this.regionParamList = [];
                 _this.flowStatsAllChecked = true;
                 _this.parametersAllChecked = true;
                 _this.showBasinCharacteristics = false;
@@ -63,8 +67,8 @@ var StreamStats;
                     if (this.selectedFlowStatsList.length == 0) {
                         this.selectedParamList = [];
                         this.availableParamList.forEach(function (parameter) {
-                            parameter['checked'] = false;
-                            parameter['toggleable'] = true;
+                            parameter.checked = false;
+                            parameter.toggleable = true;
                         });
                     }
                 }
@@ -101,7 +105,7 @@ var StreamStats;
                                 var found = false;
                                 for (var i = 0; i < _this.availableParamList.length; i++) {
                                     var parameter = _this.availableParamList[i];
-                                    if (parameter['code'].toLowerCase() == param.code.toLowerCase()) {
+                                    if (parameter.code.toLowerCase() == param.code.toLowerCase()) {
                                         _this.addParameterToSelectedParamList(param.code);
                                         found = true;
                                         break;
@@ -131,16 +135,16 @@ var StreamStats;
                 }
             };
             BatchProcessorController.prototype.updateSelectedParamList = function (parameter) {
-                if (parameter['toggleable'] == false) {
-                    parameter['checked'] = true;
+                if (parameter.toggleable == false) {
+                    parameter.checked = true;
                     return;
                 }
-                var paramCode = parameter['code'];
+                var paramCode = parameter.code;
                 var index = this.selectedParamList.indexOf(paramCode);
-                if (!parameter['checked'] && index > -1) {
+                if (!parameter.checked && index > -1) {
                     this.selectedParamList.splice(index, 1);
                 }
-                else if (parameter['checked'] && index == -1) {
+                else if (parameter.checked && index == -1) {
                     this.selectedParamList.push(paramCode);
                 }
                 console.log("selectedParamList", this.selectedParamList);
@@ -181,16 +185,16 @@ var StreamStats;
             BatchProcessorController.prototype.toggleParametersAllChecked = function () {
                 var _this = this;
                 this.availableParamList.forEach(function (parameter) {
-                    var paramCheck = _this.selectedParamList.indexOf(parameter['code']);
+                    var paramCheck = _this.selectedParamList.indexOf(parameter.code);
                     if (_this.parametersAllChecked) {
                         if (paramCheck == -1)
-                            _this.selectedParamList.push(parameter['code']);
-                        parameter['checked'] = true;
+                            _this.selectedParamList.push(parameter.code);
+                        parameter.checked = true;
                     }
                     else {
-                        if (paramCheck > -1 && parameter['toggleable']) {
+                        if (paramCheck > -1 && parameter.toggleable) {
                             _this.selectedParamList.splice(paramCheck, 1);
-                            parameter['checked'] = false;
+                            parameter.checked = false;
                         }
                     }
                 });
@@ -204,6 +208,7 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 return this.Execute(request).then(function (response) {
                     if (response.data.parameters && response.data.parameters.length > 0) {
+                        console.log("response", response.data.parameters);
                         var paramRaw = [];
                         response.data.parameters.forEach(function (parameter) {
                             try {

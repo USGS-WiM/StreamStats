@@ -36,6 +36,20 @@ module StreamStats.Controllers {
     interface IBatchProcessorController extends IModal {
     }
 
+    interface IParameter {
+        code: string,
+        description: string,
+        checked: boolean,
+        toggleable: boolean
+    }
+
+    class Parameter implements IParameter {
+        public code: string;
+        public description: string;
+        public checked: boolean;
+        public toggleable: boolean;
+    }
+
     class BatchProcessorController extends WiM.Services.HTTPServiceBase implements IBatchProcessorController {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -61,10 +75,9 @@ module StreamStats.Controllers {
         public flowStatisticsAllChecked: boolean;
 
         // Parameters/basin characteristics
-        public availableParamList: Array<Object>;
-        public selectedParamList: Array<Object>
+        public availableParamList: Array<Parameter>;
+        public selectedParamList: Array<string>
         public parametersAllChecked: boolean;
-        public regionParamList: Array<Object>;
         public showBasinCharacteristics: boolean;
 
         //Constructor
@@ -80,7 +93,6 @@ module StreamStats.Controllers {
             this.selectedFlowStatsList = [];
             this.selectedParamList = [];
             this.availableParamList = [];
-            this.regionParamList = [];
             this.flowStatsAllChecked = true;
             // this.flowStatChecked = false;
             this.parametersAllChecked = true;
@@ -229,8 +241,8 @@ module StreamStats.Controllers {
                     this.selectedParamList = [];
 
                     this.availableParamList.forEach((parameter) => {
-                        parameter['checked'] = false;
-                        parameter['toggleable'] = true;
+                        parameter.checked = false;
+                        parameter.toggleable = true;
                     });
                 }
 
@@ -294,7 +306,7 @@ module StreamStats.Controllers {
                             var found = false;
                             for (var i = 0; i < this.availableParamList.length; i++) {
                                 var parameter = this.availableParamList[i];
-                                if (parameter['code'].toLowerCase() == param.code.toLowerCase()) {
+                                if (parameter.code.toLowerCase() == param.code.toLowerCase()) {
                                     this.addParameterToSelectedParamList(param.code);
                                     found = true;
                                     break;
@@ -337,22 +349,22 @@ module StreamStats.Controllers {
         }
 
         // update selectedParamList
-        public updateSelectedParamList(parameter: Array<any>): void {
+        public updateSelectedParamList(parameter: Parameter): void {
             
             //dont mess with certain parameters
-            if (parameter['toggleable'] == false) {
-                parameter['checked'] = true;
+            if (parameter.toggleable == false) {
+                parameter.checked = true;
                 return;
             }
 
-            var paramCode = parameter['code']
+            var paramCode = parameter.code
             var index = this.selectedParamList.indexOf(paramCode);
 
-            if (!parameter['checked'] && index > -1) {
+            if (!parameter.checked && index > -1) {
                 //remove it
                 this.selectedParamList.splice(index, 1);
             }
-            else if (parameter['checked'] && index == -1) {
+            else if (parameter.checked && index == -1) {
                 //add it
                 this.selectedParamList.push(paramCode);
             }
@@ -399,21 +411,21 @@ module StreamStats.Controllers {
 
             this.availableParamList.forEach((parameter) => {
                 
-                var paramCheck = this.selectedParamList.indexOf(parameter['code'])
+                var paramCheck = this.selectedParamList.indexOf(parameter.code);
 
                 if (this.parametersAllChecked) {
 
                     //if its not there add it
-                    if (paramCheck == -1) this.selectedParamList.push(parameter['code']);
-                    parameter['checked'] = true;
+                    if (paramCheck == -1) this.selectedParamList.push(parameter.code);
+                    parameter.checked = true;
                 }
                 else {
 
                     //remove it only if toggleable
-                    if (paramCheck > -1 && parameter['toggleable']) {
+                    if (paramCheck > -1 && parameter.toggleable) {
                         this.selectedParamList.splice(paramCheck, 1);
                         //this.toaster.pop('warning', parameter.code + " is required by one of the selected scenarios", "It cannot be unselected");
-                        parameter['checked'] = false;
+                        parameter.checked = false;
                     }
                 }
 
@@ -438,7 +450,7 @@ module StreamStats.Controllers {
 
                     if (response.data.parameters && response.data.parameters.length > 0) {
                         // this.streamStatsAvailable = true;
-
+                        console.log("response", response.data.parameters)
                         // create array to return
                         var paramRaw = [];
 
@@ -446,7 +458,7 @@ module StreamStats.Controllers {
 
 
                             try {
-                                var param = {
+                                let param: Parameter = {
                                     code: parameter.code,
                                     description: parameter.description,
                                     checked: false,
