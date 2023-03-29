@@ -18,6 +18,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Security  
 
+## [v4.14.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.14.1) - 2023-03-29
+  
+### Added 
+- Google analytic tag for querying Propser
+- Lat/Long to google analytic tag for edited basin
+
+### Changed  
+- Enabled edit basin button for all local delineations
+
 ## [v4.14.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.14.0) - 2023-03-09
 
 ### Changed  
