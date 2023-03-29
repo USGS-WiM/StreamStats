@@ -60,7 +60,7 @@
                 <tbody ng-repeat="flowStat in vm.flowStatsList">
                     <tr>
                         <td>
-                            <checkbox large ng-model="flowStat.checked" ng-change="vm.setRegionStats(flowStat, false)">
+                            <checkbox large ng-model="flowStat.checked" ng-change="vm.setRegionStats(flowStat)">
                             </checkbox>
                         </td>
                         <td><span>&nbsp;&nbsp;{{flowStat.statisticGroupName}}</span></td>
