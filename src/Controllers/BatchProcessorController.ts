@@ -234,8 +234,8 @@ module StreamStats.Controllers {
 
             var checkStatisticsGroup = this.checkArrayForObj(this.selectedFlowStatsList, statisticsGroup);
 
+            // If no "Select/Unselect All Flow Statistics" button was clicked...
             if (allFlowStatsSelectedToggle == null) {
-
 
                 //if toggled remove selected flow stats set
                 if (checkStatisticsGroup != -1) {
@@ -264,7 +264,7 @@ module StreamStats.Controllers {
                     // this.addParameterToSelectedParamList("DRNAREA"); // uncomment if want to forcibly add DRNAREA to selectedParamList
 
                 }
-            } else if (allFlowStatsSelectedToggle == true) {
+            } else if (allFlowStatsSelectedToggle == true) { // "Select All Flow Statistics" button was clicked
                 if (checkStatisticsGroup == -1) {
                     this.selectedFlowStatsList.push(statisticsGroup);
 
@@ -272,11 +272,10 @@ module StreamStats.Controllers {
                     this.setParamCheck(statisticsGroup['regressionRegions']);
                 } 
 
-            } else if (allFlowStatsSelectedToggle == false) {
+            } else if (allFlowStatsSelectedToggle == false) { // "Unselect All Flow Statistics" button was clicked
                 if (checkStatisticsGroup != -1) {
                     this.selectedFlowStatsList.splice(checkStatisticsGroup, 1);
                 }
-
             }
 
             this.onSelectedStatisticsGroupChanged();
@@ -308,11 +307,11 @@ module StreamStats.Controllers {
 
         public onSelectedStatisticsGroupChanged(): void {
 
+            // Rebuild the selected parameters from scratch
             this.availableParamList.forEach(param => {
                 param.checked = false;
                 param.toggleable = true;
             })
-
             this.selectedParamList = [];
 
             //loop over whole statisticsgroups
