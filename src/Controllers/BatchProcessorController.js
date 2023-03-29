@@ -31,9 +31,9 @@ var StreamStats;
                 _this.selectedParamList = [];
                 _this.availableParamList = [];
                 _this.regionParamList = [];
-                _this.flowStatChecked = false;
+                _this.flowStatsAllChecked = true;
                 _this.parametersAllChecked = true;
-                _this.flowStatisticsAllChecked = true;
+                _this.showBasinCharacterstics = false;
                 _this.init();
                 return _this;
             }
@@ -52,11 +52,14 @@ var StreamStats;
                 this.nssService.getFlowStatsList(rcode).then(function (response) { _this.flowStatsList = response; });
                 this.loadParametersByRegionBP(rcode).then(function (response) { _this.availableParamList = response; });
             };
-            BatchProcessorController.prototype.setRegionStats = function (statisticsGroup) {
+            BatchProcessorController.prototype.setRegionStats = function (statisticsGroup, allFlowStatsToggle) {
+                if (allFlowStatsToggle === void 0) { allFlowStatsToggle = false; }
                 var checkStatisticsGroup = this.checkArrayForObj(this.selectedFlowStatsList, statisticsGroup);
                 if (checkStatisticsGroup != -1) {
                     this.selectedFlowStatsList.splice(checkStatisticsGroup, 1);
-                    statisticsGroup['checked'] = false;
+                    if (allFlowStatsToggle = false) {
+                        statisticsGroup['checked'] = true;
+                    }
                     if (this.selectedFlowStatsList.length == 0) {
                         this.selectedParamList = [];
                         this.availableParamList.forEach(function (parameter) {
@@ -107,14 +110,8 @@ var StreamStats;
                                 }
                                 if (!found) {
                                     var newParam = {
-                                        name: param.name,
-                                        description: param.description,
                                         code: param.code,
-                                        unit: param.unitType.unit,
-                                        value: null,
-                                        regulatedValue: null,
-                                        unRegulatedValue: null,
-                                        loaded: null,
+                                        description: param.description,
                                         checked: false,
                                         toggleable: true
                                     };
@@ -128,11 +125,9 @@ var StreamStats;
             };
             BatchProcessorController.prototype.checkStats = function () {
                 if (this.selectedFlowStatsList.length > 0) {
-                    this.flowStatChecked = true;
                     this.showBasinCharacterstics = true;
                 }
                 else {
-                    this.flowStatChecked = false;
                     this.showBasinCharacterstics = false;
                 }
                 var allChecked = true;
@@ -179,18 +174,18 @@ var StreamStats;
             };
             BatchProcessorController.prototype.toggleFlowStatisticsAllChecked = function () {
                 var _this = this;
-                if (this.flowStatisticsAllChecked) {
-                    this.flowStatisticsAllChecked = false;
+                if (this.flowStatsAllChecked) {
+                    this.flowStatsAllChecked = false;
                     this.flowStatsList.forEach(function (flowStat) {
-                        flowStat.checked = false;
-                        _this.setRegionStats(flowStat);
+                        flowStat['checked'] = true;
+                        _this.setRegionStats(flowStat, true);
                     });
                 }
                 else {
-                    this.flowStatisticsAllChecked = true;
+                    this.flowStatsAllChecked = true;
                     this.flowStatsList.forEach(function (flowStat) {
-                        flowStat.checked = true;
-                        _this.setRegionStats(flowStat);
+                        flowStat['checked'] = false;
+                        _this.setRegionStats(flowStat, true);
                     });
                 }
             };
