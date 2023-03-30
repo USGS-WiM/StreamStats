@@ -107,13 +107,13 @@
                                 <select name="AEPOptions" ng-model="vm.SelectedAEP" ng-options="precip.name for precip in vm.AEPOptions track by precip.value" required></select>
 
                                 <label for="DrainageArea">Drainage Area (square miles):</label> <span ng-if="BohmanUrbanForm.DrainageArea.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
-                                <input type="number" name="DrainageArea" ng-model="vm.drainageArea" required readonly/>
+                                <input type="number" name="DrainageArea" ng-model="vm.drainageArea" required disabled/>
                                 <label for="MainChannelLength">Main Channel Length (miles):</label> <span ng-if="BohmanUrbanForm.MainChannelLength.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
-                                <input type="number" name="MainChannelLength" ng-model="vm.mainChannelLength" required readonly/>
+                                <input type="number" name="MainChannelLength" ng-model="vm.mainChannelLength" required disabled/>
                                 <label for="MainChannelSlope">Main Channel Slope (feet per mile):</label>  <span ng-if="BohmanUrbanForm.MainChannelSlope.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
-                                <input type="number" name="MainChannelSlope" ng-model="vm.mainChannelSlope" required readonly/>
+                                <input type="number" name="MainChannelSlope" ng-model="vm.mainChannelSlope" required disabled/>
                                 <label for="TotalImperviousArea">Total impervious area (%):</label>  <span ng-if="BohmanUrbanForm.TotalImperviousArea.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be between 0 and 100</span>
-                                <input type="number" name="TotalImperviousArea" ng-model="vm.totalImperviousArea" required readonly/>
+                                <input type="number" name="TotalImperviousArea" ng-model="vm.totalImperviousArea" required disabled/>
 
                                 <label class="fullwidth alignc" ng-if="vm.validateForm(BohmanUrbanForm) && !vm.hideAlerts"><span class="fa fa-check"></span>&nbsp;Parameters Have Been Calculated</label>
                                 <label class="fullwidth" ng-if="!vm.validateForm(BohmanUrbanForm) || (vm.validateForm(BohmanUrbanForm) && vm.hideAlerts)">&nbsp;&nbsp;</label>
@@ -199,34 +199,32 @@
                         </div>
                         <!-- Synthetic Urban Hydrograph tab -->
                         <div ng-if="vm.SelectedTab == 3" style="position:relative;">
-                            <div>&nbsp;</div>
                             <div class="wim-alert hidden-print">Fill out required<span style="color: #ffcc00">*</span> fields. Remaining inputs will be calculated with <b>Calculate Missing Parameters</b> based on delineated basin. Then click <b>Continue</b> to view peak discharge and hydrograph.</div>
                             <form id="SyntheticUrbanHydrograph" name="SyntheticUrbanHydrograph" class="hidden-print" novalidate>
                                 <label for="AEPOptionsSynthetic">Annual Exceedance Probability (AEP) / Design Storm Return Period:<span style="color: #ffcc00">*</span></label>
                                 <select name="AEPOptionsSynthetic" ng-model="vm.SelectedAEPSynthetic" ng-options="precip.name for precip in vm.AEPOptionsSynthetic track by precip.value" required></select>
                                 <label for="RainfallDistribution">Rainfall Distribution Curve:</label>
-                                <select style="pointer-events: none;" name="RainfallDistribution" ng-model="vm.SelectedRainfallDistribution" ng-options="distr.name for distr in vm.RainfallDistributionOptions track by distr.value" required readonly></select>
+                                <select style="pointer-events: none;" name="RainfallDistribution" ng-model="vm.SelectedRainfallDistribution" ng-options="distr.name for distr in vm.RainfallDistributionOptions track by distr.value" required disabled></select>
                                 
                                 <div class="form-row">
                                     <div class="form-column-left">
                                         <label for="DrainageAreaSynthetic">Drainage Area (acres):</label> <span ng-if="SyntheticUrbanHydrograph.DrainageAreaSynthetic.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
-                                        <input type="number" name="DrainageAreaSynthetic" ng-model="vm.drainageAreaSynthetic" ng-minlength="1" ng-pattern="greaterThanZero" required readonly/>
+                                        <input type="number" name="DrainageAreaSynthetic" ng-model="vm.drainageAreaSynthetic" ng-minlength="1" ng-pattern="greaterThanZero" required disabled/>
                                     </div>
                                     <div class="form-column-right">
                                         <label for="InitialAbstraction">Initial Abstraction, Ia:</label> <span ng-if="SyntheticUrbanHydrograph.InitialAbstraction.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
-                                        <input type="number" name="InitialAbstraction" ng-model="vm.initialAbstraction" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required readonly/>
+                                        <input type="number" name="InitialAbstraction" ng-model="vm.initialAbstraction" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required disabled/>
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-column-left">
                                         <label for="WatershedRetention">Watershed Retention, S:</label> <span ng-if="SyntheticUrbanHydrograph.WatershedRetention.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
-                                        <input type="number" name="WatershedRetention" ng-model="vm.watershedRetention" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required readonly/>
+                                        <input type="number" name="WatershedRetention" ng-model="vm.watershedRetention" ng-minlength="0" ng-pattern="greaterThanOrEqualToZero" required disabled/>
                                     </div>
                                     <div class="form-column-right">
                                         
                                     </div>
                                 </div>
-
 
                                 <!-- Curve Number -->
                                 <h3 class="center-div">Curve Number</h3>
@@ -236,7 +234,7 @@
                                 <label for="CNModification">Select a Curve Number Modification Method:<span style="color: #ffcc00">*</span></label>
                                 <select name="CNModification" ng-model="vm.SelectedCNModification" ng-options="cnmod.name for cnmod in vm.CNModificationOptions track by cnmod.value" required></select>
                                 <label for="StandardCurveNumber">Standard Curve Number, CN:</label> <span ng-if="SyntheticUrbanHydrograph.StandardCurveNumber.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
-                                <input type="number" name="StandardCurveNumber" ng-model="vm.standardCurveNumber" required readonly/>
+                                <input type="number" name="StandardCurveNumber" ng-model="vm.standardCurveNumber" required disabled/>
 
                                 <!-- Peak Rate Factor -->
                                 <h3 class="center-div">Peak Rate Factor</h3>
@@ -289,8 +287,7 @@
                                     </div>
                                 </div>
                                 <label for="PeakRateFactor">Peak Rate Factor, PRF:</label> <span ng-if="SyntheticUrbanHydrograph.PeakRateFactor.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
-                                <input type="number" name="PeakRateFactor" ng-model="vm.peakRateFactor" required readonly/>&nbsp;&nbsp;
-
+                                <input type="number" name="PeakRateFactor" ng-model="vm.peakRateFactor" required disabled/>
 
                                 <!-- Time of Concentration -->
                                 <h3 class="center-div">Time of Concentration</h3>
@@ -298,7 +295,7 @@
                                 <label for="TimeOfConcentration">Select Time of Concentration:<span style="color: #ffcc00">*</span></label>
                                 <select name="TimeOfConcentration" ng-model="vm.SelectedTimeOfConcentration" ng-options="time.name for time in vm.TimeOfConcentrationOptions track by time.value" required></select>
                                 <label for="TimeOfConcentrationMin">Time of Concentration, Tc (minutes):</label> <span ng-if="SyntheticUrbanHydrograph.TimeOfConcentrationMin.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
-                                <input type="number" name="TimeOfConcentrationMin" ng-model="vm.timeOfConcentrationMin" required readonly/>
+                                <input type="number" name="TimeOfConcentrationMin" ng-model="vm.timeOfConcentrationMin" required disabled/>
 
                                 <div ng-if="vm.SelectedTimeOfConcentration.value == 1 || vm.SelectedTimeOfConcentration.value == 2" class="center-div">
                                     <h4 class="center-title">{{vm.TimeOfConcentrationOptions[vm.SelectedTimeOfConcentration.value - 1].name}}
@@ -310,11 +307,11 @@
                                 <div ng-if="vm.SelectedTimeOfConcentration.value == 2" class="form-row">
                                     <div class="form-column-left">
                                         <label for="LagTimeLength">Length (feet):</label> <span ng-if="SyntheticUrbanHydrograph.LagTimeLength.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
-                                        <input type="number" name="LagTimeLength" ng-model="vm.lagTimeLength" required readonly/>
+                                        <input type="number" name="LagTimeLength" ng-model="vm.lagTimeLength" required disabled/>
                                     </div>
                                     <div class="form-column-right">
                                         <label for="LagTimeSlope">Slope (%):</label> <span ng-if="SyntheticUrbanHydrograph.LagTimeSlope.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than or equal to 0</span>
-                                        <input type="number" name="LagTimeSlope" ng-model="vm.lagTimeSlope" required readonly/>
+                                        <input type="number" name="LagTimeSlope" ng-model="vm.lagTimeSlope" required disabled/>
                                     </div>
                                 </div>
                                 
@@ -378,12 +375,288 @@
                                     </div>
                                 </div>
 
+                                 <!-- USLE & MUSLE -->
+                                <div>
+                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-black" ng-if="!vm.usle" ng-click="vm.usle = !vm.usle">Calculate USLE & MUSLE</button>
+                                    <div ng-if="vm.usle">
+                                        <h3 class="center-div">USLE & MUSLE</h3>
+                                        <div class="wim-alert hidden-print">Enter a 'County Name', 'Soil Name', 'Slope Length', 'Slope Steepness', 'Cover Name', and 'Practice Name' to compute the R, K, LS, C, and P factors. These factors will be used to compute results related to the Universal Soil Loss Equation (USLE) and Modified Universal Soil Loss Equation (MUSLE).</div>
+                                        <label for="countyName">County Name:<span style="color: #ffcc00">*</span></label>
+                                        <select name="countyName" ng-model="vm.countyName" ng-options="c for c in vm.countyNames" required></select> 
+                                        <label for="soilName">Soil Name:<span style="color: #ffcc00">*</span></label>
+                                        <select name="soilName" ng-model="vm.soilName" ng-options="s for s in vm.soilNames" required></select>
+                                        <label for="slopeLength">Slope Length (feet): (value should be less than 1000 feet)<span style="color: #ffcc00">*</span></label>
+                                        <input type="number" name="slopeLength" ng-model="vm.slopeLength" required></input>
+                                        <label for="slopeSteepness">Slope Steepness (%): (value should be less than 25%)<span style="color: #ffcc00">*</span></label>
+                                        <input type ="number" name="slopeSteepness" ng-model="vm.slopeSteepness" required></input>
+                                        <label for="coverName">Cover Name:<span style="color: #ffcc00">*</span></label>
+                                        <select name="coverName" ng-model="vm.coverName" ng-options="c for c in vm.coverNames" required></select>     
+                                        <label for="practiceName">Practice Name:<span style="color: #ffcc00">*</span></label>
+                                        <select name="practiceName" ng-model="vm.practiceName" ng-options="p for p in vm.practiceNames" required></select>                                                                      
+                                    </div>
+                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-black" ng-if="vm.usle" ng-click="vm.usle = !vm.usle">Remove USLE & MUSLE</button>
+                                </div>
+
+                                <!-- Storm Ponding -->
+                                <div>
+                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-black" ng-if="!vm.stormponds" ng-click="vm.stormponds = !vm.stormponds">Design Storm Ponds</button>
+                                    <div ng-if="vm.stormponds">
+                                        <h3 class="center-div">Design Storm Ponds</h3>
+                                        <div class="wim-alert hidden-print">Select a 'Pond Option' and fill out all required fields to compute pond stage-storage and stage-outflow ratings.</div>
+                                        <label for="pondOption">Pond Option:<span style="color: #ffcc00">*</span></label>
+                                        <select name="pondOption" ng-model="vm.pondOption" ng-change="vm.disableSediment()" required>
+                                            <option value="1">Pond Option 1 (Inverted Quadrilateral Frustum)</option>
+                                            <option value="2">Pond Option 2 (Elevation vs Surface Area)</option>
+                                        </select>
+
+                                        <label for="pond_bottom_elev">Bottom Elevation (feet):<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.pond_bottom_elev.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                        <input type="number" name="pond_bottom_elev" ng-model="vm.pond_bottom_elev" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+
+                                        <label for="max_depth">Max Depth (feet):</label>
+                                        <input type="number" name="max_depth" ng-model="vm.max_depth" disabled/><br>
+
+                                        <div ng-if="vm.pondOption == 1"><br>
+                                            <h4 class="center-title">Pond Option 1: Inverted Quadrilateral Frustum</h4>
+                                            <label for="length">Length (feet):<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.length.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                            <input  type="number" name="length" ng-model="vm.length" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                            <label for="w1">W<sub>1</sub> (feet):<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.w1.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                            <input  type="number" name="w1" ng-model="vm.w1" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                            <label for="w2">W<sub>2</sub> (feet):<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.w2.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                            <input  type="number" name="w2" ng-model="vm.w2" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                            <label for="side_slope_z">Side Slope Z:<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.side_slope_z.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                            <input  type="number" name="side_slope_z" ng-model="vm.side_slope_z" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                            <label for="bottom_slope">Bottom Slope S<sub>o</sub> (%):<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.bottom_slope.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                            <input  type="number" name="bottom_slope" ng-model="vm.bottom_slope" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                        </div>
+
+                                        
+                                        <!-- TODO: highlight input box in Elevation column if values are not within range -->
+                                        <div ng-if="vm.pondOption == 2"><br>
+                                            <h4 class="center-title">Pond Option 2: Elevation (ft-MSL) vs Surface Area (sq ft)</h4>
+                                            <div class="form-row">
+                                                <div class="form-column-left">
+                                                    <label>Elevation (ft-MSL): (values should be between {{vm.pond_bottom_elev}} and {{vm.pond_bottom_elev + 10}})<span style="color: #ffcc00">*</span></label>
+                                                </div>
+                                                <div class="form-column-right">
+                                                    <label for = "elevation">Surface Area (square feet):<span style="color: #ffcc00">*</span></label>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-column-left">
+                                                    <input type="number" value="{{vm.pond_bottom_elev}}" ng-model="vm.Elev_Area[0][0]" disabled/>
+                                                </div>
+                                                <div class="form-column-right">
+                                                    <input type="number" name="elevation" ng-model="vm.Elev_Area[0][1]" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-column-left">
+                                                    <input type="number" ng-model="vm.Elev_Area[1][0]" required/>
+                                                </div>
+                                                <div class="form-column-right">
+                                                    <input type="number" name="elevation" ng-model="vm.Elev_Area[1][1]" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-column-left">
+                                                    <input type="number" ng-model="vm.Elev_Area[2][0]" required/>
+                                                </div>
+                                                <div class="form-column-right">
+                                                    <input type="number" name="elevation" ng-model="vm.Elev_Area[2][1]" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-column-left">
+                                                    <input type="number" ng-model="vm.Elev_Area[3][0]" required/>
+                                                </div>
+                                                <div class="form-column-right">
+                                                    <input type="number" name="elevation" ng-model="vm.Elev_Area[3][1]" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-column-left">
+                                                    <input type="number" ng-model="vm.Elev_Area[4][0]" required/>
+                                                </div>
+                                                <div class="form-column-right">
+                                                    <input type="number" name="elevation" ng-model="vm.Elev_Area[4][1]" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-column-left">
+                                                    <input type="number" ng-model="vm.Elev_Area[5][0]" required/>
+                                                </div>
+                                                <div class="form-column-right">
+                                                    <input type="number" name="elevation" ng-model="vm.Elev_Area[5][1]" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-column-left">
+                                                    <input type="number" ng-model="vm.Elev_Area[6][0]" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                                </div>
+                                                <div class="form-column-right">
+                                                    <input type="number" name="elevation" ng-model="vm.Elev_Area[6][1]" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-column-left">
+                                                    <input type="number" ng-model="vm.Elev_Area[7][0]" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                                </div>
+                                                <div class="form-column-right">
+                                                    <input type="number" name="elevation" ng-model="vm.Elev_Area[7][1]" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-column-left">
+                                                    <input type="number" ng-model="vm.Elev_Area[8][0]" required/>
+                                                </div>
+                                                <div class="form-column-right">
+                                                    <input type="number" name="elevation" ng-model="vm.Elev_Area[8][1]" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-column-left">
+                                                    <input type="number" ng-model="vm.Elev_Area[9][0]" required/>
+                                                </div>
+                                                <div class="form-column-right">
+                                                    <input type="number" name="elevation" ng-model="vm.Elev_Area[9][1]" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        
+                                        <br><h4 class="center-title">Outflow Devices</h4>
+                                        <div class="form-row">
+                                            <div class="form-column-left">
+                                                <label>1st Stage Circular Orifices</label>
+                                            </div>
+                                            <div class="form-column-right">
+                                                <label>2nd Stage Circular Orifices</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-column-left">
+                                                <label for="Orif1_Coeff">Coefficient:<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.Orif1_Coeff.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                                <input type="number" name="Orif1_Coeff" ng-model="vm.Orif1_Coeff" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                            </div>
+                                            <div class="form-column-right">
+                                                <label for="Orif2_Coeff">Coefficient:<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.Orif2_Coeff.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                                <input type="number" name="Orif2_Coeff" ng-model="vm.Orif2_Coeff" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-column-left">
+                                                <label for="Orif1_Dia">Diameter (inches):<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.Orif1_Dia.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                                <input type="number" name="Orif1_Dia" ng-model="vm.Orif1_Dia" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                            </div>
+                                            <div class="form-column-right">
+                                                <label for="Orif2_Dia">Diameter (inches):<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.Orif2_Dia.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                                <input type="number" name="Orif2_Dia" ng-model="vm.Orif2_Dia" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-column-left">
+                                                <label for="Orif1_CtrEL">Centerline Elevation Above Bottom of Pond (feet):<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.Orif1_CtrEL.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                                <input type="number" name="Orif1_CtrEL" ng-model="vm.Orif1_CtrEL" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                            </div>
+                                            <div class="form-column-right">
+                                                <label for="Orif2_CtrEL">Centerline Elevation Above Bottom of Pond (feet):<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.Orif2_CtrEL.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                                <input type="number" name="Orif2_CtrEL" ng-model="vm.Orif2_CtrEL" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-column-left">
+                                                <label for="Orif1_NumOpenings">Number of Openings:<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.Orif1_NumOpenings.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                                <input type="number" name="Orif1_NumOpenings" ng-model="vm.Orif1_NumOpenings" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                            </div>
+                                            <div class="form-column-right">
+                                                <label for="Orif2_NumOpenings">Number of Openings:<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.Orif2_NumOpenings.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                                <input type="number" name="Orif2_NumOpenings" ng-model="vm.Orif2_NumOpenings" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="form-row">
+                                            <div class="form-column-left">
+                                                <label>3rd Stage Rectangular Weir</label>
+                                            </div>
+                                            <div class="form-column-right">
+                                                <label>Overflow Spillway</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-column-left">
+                                                <label for="Rec_Weir_Coeff">Weir Coefficient:<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.Rec_Weir_Coeff.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                                <input type="number" name="Rec_Weir_Coeff" ng-model="vm.Rec_Weir_Coeff" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                            </div>
+                                            <div class="form-column-right">
+                                                <label for="OS_BCWeir_Coeff">Broad-Crested Weir Coefficient:<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.OS_BCWeir_Coeff.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                                <input type="number" name="OS_BCWeir_Coeff" ng-model="vm.OS_BCWeir_Coeff" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-column-left">
+                                                <label for="Rec_Weir_Ex">Weir exponent:<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.Rec_Weir_Ex.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                                <input type="number" name="Rec_Weir_Ex" ng-model="vm.Rec_Weir_Ex" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                            </div>
+                                            <div class="form-column-right">
+                                                <label for="OS_Weir_Ex">Weir exponent:<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.OS_Weir_Ex.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                                <input type="number" name="OS_Weir_Ex" ng-model="vm.OS_Weir_Ex" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-column-left">
+                                                <label for="Rec_Weir_Length">Length (feet):<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.Rec_Weir_Length.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                                <input type="number" name="Rec_Weir_Length" ng-model="vm.Rec_Weir_Length" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                            </div>
+                                            <div class="form-column-right">
+                                                <label for="OS_Length">Length (feet):<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.OS_Length.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                                <input type="number" name="OS_Length" ng-model="vm.OS_Length" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-column-left">
+                                                <label for="Rec_WeirCrest_EL">Crest Elevation Above Pond Bottom (feet):<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.Rec_WeirCrest_EL.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                                <input type="number" name="Rec_WeirCrest_EL" ng-model="vm.Rec_WeirCrest_EL" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                            </div>
+                                            <div class="form-column-right">
+                                                <label for="OS_Crest_EL">Crest Elevation Above Pond Bottom (feet):<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.OS_Crest_EL.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                                <input type="number" name="OS_Crest_EL" ng-model="vm.OS_Crest_EL" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-column-left">
+                                                <label for="Rec_Num_Weirs">Number of Weirs:<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.Rec_Num_Weirs.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                                <input type="number" name="Rec_Num_Weirs" ng-model="vm.Rec_Num_Weirs" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                            </div>
+                                            <div class="form-column-right">
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <label for="Seepage_Bottom">Seepage Through Pond Bottom (inches/hour):<span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.Seepage_Bottom.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                        <input type="number" name="Seepage_Bottom" ng-model="vm.Seepage_Bottom" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+                                        <label for="Seepage_Side">Seepage Through Pond Side Slopes (inches/hour): <span style="color: #ffcc00">*</span></label><span ng-if="SyntheticUrbanHydrograph.Seepage_Side.$error.pattern" class="red label"><span class="fa fa-exclamation-triangle"></span>&nbsp;Value must be greater than 0</span>
+                                        <input type="number" name="Seepage_Side" ng-model="vm.Seepage_Side" ng-minlength="1" ng-pattern="greaterThanZero" required/>
+
+                                        <!-- Pond Sediment -->
+                                        <div>
+                                            <button style="line-height:unset" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-black" ng-disabled="vm.disableSediment()" ng-if="!vm.pondsediment" ng-click="vm.pondsediment = !vm.pondsediment">&nbsp;&nbsp;Calculate Pond Sediment</button>
+                                            <div ng-if="vm.pondsediment">
+                                                <h3 class="center-div">Pond Sediment</h3>
+                                                <label for="soilName">Soil Name<span style="color: #ffcc00">*</span></label>
+                                                <select name="soilName" ng-model="vm.soilName" ng-options="s for s in vm.soilNames" required></select>
+                                            </div>
+                                            <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-black" ng-if="vm.pondsediment" ng-click="vm.pondsediment = !vm.pondsediment">Remove Pond Sediment</button>
+                                        </div>
+                                    </div>
+                                    <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-black" ng-if="vm.stormponds" ng-click="vm.stormponds = !vm.stormponds">Remove Storm Ponds</button>
+                                </div>
+
+                                <!-- Buttons -->
                                 <label class="fullwidth alignc" ng-if="vm.validateForm(SyntheticUrbanHydrograph) && !vm.hideAlerts"><span class="fa fa-check"></span>&nbsp;Parameters Have Been Calculated</label>
                                 <label class="fullwidth" ng-if="!vm.validateForm(SyntheticUrbanHydrograph) || (vm.validateForm(SyntheticUrbanHydrograph) && vm.hideAlerts)">&nbsp;&nbsp;</label>
                                 <div class="hidden-print">
                                     <button style="line-height:unset;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-disabled="vm.calculateSyntheticParamsDisabled()" ng-click="vm.calculateSyntheticParameters('DRNAREA,LFPLENGTH,CSL10_85fm')" ng-hide="vm.validateForm(SyntheticUrbanHydrograph)"><span ng-class="vm.canContinueSynthetic ? 'fa fa-calculator' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;Calculate Missing Parameters</button>
                                     <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-red" ng-click="vm.clearResults(SyntheticUrbanHydrograph.$name)" ng-hide="!vm.validateForm(SyntheticUrbanHydrograph)"><span class="fa fa-trash-o"></span>&nbsp;&nbsp;Clear All</button>
-                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.calculateSynthetic()" ng-hide="!vm.validateForm(SyntheticUrbanHydrograph)"><span ng-class="vm.canContinueSynthetic ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showResultsSynthetic ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
+                                    <button style="line-height:unset; display:inline-block; width:49%;" class="btn-wim-sm btn-wim-success btn-wim-group-1 btn-blue" ng-click="vm.calculateSpreedSheet()" ng-hide="!vm.validateForm(SyntheticUrbanHydrograph)"><span ng-class="vm.canContinueSynthetic ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>{{ vm.showResultsSynthetic ? '&nbsp;&nbsp;Recalculate Results' : '&nbsp;&nbsp;Continue' }}</button>
                                 </div>
                                 <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 1"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must select 'AEP', 'Standard Curve Number Value', fill out 'Peak Rate Factor Input Form', and 'Time of Concentration' Before <b>Calculate Missing Parameters</b>.</label>
                                 <label class="fullwidth alignc orange" ng-if="vm.calculateSyntheticParamsDisabled() == 2"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Must select 'AEP', 'Standard Curve Number Value', fill out 'Peak Rate Factor Input Form', and at Least One Flow Segment Before <b>Calculate Missing Parameters</b>.</label>
@@ -391,11 +664,15 @@
                                 <label class="fullwidth alignc orange" ng-if="!vm.validateForm(SyntheticUrbanHydrograph) && !vm.calculateSyntheticParamsDisabled()"><span class="fa fa-exclamation-triangle"></span>&nbsp;&nbsp;Parameters Must Be Entered Before Results Can Be Computed</label>
                                 <label ng-if="vm.validateForm(SyntheticUrbanHydrograph)">&nbsp;&nbsp;</label> 
                             </form>
+
+                            <!-- Results -->
                             <div ng-if="vm.showResultsSynthetic">
                                 <div style="position:relative;">
                                     <p class="fullwidth alignc hidden-print" style="font-size: 16px;"><b>USGS SC Flood Hydrograph for Synthetic Units using {{vm.SelectedAEPSynthetic.name}}</b></p>
                                     <div class="well">
                                         <!-- <div class="wim-alert-warning">{{vm.warningMessagesSynthetic}}</div> -->
+                                        <div class="wim-alert-warning">No warranty is made as to the accuracy and functionality of the South Carolina Synthetic Unit Hydrograph Method. Please refer to the <a href="https://www.scdot.org/business/technicalPDFs/hydraulic/SPR-738-SC-UH-Method-Application-Manual-May-2020.pdf">South Carolina Unit Hydrograph Method Applications Manual</a> for more information.</div>
+
                                         <h3>Watershed Data</h3>
                                         <!-- <h4>Parameters</h4> -->
                                         <table id="WatershedDataTable" class="table table-condensed smalltext">
@@ -406,27 +683,27 @@
                                                 </tr>
                                                 <tr>
                                                     <td>Area (acres)</td>
-                                                    <td><b>{{vm.syntheticResponseData.watershed_data.Area}}</b></td>
+                                                    <td><b>{{vm.unitHydrographResponseData.watershed_data.Area}}</b></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Time of Concentration, Tc (minutes)</td>
-                                                    <td><b>{{vm.syntheticResponseData.watershed_data.Tc}}</b></td>
+                                                    <td><b>{{vm.unitHydrographResponseData.watershed_data.Tc}}</b></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Peak Rate Factor, PRF</td>
-                                                    <td><b>{{vm.syntheticResponseData.watershed_data.PRF}}</b></td>
+                                                    <td><b>{{vm.unitHydrographResponseData.watershed_data.PRF}}</b></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Standard Curve Number, CN</td>
-                                                    <td><b>{{vm.syntheticResponseData.watershed_data["Standard CN"]}}</b></td>
+                                                    <td><b>{{vm.unitHydrographResponseData.watershed_data["Standard CN"]}}</b></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Watershed Retention, S</td>
-                                                    <td><b>{{vm.syntheticResponseData.watershed_data["Watershed Retention S"]}}</b></td>
+                                                    <td><b>{{vm.unitHydrographResponseData.watershed_data["Watershed Retention S"]}}</b></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Initial Abstraction, Ia</td>
-                                                    <td><b>{{vm.syntheticResponseData.watershed_data["Initial Abstraction Ia"]}}</b></td>
+                                                    <td><b>{{vm.unitHydrographResponseData.watershed_data["Initial Abstraction Ia"]}}</b></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -435,44 +712,44 @@
                                             <tbody>
                                                 <tr>
                                                     <td>Annual Exceedance Probability, AEP (%)</td>
-                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["Annual Exceedance Probability (AEP)"]}}</b></td>
+                                                    <td><b>{{vm.unitHydrographResponseData.unit_hydrograph_data["Annual Exceedance Probability (AEP)"]}}</b></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Design Storm Return Period (years)</td>
-                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["Design Storm Return Period"]}}</b></td>
+                                                    <td><b>{{vm.unitHydrographResponseData.unit_hydrograph_data["Design Storm Return Period"]}}</b></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Curve Number Modification Method</td>
-                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["Curve Number Modification Method"]}}</b></td>
+                                                    <td><b>{{vm.unitHydrographResponseData.unit_hydrograph_data["Curve Number Modification Method"]}}</b></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Burst Duration (minutes)</td>
-                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["Burst Duration"]}}</b></td>
+                                                    <td><b>{{vm.unitHydrographResponseData.unit_hydrograph_data["Burst Duration"]}}</b></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Gamma function shape parameter</td>
-                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["Gamma_n"].toUSGSvalue()}}</b></td>
+                                                    <td><b>{{vm.unitHydrographResponseData.unit_hydrograph_data["Gamma_n"].toUSGSvalue()}}</b></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Lag time (minutes)</td>
-                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["Lag time"].toUSGSvalue()}}</b></td>
+                                                    <td><b>{{vm.unitHydrographResponseData.unit_hydrograph_data["Lag time"].toUSGSvalue()}}</b></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Adjusted Time of Concentration, Adj Tc (minutes)</td>
-                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["Adjusted Tc"].toUSGSvalue()}}</b></td>
+                                                    <td><b>{{vm.unitHydrographResponseData.unit_hydrograph_data["Adjusted Tc"].toUSGSvalue()}}</b></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Unit Hydrograph Time to Peak, UH_Tp (minutes)</td>
-                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["UH_Tp"].toUSGSvalue()}}</b></td>
+                                                    <td><b>{{vm.unitHydrographResponseData.unit_hydrograph_data["UH_Tp"].toUSGSvalue()}}</b></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Unit Hydrograph Peak Flow Rate, UH_Qp (cubic feet per second)</td>
-                                                    <td><b>{{vm.syntheticResponseData.unit_hydrograph_data["UH_Qp"].toUSGSvalue()}}</b></td>
+                                                    <td><b>{{vm.unitHydrographResponseData.unit_hydrograph_data["UH_Qp"].toUSGSvalue()}}</b></td>
                                                 </tr>
                                             </tbody>
                                         </table>
 
-                                        <h3>Runoff Results</h3>
+                                        <h3>Runoff <span ng-if="vm.stormPondsResponseData">and Storm Pond Routing </span>Results</h3>
                                         <table id="SyntheticUnitHydrographRunoffTable" class="table table-condensed smalltext">
                                             <thead>
                                                 <tr>
@@ -482,16 +759,32 @@
                                                     <th>Runoff Volume Q<sub>CN</sub> (WS-in)</th>
                                                     <th>Peak Runoff, Q<sub>P</sub> (ft³/s)</th>
                                                     <th>Time of Peak Runoff (min)</th>
+                                                    <th ng-if="vm.stormPondsResponseData">Pond Peak Inflow (cfs)</th>
+                                                    <th ng-if="vm.stormPondsResponseData">Time of Peak Inflow (min)</th>
+                                                    <th ng-if="vm.stormPondsResponseData">Pond Peak Outflow (cfs)</th>
+                                                    <th ng-if="vm.stormPondsResponseData">Time of Peak Outflow (min)</th>
+                                                    <th ng-if="vm.stormPondsResponseData">Time to Drain First One-Half Inch (hrs)</th>
+                                                    <th ng-if="vm.stormPondsResponseData">Time to Drain First Inch (hrs)</th>
+                                                    <th ng-if="vm.stormPondsResponseData">Time to Drain First Two Inches (hrs)</th>
+                                                    <th ng-if="vm.stormPondsResponseData">Maximum Ponding Depth (ft)</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr ng-repeat="option in vm.DHourStormOptions">
                                                     <td>{{option.value}}</td>
-                                                    <td>{{vm.syntheticResponseData.runoff_results_table.rainfall_depth[$index].toUSGSvalue()}}</td>
-                                                    <td>{{vm.syntheticResponseData.runoff_results_table.CN_adjusted_for_rainfall_duration[$index].toUSGSvalue()}}</td>
-                                                    <td>{{vm.syntheticResponseData.runoff_results_table.runoff_volume_Q_CN[$index].toUSGSvalue()}}</td>
-                                                    <td>{{vm.syntheticResponseData.runoff_results_table.peak_runoff_Qp[$index].toUSGSvalue()}}</td>
-                                                    <td>{{vm.syntheticResponseData.runoff_results_table.time_of_peak_runoff[$index].toUSGSvalue()}}</td>
+                                                    <td>{{vm.unitHydrographResponseData.runoff_results_table.rainfall_depth[$index].toUSGSvalue()}}</td>
+                                                    <td>{{vm.unitHydrographResponseData.runoff_results_table.CN_adjusted_for_rainfall_duration[$index].toUSGSvalue()}}</td>
+                                                    <td>{{vm.unitHydrographResponseData.runoff_results_table.runoff_volume_Q_CN[$index].toUSGSvalue()}}</td>
+                                                    <td>{{vm.unitHydrographResponseData.runoff_results_table.peak_runoff_Qp[$index].toUSGSvalue()}}</td>
+                                                    <td>{{vm.unitHydrographResponseData.runoff_results_table.time_of_peak_runoff[$index].toUSGSvalue()}}</td>
+                                                    <td ng-if="vm.stormPondsResponseData">{{vm.stormPondsResponseData.runoff_and_ponding_results.pond_peak_inflow[$index].toUSGSvalue()}}</td>
+                                                    <td ng-if="vm.stormPondsResponseData">{{vm.stormPondsResponseData.runoff_and_ponding_results.time_of_pond_peak_inflow[$index].toUSGSvalue()}}</td>
+                                                    <td ng-if="vm.stormPondsResponseData">{{vm.stormPondsResponseData.runoff_and_ponding_results.pond_peak_outflow[$index].toUSGSvalue()}}</td>
+                                                    <td ng-if="vm.stormPondsResponseData">{{vm.stormPondsResponseData.runoff_and_ponding_results.time_of_pond_peak_outflow[$index].toUSGSvalue()}}</td>
+                                                    <td ng-if="vm.stormPondsResponseData">{{vm.stormPondsResponseData.runoff_and_ponding_results.first_half_inch[$index]}}</td>
+                                                    <td ng-if="vm.stormPondsResponseData">{{vm.stormPondsResponseData.runoff_and_ponding_results.first_inch[$index]}}</td>
+                                                    <td ng-if="vm.stormPondsResponseData">{{vm.stormPondsResponseData.runoff_and_ponding_results.first_two_inch[$index]}}</td>
+                                                    <td ng-if="vm.stormPondsResponseData">{{vm.stormPondsResponseData.runoff_and_ponding_results.max_ponding_depth[$index].toUSGSvalue()}}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -507,11 +800,11 @@
                                             <tbody>
                                                 <tr>
                                                     <td>Maximum Runoff Volume</td>
-                                                    <td>{{vm.syntheticResponseData.runoff_results_table.max_runoff_volume_storm_duration}}</td>
+                                                    <td>{{vm.unitHydrographResponseData.runoff_results_table.max_runoff_volume_storm_duration}}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Maximum Peak Runoff</td>
-                                                    <td>{{vm.syntheticResponseData.runoff_results_table.max_peak_runoff_storm_duration}}</td>
+                                                    <td>{{vm.unitHydrographResponseData.runoff_results_table.max_peak_runoff_storm_duration}}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -532,7 +825,7 @@
                                         <div class="form-row-centered">
                                             <a ng-click="vm.isSyntheticUHOpen = !vm.isSyntheticUHOpen">
                                                 <span ng-show="vm.isSyntheticUHOpen">Hide</span>
-                                                <span ng-hide="vm.isSyntheticUHOpen">Show</span> D-Hour Strom Hydrograph Ordinates
+                                                <span ng-hide="vm.isSyntheticUHOpen">Show</span> D-Hour Storm Hydrograph Ordinates
                                             </a>
                                         </div>
 
@@ -541,27 +834,154 @@
                                                 <thead>
                                                     <tr>
                                                         <th>Time (minutes)</th>
-                                                        <th>1 Hr</th>
-                                                        <th>2 Hr</th>
-                                                        <th>3 Hr</th>
-                                                        <th>6 Hr</th>
-                                                        <th>12 Hr</th>
-                                                        <th>24 Hr</th>
+                                                        <th>1 Hr <span ng-if="vm.stormPondsResponseData">Inflow</span></th>
+                                                        <th ng-if="vm.stormPondsResponseData">1 Hr Outflow</th>
+                                                        <th>2 Hr <span ng-if="vm.stormPondsResponseData">Inflow</span></th>
+                                                        <th ng-if="vm.stormPondsResponseData">2 Hr Outflow</th>
+                                                        <th>3 Hr <span ng-if="vm.stormPondsResponseData">Inflow</span></th>
+                                                        <th ng-if="vm.stormPondsResponseData">3 Hr Outflow</th>
+                                                        <th>6 Hr <span ng-if="vm.stormPondsResponseData">Inflow</span></th>
+                                                        <th ng-if="vm.stormPondsResponseData">6 Hr Outflow</th>
+                                                        <th>12 Hr <span ng-if="vm.stormPondsResponseData">Inflow</span></th>
+                                                        <th ng-if="vm.stormPondsResponseData">12 Hr Outflow</th>
+                                                        <th>24 Hr <span ng-if="vm.stormPondsResponseData">Inflow</span></th>
+                                                        <th ng-if="vm.stormPondsResponseData">24 Hr Outflow</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr ng-repeat="item in vm.syntheticResponseData.hydrograph_ordinates_table.time">
+                                                    <tr ng-repeat="item in vm.unitHydrographResponseData.hydrograph_ordinates_table.time">
                                                         <td>{{item.toUSGSvalue()}}</td>
-                                                        <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_1_hour[$index].toUSGSvalue()}}</td>
-                                                        <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_2_hour[$index].toUSGSvalue()}}</td>
-                                                        <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_3_hour[$index].toUSGSvalue()}}</td>
-                                                        <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_6_hour[$index].toUSGSvalue()}}</td>
-                                                        <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_12_hour[$index].toUSGSvalue()}}</td>
-                                                        <td>{{vm.syntheticResponseData.hydrograph_ordinates_table.flow_24_hour[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.unitHydrographResponseData.hydrograph_ordinates_table.flow_1_hour[$index].toUSGSvalue()}}</td>
+                                                        <td ng-if="vm.stormPondsResponseData">{{vm.stormPondsResponseData.pond_inflow_and_outflow_ordinates.outflow_1_hour[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.unitHydrographResponseData.hydrograph_ordinates_table.flow_2_hour[$index].toUSGSvalue()}}</td>
+                                                        <td ng-if="vm.stormPondsResponseData">{{vm.stormPondsResponseData.pond_inflow_and_outflow_ordinates.outflow_2_hour[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.unitHydrographResponseData.hydrograph_ordinates_table.flow_3_hour[$index].toUSGSvalue()}}</td>
+                                                        <td ng-if="vm.stormPondsResponseData">{{vm.stormPondsResponseData.pond_inflow_and_outflow_ordinates.outflow_3_hour[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.unitHydrographResponseData.hydrograph_ordinates_table.flow_6_hour[$index].toUSGSvalue()}}</td>
+                                                        <td ng-if="vm.stormPondsResponseData">{{vm.stormPondsResponseData.pond_inflow_and_outflow_ordinates.outflow_6_hour[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.unitHydrographResponseData.hydrograph_ordinates_table.flow_12_hour[$index].toUSGSvalue()}}</td>
+                                                        <td ng-if="vm.stormPondsResponseData">{{vm.stormPondsResponseData.pond_inflow_and_outflow_ordinates.outflow_12_hour[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.unitHydrographResponseData.hydrograph_ordinates_table.flow_24_hour[$index].toUSGSvalue()}}</td>
+                                                        <td ng-if="vm.stormPondsResponseData">{{vm.stormPondsResponseData.pond_inflow_and_outflow_ordinates.outflow_24_hour[$index].toUSGSvalue()}}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>         
                                         </div>
+
+                                        <div ng-if="vm.USLEResponseData">
+                                            <h3>USLE & MUSLE Results</h3>
+                                            <table id="USLEDataTable" class="table table-condensed smalltext">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Texture</td>
+                                                        <td><b>{{vm.USLEResponseData.texture}}</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>R Factor</td>
+                                                        <td><b>{{vm.USLEResponseData.R.toUSGSvalue()}}</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>K Factor</td>
+                                                        <td><b>{{vm.USLEResponseData.K.toUSGSvalue()}}</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>LS Factor</td>
+                                                        <td><b>{{vm.USLEResponseData.LS.toUSGSvalue()}}</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>C Factor</td>
+                                                        <td><b>{{vm.USLEResponseData.C.toUSGSvalue()}}</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>P Factor</td>
+                                                        <td><b>{{vm.USLEResponseData.P.toUSGSvalue()}}</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Predicted Soil Loss (tons/acre/year)</td>
+                                                        <td><b>{{vm.USLEResponseData.predicted_soil_loss.toUSGSvalue()}}</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Gross Erosion (tons/year)</td>
+                                                        <td><b>{{vm.USLEResponseData.gross_erosion.toUSGSvalue()}}</b></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <table id="USLEResultsTable" class="table table-condensed smalltext">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Storm Duration (hrs)</th>
+                                                        <th>Runoff Volume (ac-ft)</th>
+                                                        <th>Peak Runoff (cfs)</th>
+                                                        <th>Gross Erosion (tons)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="option in vm.DHourStormOptions">
+                                                        <td>{{option.value}}</td>
+                                                        <td>{{vm.USLEResponseData.Q_CN_ac_ft[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.USLEResponseData.Q_p[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.USLEResponseData.MUSLE[$index].toUSGSvalue()}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <div ng-if="vm.stormSedimentResponseData">
+                                            <h3>Storm Pond Sediment Results</h3>
+                                            <table id="stormSedimentDataTable" class="table table-condensed smalltext">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Texture</td>
+                                                        <td><b>{{vm.stormSedimentResponseData.texture}}</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>a</td>
+                                                        <td><b>{{vm.stormSedimentResponseData.a.toUSGSvalue()}}</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>b</td>
+                                                        <td><b>{{vm.stormSedimentResponseData.b.toUSGSvalue()}}</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>c</td>
+                                                        <td><b>{{vm.stormSedimentResponseData.c.toUSGSvalue()}}</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>d</td>
+                                                        <td><b>{{vm.stormSedimentResponseData.d.toUSGSvalue()}}</b></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <table id="stormSedimentResultsTable" class="table table-condensed smalltext">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Storm Duration (hrs)</th>
+                                                        <th>S*</th>
+                                                        <th>D*</th>
+                                                        <th>Q*</th>
+                                                        <th>F*</th>
+                                                        <th>q*</th>
+                                                        <th>Coastal TE</th>
+                                                        <th>DHEC TE</th>
+                                                        <th>UofSC TE</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="option in vm.DHourStormOptions">
+                                                        <td>{{option.value}}</td>
+                                                        <td>{{vm.stormSedimentResponseData.S_star[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.stormSedimentResponseData.D_star.toUSGSvalue()}}</td>
+                                                        <td>{{vm.stormSedimentResponseData.Q_star[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.stormSedimentResponseData.F_star[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.stormSedimentResponseData.q_star[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.stormSedimentResponseData.Coastal_TE[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.stormSedimentResponseData.DHEC_TE[$index].toUSGSvalue()}}</td>
+                                                        <td>{{vm.stormSedimentResponseData.UofSC_TEs[$index].toUSGSvalue()}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
                         
                                         <div id="SyntheticUnitHydrographDisclaimerReport"> 
                                             <h3>Notes on Time of Concentration:</h3>
