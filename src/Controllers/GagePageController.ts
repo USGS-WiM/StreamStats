@@ -207,6 +207,8 @@ module StreamStats.Controllers {
         public dailyRange = [];
         public formattedDischargePeakDates = []; // Stage vs. Discharge Plot
         public dailyValuesOnly = [];
+        public ageQualityData = 'age'; //Stage vs. Discharge Plot
+        public error: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -702,7 +704,7 @@ module StreamStats.Controllers {
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             
             this.dischargeObj = [];
-            console.log('discharge data', this.dischargeObj)
+            // console.log('discharge data', this.dischargeObj)
 
             this.Execute(request).then(
                 (response: any) => {
@@ -738,9 +740,14 @@ module StreamStats.Controllers {
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             
             this.measuredObj = [];
-            console.log('is measured obj have data', this.measuredObj)
+            // console.log('is measured obj have data', this.measuredObj)
             this.Execute(request).then(
                 (response: any) => {
+                    const data = response.data
+                    //console.log('data error message', data)
+                    var errorMessage = '<title>USGS NwisWeb error message</title>'
+                    this.error = data.includes(errorMessage)
+                    if (this.error == false) { // No error
                     // console.log('response usgsmeasured', response)
                     const data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") });
                     // console.log('data', data)
@@ -770,6 +777,7 @@ module StreamStats.Controllers {
                         // console.log(object)
                         this.measuredObj.push(object) 
                     });
+                }
                     // console.log('measured obj', this.measuredObj)
                         // console.log('dischargeObj', dischargeValue)
                 }, (error) => {
@@ -972,7 +980,7 @@ module StreamStats.Controllers {
         public createAnnualFlowPlot(): void {
             //console.log('peak value plot data', this.formattedPeakDates);
             //onsole.log('estimated peak plot data', this.formattedEstPeakDates);
-            console.log('daily flow plot data', this.formattedDailyFlow);
+            // console.log('daily flow plot data', this.formattedDailyFlow);
             this.chartConfig = {
                 chart: {
                     height: 550,
@@ -1259,7 +1267,7 @@ public createDischargePlot(): void {
                 symbol: 'diamond',
                 radius: 3
             },
-            showInLegend: !this.measuredObj.every(item => isNaN(item.y)) 
+            showInLegend: this.error == false //!this.measuredObj.every(item => isNaN(item.y)) 
         }] 
     } 
 }
@@ -1440,7 +1448,7 @@ public createDailyRasterPlot(): void {
                 }
             };   
 
-
+        // public ageQualityData = true; // starts with it checked
         //radio to show age in discharge plot
         public toggleDischargeData (dataType) {
             // console.log('this is age data')
