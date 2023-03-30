@@ -141,7 +141,7 @@ var StreamStats;
                         "name": "NOAA D",
                         "value": 7,
                     }];
-                _this.greaterThanZero = /^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
+                _this.greaterThanZero = /^\+?(\d*[1-9]\d*\.?|\d*\.\d*[1-9]\d*)$/;
                 _this.gTZInvalidMessage = "Value must be greater than 0";
                 _this.greaterThanOrEqualToZero = /0+|^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
                 _this.gTOETZInvalidMessage = "Value must be greater than or equal to 0";
@@ -423,6 +423,20 @@ var StreamStats;
                 _this.TravelTimeFlowSegments = JSON.parse(JSON.stringify(_this._defaultFlowSegments));
                 _this.prfSegments = [];
                 _this.addFlowSegmentOpen = false;
+                _this.usle = false;
+                _this.countyNames = [];
+                _this.coverNames = [];
+                _this.practiceNames = [];
+                _this.stormponds = false;
+                _this.max_depth = 10;
+                _this.Orif1_Coeff = 0.6;
+                _this.Orif2_Coeff = 0.6;
+                _this.Rec_Weir_Coeff = 3.3;
+                _this.Rec_Weir_Ex = 1.5;
+                _this.OS_BCWeir_Coeff = 3;
+                _this.OS_Weir_Ex = 1.5;
+                _this.pondsediment = false;
+                _this.soilNames = [];
                 _this.DHourStormOptions = [{
                         "name": "1-Hour",
                         "value": 1,
@@ -973,15 +987,19 @@ var StreamStats;
                 }
                 return formattedSegments;
             };
-            SCStormRunoffController.prototype.calculateSynthetic = function () {
+            SCStormRunoffController.prototype.calculateSpreedSheet = function () {
                 var _this = this;
+                var unitHydrograph = {};
+                var stormPonding = {};
+                var USLE = {};
+                var stormSediment = {};
                 this.canContinueSynthetic = false;
                 var headers = {
                     "Content-Type": "application/json",
                     "X-Is-StreamStats": true
                 };
-                var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCStormRunoffSyntheticUnitComputerGraphResults'];
-                var data = {
+                var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCComputeSpreadSheet'];
+                unitHydrograph = {
                     "lat": this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
                     "lon": this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
                     "AEP": this._selectedAEPSynthetic.value,
@@ -994,43 +1012,150 @@ var StreamStats;
                     "S": this.watershedRetention,
                     "Ia": this.initialAbstraction
                 };
+                if (this.usle == true) {
+                    USLE = {
+                        "county_name": this.countyName,
+                        "soil_name": this.soilName,
+                        "slope_length": this.slopeLength,
+                        "slope_steepness": this.slopeSteepness,
+                        "cover_name": this.coverName,
+                        "practice_name": this.practiceName
+                    };
+                }
+                if (this.stormponds == true) {
+                    if (this.pondOption == 1) {
+                        stormPonding = {
+                            "pondOption": 1,
+                            "pond_bottom_elev": this.pond_bottom_elev,
+                            "Orif1_Coeff": this.Orif1_Coeff,
+                            "Orif1_Dia": this.Orif1_Dia,
+                            "Orif1_CtrEL": this.Orif1_CtrEL,
+                            "Orif1_NumOpenings": this.Orif1_NumOpenings,
+                            "Orif2_Coeff": this.Orif2_Coeff,
+                            "Orif2_Dia": this.Orif2_Dia,
+                            "Orif2_CtrEL": this.Orif2_CtrEL,
+                            "Orif2_NumOpenings": this.Orif2_NumOpenings,
+                            "Rec_Weir_Coeff": this.Rec_Weir_Coeff,
+                            "Rec_Weir_Ex": this.Rec_Weir_Ex,
+                            "Rec_Weir_Length": this.Rec_Weir_Length,
+                            "Rec_WeirCrest_EL": this.Rec_WeirCrest_EL,
+                            "Rec_Num_Weirs": this.Rec_Num_Weirs,
+                            "OS_BCWeir_Coeff": this.OS_BCWeir_Coeff,
+                            "OS_Weir_Ex": this.OS_Weir_Ex,
+                            "OS_Length": this.OS_Length,
+                            "OS_Crest_EL": this.OS_Crest_EL,
+                            "Seepage_Bottom": this.Seepage_Bottom,
+                            "Seepage_Side": this.Seepage_Side,
+                            "length": this.length,
+                            "w1": this.w1,
+                            "w2": this.w2,
+                            "side_slope_z": this.side_slope_z,
+                            "bottom_slope": this.bottom_slope
+                        };
+                    }
+                    else {
+                        var elevation_area = [[this.pond_bottom_elev, this.Elev_Area[0][1]],
+                            [this.Elev_Area[1][0], this.Elev_Area[1][1]],
+                            [this.Elev_Area[2][0], this.Elev_Area[2][1]],
+                            [this.Elev_Area[3][0], this.Elev_Area[3][1]],
+                            [this.Elev_Area[4][0], this.Elev_Area[4][1]],
+                            [this.Elev_Area[5][0], this.Elev_Area[5][1]],
+                            [this.Elev_Area[6][0], this.Elev_Area[6][1]],
+                            [this.Elev_Area[7][0], this.Elev_Area[7][1]],
+                            [this.Elev_Area[8][0], this.Elev_Area[8][1]],
+                            [this.Elev_Area[9][0], this.Elev_Area[9][1]]];
+                        stormPonding = {
+                            "pondOption": 2,
+                            "pond_bottom_elev": this.pond_bottom_elev,
+                            "Orif1_Coeff": this.Orif1_Coeff,
+                            "Orif1_Dia": this.Orif1_Dia,
+                            "Orif1_CtrEL": this.Orif1_CtrEL,
+                            "Orif1_NumOpenings": this.Orif1_NumOpenings,
+                            "Orif2_Coeff": this.Orif2_Coeff,
+                            "Orif2_Dia": this.Orif2_Dia,
+                            "Orif2_CtrEL": this.Orif2_CtrEL,
+                            "Orif2_NumOpenings": this.Orif2_NumOpenings,
+                            "Rec_Weir_Coeff": this.Rec_Weir_Coeff,
+                            "Rec_Weir_Ex": this.Rec_Weir_Ex,
+                            "Rec_Weir_Length": this.Rec_Weir_Length,
+                            "Rec_WeirCrest_EL": this.Rec_WeirCrest_EL,
+                            "Rec_Num_Weirs": this.Rec_Num_Weirs,
+                            "OS_BCWeir_Coeff": this.OS_BCWeir_Coeff,
+                            "OS_Weir_Ex": this.OS_Weir_Ex,
+                            "OS_Length": this.OS_Length,
+                            "OS_Crest_EL": this.OS_Crest_EL,
+                            "Seepage_Bottom": this.Seepage_Bottom,
+                            "Seepage_Side": this.Seepage_Side,
+                            "Elev_Area": elevation_area
+                        };
+                    }
+                }
+                if (this.pondsediment == true) {
+                    stormSediment = {
+                        "soil_name": this.soilName
+                    };
+                }
+                var data = {
+                    unitHydrograph: unitHydrograph,
+                    USLE: USLE,
+                    stormPonding: stormPonding,
+                    stormSediment: stormSediment
+                };
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(data), headers);
                 this.Execute(request).then(function (response) {
                     if (!response.data) {
-                        _this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
+                        _this.toaster.pop('error', "There was an HTTP error calculating results.", "Please retry", 0);
                         return;
                     }
-                    if (!response.data.hydrograph_ordinates_table || !response.data.runoff_results_table || !response.data.unit_hydrograph_data || !response.data.watershed_data) {
-                        _this.toaster.pop('error', "One or more of the expected data responses came back null.", "Please retry", 0);
-                        return;
-                    }
-                    _this.syntheticResponseData = response.data;
+                    _this.unitHydrographResponseData = response.data.unitHydrographResults;
+                    _this.stormPondsResponseData = response.data.stormPondingResults;
+                    _this.USLEResponseData = response.data.USLEResults;
+                    _this.stormSedimentResponseData = response.data.pondSedimentResults;
                     _this.DHourStormChange();
                     _this.showResultsSynthetic = true;
                     _this.canContinueSynthetic = true;
                 }, function (error) {
-                    _this.toaster.pop('error', "There was an HTTP error querying Regression regions", "Please retry", 0);
+                    _this.toaster.pop('error', "There was an HTTP error calculating results.", error.data.detail, 0);
                 }).finally(function () {
                 });
             };
             SCStormRunoffController.prototype.loadSyntheticGraphData = function () {
                 var _this = this;
                 var results = [];
-                var hydrograph = [];
+                var flow = [];
                 var flowHour = "flow_" + this._selectedDHourStorm.value + "_hour";
                 var timeArray = [];
-                for (var _i = 0, _a = this.syntheticResponseData.hydrograph_ordinates_table.time; _i < _a.length; _i++) {
+                for (var _i = 0, _a = this.unitHydrographResponseData.hydrograph_ordinates_table.time; _i < _a.length; _i++) {
                     var time = _a[_i];
                     timeArray.push(time);
                     if (Math.abs(time - this._selectedDHourStorm.maxTimeMinutes) < 6) {
                         break;
                     }
                 }
-                hydrograph = timeArray.map(function (v, i) { return [v, _this.syntheticResponseData.hydrograph_ordinates_table[flowHour][i]]; }).map(function (_a) {
+                flow = timeArray.map(function (v, i) { return [v, _this.unitHydrographResponseData.hydrograph_ordinates_table[flowHour][i]]; }).map(function (_a) {
                     var x = _a[0], y = _a[1];
                     return ({ x: x, y: y });
                 });
-                results.push({ values: hydrograph, key: "Flow (ft³/s)", color: " #009900", type: "line", yAxis: 1 });
+                if (this.stormponds == true) {
+                    results.push({ values: flow, key: "Inflow (ft³/s)", color: " #0000FF", type: "line", yAxis: 1 });
+                    var flowHour = "outflow_" + this._selectedDHourStorm.value + "_hour";
+                    var timeArray = [];
+                    for (var _b = 0, _c = this.stormPondsResponseData.pond_inflow_and_outflow_ordinates.time; _b < _c.length; _b++) {
+                        var time = _c[_b];
+                        timeArray.push(time);
+                        if (Math.abs(time - this._selectedDHourStorm.maxTimeMinutes) < 6) {
+                            break;
+                        }
+                    }
+                    var outflow = timeArray.map(function (v, i) { return [v, _this.stormPondsResponseData.pond_inflow_and_outflow_ordinates[flowHour][i]]; }).map(function (_a) {
+                        var x = _a[0], y = _a[1];
+                        return ({ x: x, y: y });
+                    });
+                    results.push({ values: outflow, key: "Outflow (ft³/s)", color: " #FF0000", type: "line", yAxis: 1 });
+                }
+                else {
+                    results.push({ values: flow, key: "Flow (ft³/s)", color: " #0000FF", type: "line", yAxis: 1 });
+                }
                 return results;
             };
             SCStormRunoffController.prototype.setSyntheticGraphOptions = function () {
@@ -1070,18 +1195,18 @@ var StreamStats;
             };
             SCStormRunoffController.prototype.DHourStormChange = function () {
                 this.ReportData.SyntheticUrbanHydrograph.Graph = this.loadSyntheticGraphData();
-                this.ReportData.SyntheticUrbanHydrograph.WeightedRunoff = this.syntheticResponseData.runoff_results_table;
+                this.ReportData.SyntheticUrbanHydrograph.WeightedRunoff = this.unitHydrographResponseData.runoff_results_table;
                 this.setSyntheticGraphOptions();
             };
             SCStormRunoffController.prototype.isMaxRunoffVolume = function (index) {
-                var max_runoff_volume_storm_duration = this.syntheticResponseData.runoff_results_table.max_runoff_volume_storm_duration;
+                var max_runoff_volume_storm_duration = this.unitHydrographResponseData.runoff_results_table.max_runoff_volume_storm_duration;
                 if (this.DHourStormOptions[index].value == max_runoff_volume_storm_duration) {
                     return true;
                 }
                 return false;
             };
             SCStormRunoffController.prototype.isMaxPeakRunoff = function (index) {
-                var max_peak_runoff_storm_duration = this.syntheticResponseData.runoff_results_table.max_peak_runoff_storm_duration;
+                var max_peak_runoff_storm_duration = this.unitHydrographResponseData.runoff_results_table.max_peak_runoff_storm_duration;
                 if (this.DHourStormOptions[index].value == max_peak_runoff_storm_duration) {
                     return true;
                 }
@@ -1334,6 +1459,23 @@ var StreamStats;
                 }
                 return counter;
             };
+            SCStormRunoffController.prototype.getFactorData = function () {
+                var _this = this;
+                var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCFactorData'];
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.Execute(request).then(function (response) {
+                    if (response.data) {
+                        _this.countyNames = Object.keys(response.data.R_Factor);
+                        _this.soilNames = Object.keys(response.data.K_Factor);
+                        _this.coverNames = Object.keys(response.data.C_Factor);
+                        _this.practiceNames = Object.keys(response.data.P_Factor);
+                    }
+                }, function (error) {
+                    _this.toaster.clear();
+                    _this.toaster.pop("error", "There was an HTTP error getting factor data.", "Please retry", 0);
+                }).finally(function () {
+                });
+            };
             SCStormRunoffController.prototype.validateForm = function (mainForm) {
                 var _a;
                 if (mainForm.$name == "SyntheticUrbanHydrograph") {
@@ -1363,6 +1505,15 @@ var StreamStats;
                     this.showUrbanResults = false;
                     this.hideAlerts = false;
                     return false;
+                }
+            };
+            SCStormRunoffController.prototype.disableSediment = function () {
+                if (this.pondOption == 1) {
+                    return false;
+                }
+                else {
+                    this.pondsediment = false;
+                    return true;
                 }
             };
             SCStormRunoffController.prototype.clearResults = function (form) {
@@ -1472,10 +1623,25 @@ var StreamStats;
                     var UnitHydrographTable = (_this.tableToCSV($('#UnitHydrographTable')).slice(3));
                     finalVal += '\n' + "Watershed Data" + WatershedDataTable;
                     finalVal += '\n\n' + "Unit Hydrograph Data" + UnitHydrographTable;
-                    finalVal += '\n\n' + "Runoff Results" + '\n' + _this.tableToCSV($('#SyntheticUnitHydrographRunoffTable'));
+                    if (_this.stormPondsResponseData) {
+                        finalVal += '\n\n' + "Runoff and Storm Ponding Results" + '\n' + _this.tableToCSV($('#SyntheticUnitHydrographRunoffTable'));
+                    }
+                    else {
+                        finalVal += '\n\n' + "Runoff Results" + '\n' + _this.tableToCSV($('#SyntheticUnitHydrographRunoffTable'));
+                    }
                     finalVal += '\n\n' + "Critical Durations" + '\n' + _this.tableToCSV($('#SyntheticUnitHydrographCriticalDurationsTable'));
                     finalVal += '\n\nTabular Hydrograph';
                     finalVal += '\n' + "D-Hour Storm Hydrograph Ordinates" + '\n' + _this.tableToCSV($('#SyntheticUnitHydrographDataTable'));
+                    if (_this.USLEResponseData) {
+                        var USLEDataTable = (_this.tableToCSV($('#USLEDataTable')).slice(3));
+                        finalVal += '\n\n' + "USLE and MUSLE Data" + USLEDataTable;
+                        finalVal += '\n\n' + "USLE and MUSLE Results" + '\n' + _this.tableToCSV($('#USLEResultsTable'));
+                    }
+                    if (_this.stormSedimentResponseData) {
+                        var stormSedimentDataTable = (_this.tableToCSV($('#stormSedimentDataTable')).slice(3));
+                        finalVal += '\n\n' + "Storm Pond Sediment Data" + stormSedimentDataTable;
+                        finalVal += '\n\n' + "Storm Pond Sediment Results" + '\n' + _this.tableToCSV($('#stormSedimentResultsTable'));
+                    }
                     finalVal += '\n\n' + _this.tableToCSV($('#SyntheticUnitHydrographDisclaimerReport'));
                     var node = document.getElementById('SyntheticUnitHydrographDisclaimerReport');
                     var string = node.textContent.replace(/\s+/g, ' ').trim();
@@ -1522,6 +1688,7 @@ var StreamStats;
                 this.canContinueSynthetic = true;
                 this._chosenFlowType = null;
                 this.stormHydrographOrdinatesAccordionOpen = false;
+                this.getFactorData();
             };
             SCStormRunoffController.prototype.selectRunoffType = function () {
                 switch (this._selectedTab) {
