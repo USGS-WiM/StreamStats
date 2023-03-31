@@ -1308,7 +1308,7 @@ module StreamStats.Controllers {
                     this.formattedContrOneDayStats.push({
                         name: contrOneDayItem.regressionType.name,
                         tooltip: {
-                            headerFormat:'<b>30-Day Low Flow Statistics',
+                            headerFormat:'<b>Controlled 1-Day Low Flow Statistics',
                             pointFormatter: function(){
                                 if (this.formattedPeakDates !== null){
                                     return '</b><br>AEP: <b>'  + formattedName + '%' + '</b><br>Value: <b>' + contrOneDayItem.value + ' ft³/s<br>'
@@ -1359,7 +1359,7 @@ module StreamStats.Controllers {
                     this.formattedContrSevenDayStats.push({
                         name: contrSevenDayItem.regressionType.name,
                         tooltip: {
-                            headerFormat:'<b>30-Day Low Flow Statistics',
+                            headerFormat:'<b>Controlled 7-Day Low Flow Statistics',
                             pointFormatter: function(){
                                 if (this.formattedPeakDates !== null){
                                     return '</b><br>AEP: <b>'  + formattedName + '%' + '</b><br>Value: <b>' + contrSevenDayItem.value + ' ft³/s<br>'
@@ -1412,7 +1412,7 @@ module StreamStats.Controllers {
                     this.formattedContrFourteenDayStats.push({
                         name: contrFourteenDayItem.regressionType.name,
                         tooltip: {
-                            headerFormat:'<b>30-Day Low Flow Statistics',
+                            headerFormat:'<b>Controlled 14-Day Low Flow Statistics',
                             pointFormatter: function(){
                                 if (this.formattedPeakDates !== null){
                                     return '</b><br>AEP: <b>'  + formattedName + '%' + '</b><br>Value: <b>' + contrFourteenDayItem.value + ' ft³/s<br>'
@@ -1463,7 +1463,7 @@ module StreamStats.Controllers {
                     this.formattedContrThirtyDayStats.push({
                         name: contrThirtyDayItem.regressionType.name,
                         tooltip: {
-                            headerFormat:'<b>30-Day Low Flow Statistics',
+                            headerFormat:'<b>Controlled 30-Day Low Flow Statistics',
                             pointFormatter: function(){
                                 if (this.formattedPeakDates !== null){
                                     return '</b><br>AEP: <b>'  + formattedName + '%' + '</b><br>Value: <b>' + contrThirtyDayItem.value + ' ft³/s<br>'
@@ -1520,7 +1520,7 @@ module StreamStats.Controllers {
                     this.formattedWeightedOneDayStats.push({
                         name: weightedOneDayItem.regressionType.name,
                         tooltip: {
-                            headerFormat:'<b>30-Day Low Flow Statistics',
+                            headerFormat:'<b>Weighted 1-Day Low Flow Statistics',
                             pointFormatter: function(){
                                 if (this.formattedPeakDates !== null){
                                     return '</b><br>AEP: <b>'  + formattedName + '%' + '</b><br>Value: <b>' + weightedOneDayItem.value + ' ft³/s<br>'
@@ -1579,7 +1579,7 @@ module StreamStats.Controllers {
                     this.formattedWeightedSevenDayStats.push({
                         name: weightedSevenDayItem.regressionType.name,
                         tooltip: {
-                            headerFormat:'<b>30-Day Low Flow Statistics',
+                            headerFormat:'<b>Weighted 7-Day Low Flow Statistics',
                             pointFormatter: function(){
                                 if (this.formattedPeakDates !== null){
                                     return '</b><br>AEP: <b>'  + formattedName + '%' + '</b><br>Value: <b>' + weightedSevenDayItem.value + ' ft³/s<br>'
@@ -1637,7 +1637,7 @@ module StreamStats.Controllers {
                     this.formattedWeightedThirtyDayStats.push({
                         name: weightedThirtyDayItem.regressionType.name,
                         tooltip: {
-                            headerFormat:'<b>30-Day Low Flow Statistics',
+                            headerFormat:'<b>Weighted 30-Day Low Flow Statistics',
                             pointFormatter: function(){
                                 if (this.formattedPeakDates !== null){
                                     return '</b><br>AEP: <b>'  + formattedName + '%' + '</b><br>Value: <b>' + weightedThirtyDayItem.value + ' ft³/s<br>'
@@ -1692,7 +1692,7 @@ module StreamStats.Controllers {
                     this.formattedAltFloodFreq.push({
                         name: altFloodFreqItem.regressionType.name,
                         tooltip: {
-                            headerFormat:'<b>30-Day Low Flow Statistics',
+                            headerFormat:'<b>Alternative Annual Exceedance Probability (AEP)',
                             pointFormatter: function(){
                                 if (this.formattedPeakDates !== null){
                                     return '</b><br>AEP: <b>'  + formattedName + '%' + '</b><br>Value: <b>' + altFloodFreqItem.value + ' ft³/s<br>'
@@ -1793,6 +1793,17 @@ module StreamStats.Controllers {
                             })
                     });
             this.allFloodFreqStats.push(this.formattedFloodFreq, this.formattedAltFloodFreq, this.formattedOneDayStats, this.formattedSevenDayStats, this.formattedFourteenDayStats, this.formattedThirtyDayStats, this.formattedContrOneDayStats, this.formattedContrOneDayStats, this.formattedContrSevenDayStats, this.formattedContrFourteenDayStats, this.formattedContrThirtyDayStats, this.formattedWeightedOneDayStats, this.formattedWeightedSevenDayStats, this.formattedWeightedThirtyDayStats);
+            
+            this.allFloodFreqStats = this.allFloodFreqStats.filter(group => group.length > 0);
+
+            this.allFloodFreqStats.forEach((group, index) => {
+                console.log(group);
+                this.allFloodFreqStats[index] = {
+                    name: group[0].tooltip.headerFormat.replace("<b>",""),
+                    statistics: group
+                }
+            });
+            
             console.log(this.allFloodFreqStats);
             this.createAnnualFlowPlot();
         }}
@@ -2150,8 +2161,19 @@ module StreamStats.Controllers {
             this.formattedFloodFreq.forEach((formattedFloodFreqItem) => {
                 this.chartConfig.series.push(formattedFloodFreqItem)
             });
-
         }
+
+        //dropdown for choosing flood statistics
+        public chooseFloodStats () {
+            let chart = $('#chart1').highcharts();
+            if (chart.gageFloodStatsSelect.name == '30-Day Low Flow Statistics') {
+                this.formattedThirtyDayStats.forEach((formattedThirtyDayItem) => {
+                    this.chartConfig.series.push(formattedThirtyDayItem)
+                });
+            }
+        }
+
+
 
         //checkbox for turning on and off AEP lines
         public showAEP = true;

@@ -1091,7 +1091,7 @@ var StreamStats;
                         _this_1.formattedContrOneDayStats.push({
                             name: contrOneDayItem.regressionType.name,
                             tooltip: {
-                                headerFormat: '<b>30-Day Low Flow Statistics',
+                                headerFormat: '<b>Controlled 1-Day Low Flow Statistics',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
                                         return '</b><br>AEP: <b>' + formattedName + '%' + '</b><br>Value: <b>' + contrOneDayItem.value + ' ft³/s<br>';
@@ -1141,7 +1141,7 @@ var StreamStats;
                         _this_1.formattedContrSevenDayStats.push({
                             name: contrSevenDayItem.regressionType.name,
                             tooltip: {
-                                headerFormat: '<b>30-Day Low Flow Statistics',
+                                headerFormat: '<b>Controlled 7-Day Low Flow Statistics',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
                                         return '</b><br>AEP: <b>' + formattedName + '%' + '</b><br>Value: <b>' + contrSevenDayItem.value + ' ft³/s<br>';
@@ -1193,7 +1193,7 @@ var StreamStats;
                         _this_1.formattedContrFourteenDayStats.push({
                             name: contrFourteenDayItem.regressionType.name,
                             tooltip: {
-                                headerFormat: '<b>30-Day Low Flow Statistics',
+                                headerFormat: '<b>Controlled 14-Day Low Flow Statistics',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
                                         return '</b><br>AEP: <b>' + formattedName + '%' + '</b><br>Value: <b>' + contrFourteenDayItem.value + ' ft³/s<br>';
@@ -1243,7 +1243,7 @@ var StreamStats;
                         _this_1.formattedContrThirtyDayStats.push({
                             name: contrThirtyDayItem.regressionType.name,
                             tooltip: {
-                                headerFormat: '<b>30-Day Low Flow Statistics',
+                                headerFormat: '<b>Controlled 30-Day Low Flow Statistics',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
                                         return '</b><br>AEP: <b>' + formattedName + '%' + '</b><br>Value: <b>' + contrThirtyDayItem.value + ' ft³/s<br>';
@@ -1299,7 +1299,7 @@ var StreamStats;
                         _this_1.formattedWeightedOneDayStats.push({
                             name: weightedOneDayItem.regressionType.name,
                             tooltip: {
-                                headerFormat: '<b>30-Day Low Flow Statistics',
+                                headerFormat: '<b>Weighted 1-Day Low Flow Statistics',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
                                         return '</b><br>AEP: <b>' + formattedName + '%' + '</b><br>Value: <b>' + weightedOneDayItem.value + ' ft³/s<br>';
@@ -1357,7 +1357,7 @@ var StreamStats;
                         _this_1.formattedWeightedSevenDayStats.push({
                             name: weightedSevenDayItem.regressionType.name,
                             tooltip: {
-                                headerFormat: '<b>30-Day Low Flow Statistics',
+                                headerFormat: '<b>Weighted 7-Day Low Flow Statistics',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
                                         return '</b><br>AEP: <b>' + formattedName + '%' + '</b><br>Value: <b>' + weightedSevenDayItem.value + ' ft³/s<br>';
@@ -1414,7 +1414,7 @@ var StreamStats;
                         _this_1.formattedWeightedThirtyDayStats.push({
                             name: weightedThirtyDayItem.regressionType.name,
                             tooltip: {
-                                headerFormat: '<b>30-Day Low Flow Statistics',
+                                headerFormat: '<b>Weighted 30-Day Low Flow Statistics',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
                                         return '</b><br>AEP: <b>' + formattedName + '%' + '</b><br>Value: <b>' + weightedThirtyDayItem.value + ' ft³/s<br>';
@@ -1468,7 +1468,7 @@ var StreamStats;
                         _this_1.formattedAltFloodFreq.push({
                             name: altFloodFreqItem.regressionType.name,
                             tooltip: {
-                                headerFormat: '<b>30-Day Low Flow Statistics',
+                                headerFormat: '<b>Alternative Annual Exceedance Probability (AEP)',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
                                         return '</b><br>AEP: <b>' + formattedName + '%' + '</b><br>Value: <b>' + altFloodFreqItem.value + ' ft³/s<br>';
@@ -1565,6 +1565,14 @@ var StreamStats;
                         });
                     });
                     this.allFloodFreqStats.push(this.formattedFloodFreq, this.formattedAltFloodFreq, this.formattedOneDayStats, this.formattedSevenDayStats, this.formattedFourteenDayStats, this.formattedThirtyDayStats, this.formattedContrOneDayStats, this.formattedContrOneDayStats, this.formattedContrSevenDayStats, this.formattedContrFourteenDayStats, this.formattedContrThirtyDayStats, this.formattedWeightedOneDayStats, this.formattedWeightedSevenDayStats, this.formattedWeightedThirtyDayStats);
+                    this.allFloodFreqStats = this.allFloodFreqStats.filter(function (group) { return group.length > 0; });
+                    this.allFloodFreqStats.forEach(function (group, index) {
+                        console.log(group);
+                        _this_1.allFloodFreqStats[index] = {
+                            name: group[0].tooltip.headerFormat.replace("<b>", ""),
+                            statistics: group
+                        };
+                    });
                     console.log(this.allFloodFreqStats);
                     this.createAnnualFlowPlot();
                 }
@@ -1912,6 +1920,15 @@ var StreamStats;
                 this.formattedFloodFreq.forEach(function (formattedFloodFreqItem) {
                     _this_1.chartConfig.series.push(formattedFloodFreqItem);
                 });
+            };
+            GagePageController.prototype.chooseFloodStats = function () {
+                var _this_1 = this;
+                var chart = $('#chart1').highcharts();
+                if (chart.gageFloodStatsSelect.name == '30-Day Low Flow Statistics') {
+                    this.formattedThirtyDayStats.forEach(function (formattedThirtyDayItem) {
+                        _this_1.chartConfig.series.push(formattedThirtyDayItem);
+                    });
+                }
             };
             GagePageController.prototype.toggleAEPlines = function () {
                 var chart = $('#chart1').highcharts();
