@@ -74,19 +74,21 @@ var StreamStats;
                         this.selectedFlowStatsList.push(statisticsGroup);
                         this.setParamCheck(statisticsGroup['regressionRegions']);
                     }
+                    this.onSelectedStatisticsGroupChanged();
                 }
                 else if (allFlowStatsSelectedToggle == true) {
                     if (checkStatisticsGroup == -1) {
                         this.selectedFlowStatsList.push(statisticsGroup);
                         this.setParamCheck(statisticsGroup['regressionRegions']);
                     }
+                    this.onSelectedStatisticsGroupChanged();
                 }
                 else if (allFlowStatsSelectedToggle == false) {
                     if (checkStatisticsGroup != -1) {
                         this.selectedFlowStatsList.splice(checkStatisticsGroup, 1);
                     }
+                    this.onSelectedStatisticsGroupChanged(false);
                 }
-                this.onSelectedStatisticsGroupChanged();
                 this.checkStats();
             };
             BatchProcessorController.prototype.setParamCheck = function (regressionRegions) {
@@ -105,12 +107,15 @@ var StreamStats;
                     });
                 });
             };
-            BatchProcessorController.prototype.onSelectedStatisticsGroupChanged = function () {
+            BatchProcessorController.prototype.onSelectedStatisticsGroupChanged = function (allFlowStatsSelectedToggle) {
                 var _this = this;
-                this.availableParamList.forEach(function (param) {
-                    param.checked = false;
-                    param.toggleable = true;
-                });
+                if (allFlowStatsSelectedToggle === void 0) { allFlowStatsSelectedToggle = null; }
+                if (allFlowStatsSelectedToggle == false) {
+                    this.availableParamList.forEach(function (param) {
+                        param.checked = false;
+                        param.toggleable = true;
+                    });
+                }
                 this.selectedParamList = [];
                 this.selectedFlowStatsList.forEach(function (statisticsGroup) {
                     statisticsGroup['checked'] = true;

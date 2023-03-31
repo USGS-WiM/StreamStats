@@ -174,8 +174,11 @@ module StreamStats.Controllers {
 
                     // make sure DNRAREA is in selectedParamList
                     // this.addParameterToSelectedParamList("DRNAREA"); // uncomment if want to forcibly add DRNAREA to selectedParamList
-
+                    
                 }
+
+                this.onSelectedStatisticsGroupChanged();
+
             } else if (allFlowStatsSelectedToggle == true) { // "Select All Flow Statistics" button was clicked
                 if (checkStatisticsGroup == -1) {
                     this.selectedFlowStatsList.push(statisticsGroup);
@@ -184,13 +187,16 @@ module StreamStats.Controllers {
                     this.setParamCheck(statisticsGroup['regressionRegions']);
                 } 
 
+                this.onSelectedStatisticsGroupChanged();
+
             } else if (allFlowStatsSelectedToggle == false) { // "Unselect All Flow Statistics" button was clicked
                 if (checkStatisticsGroup != -1) {
                     this.selectedFlowStatsList.splice(checkStatisticsGroup, 1);
-                }
-            }
 
-            this.onSelectedStatisticsGroupChanged();
+                    
+                }
+                this.onSelectedStatisticsGroupChanged(false);
+            }
 
             // handle impacts of flowStat.checked
             this.checkStats();
@@ -217,13 +223,16 @@ module StreamStats.Controllers {
         }
 
 
-        public onSelectedStatisticsGroupChanged(): void {
+        public onSelectedStatisticsGroupChanged(allFlowStatsSelectedToggle: boolean = null): void {
 
             // Rebuild the selected parameters from scratch
-            this.availableParamList.forEach(param => {
-                param.checked = false;
-                param.toggleable = true;
-            })
+            if (allFlowStatsSelectedToggle == false) {
+                this.availableParamList.forEach(param => {
+                    param.checked = false;
+                    param.toggleable = true;
+                })
+            }
+
             this.selectedParamList = [];
 
             //loop over whole statisticsgroups
@@ -254,7 +263,7 @@ module StreamStats.Controllers {
                                 // this.toaster.pop('warning', "Missing Parameter: " + param.code, "The selected scenario requires a parameter not available in this State/Region.  The value for this parameter will need to be entered manually.", 0);
 
                                 //add to region parameterList
-                                var newParam = {
+                                var newParam: Parameter = {
                                     code: param.code,
                                     description: param.description,
                                     checked: false,
@@ -272,7 +281,6 @@ module StreamStats.Controllers {
                     });// next regressionRegion
                 }//end if
             });//next statisticgroup
-
         }
 
         public checkStats(): void {
