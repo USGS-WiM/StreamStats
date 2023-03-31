@@ -103,8 +103,8 @@ var StreamStats;
                 _this_1.formattedDailyFlow = [];
                 _this_1.dailyRange = [];
                 _this_1.formattedDischargePeakDates = [];
-                _this_1.ageQualityData = 'age';
                 _this_1.dailyValuesOnly = [];
+                _this_1.ageQualityData = 'age';
                 _this_1.plotlines = true;
                 _this_1.logScale = false;
                 _this_1.logScaleDischarge = false;
@@ -493,7 +493,6 @@ var StreamStats;
                 var url = 'https://waterdata.usgs.gov/nwisweb/get_ratings?site_no=' + this.gage.code + '&file_type=exsa';
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.dischargeObj = [];
-                console.log('discharge data', this.dischargeObj);
                 this.Execute(request).then(function (response) {
                     var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
                     data.shift().split('\t');
@@ -516,26 +515,30 @@ var StreamStats;
                 var url = 'https://waterdata.usgs.gov/nwis/measurements?site_no=' + this.gage.code + '&agency_cd=USGS&format=rdb_expanded';
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.measuredObj = [];
-                console.log('is measured obj have data', this.measuredObj);
                 this.Execute(request).then(function (response) {
-                    var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
-                    data.shift().split('\t');
-                    data.shift();
-                    data.forEach(function (row) {
-                        var dataRow = row.split('\t');
-                        var object = {
-                            dateTime: dataRow[3],
-                            timeZone: dataRow[4],
-                            quality: dataRow[10],
-                            control: dataRow[13],
-                            x: parseFloat(dataRow[9]),
-                            y: parseFloat(dataRow[8]),
-                            qualityColor: _this_1.getCorrectQualityColor(dataRow[10]),
-                            color: _this_1.getCorrectColor(new Date(dataRow[3])),
-                            ageColor: _this_1.getCorrectColor(new Date(dataRow[3]))
-                        };
-                        _this_1.measuredObj.push(object);
-                    });
+                    var data = response.data;
+                    var errorMessage = '<title>USGS NwisWeb error message</title>';
+                    _this_1.error = data.includes(errorMessage);
+                    if (_this_1.error == false) {
+                        var data_1 = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
+                        data_1.shift().split('\t');
+                        data_1.shift();
+                        data_1.forEach(function (row) {
+                            var dataRow = row.split('\t');
+                            var object = {
+                                dateTime: dataRow[3],
+                                timeZone: dataRow[4],
+                                quality: dataRow[10],
+                                control: dataRow[13],
+                                x: parseFloat(dataRow[9]),
+                                y: parseFloat(dataRow[8]),
+                                qualityColor: _this_1.stageDischargeQualityColor(dataRow[10]),
+                                color: _this_1.stageDischargeAgeColor(new Date(dataRow[3])),
+                                ageColor: _this_1.stageDischargeAgeColor(new Date(dataRow[3]))
+                            };
+                            _this_1.measuredObj.push(object);
+                        });
+                    }
                 }, function (error) {
                 }).finally(function () {
                     _this_1.formatData();
@@ -823,7 +826,7 @@ var StreamStats;
                     _this_1.chartConfig.yAxis.plotLines.push(formattedFloodFreqItem);
                 });
             };
-            GagePageController.prototype.getCorrectColor = function (date) {
+            GagePageController.prototype.stageDischargeAgeColor = function (date) {
                 var days = (new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24);
                 if (days <= 31) {
                     return 'red';
@@ -838,7 +841,7 @@ var StreamStats;
                     return "#0000cd4d";
                 }
             };
-            GagePageController.prototype.getCorrectQualityColor = function (quality) {
+            GagePageController.prototype.stageDischargeQualityColor = function (quality) {
                 if (quality === "Good") {
                     return "#2ED017";
                 }
@@ -932,7 +935,7 @@ var StreamStats;
                                         var discharge = this.x;
                                         var stage = this.y;
                                         var peakDate = this.date;
-                                        return '<br>Date <b>' + peakDate + '<br>Peak <b>' + discharge + ' cfs' + '<br>at stage <b>' + stage + ' ft';
+                                        return '<br>Date: <b>' + peakDate + '</b></br>Peak: <b>' + discharge + ' cfs</b></br>at stage <b>' + stage + ' ft</b></br>';
                                     }
                                 }
                             },
@@ -949,7 +952,7 @@ var StreamStats;
                         {
                             name: 'USGS Measured',
                             showInNavigator: false,
-                            tooltip: { headerFormat: '<b>USGS Measured</b>',
+                            tooltip: { headerFormat: '<b>USGS Measured Discharge</b>',
                                 pointFormatter: function () {
                                     if (this.measuredObj !== null) {
                                         var dateTime = this.dateTime;
@@ -958,7 +961,7 @@ var StreamStats;
                                         var control = this.control;
                                         var discharge = this.x;
                                         var stage = this.y;
-                                        return '<br><b>' + dateTime + ' ' + timeZone + '<br>Gage Height: <b>' + stage + ' ft' + '<br>Discharge: <b>' + discharge + ' cfs' + '<br>Quality: <b>' + quality + '<br>Control: <b>' + control;
+                                        return '<br> Date: <b>' + dateTime + ' ' + timeZone + '</b></br>Gage Height: <b>' + stage + ' ft</b></br>' + 'Discharge: <b>' + discharge + ' cfs</b></br>' + 'Quality: <b>' + quality + '</b></br>Control: <b>' + control + '</b></br>';
                                     }
                                 }
                             },
@@ -970,7 +973,7 @@ var StreamStats;
                                 symbol: 'diamond',
                                 radius: 3
                             },
-                            showInLegend: !this.measuredObj.every(function (item) { return isNaN(item.y); })
+                            showInLegend: this.error == false
                         }
                     ]
                 };
