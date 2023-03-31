@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed  
 
+- Updated national status map (now includes D.C. as undergoing implementation)
+- Changed national status map from image URL to downloaded image in images folder
+
 ### Deprecated 
 
 ### Removed 
