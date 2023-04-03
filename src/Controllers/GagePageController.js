@@ -131,6 +131,14 @@ var StreamStats;
                 _this_1.formattedEstPeakDates = [];
                 _this_1.formattedDailyFlow = [];
                 _this_1.dailyDatesOnly = [];
+                _this_1.chooseFloodStats = {
+                    onSelectionChanged: function (item) {
+                    },
+                    onItemSelect: function (item) {
+                        console.log(item);
+                        console.log(this.selectedFloodFreqStats);
+                    }
+                };
                 _this_1.showAEP = true;
                 _this_1.logScale = false;
                 _this_1.peaksOnYear = true;
@@ -140,6 +148,7 @@ var StreamStats;
                 _this_1.init();
                 _this_1.selectedStatisticGroups = [];
                 _this_1.selectedCitations = [];
+                _this_1.selectedFloodFreqStats = [];
                 _this_1.selectedStatGroupsChar = [];
                 _this_1.selectedCitationsChar = [];
                 _this_1.statCitationList = [];
@@ -1920,15 +1929,6 @@ var StreamStats;
                 this.formattedFloodFreq.forEach(function (formattedFloodFreqItem) {
                     _this_1.chartConfig.series.push(formattedFloodFreqItem);
                 });
-            };
-            GagePageController.prototype.chooseFloodStats = function () {
-                var _this_1 = this;
-                var chart = $('#chart1').highcharts();
-                if (chart.gageFloodStatsSelect.name == '30-Day Low Flow Statistics') {
-                    this.formattedThirtyDayStats.forEach(function (formattedThirtyDayItem) {
-                        _this_1.chartConfig.series.push(formattedThirtyDayItem);
-                    });
-                }
             };
             GagePageController.prototype.toggleAEPlines = function () {
                 var chart = $('#chart1').highcharts();

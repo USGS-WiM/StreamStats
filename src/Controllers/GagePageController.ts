@@ -191,6 +191,7 @@ module StreamStats.Controllers {
         public peakValuePlot: any;
         public annualFlowPlot: any;
         public peakValues: any;
+        public selectedFloodFreqStats;
         public floodFreq = undefined;
         public altFloodFreq = undefined;
         public oneDayStats = undefined;
@@ -258,6 +259,7 @@ module StreamStats.Controllers {
             this.init(); 
             this.selectedStatisticGroups = [];
             this.selectedCitations = [];
+            this.selectedFloodFreqStats = [];
             this.selectedStatGroupsChar = [];
             this.selectedCitationsChar = [];
             this.statCitationList = [];
@@ -1800,7 +1802,8 @@ module StreamStats.Controllers {
                 console.log(group);
                 this.allFloodFreqStats[index] = {
                     name: group[0].tooltip.headerFormat.replace("<b>",""),
-                    statistics: group
+                    statistics: group,
+                    seriesIndex: 3 + index
                 }
             });
             
@@ -2164,14 +2167,20 @@ module StreamStats.Controllers {
         }
 
         //dropdown for choosing flood statistics
-        public chooseFloodStats () {
-            let chart = $('#chart1').highcharts();
-            if (chart.gageFloodStatsSelect.name == '30-Day Low Flow Statistics') {
-                this.formattedThirtyDayStats.forEach((formattedThirtyDayItem) => {
-                    this.chartConfig.series.push(formattedThirtyDayItem)
-                });
+
+        public chooseFloodStats = {
+            onSelectionChanged: function(item) {
+                //series[serieIndex]
+                },
+            onItemSelect: function(item) {
+                //look at item that was selected and turn it on
+                    console.log(item);
+                    console.log(this.selectedFloodFreqStats);
+                },
+            onItemDeselect: function(item) {
+                //turn off series
             }
-        }
+    };
 
 
 
