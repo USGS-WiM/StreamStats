@@ -1115,7 +1115,7 @@ var StreamStats;
                                     y: contrOneDayItem.value
                                 }
                             ],
-                            linkedTo: null,
+                            linkedTo: 'contrOneDay',
                             marker: {
                                 symbol: 'circle',
                                 radius: 0.1
@@ -1164,7 +1164,7 @@ var StreamStats;
                                     y: contrSevenDayItem.value
                                 }
                             ],
-                            linkedTo: null,
+                            linkedTo: 'contrSevenDay',
                             marker: {
                                 symbol: 'circle',
                                 radius: 0.1
@@ -1215,7 +1215,7 @@ var StreamStats;
                                     y: contrFourteenDayItem.value
                                 }
                             ],
-                            linkedTo: null,
+                            linkedTo: 'contrFourteenDay',
                             marker: {
                                 symbol: 'circle',
                                 radius: 0.1
@@ -1264,7 +1264,7 @@ var StreamStats;
                                     y: contrThirtyDayItem.value
                                 }
                             ],
-                            linkedTo: null,
+                            linkedTo: 'contrThirtyDay',
                             marker: {
                                 symbol: 'circle',
                                 radius: 0.1
@@ -1486,7 +1486,7 @@ var StreamStats;
                                     y: altFloodFreqItem.value
                                 }
                             ],
-                            linkedTo: null,
+                            linkedTo: 'altAEP',
                             marker: {
                                 symbol: 'circle',
                                 radius: 0.1
@@ -1595,7 +1595,7 @@ var StreamStats;
                             x: 0,
                             y: 0
                         },
-                        selected: 3,
+                        selected: 4,
                         buttonPosition: {
                             align: 'right',
                             x: 0,
@@ -2003,6 +2003,116 @@ var StreamStats;
                                 radius: 0.1
                             },
                             showInLegend: false
+                        },
+                        {
+                            name: 'Controlled 1-Day Low Flow Statistics',
+                            showInNavigator: false,
+                            tooltip: {
+                                headerFormat: null,
+                                pointFormatter: function () {
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: null,
+                            color: 'black',
+                            fillOpacity: null,
+                            lineWidth: null,
+                            data: null,
+                            linkedTo: null,
+                            id: 'contrOneDay',
+                            marker: {
+                                symbol: 'line',
+                                radius: 0.1
+                            },
+                            showInLegend: false
+                        },
+                        {
+                            name: 'Alternative Annual Exceedance Probability (AEP)',
+                            showInNavigator: false,
+                            tooltip: {
+                                headerFormat: null,
+                                pointFormatter: function () {
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: null,
+                            color: 'black',
+                            fillOpacity: null,
+                            lineWidth: null,
+                            data: null,
+                            linkedTo: null,
+                            id: 'altAEP',
+                            marker: {
+                                symbol: 'line',
+                                radius: 0.1
+                            },
+                            showInLegend: false
+                        },
+                        {
+                            name: 'Controlled 7-Day Low Flow Statistics',
+                            showInNavigator: false,
+                            tooltip: {
+                                headerFormat: null,
+                                pointFormatter: function () {
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: null,
+                            color: 'black',
+                            fillOpacity: null,
+                            lineWidth: null,
+                            data: null,
+                            linkedTo: null,
+                            id: 'contrSevenDay',
+                            marker: {
+                                symbol: 'line',
+                                radius: 0.1
+                            },
+                            showInLegend: false
+                        },
+                        {
+                            name: 'Controlled 14-Day Low Flow Statistics',
+                            showInNavigator: false,
+                            tooltip: {
+                                headerFormat: null,
+                                pointFormatter: function () {
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: null,
+                            color: 'black',
+                            fillOpacity: null,
+                            lineWidth: null,
+                            data: null,
+                            linkedTo: null,
+                            id: 'contrFourteenDay',
+                            marker: {
+                                symbol: 'line',
+                                radius: 0.1
+                            },
+                            showInLegend: false
+                        },
+                        {
+                            name: 'Controlled 30-Day Low Flow Statistics',
+                            showInNavigator: false,
+                            tooltip: {
+                                headerFormat: null,
+                                pointFormatter: function () {
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: null,
+                            color: 'black',
+                            fillOpacity: null,
+                            lineWidth: null,
+                            data: null,
+                            linkedTo: null,
+                            id: 'contrThirtyDay',
+                            marker: {
+                                symbol: 'line',
+                                radius: 0.1
+                            },
+                            showInLegend: false
                         }
                     ]
                 };
@@ -2021,6 +2131,21 @@ var StreamStats;
                 this.formattedThirtyDayStats.forEach(function (formattedThirtyDay) {
                     _this_1.chartConfig.series.push((formattedThirtyDay));
                 });
+                this.formattedContrOneDayStats.forEach(function (formattedContrOneDay) {
+                    _this_1.chartConfig.series.push((formattedContrOneDay));
+                });
+                this.formattedAltFloodFreq.forEach(function (formattedAltFloodFreqItem) {
+                    _this_1.chartConfig.series.push(formattedAltFloodFreqItem);
+                });
+                this.formattedContrSevenDayStats.forEach(function (formattedContrSevenDay) {
+                    _this_1.chartConfig.series.push((formattedContrSevenDay));
+                });
+                this.formattedContrFourteenDayStats.forEach(function (formattedContrFourteenDay) {
+                    _this_1.chartConfig.series.push((formattedContrFourteenDay));
+                });
+                this.formattedContrThirtyDayStats.forEach(function (formattedContrThirtyDay) {
+                    _this_1.chartConfig.series.push((formattedContrThirtyDay));
+                });
             };
             GagePageController.prototype.chooseFloodStats = function () {
                 var chart = $('#chart1').highcharts();
@@ -2030,6 +2155,11 @@ var StreamStats;
                     chart.series[11].hide();
                     chart.series[12].hide();
                     chart.series[13].hide();
+                    chart.series[14].hide();
+                    chart.series[15].hide();
+                    chart.series[16].hide();
+                    chart.series[17].hide();
+                    chart.series[18].hide();
                     AEPseries.show();
                 }
                 if (this.selectedFloodFreqStats.name === "1-Day Low Flow Statistics") {
@@ -2038,8 +2168,12 @@ var StreamStats;
                     chart.series[11].hide();
                     chart.series[12].hide();
                     chart.series[13].hide();
+                    chart.series[14].hide();
+                    chart.series[15].hide();
+                    chart.series[16].hide();
+                    chart.series[17].hide();
+                    chart.series[18].hide();
                     chart.series[10].show();
-                    console.log(this.formattedOneDayStats);
                 }
                 if (this.selectedFloodFreqStats.name === "7-Day Low Flow Statistics") {
                     console.log('7 day');
@@ -2047,8 +2181,12 @@ var StreamStats;
                     chart.series[10].hide();
                     chart.series[12].hide();
                     chart.series[13].hide();
+                    chart.series[14].hide();
+                    chart.series[15].hide();
+                    chart.series[16].hide();
+                    chart.series[17].hide();
+                    chart.series[18].hide();
                     chart.series[11].show();
-                    console.log(this.formattedOneDayStats);
                 }
                 if (this.selectedFloodFreqStats.name === "14-Day Low Flow Statistics") {
                     console.log('14 day');
@@ -2056,8 +2194,12 @@ var StreamStats;
                     chart.series[10].hide();
                     chart.series[11].hide();
                     chart.series[13].hide();
+                    chart.series[14].hide();
+                    chart.series[15].hide();
+                    chart.series[16].hide();
+                    chart.series[17].hide();
+                    chart.series[18].hide();
                     chart.series[12].show();
-                    console.log(this.formattedOneDayStats);
                 }
                 if (this.selectedFloodFreqStats.name === "30-Day Low Flow Statistics") {
                     console.log('30 day');
@@ -2065,8 +2207,76 @@ var StreamStats;
                     chart.series[10].hide();
                     chart.series[11].hide();
                     chart.series[12].hide();
+                    chart.series[14].hide();
+                    chart.series[15].hide();
+                    chart.series[16].hide();
+                    chart.series[17].hide();
+                    chart.series[18].hide();
                     chart.series[13].show();
-                    console.log(this.formattedOneDayStats);
+                }
+                if (this.selectedFloodFreqStats.name === "Controlled 1-Day Low Flow Statistics") {
+                    console.log('Controlled 1 day');
+                    AEPseries.hide();
+                    chart.series[10].hide();
+                    chart.series[11].hide();
+                    chart.series[12].hide();
+                    chart.series[13].hide();
+                    chart.series[15].hide();
+                    chart.series[16].hide();
+                    chart.series[17].hide();
+                    chart.series[18].hide();
+                    chart.series[14].show();
+                }
+                if (this.selectedFloodFreqStats.name === "Alternative Annual Exceedance Probability (AEP)") {
+                    AEPseries.hide();
+                    chart.series[10].hide();
+                    chart.series[11].hide();
+                    chart.series[12].hide();
+                    chart.series[13].hide();
+                    chart.series[14].hide();
+                    chart.series[16].hide();
+                    chart.series[17].hide();
+                    chart.series[18].hide();
+                    chart.series[15].show();
+                }
+                if (this.selectedFloodFreqStats.name === "Controlled 7-Day Low Flow Statistics") {
+                    console.log('Controlled 7 day');
+                    AEPseries.hide();
+                    chart.series[10].hide();
+                    chart.series[11].hide();
+                    chart.series[12].hide();
+                    chart.series[13].hide();
+                    chart.series[14].hide();
+                    chart.series[15].hide();
+                    chart.series[17].hide();
+                    chart.series[18].hide();
+                    chart.series[16].show();
+                }
+                if (this.selectedFloodFreqStats.name === "Controlled 14-Day Low Flow Statistics") {
+                    console.log('Controlled 14 day');
+                    AEPseries.hide();
+                    chart.series[10].hide();
+                    chart.series[11].hide();
+                    chart.series[12].hide();
+                    chart.series[13].hide();
+                    chart.series[14].hide();
+                    chart.series[15].hide();
+                    chart.series[16].hide();
+                    chart.series[18].hide();
+                    chart.series[17].show();
+                }
+                if (this.selectedFloodFreqStats.name === "Controlled 30-Day Low Flow Statistics") {
+                    console.log('Controlled 30 day');
+                    AEPseries.hide();
+                    chart.series[10].hide();
+                    chart.series[11].hide();
+                    chart.series[12].hide();
+                    chart.series[13].hide();
+                    chart.series[14].hide();
+                    chart.series[15].hide();
+                    chart.series[16].hide();
+                    chart.series[17].hide();
+                    chart.series[18].show();
                 }
                 console.log("selected flood freq stat:", this.selectedFloodFreqStats);
             };
