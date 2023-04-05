@@ -1293,7 +1293,7 @@ var StreamStats;
                                     if (key == "S" && !_this.watershedRetention)
                                         _this.watershedRetention = response.data.S.toUSGSvalue();
                                     if (key == "curve_number" && !_this.standardCurveNumber)
-                                        _this.standardCurveNumber = response.data.curve_number.toUSGSvalue();
+                                        _this.standardCurveNumber = Math.round(response.data.curve_number);
                                     if (key == "peak_rate_factor" && !_this.peakRateFactor)
                                         _this.peakRateFactor = response.data.peak_rate_factor.toUSGSvalue();
                                     if (key == "rainfall_distribution_curve_letter" && !_this._selectedRainfallDistribution) {

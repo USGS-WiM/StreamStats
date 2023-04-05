@@ -1528,7 +1528,7 @@ module StreamStats.Controllers {
                                 for(let key of keys) {
                                     if(key == "Ia" && !this.initialAbstraction) this.initialAbstraction = response.data.Ia.toUSGSvalue()
                                     if(key == "S" && !this.watershedRetention) this.watershedRetention = response.data.S.toUSGSvalue()
-                                    if(key == "curve_number" && !this.standardCurveNumber) this.standardCurveNumber = response.data.curve_number.toUSGSvalue()
+                                    if(key == "curve_number" && !this.standardCurveNumber) this.standardCurveNumber = Math.round(response.data.curve_number)
                                     if(key == "peak_rate_factor" && !this.peakRateFactor) this.peakRateFactor = response.data.peak_rate_factor.toUSGSvalue()
                                     if(key == "rainfall_distribution_curve_letter" && !this._selectedRainfallDistribution) {
                                         for(let option of this.RainfallDistributionOptions) {
