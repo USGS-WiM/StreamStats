@@ -143,7 +143,7 @@ var StreamStats;
                     }];
                 _this.greaterThanZero = /^\+?(\d*[1-9]\d*\.?|\d*\.\d*[1-9]\d*)$/;
                 _this.gTZInvalidMessage = "Value must be greater than 0";
-                _this.greaterThanOrEqualToZero = /0+|^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
+                _this.greaterThanOrEqualToZero = /^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/;
                 _this.gTOETZInvalidMessage = "Value must be greater than or equal to 0";
                 _this.betweenZeroOneHundred = /^(\d{0,2}(\.\d{1,2})?|100(\.00?)?)$/;
                 _this.prfTypes = [
@@ -289,8 +289,8 @@ var StreamStats;
                                 label: "Base Width",
                                 type: "number",
                                 value: null,
-                                pattern: "greaterThanZero",
-                                invalidMessage: _this.gTZInvalidMessage
+                                pattern: "greaterThanOrEqualToZero",
+                                invalidMessage: _this.gTOETZInvalidMessage
                             },
                             {
                                 id: "frontSlope",

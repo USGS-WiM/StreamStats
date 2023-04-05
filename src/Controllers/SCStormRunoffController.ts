@@ -254,7 +254,7 @@ module StreamStats.Controllers {
 
         private greaterThanZero = /^\+?(\d*[1-9]\d*\.?|\d*\.\d*[1-9]\d*)$/;
         private gTZInvalidMessage = "Value must be greater than 0"
-        private greaterThanOrEqualToZero = /0+|^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
+        private greaterThanOrEqualToZero = /^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/;
         private gTOETZInvalidMessage = "Value must be greater than or equal to 0"
         private betweenZeroOneHundred = /^(\d{0,2}(\.\d{1,2})?|100(\.00?)?)$/;
 
@@ -405,8 +405,8 @@ module StreamStats.Controllers {
                         label: "Base Width",
                         type: "number",
                         value: null,
-                        pattern: "greaterThanZero",
-                        invalidMessage: this.gTZInvalidMessage
+                        pattern: "greaterThanOrEqualToZero",
+                        invalidMessage: this.gTOETZInvalidMessage
                     },
                     {
                         id: "frontSlope",
