@@ -638,7 +638,6 @@ var StreamStats;
                     flowStats.forEach(function (element) {
                         element.checked = false;
                     });
-                    console.log("flowStatsList_nssServices", flowStats);
                     return flowStats;
                 }, function (error) {
                     _this.toaster.pop('error', "There was an HTTP error returning the flow statistics list.", "Please retry", 0);
