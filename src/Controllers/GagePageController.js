@@ -1138,31 +1138,47 @@ var StreamStats;
             };
             ;
             GagePageController.prototype.toggleLogLinearDischarge = function () {
+                console.log('toggleLogLinearDischarge() called');
                 var chart = $('#chart3').highcharts();
                 if (this.logScaleDischarge) {
-                    chart.yAxis[0].update({ type: 'logarithmic' });
                     chart.xAxis[0].update({ type: 'logarithmic' });
+                    chart.yAxis[0].update({ type: 'logarithmic' });
+                    console.log('logScaleDischarge', this.logScaleDischarge);
                 }
                 else {
-                    chart.yAxis[0].update({ type: 'linear' });
                     chart.xAxis[0].update({ type: 'linear' });
+                    chart.yAxis[0].update({ type: 'linear' });
                 }
             };
             ;
             GagePageController.prototype.toggleDischargeData = function (dataType) {
+                var _this_1 = this;
                 var chart = $('#chart3').highcharts();
+                console.log('datatype', dataType);
                 if (dataType === 'age') {
                     this.measuredObj.forEach(function (row) {
                         row.color = row.ageColor;
+                        console.log('is age working', _this_1.measuredObj);
                     });
                 }
-                else {
+                else if (dataType === 'quality') {
                     this.measuredObj.forEach(function (row) {
                         row.color = row.qualityColor;
+                        console.log('is quality working', _this_1.measuredObj);
                     });
                 }
-                ;
+                if (this.logScaleDischarge) {
+                    chart.xAxis[0].update({ type: 'linear' });
+                    chart.yAxis[0].update({ type: 'linear' });
+                    chart.xAxis[0].update({ type: 'logarithmic' });
+                    chart.yAxis[0].update({ type: 'logarithmic' });
+                }
+                else {
+                    chart.xAxis[0].update({ type: 'linear' });
+                    chart.yAxis[0].update({ type: 'linear' });
+                }
             };
+            ;
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;
                 this.getGagePage();

@@ -1437,35 +1437,80 @@ public createDailyRasterPlot(): void {
             
         //checkbox to linear to log scale for discharge plot
         public logScaleDischarge = false; // starts with it uncehcked
-            public toggleLogLinearDischarge () {
-                let chart = $('#chart3').highcharts();
-                if (this.logScaleDischarge) {
-                    chart.yAxis[0].update({ type: 'logarithmic' });
-                    chart.xAxis[0].update({ type: 'logarithmic' });
-                } else {
-                    chart.yAxis[0].update({ type: 'linear' });
-                    chart.xAxis[0].update({ type: 'linear' });
-                }
-            };   
-
+        public toggleLogLinearDischarge () {
+            console.log('toggleLogLinearDischarge() called');
+            let chart = $('#chart3').highcharts();
+            if (this.logScaleDischarge) {
+                chart.xAxis[0].update({ type: 'logarithmic' });
+                chart.yAxis[0].update({ type: 'logarithmic' });
+                console.log('logScaleDischarge', this.logScaleDischarge);
+            } else {
+                chart.xAxis[0].update({ type: 'linear' });
+                chart.yAxis[0].update({ type: 'linear' });
+            }
+        };
+        
         // public ageQualityData = true; // starts with it checked
         //radio to show age in discharge plot
+
         public toggleDischargeData (dataType) {
-            // console.log('this is age data')
             let chart = $('#chart3').highcharts();
-            // console.log('this is chart data', chart)
-            // console.log('this is measuredObj data', this.measuredObj)
+            console.log('datatype', dataType)
             if (dataType === 'age') {
                 this.measuredObj.forEach(row => {
-                    row.color = row.ageColor
+                    row.color = row.ageColor;
+                    console.log('is age working', this.measuredObj)
+                });
+            } else if (dataType === 'quality') {
+                this.measuredObj.forEach(row => {
+                    row.color = row.qualityColor;
+                    console.log('is quality working', this.measuredObj)
                 });
             }
-                else {
-                    this.measuredObj.forEach(row => {
-                        row.color = row.qualityColor
-                    });
-            };
-        }
+            if (this.logScaleDischarge) {
+                chart.xAxis[0].update({ type: 'linear' });
+                chart.yAxis[0].update({ type: 'linear' });
+                chart.xAxis[0].update({ type: 'logarithmic' });
+                chart.yAxis[0].update({ type: 'logarithmic' });
+            } else {
+                chart.xAxis[0].update({ type: 'linear' });
+                chart.yAxis[0].update({ type: 'linear' });
+            }
+        };
+
+        // another
+        // public toggleDischargeData (dataType) {
+        //     let chart = $('#chart3').highcharts();
+        //     if (dataType === 'age') {
+        //         this.measuredObj.forEach(row => {
+        //             row.color = row.ageColor;
+        //         });
+        //     } else if (dataType === 'quality') {
+        //         this.measuredObj.forEach(row => {
+        //             row.color = row.qualityColor;
+        //         });
+        //     }
+        //     this.toggleLogLinearDischarge(); // call the function to update axis scale type
+        // };
+        
+
+        // original
+        // public toggleDischargeData (dataType) {
+        //     // console.log('this is age data')
+        //     let chart = $('#chart3').highcharts();
+        //     // console.log('this is chart data', chart)
+        //     // console.log('this is measuredObj data', this.measuredObj)
+        //     if (dataType === 'age') {
+        //         this.measuredObj.forEach(row => {
+        //             row.color = row.ageColor
+        //         });
+        //     }
+        //         else {
+        //             this.measuredObj.forEach(row => {
+        //                 row.color = row.qualityColor
+        //             });
+        //     };
+        // }
             // to be used to create a slide based on month or year
             // scope.slider_draggable_range = {
             //     minValue: 1,
