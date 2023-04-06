@@ -250,7 +250,6 @@ var StreamStats;
                 });
             };
             BatchProcessorController.prototype.init = function () {
-                this.AppVersion = configuration.version;
                 this.getRegions();
             };
             BatchProcessorController.prototype.checkArrayForObj = function (arr, obj) {

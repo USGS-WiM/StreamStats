@@ -60,7 +60,6 @@ module StreamStats.Controllers {
         public selectedBatchProcessorTabName: string;
         public displayMessage: string;
         public isValid: boolean;
-        public AppVersion: string;
         public submitBatchInfo: string;
 
         // Regions
@@ -71,7 +70,6 @@ module StreamStats.Controllers {
         public flowStatsList: Array<any>;
         public flowStatsAllChecked: boolean;
         public selectedFlowStatsList: Array<Object>;
-        public flowStatChecked: boolean;
         public flowStatisticsAllChecked: boolean;
 
         // Parameters/basin characteristics
@@ -94,7 +92,6 @@ module StreamStats.Controllers {
             this.selectedParamList = [];
             this.availableParamList = [];
             this.flowStatsAllChecked = true;
-            // this.flowStatChecked = false;
             this.parametersAllChecked = true;
             this.showBasinCharacteristics = false;
             this.init();
@@ -286,10 +283,8 @@ module StreamStats.Controllers {
         public checkStats(): void {
 
             if (this.selectedFlowStatsList.length > 0) {
-                // this.flowStatChecked = true;
                 this.showBasinCharacteristics = true;
             } else {
-                // this.flowStatChecked = false;
                 this.showBasinCharacteristics = false;
             }
         }
@@ -434,7 +429,6 @@ module StreamStats.Controllers {
         // Helper Methods
         // -+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
-            this.AppVersion = configuration.version;
             this.getRegions();
         }
 
