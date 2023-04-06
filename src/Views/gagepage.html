@@ -227,8 +227,8 @@
                     <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.chartConfig">
                         <center>
                         <div class="plot-filters">
-                            <input type="checkbox" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" id="toggleAEP" name="toggleAEP" ng-model="vm.showAEP" ng-change="vm.toggleAEPlines()" checked>
-                            <label for="toggleAEP" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" > Show Flood Statistics:</label>
+                            <input type="checkbox" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" id="toggleFloodStats" name="toggleFloodStats" ng-model="vm.showFloodStats" ng-change="vm.toggleFloodStats()" checked>
+                            <label for="toggleFloodStats" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" > Show Flood Statistics:</label>
                             <select id="gageFloodStatsSelect" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0 " style="width:10%" name="gageFloodStatsSelect" ng-model="vm.selectedFloodFreqStats" ng-options="floodFreqStat.name for floodFreqStat in vm.allFloodFreqStats" ng-init="floodFreqStat.name[0]" ng-change="vm.chooseFloodStats()"></select>&nbsp;&nbsp;&nbsp;                      
                             <input type="checkbox" ng-if="vm.formattedPeakDates.length > 0" id="togglePeaks" name="togglePeaks" ng-model="vm.peaksOnYear" ng-change="vm.togglePeakYear()" checked>
                             <label for="togglePeaks" ng-if="vm.formattedPeakDates.length > 0"> Plot Peaks on Latest Year&nbsp;&nbsp;</label>
