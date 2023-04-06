@@ -483,17 +483,17 @@ var StreamStats;
                     var data = response.data;
                     var AEPlookup = [9, 852, 8, 4, 7, 3, 6, 1, 501, 5, 2, 500, 851, 1438, 818];
                     var altAEPlookup = [2311, 2312, 2313, 2314, 2315, 2316, 2317, 2318];
-                    var oneDayLookup = [820, 819, 84, 1130, 1138, 1696, 1139, 1699, 1140, 1702, 1141, 1705, 1737, 85, 1142, 82, 1759, 1143, 1756, 909, 596, 83];
-                    var sevenDayLookup = [1167, 822, 821, 1423, 92, 1131, 1433, 1159, 1976, 1160, 1979, 1161, 1982, 1162, 1985, 536, 1165, 1424, 93, 537, 1163, 90, 535, 1432, 1425, 2030, 1164, 2026, 1426, 1166, 1427, 589, 91, 1428, 1429, 1430, 1431];
-                    var fourteenDayLookup = [829, 823, 96, 539, 97, 540, 94, 538, 1670, 828, 95];
-                    var thirtyDayLookup = [1176, 830, 824, 100, 542, 1168, 1825, 1169, 1827, 1170, 1830, 1171, 1833, 1174, 101, 543, 1172, 98, 541, 1875, 1173, 1872, 1175, 657, 99];
-                    var contrOneDayLookup = [1712, 1744, 1753, 1766, 1773];
-                    var contrSevenDayLookup = [1992, 2015, 2039, 2048];
+                    var oneDayLookup = [82, 83, 84, 85, 596, 820, 1737];
+                    var sevenDayLookup = [90, 91, 92, 93, 589, 822, 1165, 1166, 1167];
+                    var fourteenDayLookup = [94, 95, 96, 97, 828, 829];
+                    var thirtyDayLookup = [98, 99, 100, 101, 657, 830, 1174, 1175, 1176];
+                    var contrOneDayLookup = [1753, 1773, 1081, 1744, 1766, 1712];
+                    var contrSevenDayLookup = [1082, 1083, 1992, 2015, 2039, 2048];
                     var contrFourteenDayLookup = [1645, 1652, 1662, 1669, 1677, 1683];
-                    var contrThirtyDayLookup = [1837, 1861, 1882, 1891];
-                    var weightedOneDayLookup = [1698, 1701, 1704, 1707, 1732, 1736, 1746, 1755, 1758, 1775];
-                    var weightedSevenDayLookup = [1978, 1981, 1984, 1987, 2001, 2005, 2007, 2017, 2025, 2028, 2041, 2050];
-                    var weightedThirtyDayLookup = [1829, 1832, 1835, 1852, 1854, 1863, 1871, 1874, 1884, 1893, 1845];
+                    var contrThirtyDayLookup = [1084, 1891, 1085, 1861, 1882, 1837];
+                    var weightedOneDayLookup = [1755, 1775, 1732, 1746];
+                    var weightedSevenDayLookup = [2025, 2050, 2001, 2017, 2041, 2007];
+                    var weightedThirtyDayLookup = [1871, 1893, 1845, 1863, 1884, 1854];
                     var AEPchartData = [];
                     var altAEPchartData = [];
                     var oneDayChartData = [];
@@ -801,38 +801,24 @@ var StreamStats;
                 if (this.oneDayStats) {
                     this.formattedOneDayStats = [];
                     var oneDayStatsColors_1 = {
-                        820: '#9A6324',
-                        819: '#800000',
-                        84: '#e6194B',
-                        1130: '#ffd8b1',
-                        1138: '#f58231',
-                        1696: '#ffe119',
-                        1139: '#bfef45',
-                        1699: '#3cb44b',
-                        1140: '#42d4f4',
-                        1702: '#4363d8',
-                        1141: '#000075',
-                        1705: '#911eb4',
-                        1737: '#dcbeff',
-                        85: '#fabed4',
-                        1142: '#469990',
                         82: '#f58231',
-                        1759: '#3cb44b',
-                        1143: '#e6194B',
-                        1756: '#bfef45',
-                        909: '#911eb4',
+                        83: '#9A6324',
+                        84: '#e6194B',
+                        85: '#fabed4',
                         596: '#9A6324',
-                        83: '#9A6324'
+                        820: '#9A6324',
+                        1737: '#dcbeff'
                     };
                     this.oneDayStats.forEach(function (oneDayItem) {
                         var colorIndex = oneDayItem.regressionTypeID;
+                        var formattedName = oneDayItem.regressionType.name.replaceAll('_', ' ');
                         _this_1.formattedOneDayStats.push({
-                            name: oneDayItem.regressionType.name,
+                            name: formattedName,
                             tooltip: {
                                 headerFormat: '<b>1-Day Low Flow Statistics',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
-                                        return '</b><br>AEP: <b>' + oneDayItem.regressionType.name + '</b><br>Value: <b>' + oneDayItem.value + ' ft³/s<br>';
+                                        return '</b><br>Value: <b>' + oneDayItem.value + ' ft³/s<br>';
                                     }
                                 }
                             },
@@ -844,7 +830,7 @@ var StreamStats;
                                 zIndex: 3,
                                 pointFormatter: function () {
                                     if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
-                                        return oneDayItem.regressionType.name;
+                                        return formattedName;
                                     }
                                 }
                             },
@@ -868,53 +854,26 @@ var StreamStats;
                 if (this.sevenDayStats) {
                     this.formattedSevenDayStats = [];
                     var sevenDayStatsColors_1 = {
-                        1167: '#9A6324',
-                        822: '#800000',
-                        821: '#e6194B',
-                        1423: '#ffd8b1',
-                        92: '#f58231',
-                        1131: '#ffe119',
-                        1433: '#bfef45',
-                        1159: '#3cb44b',
-                        1976: '#42d4f4',
-                        1160: '#4363d8',
-                        1979: '#000075',
-                        1161: '#911eb4',
-                        1982: '#dcbeff',
-                        1162: '#fabed4',
-                        1985: '#469990',
-                        536: '#f58231',
-                        1165: '#3cb44b',
-                        1424: '#e6194B',
-                        93: '#bfef45',
-                        537: '#911eb4',
-                        1163: '#9A6324',
                         90: '#9A6324',
-                        535: '#800000',
-                        1432: '#e6194B',
-                        1425: '#ffd8b1',
-                        2030: '#f58231',
-                        1164: '#ffe119',
-                        2026: '#bfef45',
-                        1426: '#3cb44b',
-                        1166: '#42d4f4',
-                        1427: '#4363d8',
-                        589: '#000075',
-                        91: '#911eb4',
-                        1428: '#dcbeff',
-                        1429: '#fabed4',
-                        1430: '#469990',
-                        1431: '#f58231'
+                        91: '#800000',
+                        92: '#e6194B',
+                        93: '#ffd8b1',
+                        589: '#f58231',
+                        822: '#ffe119',
+                        1165: '#bfef45',
+                        1166: '#3cb44b',
+                        1167: '#42d4f4'
                     };
                     this.sevenDayStats.forEach(function (sevenDayItem) {
                         var colorIndex = sevenDayItem.regressionTypeID;
+                        var formattedName = sevenDayItem.regressionType.name.replaceAll('_', ' ');
                         _this_1.formattedSevenDayStats.push({
-                            name: sevenDayItem.regressionType.name,
+                            name: formattedName,
                             tooltip: {
                                 headerFormat: '<b>7-Day Low Flow Statistics',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
-                                        return '</b><br>AEP: <b>' + sevenDayItem.regressionType.name + '</b><br>Value: <b>' + sevenDayItem.value + ' ft³/s<br>';
+                                        return '</b><br>Value: <b>' + sevenDayItem.value + ' ft³/s<br>';
                                     }
                                 }
                             },
@@ -926,7 +885,7 @@ var StreamStats;
                                 zIndex: 3,
                                 pointFormatter: function () {
                                     if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
-                                        return sevenDayItem.regressionType.name;
+                                        return formattedName;
                                     }
                                 }
                             },
@@ -950,27 +909,23 @@ var StreamStats;
                 if (this.fourteenDayStats) {
                     this.formattedFourteenDayStats = [];
                     var fourteenDayStatsColors_1 = {
-                        829: '#9A6324',
-                        823: '#800000',
+                        94: '#9A6324',
+                        95: '#800000',
                         96: '#e6194B',
-                        539: '#ffd8b1',
-                        97: '#f58231',
-                        540: '#ffe119',
-                        94: '#bfef45',
-                        538: '#3cb44b',
-                        1670: '#42d4f4',
-                        828: '#4363d8',
-                        95: '#000075'
+                        97: '#ffd8b1',
+                        828: '#f58231',
+                        829: '#ffe119'
                     };
                     this.fourteenDayStats.forEach(function (fourteenDayItem) {
                         var colorIndex = fourteenDayItem.regressionTypeID;
+                        var formattedName = fourteenDayItem.regressionType.name.replaceAll('_', ' ');
                         _this_1.formattedFourteenDayStats.push({
-                            name: fourteenDayItem.regressionType.name,
+                            name: formattedName,
                             tooltip: {
                                 headerFormat: '<b>14-Day Low Flow Statistics',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
-                                        return '</b><br>AEP: <b>' + fourteenDayItem.regressionType.name + '</b><br>Value: <b>' + fourteenDayItem.value + ' ft³/s<br>';
+                                        return '</b><br>Value: <b>' + fourteenDayItem.value + ' ft³/s<br>';
                                     }
                                 }
                             },
@@ -982,7 +937,7 @@ var StreamStats;
                                 zIndex: 3,
                                 pointFormatter: function () {
                                     if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
-                                        return fourteenDayItem.regressionType.name;
+                                        return formattedName;
                                     }
                                 }
                             },
@@ -1006,41 +961,26 @@ var StreamStats;
                 if (this.thirtyDayStats) {
                     this.formattedThirtyDayStats = [];
                     var thirtyDayStatsColors_1 = {
-                        1176: '#9A6324',
-                        830: '#800000',
-                        824: '#e6194B',
-                        100: '#ffd8b1',
-                        542: '#f58231',
-                        1168: '#ffe119',
-                        1825: '#bfef45',
-                        1169: '#3cb44b',
-                        1827: '#42d4f4',
-                        1170: '#4363d8',
-                        1830: '#000075',
-                        1171: '#911eb4',
-                        1833: '#dcbeff',
-                        1174: '#fabed4',
-                        101: '#469990',
-                        543: '#f58231',
-                        1172: '#3cb44b',
-                        98: '#e6194B',
-                        541: '#bfef45',
-                        1875: '#911eb4',
-                        1173: '#9A6324',
-                        1872: '#ffe119',
-                        1175: '#42d4f4',
-                        657: '#9A6324',
-                        99: '#800000'
+                        98: '#9A6324',
+                        99: '#800000',
+                        100: '#e6194B',
+                        101: '#ffd8b1',
+                        657: '#f58231',
+                        830: '#ffe119',
+                        1174: '#bfef45',
+                        1175: '#3cb44b',
+                        1176: '#42d4f4'
                     };
                     this.thirtyDayStats.forEach(function (thirtyDayItem) {
                         var colorIndex = thirtyDayItem.regressionTypeID;
+                        var formattedName = thirtyDayItem.regressionType.name.replaceAll('_', ' ');
                         _this_1.formattedThirtyDayStats.push({
-                            name: thirtyDayItem.regressionType.name,
+                            name: formattedName,
                             tooltip: {
                                 headerFormat: '<b>30-Day Low Flow Statistics',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
-                                        return '</b><br>AEP: <b>' + thirtyDayItem.regressionType.name + '</b><br>Value: <b>' + thirtyDayItem.value + ' ft³/s<br>';
+                                        return '</b><br>Value: <b>' + thirtyDayItem.value + ' ft³/s<br>';
                                     }
                                 }
                             },
@@ -1052,7 +992,7 @@ var StreamStats;
                                 zIndex: 3,
                                 pointFormatter: function () {
                                     if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
-                                        return thirtyDayItem.regressionType.name;
+                                        return formattedName;
                                     }
                                 }
                             },
@@ -1076,6 +1016,7 @@ var StreamStats;
                 if (this.contrOneDayStats) {
                     this.formattedContrOneDayStats = [];
                     var contrOneDayStatsColors_1 = {
+                        1081: '#bfef45',
                         1712: '#9A6324',
                         1744: '#800000',
                         1753: '#e6194B',
@@ -1084,13 +1025,14 @@ var StreamStats;
                     };
                     this.contrOneDayStats.forEach(function (contrOneDayItem) {
                         var colorIndex = contrOneDayItem.regressionTypeID;
+                        var formattedName = contrOneDayItem.regressionType.name.replaceAll('_', ' ');
                         _this_1.formattedContrOneDayStats.push({
-                            name: contrOneDayItem.regressionType.name,
+                            name: formattedName,
                             tooltip: {
                                 headerFormat: '<b>Controlled 1-Day Low Flow Statistics',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
-                                        return '</b><br>AEP: <b>' + contrOneDayItem.regressionType.name + '</b><br>Value: <b>' + contrOneDayItem.value + ' ft³/s<br>';
+                                        return '</b><br>Value: <b>' + contrOneDayItem.value + ' ft³/s<br>';
                                     }
                                 }
                             },
@@ -1102,7 +1044,7 @@ var StreamStats;
                                 zIndex: 3,
                                 pointFormatter: function () {
                                     if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
-                                        return contrOneDayItem.regressionType.name;
+                                        return formattedName;
                                     }
                                 }
                             },
@@ -1126,20 +1068,23 @@ var StreamStats;
                 if (this.contrSevenDayStats) {
                     this.formattedContrSevenDayStats = [];
                     var contrSevenDayStatsColors_1 = {
-                        1992: '#9A6324',
-                        2015: '#800000',
-                        2039: '#e6194B',
-                        2048: '#ffd8b1'
+                        1082: '#9A6324',
+                        1083: '#800000',
+                        1992: '#e6194B',
+                        2015: '#ffd8b1',
+                        2039: '#f58231',
+                        2048: '#ffe119'
                     };
                     this.contrSevenDayStats.forEach(function (contrSevenDayItem) {
                         var colorIndex = contrSevenDayItem.regressionTypeID;
+                        var formattedName = contrSevenDayItem.regressionType.name.replaceAll('_', ' ');
                         _this_1.formattedContrSevenDayStats.push({
-                            name: contrSevenDayItem.regressionType.name,
+                            name: formattedName,
                             tooltip: {
                                 headerFormat: '<b>Controlled 7-Day Low Flow Statistics',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
-                                        return '</b><br>AEP: <b>' + contrSevenDayItem.regressionType.name + '</b><br>Value: <b>' + contrSevenDayItem.value + ' ft³/s<br>';
+                                        return '</b><br>Value: <b>' + contrSevenDayItem.value + ' ft³/s<br>';
                                     }
                                 }
                             },
@@ -1151,7 +1096,7 @@ var StreamStats;
                                 zIndex: 3,
                                 pointFormatter: function () {
                                     if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
-                                        return contrSevenDayItem.regressionType.name;
+                                        return formattedName;
                                     }
                                 }
                             },
@@ -1184,13 +1129,14 @@ var StreamStats;
                     };
                     this.contrFourteenDayStats.forEach(function (contrFourteenDayItem) {
                         var colorIndex = contrFourteenDayItem.regressionTypeID;
+                        var formattedName = contrFourteenDayItem.regressionType.name.replaceAll('_', ' ');
                         _this_1.formattedContrFourteenDayStats.push({
-                            name: contrFourteenDayItem.regressionType.name,
+                            name: formattedName,
                             tooltip: {
                                 headerFormat: '<b>Controlled 14-Day Low Flow Statistics',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
-                                        return '</b><br>AEP: <b>' + contrFourteenDayItem.regressionType.name + '</b><br>Value: <b>' + contrFourteenDayItem.value + ' ft³/s<br>';
+                                        return '</b><br>Value: <b>' + contrFourteenDayItem.value + ' ft³/s<br>';
                                     }
                                 }
                             },
@@ -1202,7 +1148,7 @@ var StreamStats;
                                 zIndex: 3,
                                 pointFormatter: function () {
                                     if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
-                                        return contrFourteenDayItem.regressionType.name;
+                                        return formattedName;
                                     }
                                 }
                             },
@@ -1226,6 +1172,8 @@ var StreamStats;
                 if (this.contrThirtyDayStats) {
                     this.formattedContrThirtyDayStats = [];
                     var contrThirtyDayStatsColors_1 = {
+                        1084: '#f58231',
+                        1085: '#ffe119',
                         1837: '#9A6324',
                         1861: '#800000',
                         1882: '#e6194B',
@@ -1233,13 +1181,14 @@ var StreamStats;
                     };
                     this.contrThirtyDayStats.forEach(function (contrThirtyDayItem) {
                         var colorIndex = contrThirtyDayItem.regressionTypeID;
+                        var formattedName = contrThirtyDayItem.regressionType.name.replaceAll('_', ' ');
                         _this_1.formattedContrThirtyDayStats.push({
-                            name: contrThirtyDayItem.regressionType.name,
+                            name: formattedName,
                             tooltip: {
                                 headerFormat: '<b>Controlled 30-Day Low Flow Statistics',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
-                                        return '</b><br>AEP: <b>' + contrThirtyDayItem.regressionType.name + '</b><br>Value: <b>' + contrThirtyDayItem.value + ' ft³/s<br>';
+                                        return '</b><br>Value: <b>' + contrThirtyDayItem.value + ' ft³/s<br>';
                                     }
                                 }
                             },
@@ -1251,7 +1200,7 @@ var StreamStats;
                                 zIndex: 3,
                                 pointFormatter: function () {
                                     if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
-                                        return contrThirtyDayItem.regressionType.name;
+                                        return formattedName;
                                     }
                                 }
                             },
@@ -1275,26 +1224,21 @@ var StreamStats;
                 if (this.weightedOneDayStats) {
                     this.formattedWeightedOneDayStats = [];
                     var contrweightedOneStatsColors_1 = {
-                        1698: '#9A6324',
-                        1701: '#800000',
-                        1704: '#e6194B',
-                        1707: '#ffd8b1',
-                        1732: '#f58231',
-                        1736: '#ffe119',
-                        1746: '#bfef45',
-                        1755: '#3cb44b',
-                        1758: '#42d4f4',
-                        1775: '#4363d8'
+                        1755: '#9A6324',
+                        1775: '#800000',
+                        1732: '#e6194B',
+                        1746: '#ffd8b1'
                     };
                     this.weightedOneDayStats.forEach(function (weightedOneDayItem) {
                         var colorIndex = weightedOneDayItem.regressionTypeID;
+                        var formattedName = weightedOneDayItem.regressionType.name.replaceAll('_', ' ');
                         _this_1.formattedWeightedOneDayStats.push({
-                            name: weightedOneDayItem.regressionType.name,
+                            name: formattedName,
                             tooltip: {
                                 headerFormat: '<b>Weighted 1-Day Low Flow Statistics',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
-                                        return '</b><br>AEP: <b>' + weightedOneDayItem.regressionType.name + '</b><br>Value: <b>' + weightedOneDayItem.value + ' ft³/s<br>';
+                                        return '</b><br>Value: <b>' + weightedOneDayItem.value + ' ft³/s<br>';
                                     }
                                 }
                             },
@@ -1306,7 +1250,7 @@ var StreamStats;
                                 zIndex: 3,
                                 pointFormatter: function () {
                                     if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
-                                        return weightedOneDayItem.regressionType.name;
+                                        return formattedName;
                                     }
                                 }
                             },
@@ -1319,7 +1263,7 @@ var StreamStats;
                                     y: weightedOneDayItem.value
                                 }
                             ],
-                            linkedTo: null,
+                            linkedTo: 'weightedOneDay',
                             marker: {
                                 symbol: 'circle',
                                 radius: 0.1
@@ -1330,28 +1274,23 @@ var StreamStats;
                 if (this.weightedSevenDayStats) {
                     this.formattedWeightedSevenDayStats = [];
                     var contrweightedSevenStatsColors_1 = {
-                        1978: '#9A6324',
-                        1981: '#800000',
-                        1984: '#e6194B',
-                        1987: '#ffd8b1',
-                        2001: '#f58231',
-                        2005: '#ffe119',
-                        2007: '#bfef45',
-                        2017: '#3cb44b',
-                        2025: '#42d4f4',
-                        2028: '#4363d8',
-                        2041: '#000075',
-                        2050: '#911eb4'
+                        2025: '#9A6324',
+                        2050: '#800000',
+                        2001: '#800000',
+                        2017: '#e6194B',
+                        2041: '#ffd8b1',
+                        2007: '#f58231'
                     };
                     this.weightedSevenDayStats.forEach(function (weightedSevenDayItem) {
                         var colorIndex = weightedSevenDayItem.regressionTypeID;
+                        var formattedName = weightedSevenDayItem.regressionType.name.replaceAll('_', ' ');
                         _this_1.formattedWeightedSevenDayStats.push({
-                            name: weightedSevenDayItem.regressionType.name,
+                            name: formattedName,
                             tooltip: {
                                 headerFormat: '<b>Weighted 7-Day Low Flow Statistics',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
-                                        return '</b><br>AEP: <b>' + weightedSevenDayItem.regressionType.name + '</b><br>Value: <b>' + weightedSevenDayItem.value + ' ft³/s<br>';
+                                        return '</b><br>Value: <b>' + weightedSevenDayItem.value + ' ft³/s<br>';
                                     }
                                 }
                             },
@@ -1363,7 +1302,7 @@ var StreamStats;
                                 zIndex: 3,
                                 pointFormatter: function () {
                                     if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
-                                        return weightedSevenDayItem.regressionType.name;
+                                        return formattedName;
                                     }
                                 }
                             },
@@ -1376,7 +1315,7 @@ var StreamStats;
                                     y: weightedSevenDayItem.value
                                 }
                             ],
-                            linkedTo: null,
+                            linkedTo: 'weightedSevenDay',
                             marker: {
                                 symbol: 'circle',
                                 radius: 0.1
@@ -1387,27 +1326,23 @@ var StreamStats;
                 if (this.weightedThirtyDayStats) {
                     this.formattedWeightedThirtyDayStats = [];
                     var contrweightedThirtyStatsColors_1 = {
-                        1829: '#9A6324',
-                        1832: '#800000',
-                        1835: '#e6194B',
-                        1852: '#ffd8b1',
-                        1854: '#f58231',
-                        1863: '#ffe119',
-                        1871: '#bfef45',
-                        1874: '#3cb44b',
-                        1884: '#42d4f4',
-                        1893: '#4363d8',
-                        1845: '#000075'
+                        1871: '#9A6324',
+                        1893: '#800000',
+                        1845: '#e6194B',
+                        1863: '#ffd8b1',
+                        1884: '#f58231',
+                        1854: '#ffe119'
                     };
                     this.weightedThirtyDayStats.forEach(function (weightedThirtyDayItem) {
                         var colorIndex = weightedThirtyDayItem.regressionTypeID;
+                        var formattedName = weightedThirtyDayItem.regressionType.name.replaceAll('_', ' ');
                         _this_1.formattedWeightedThirtyDayStats.push({
-                            name: weightedThirtyDayItem.regressionType.name,
+                            name: formattedName,
                             tooltip: {
                                 headerFormat: '<b>Weighted 30-Day Low Flow Statistics',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
-                                        return '</b><br>AEP: <b>' + weightedThirtyDayItem.regressionType.name + '</b><br>Value: <b>' + weightedThirtyDayItem.value + ' ft³/s<br>';
+                                        return '</b><br>Value: <b>' + weightedThirtyDayItem.value + ' ft³/s<br>';
                                     }
                                 }
                             },
@@ -1419,7 +1354,7 @@ var StreamStats;
                                 zIndex: 3,
                                 pointFormatter: function () {
                                     if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
-                                        return weightedThirtyDayItem.regressionType.name;
+                                        return formattedName;
                                     }
                                 }
                             },
@@ -1432,7 +1367,7 @@ var StreamStats;
                                     y: weightedThirtyDayItem.value
                                 }
                             ],
-                            linkedTo: null,
+                            linkedTo: 'weightedThirtyDay',
                             marker: {
                                 symbol: 'circle',
                                 radius: 0.1
@@ -1658,8 +1593,7 @@ var StreamStats;
                                 radius: 3
                             },
                             showInLegend: this.formattedPeakDates.length > 0
-                        },
-                        {
+                        }, {
                             name: 'Annual Peak Streamflow (Date Estimated)',
                             showInNavigator: false,
                             tooltip: {
@@ -1693,8 +1627,7 @@ var StreamStats;
                                 radius: 3
                             },
                             showInLegend: this.formattedEstPeakDates.length > 0
-                        },
-                        {
+                        }, {
                             name: 'Shaded Daily Statistics',
                             showInNavigator: false,
                             tooltip: {
@@ -1721,8 +1654,7 @@ var StreamStats;
                                 radius: null
                             },
                             showInLegend: this.formattedP90to100.length > 0
-                        },
-                        {
+                        }, {
                             name: 'P 0-10%',
                             showInNavigator: false,
                             tooltip: {
@@ -1749,8 +1681,7 @@ var StreamStats;
                                 radius: null
                             },
                             showInLegend: false
-                        },
-                        {
+                        }, {
                             name: 'p 10-25 %',
                             showInNavigator: false,
                             tooltip: {
@@ -1777,8 +1708,7 @@ var StreamStats;
                                 radius: null
                             },
                             showInLegend: false
-                        },
-                        {
+                        }, {
                             name: 'p 25-75 %',
                             showInNavigator: false,
                             tooltip: {
@@ -1805,8 +1735,7 @@ var StreamStats;
                                 radius: null
                             },
                             showInLegend: false
-                        },
-                        {
+                        }, {
                             name: 'p 75-90 %',
                             showInNavigator: false,
                             tooltip: {
@@ -1833,8 +1762,7 @@ var StreamStats;
                                 radius: null
                             },
                             showInLegend: false
-                        },
-                        {
+                        }, {
                             name: 'Daily Streamflow',
                             showInNavigator: true,
                             tooltip: {
@@ -1863,8 +1791,7 @@ var StreamStats;
                                 radius: 3
                             },
                             showInLegend: this.formattedDailyFlow.length > 0
-                        },
-                        {
+                        }, {
                             name: 'NWS Forecast',
                             showInNavigator: false,
                             tooltip: {
@@ -1893,8 +1820,7 @@ var StreamStats;
                                 radius: 3
                             },
                             showInLegend: this.NWSforecast !== undefined
-                        },
-                        {
+                        }, {
                             name: 'Annual Exceedance Probability',
                             showInNavigator: false,
                             tooltip: {
@@ -1915,8 +1841,7 @@ var StreamStats;
                                 radius: 0.1
                             },
                             showInLegend: false
-                        },
-                        {
+                        }, {
                             name: '1-Day Low Flow Statistics',
                             showInNavigator: false,
                             tooltip: {
@@ -1937,8 +1862,7 @@ var StreamStats;
                                 radius: 0.1
                             },
                             showInLegend: false
-                        },
-                        {
+                        }, {
                             name: '7-Day Low Flow Statistics',
                             showInNavigator: false,
                             tooltip: {
@@ -1959,8 +1883,7 @@ var StreamStats;
                                 radius: 0.1
                             },
                             showInLegend: false
-                        },
-                        {
+                        }, {
                             name: '14-Day Low Flow Statistics',
                             showInNavigator: false,
                             tooltip: {
@@ -1981,8 +1904,7 @@ var StreamStats;
                                 radius: 0.1
                             },
                             showInLegend: false
-                        },
-                        {
+                        }, {
                             name: '30-Day Low Flow Statistics',
                             showInNavigator: false,
                             tooltip: {
@@ -2003,8 +1925,7 @@ var StreamStats;
                                 radius: 0.1
                             },
                             showInLegend: false
-                        },
-                        {
+                        }, {
                             name: 'Controlled 1-Day Low Flow Statistics',
                             showInNavigator: false,
                             tooltip: {
@@ -2025,8 +1946,7 @@ var StreamStats;
                                 radius: 0.1
                             },
                             showInLegend: false
-                        },
-                        {
+                        }, {
                             name: 'Alternative Annual Exceedance Probability (AEP)',
                             showInNavigator: false,
                             tooltip: {
@@ -2047,8 +1967,7 @@ var StreamStats;
                                 radius: 0.1
                             },
                             showInLegend: false
-                        },
-                        {
+                        }, {
                             name: 'Controlled 7-Day Low Flow Statistics',
                             showInNavigator: false,
                             tooltip: {
@@ -2069,8 +1988,7 @@ var StreamStats;
                                 radius: 0.1
                             },
                             showInLegend: false
-                        },
-                        {
+                        }, {
                             name: 'Controlled 14-Day Low Flow Statistics',
                             showInNavigator: false,
                             tooltip: {
@@ -2091,8 +2009,7 @@ var StreamStats;
                                 radius: 0.1
                             },
                             showInLegend: false
-                        },
-                        {
+                        }, {
                             name: 'Controlled 30-Day Low Flow Statistics',
                             showInNavigator: false,
                             tooltip: {
@@ -2108,6 +2025,69 @@ var StreamStats;
                             data: null,
                             linkedTo: null,
                             id: 'contrThirtyDay',
+                            marker: {
+                                symbol: 'line',
+                                radius: 0.1
+                            },
+                            showInLegend: false
+                        }, {
+                            name: 'Weighted 1-Day Low Flow Statistics',
+                            showInNavigator: false,
+                            tooltip: {
+                                headerFormat: null,
+                                pointFormatter: function () {
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: null,
+                            color: 'black',
+                            fillOpacity: null,
+                            lineWidth: null,
+                            data: null,
+                            linkedTo: null,
+                            id: 'weightedOneDay',
+                            marker: {
+                                symbol: 'line',
+                                radius: 0.1
+                            },
+                            showInLegend: false
+                        }, {
+                            name: 'Weighted 7-Day Low Flow Statistics',
+                            showInNavigator: false,
+                            tooltip: {
+                                headerFormat: null,
+                                pointFormatter: function () {
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: null,
+                            color: 'black',
+                            fillOpacity: null,
+                            lineWidth: null,
+                            data: null,
+                            linkedTo: null,
+                            id: 'weightedSevenDay',
+                            marker: {
+                                symbol: 'line',
+                                radius: 0.1
+                            },
+                            showInLegend: false
+                        }, {
+                            name: 'Weighted 30-Day Low Flow Statistics',
+                            showInNavigator: false,
+                            tooltip: {
+                                headerFormat: null,
+                                pointFormatter: function () {
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: null,
+                            color: 'black',
+                            fillOpacity: null,
+                            lineWidth: null,
+                            data: null,
+                            linkedTo: null,
+                            id: 'weightedThirtyDay',
                             marker: {
                                 symbol: 'line',
                                 radius: 0.1
@@ -2146,6 +2126,15 @@ var StreamStats;
                 this.formattedContrThirtyDayStats.forEach(function (formattedContrThirtyDay) {
                     _this_1.chartConfig.series.push((formattedContrThirtyDay));
                 });
+                this.formattedWeightedOneDayStats.forEach(function (formattedWeightedOneDay) {
+                    _this_1.chartConfig.series.push((formattedWeightedOneDay));
+                });
+                this.formattedWeightedSevenDayStats.forEach(function (formattedWeightedSevenDay) {
+                    _this_1.chartConfig.series.push((formattedWeightedSevenDay));
+                });
+                this.formattedWeightedThirtyDayStats.forEach(function (formattedWeightedThirtyDay) {
+                    _this_1.chartConfig.series.push((formattedWeightedThirtyDay));
+                });
             };
             GagePageController.prototype.chooseFloodStats = function () {
                 var chart = $('#chart1').highcharts();
@@ -2160,6 +2149,9 @@ var StreamStats;
                     chart.series[16].hide();
                     chart.series[17].hide();
                     chart.series[18].hide();
+                    chart.series[19].hide();
+                    chart.series[20].hide();
+                    chart.series[21].hide();
                     AEPseries.show();
                 }
                 if (this.selectedFloodFreqStats.name === "1-Day Low Flow Statistics") {
@@ -2173,6 +2165,9 @@ var StreamStats;
                     chart.series[16].hide();
                     chart.series[17].hide();
                     chart.series[18].hide();
+                    chart.series[19].hide();
+                    chart.series[20].hide();
+                    chart.series[21].hide();
                     chart.series[10].show();
                 }
                 if (this.selectedFloodFreqStats.name === "7-Day Low Flow Statistics") {
@@ -2186,6 +2181,9 @@ var StreamStats;
                     chart.series[16].hide();
                     chart.series[17].hide();
                     chart.series[18].hide();
+                    chart.series[19].hide();
+                    chart.series[20].hide();
+                    chart.series[21].hide();
                     chart.series[11].show();
                 }
                 if (this.selectedFloodFreqStats.name === "14-Day Low Flow Statistics") {
@@ -2199,6 +2197,9 @@ var StreamStats;
                     chart.series[16].hide();
                     chart.series[17].hide();
                     chart.series[18].hide();
+                    chart.series[19].hide();
+                    chart.series[20].hide();
+                    chart.series[21].hide();
                     chart.series[12].show();
                 }
                 if (this.selectedFloodFreqStats.name === "30-Day Low Flow Statistics") {
@@ -2212,6 +2213,9 @@ var StreamStats;
                     chart.series[16].hide();
                     chart.series[17].hide();
                     chart.series[18].hide();
+                    chart.series[19].hide();
+                    chart.series[20].hide();
+                    chart.series[21].hide();
                     chart.series[13].show();
                 }
                 if (this.selectedFloodFreqStats.name === "Controlled 1-Day Low Flow Statistics") {
@@ -2225,6 +2229,9 @@ var StreamStats;
                     chart.series[16].hide();
                     chart.series[17].hide();
                     chart.series[18].hide();
+                    chart.series[19].hide();
+                    chart.series[20].hide();
+                    chart.series[21].hide();
                     chart.series[14].show();
                 }
                 if (this.selectedFloodFreqStats.name === "Alternative Annual Exceedance Probability (AEP)") {
@@ -2237,6 +2244,9 @@ var StreamStats;
                     chart.series[16].hide();
                     chart.series[17].hide();
                     chart.series[18].hide();
+                    chart.series[19].hide();
+                    chart.series[20].hide();
+                    chart.series[21].hide();
                     chart.series[15].show();
                 }
                 if (this.selectedFloodFreqStats.name === "Controlled 7-Day Low Flow Statistics") {
@@ -2250,6 +2260,9 @@ var StreamStats;
                     chart.series[15].hide();
                     chart.series[17].hide();
                     chart.series[18].hide();
+                    chart.series[19].hide();
+                    chart.series[20].hide();
+                    chart.series[21].hide();
                     chart.series[16].show();
                 }
                 if (this.selectedFloodFreqStats.name === "Controlled 14-Day Low Flow Statistics") {
@@ -2263,6 +2276,9 @@ var StreamStats;
                     chart.series[15].hide();
                     chart.series[16].hide();
                     chart.series[18].hide();
+                    chart.series[19].hide();
+                    chart.series[20].hide();
+                    chart.series[21].hide();
                     chart.series[17].show();
                 }
                 if (this.selectedFloodFreqStats.name === "Controlled 30-Day Low Flow Statistics") {
@@ -2276,7 +2292,58 @@ var StreamStats;
                     chart.series[15].hide();
                     chart.series[16].hide();
                     chart.series[17].hide();
+                    chart.series[19].hide();
+                    chart.series[20].hide();
+                    chart.series[21].hide();
                     chart.series[18].show();
+                }
+                if (this.selectedFloodFreqStats.name === "Weighted 1-Day Low Flow Statistics") {
+                    console.log('Weighted 1 day');
+                    AEPseries.hide();
+                    chart.series[10].hide();
+                    chart.series[11].hide();
+                    chart.series[12].hide();
+                    chart.series[13].hide();
+                    chart.series[14].hide();
+                    chart.series[15].hide();
+                    chart.series[16].hide();
+                    chart.series[17].hide();
+                    chart.series[18].hide();
+                    chart.series[20].hide();
+                    chart.series[21].hide();
+                    chart.series[19].show();
+                }
+                if (this.selectedFloodFreqStats.name === "Weighted 7-Day Low Flow Statistics") {
+                    console.log('Weighted 7 day');
+                    AEPseries.hide();
+                    chart.series[10].hide();
+                    chart.series[11].hide();
+                    chart.series[12].hide();
+                    chart.series[13].hide();
+                    chart.series[14].hide();
+                    chart.series[15].hide();
+                    chart.series[16].hide();
+                    chart.series[17].hide();
+                    chart.series[18].hide();
+                    chart.series[19].hide();
+                    chart.series[21].hide();
+                    chart.series[20].show();
+                }
+                if (this.selectedFloodFreqStats.name === "Weighted 30-Day Low Flow Statistics") {
+                    console.log('Weighted 30 day');
+                    AEPseries.hide();
+                    chart.series[10].hide();
+                    chart.series[11].hide();
+                    chart.series[12].hide();
+                    chart.series[13].hide();
+                    chart.series[14].hide();
+                    chart.series[15].hide();
+                    chart.series[16].hide();
+                    chart.series[17].hide();
+                    chart.series[18].hide();
+                    chart.series[19].hide();
+                    chart.series[20].hide();
+                    chart.series[21].show();
                 }
                 console.log("selected flood freq stat:", this.selectedFloodFreqStats);
             };
