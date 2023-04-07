@@ -1603,6 +1603,7 @@ var StreamStats;
                             linkedTo: null,
                             visible: true,
                             id: null,
+                            zIndex: 5,
                             marker: {
                                 symbol: 'circle',
                                 radius: 3
@@ -1638,6 +1639,7 @@ var StreamStats;
                             linkedTo: null,
                             visible: true,
                             id: null,
+                            zIndex: 5,
                             marker: {
                                 symbol: 'square',
                                 radius: 3
@@ -1666,6 +1668,7 @@ var StreamStats;
                             linkedTo: null,
                             visible: true,
                             id: null,
+                            zIndex: 1,
                             marker: {
                                 symbol: null,
                                 radius: null
@@ -1694,6 +1697,7 @@ var StreamStats;
                             linkedTo: ':previous',
                             visible: true,
                             id: null,
+                            zIndex: 1,
                             marker: {
                                 symbol: null,
                                 radius: null
@@ -1722,6 +1726,7 @@ var StreamStats;
                             linkedTo: ':previous',
                             visible: true,
                             id: null,
+                            zIndex: 1,
                             marker: {
                                 symbol: null,
                                 radius: null
@@ -1750,6 +1755,7 @@ var StreamStats;
                             linkedTo: ':previous',
                             visible: true,
                             id: null,
+                            zIndex: 1,
                             marker: {
                                 symbol: null,
                                 radius: null
@@ -1778,6 +1784,7 @@ var StreamStats;
                             linkedTo: ':previous',
                             visible: true,
                             id: null,
+                            zIndex: 1,
                             marker: {
                                 symbol: null,
                                 radius: null
@@ -1808,6 +1815,7 @@ var StreamStats;
                             linkedTo: null,
                             visible: true,
                             id: null,
+                            zIndex: 4,
                             marker: {
                                 symbol: 'circle',
                                 radius: 3
@@ -1838,6 +1846,7 @@ var StreamStats;
                             linkedTo: null,
                             visible: true,
                             id: null,
+                            zIndex: 3,
                             marker: {
                                 symbol: '',
                                 radius: 3
@@ -1860,6 +1869,7 @@ var StreamStats;
                             linkedTo: null,
                             visible: true,
                             id: 'dummyAEP',
+                            zIndex: 2,
                             marker: {
                                 symbol: 'line',
                                 radius: 0.1
@@ -1882,6 +1892,7 @@ var StreamStats;
                             linkedTo: null,
                             visible: false,
                             id: 'oneDay',
+                            zIndex: 2,
                             marker: {
                                 symbol: 'line',
                                 radius: 0.1
@@ -1904,6 +1915,7 @@ var StreamStats;
                             linkedTo: null,
                             visible: false,
                             id: 'sevenDay',
+                            zIndex: 2,
                             marker: {
                                 symbol: 'line',
                                 radius: 0.1
@@ -1926,6 +1938,7 @@ var StreamStats;
                             linkedTo: null,
                             visible: false,
                             id: 'fourteenDay',
+                            zIndex: 2,
                             marker: {
                                 symbol: 'line',
                                 radius: 0.1
@@ -1948,6 +1961,7 @@ var StreamStats;
                             linkedTo: null,
                             visible: false,
                             id: 'thirtyDay',
+                            zIndex: 2,
                             marker: {
                                 symbol: 'line',
                                 radius: 0.1
@@ -1970,6 +1984,7 @@ var StreamStats;
                             linkedTo: null,
                             visible: false,
                             id: 'contrOneDay',
+                            zIndex: 2,
                             marker: {
                                 symbol: 'line',
                                 radius: 0.1
@@ -1992,6 +2007,7 @@ var StreamStats;
                             linkedTo: null,
                             visible: this.formattedFloodFreq.length === 0,
                             id: 'altAEP',
+                            zIndex: 2,
                             marker: {
                                 symbol: 'line',
                                 radius: 0.1
@@ -2014,6 +2030,7 @@ var StreamStats;
                             linkedTo: null,
                             visible: false,
                             id: 'contrSevenDay',
+                            zIndex: 2,
                             marker: {
                                 symbol: 'line',
                                 radius: 0.1
@@ -2036,6 +2053,7 @@ var StreamStats;
                             linkedTo: null,
                             visible: false,
                             id: 'contrFourteenDay',
+                            zIndex: 2,
                             marker: {
                                 symbol: 'line',
                                 radius: 0.1
@@ -2058,6 +2076,7 @@ var StreamStats;
                             linkedTo: null,
                             visible: false,
                             id: 'contrThirtyDay',
+                            zIndex: 2,
                             marker: {
                                 symbol: 'line',
                                 radius: 0.1
@@ -2080,6 +2099,7 @@ var StreamStats;
                             linkedTo: null,
                             visible: false,
                             id: 'weightedOneDay',
+                            zIndex: 2,
                             marker: {
                                 symbol: 'line',
                                 radius: 0.1
@@ -2102,6 +2122,7 @@ var StreamStats;
                             linkedTo: null,
                             visible: false,
                             id: 'weightedSevenDay',
+                            zIndex: 2,
                             marker: {
                                 symbol: 'line',
                                 radius: 0.1
@@ -2124,6 +2145,7 @@ var StreamStats;
                             linkedTo: null,
                             visible: false,
                             id: 'weightedThirtyDay',
+                            zIndex: 2,
                             marker: {
                                 symbol: 'line',
                                 radius: 0.1

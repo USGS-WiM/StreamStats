@@ -250,7 +250,7 @@ module StreamStats.Controllers {
                         xAxis: {  type: string, title: {text: string}, custom: { allowNegativeLog: Boolean }},
                         yAxis: { title: {text: string}, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
                         series: { name: string; showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
-                                fillOpacity: number, lineWidth: number, data: number[], linkedTo: string, visible: boolean, id: string, marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
+                                fillOpacity: number, lineWidth: number, data: number[], linkedTo: string, visible: boolean, id: string, zIndex: number, marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
         constructor($scope: IGagePageControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
@@ -1841,6 +1841,7 @@ module StreamStats.Controllers {
                     linkedTo: null,
                     visible: true,
                     id: null,
+                    zIndex: 5,
                     marker: {
                         symbol: 'circle',
                         radius: 3
@@ -1875,6 +1876,7 @@ module StreamStats.Controllers {
                     linkedTo: null,
                     visible: true,
                     id: null,
+                    zIndex: 5,
                     marker: {
                         symbol: 'square',
                         radius: 3
@@ -1903,6 +1905,7 @@ module StreamStats.Controllers {
                     linkedTo: null,
                     visible: true,
                     id: null,
+                    zIndex: 1,
                     marker: {
                         symbol: null,
                         radius: null
@@ -1931,6 +1934,7 @@ module StreamStats.Controllers {
                     linkedTo: ':previous',
                     visible: true,
                     id: null,
+                    zIndex: 1,
                     marker: {
                         symbol: null,
                         radius: null
@@ -1959,6 +1963,7 @@ module StreamStats.Controllers {
                     linkedTo: ':previous',
                     visible: true,
                     id: null,
+                    zIndex: 1,
                     marker: {
                         symbol: null,
                         radius: null
@@ -1987,6 +1992,7 @@ module StreamStats.Controllers {
                     linkedTo: ':previous',
                     visible: true,
                     id: null,
+                    zIndex: 1,
                     marker: {
                         symbol: null,
                         radius: null
@@ -2015,6 +2021,7 @@ module StreamStats.Controllers {
                     linkedTo: ':previous',
                     visible: true,
                     id: null,
+                    zIndex: 1,
                     marker: {
                         symbol: null,
                         radius: null
@@ -2046,6 +2053,7 @@ module StreamStats.Controllers {
                     linkedTo: null,
                     visible: true,
                     id: null,
+                    zIndex: 4,
                     marker: {
                         symbol: 'circle',
                         radius: 3
@@ -2076,6 +2084,7 @@ module StreamStats.Controllers {
                     linkedTo: null,
                     visible: true,
                     id: null,
+                    zIndex: 3,
                     marker: {
                         symbol: '',
                         radius: 3
@@ -2098,6 +2107,7 @@ module StreamStats.Controllers {
                     linkedTo: null,
                     visible: true,
                     id: 'dummyAEP',
+                    zIndex: 2,
                     marker: {
                         symbol: 'line',
                         radius: 0.1
@@ -2120,6 +2130,7 @@ module StreamStats.Controllers {
                     linkedTo: null,
                     visible: false,
                     id: 'oneDay',
+                    zIndex: 2,
                     marker: {
                         symbol: 'line',
                         radius: 0.1
@@ -2142,6 +2153,7 @@ module StreamStats.Controllers {
                     linkedTo: null,
                     visible: false,
                     id: 'sevenDay',
+                    zIndex: 2,
                     marker: {
                         symbol: 'line',
                         radius: 0.1
@@ -2164,6 +2176,7 @@ module StreamStats.Controllers {
                     linkedTo: null,
                     visible: false,
                     id: 'fourteenDay',
+                    zIndex: 2,
                     marker: {
                         symbol: 'line',
                         radius: 0.1
@@ -2186,6 +2199,7 @@ module StreamStats.Controllers {
                     linkedTo: null,
                     visible: false,
                     id: 'thirtyDay',
+                    zIndex: 2,
                     marker: {
                         symbol: 'line',
                         radius: 0.1
@@ -2208,6 +2222,7 @@ module StreamStats.Controllers {
                     linkedTo: null,
                     visible: false,
                     id: 'contrOneDay',
+                    zIndex: 2,
                     marker: {
                         symbol: 'line',
                         radius: 0.1
@@ -2230,6 +2245,7 @@ module StreamStats.Controllers {
                     linkedTo: null,
                     visible: this.formattedFloodFreq.length === 0,
                     id: 'altAEP',
+                    zIndex: 2,
                     marker: {
                         symbol: 'line',
                         radius: 0.1
@@ -2252,6 +2268,7 @@ module StreamStats.Controllers {
                     linkedTo: null,
                     visible: false,
                     id: 'contrSevenDay',
+                    zIndex: 2,
                     marker: {
                         symbol: 'line',
                         radius: 0.1
@@ -2274,6 +2291,7 @@ module StreamStats.Controllers {
                     linkedTo: null,
                     visible: false,
                     id: 'contrFourteenDay',
+                    zIndex: 2,
                     marker: {
                         symbol: 'line',
                         radius: 0.1
@@ -2296,6 +2314,7 @@ module StreamStats.Controllers {
                     linkedTo: null,
                     visible: false,
                     id: 'contrThirtyDay',
+                    zIndex: 2,
                     marker: {
                         symbol: 'line',
                         radius: 0.1
@@ -2318,6 +2337,7 @@ module StreamStats.Controllers {
                     linkedTo: null,
                     visible: false,
                     id: 'weightedOneDay',
+                    zIndex: 2,
                     marker: {
                         symbol: 'line',
                         radius: 0.1
@@ -2340,6 +2360,7 @@ module StreamStats.Controllers {
                     linkedTo: null,
                     visible: false,
                     id: 'weightedSevenDay',
+                    zIndex: 2,
                     marker: {
                         symbol: 'line',
                         radius: 0.1
@@ -2362,6 +2383,7 @@ module StreamStats.Controllers {
                     linkedTo: null,
                     visible: false,
                     id: 'weightedThirtyDay',
+                    zIndex: 2,
                     marker: {
                         symbol: 'line',
                         radius: 0.1
