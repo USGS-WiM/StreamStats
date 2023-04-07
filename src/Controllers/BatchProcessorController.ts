@@ -112,15 +112,17 @@ module StreamStats.Controllers {
             this.selectedBatchProcessorTabName = tabname;
         }
 
-        // get list of regions/stats from nssservices/regions
-        // Used getFreshDeskArticles from HelpController as template
+        // Get list of State/Regions from batchprocessor/regions
         public getRegions(): void {
-            // call an ng.IPromise first
-            this.nssService.getRegionList().then(
-                // set regionList to values of promised response
-                response => { this.regionList = response; }
 
-            );
+            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['Regions'];
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+
+            this.Execute(request).then(
+                (response: any) => {
+                    this.regionList = response.data;
+                });
+
         }
 
         // send selected region code and retrieve flows stats list

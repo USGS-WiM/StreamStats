@@ -23,7 +23,7 @@
             <div id="selectRegionID">
                 <label><strong>State / Region:</strong></label>
                 <select ng-model="vm.selectedRegion"
-                    ng-options="region.code as region.name for region in vm.regionList track by region.code"
+                    ng-options="region.Code as region.Name for region in vm.regionList track by region.Code"
                     ng-change="vm.getFlowStatsAndParams(vm.selectedRegion)"></select>
             </div><!-- End select region -->
             

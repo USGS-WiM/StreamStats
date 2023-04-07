@@ -49,7 +49,11 @@ var StreamStats;
             };
             BatchProcessorController.prototype.getRegions = function () {
                 var _this = this;
-                this.nssService.getRegionList().then(function (response) { _this.regionList = response; });
+                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['Regions'];
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                this.Execute(request).then(function (response) {
+                    _this.regionList = response.data;
+                });
             };
             BatchProcessorController.prototype.getFlowStatsAndParams = function (rcode) {
                 var _this = this;
