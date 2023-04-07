@@ -78,6 +78,9 @@ module StreamStats.Controllers {
         public parametersAllChecked: boolean;
         public showBasinCharacteristics: boolean;
 
+        // POST methods
+        public id_field: string;
+
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', '$modalInstance'];
@@ -424,6 +427,11 @@ module StreamStats.Controllers {
 
                 }).finally(() => {
                 });
+        }
+
+        public submitBatch(idField: string, email: string): void {
+            console.log("idField: " + idField);
+            console.log("email: " + email);
         }
 
         // Helper Methods

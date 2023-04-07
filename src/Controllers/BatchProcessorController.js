@@ -249,6 +249,10 @@ var StreamStats;
                 }).finally(function () {
                 });
             };
+            BatchProcessorController.prototype.submitBatch = function (idField, email) {
+                console.log("idField: " + idField);
+                console.log("email: " + email);
+            };
             BatchProcessorController.prototype.init = function () {
                 this.getRegions();
             };

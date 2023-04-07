@@ -7,7 +7,7 @@
     <h4 class="modal-title">StreamStats Batch Processor</h4>
 </div>
 <div class="modal-body">
-    <ul id="aboutTabs" class="nav nav-tabs">
+    <ul id="bpTabs" class="nav nav-tabs">
         <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'submitBatch'}"><a
                 ng-click="vm.selectBatchProcessorTab('submitBatch')"><i class="fa fa-question-circle"></i>&nbsp;Submit
                 Batch</a></li>
@@ -18,13 +18,16 @@
     <div style="padding-top: 10px;">
         <!-- Start submit batch -->
         <div id="submitBatch" ng-if="vm.selectedBatchProcessorTabName==='submitBatch'">
+           
+            <!-- Start select region -->
             <div id="selectRegionID">
-                <label>Select State / Region:</label>
+                <label><strong>State / Region:</strong></label>
                 <select ng-model="vm.selectedRegion"
                     ng-options="region.code as region.name for region in vm.regionList track by region.code"
                     ng-change="vm.getFlowStatsAndParams(vm.selectedRegion)"></select>
-            </div>
-            <!-- checkboxes for different work -->
+            </div><!-- End select region -->
+            
+            <!-- Start checkboxes for different sections -->
             <div style="padding-top: 15px;">
                 <span>
                     <input id="cbDelineate" , type="checkbox" ng-checked="vm.selectedRegion" display="inline-block"
@@ -39,9 +42,10 @@
                         ng-checked="vm.showBasinCharacteristics || cbBasinChar" ng-disabled="vm.showBasinCharacteristics">
                     <label class="chx" for="cbBasinChar">&nbsp;Compute Basin Characteristics</label>
                 </span>
-            </div>
-            <!-- select flow statistics -->
-            <div ng-if="cbFlowStats" style="padding-top: 15px;" class="well well-sm"><!-- ng-init="vm.flowStatsAllChecked = false"-->
+            </div><!-- end checkboxes for different sections -->
+
+            <!-- Start select flow statistics -->
+            <div ng-if="cbFlowStats" style="padding-top: 15px;" class="well well-sm">
                 <h3>Select Flow Statistics</h3>
                 <!-- button to check/uncheck all -->
                 <button class="btn-blue fullwidth" ng-class="btn-blue" ng-click="vm.toggleFlowStatisticsAllChecked()">
@@ -68,13 +72,9 @@
                 </tbody>
 
                 </table>
-                <!-- <div ng-repeat="flowStat in vm.flowStatsList">
-                    <input id="{{flowStat.statisticGroupName}}" ng-model="flowStat.checked"
-                        ng-change="vm.setRegionStats(flowStat, false)" type="checkbox" display="inline-block">
-                    <label class="chx" for="{{flowStat.statisticGroupName}}"> {{flowStat.statisticGroupName}} </label>
-                </div> -->
-            </div>
-            <!-- select parameters -->
+            </div><!-- End select flow statistics -->
+
+            <!-- Start select parameters -->
             <div ng-show="vm.showBasinCharacteristics || cbBasinChar" style="padding-top: 15px;" class="well well-sm">
                 <h3>Select Basin Characteristics</h3>
                 <!-- button to check/uncheck all -->
@@ -104,16 +104,42 @@
                         </tr>
                     </tbody>
                 </table>
+            </div><!-- End parameter selection -->
 
-            </div>
-            <!-- End submit batch -->
+            <!-- Start user information -->
+            <div style="padding-top: 15px;" class="row">
+                <div class="col-md-5"><strong>ID Field:</strong>
+                    <i ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-question-circle"></i>
+                    <span ng-show="showTooltip" class="report-tooltip">
+                        <span>This is the field heading from the shapefile of points that is unique to each point and allows the
+                            data to be
+                            joined with the batch results.</span>
+                    </span>
+                    <input type="text" id="idField" ng-model="user.idField">
+                </div>
+                <div class="col-md-7">
+                    <span><strong>Email Address:</strong>
+                        <input type="text" id="emailField" ng-model="user.email"></span>
+                </div>
+            </div> <!-- End user information-->
 
-            <!-- Start batch status -->
-            <div id="batchStatus" ng-if="vm.selectedBatchProcessorTabName==='batchStatus'">
-                <p>This is the batch status tab</p>
-            </div>
-            <!-- End batch status -->
-        </div>
+            <!-- Button to submit batch that is disabled until vm.selectedRegion, user.idField, and user.email are all true-->
+            <div style="padding-top: 15px;">
+                <button ng-disabled="!vm.selectedRegion || !user.idField || !user.email" class="btn-blue fullwidth"
+                    ng-click="vm.submitBatch(user.idField, user.email)">
+                    <span>Submit Batch</span>
+                </button>
+            </div> <!-- End submit batch button -->
+
+        </div><!-- End submit batch -->
+        
+
+        <!-- Start batch status -->
+        <div id="batchStatus" ng-if="vm.selectedBatchProcessorTabName==='batchStatus'">
+            <p>This is the batch status tab</p>
+        </div> <!-- End batch status -->
+       
+    </div> <!-- End of modal body -->
 
         <div class="modal-footer">
             <button ng-click="vm.Close()" class="btn-black"><i
