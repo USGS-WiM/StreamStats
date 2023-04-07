@@ -667,7 +667,7 @@ module StreamStats.Controllers {
         //This will be used to plot x-percent AEP flood values as horizontal plotLines
         public getFloodFreq() {
             var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.gage.code;
-            console.log('GetFloodFreqURL', url)
+            //console.log('GetFloodFreqURL', url)
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
@@ -1736,7 +1736,6 @@ module StreamStats.Controllers {
             this.allFloodFreqStats = this.allFloodFreqStats.filter(group => group.length > 0);
 
             this.allFloodFreqStats.forEach((group, index) => {
-                console.log(group);
                 this.allFloodFreqStats[index] = {
                     name: group[0].tooltip.headerFormat.replace("<b>",""),
                     statistics: group,
@@ -1744,7 +1743,6 @@ module StreamStats.Controllers {
                 }
             });
             this.selectedFloodFreqStats = this.allFloodFreqStats[0];
-            console.log(this.allFloodFreqStats);
             this.createAnnualFlowPlot();
         }}
 
@@ -2451,7 +2449,6 @@ module StreamStats.Controllers {
                 })
                 floodSeries.show();
             }
-            console.log("selected flood freq stat:", this.selectedFloodFreqStats);
         }
 
         //checkbox for turning on and off AEP lines
@@ -2564,22 +2561,21 @@ module StreamStats.Controllers {
 
 
         public destroyResetZoom() {
-            console.log('DESTROY')
             let chart = $('#chart1').highcharts();
-            //if (this.peaksOnYear) {
-                console.log('load test', chart)
                 chart.showResetZoom();
                 chart.resetZoomButton.hide();
-            //}
-            //chart.accessibility.chart.resetZoomButton.hide();
         }
+
         public resetZoom () {
             let chart = $('#chart1').highcharts();
             if (this.peaksOnYear) {
-                console.log(chart)
                 console.log('reset to one year')
+                chart.rangeSelector.update({ selected: 3 });
+                chart.yAxis[0].setExtremes();
             } else {
                 console.log('reset to full extent')
+                chart.yAxis[0].setExtremes();
+                chart.xAxis[0].setExtremes();
             }
         }
         

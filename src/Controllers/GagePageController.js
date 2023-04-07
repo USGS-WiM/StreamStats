@@ -477,7 +477,6 @@ var StreamStats;
             GagePageController.prototype.getFloodFreq = function () {
                 var _this_1 = this;
                 var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.gage.code;
-                console.log('GetFloodFreqURL', url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var data = response.data;
@@ -1505,7 +1504,6 @@ var StreamStats;
                     this.allFloodFreqStats.push(this.formattedFloodFreq, this.formattedAltFloodFreq, this.formattedOneDayStats, this.formattedSevenDayStats, this.formattedFourteenDayStats, this.formattedThirtyDayStats, this.formattedContrOneDayStats, this.formattedContrSevenDayStats, this.formattedContrFourteenDayStats, this.formattedContrThirtyDayStats, this.formattedWeightedOneDayStats, this.formattedWeightedSevenDayStats, this.formattedWeightedThirtyDayStats);
                     this.allFloodFreqStats = this.allFloodFreqStats.filter(function (group) { return group.length > 0; });
                     this.allFloodFreqStats.forEach(function (group, index) {
-                        console.log(group);
                         _this_1.allFloodFreqStats[index] = {
                             name: group[0].tooltip.headerFormat.replace("<b>", ""),
                             statistics: group,
@@ -1513,7 +1511,6 @@ var StreamStats;
                         };
                     });
                     this.selectedFloodFreqStats = this.allFloodFreqStats[0];
-                    console.log(this.allFloodFreqStats);
                     this.createAnnualFlowPlot();
                 }
             };
@@ -2207,7 +2204,6 @@ var StreamStats;
                     });
                     floodSeries.show();
                 }
-                console.log("selected flood freq stat:", this.selectedFloodFreqStats);
             };
             GagePageController.prototype.toggleFloodStats = function () {
                 var chart = $('#chart1').highcharts();
@@ -2316,20 +2312,21 @@ var StreamStats;
             };
             ;
             GagePageController.prototype.destroyResetZoom = function () {
-                console.log('DESTROY');
                 var chart = $('#chart1').highcharts();
-                console.log('load test', chart);
                 chart.showResetZoom();
                 chart.resetZoomButton.hide();
             };
             GagePageController.prototype.resetZoom = function () {
                 var chart = $('#chart1').highcharts();
                 if (this.peaksOnYear) {
-                    console.log(chart);
                     console.log('reset to one year');
+                    chart.rangeSelector.update({ selected: 3 });
+                    chart.yAxis[0].setExtremes();
                 }
                 else {
                     console.log('reset to full extent');
+                    chart.yAxis[0].setExtremes();
+                    chart.xAxis[0].setExtremes();
                 }
             };
             GagePageController.prototype.init = function () {
