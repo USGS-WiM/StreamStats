@@ -240,9 +240,9 @@ module StreamStats.Controllers {
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
-        chartConfig: {  chart: { height: number, width: number, zooming: {type: string}, panning: boolean, panKey: string },
+        chartConfig: {  chart: { events: {load: Function}, height: number, width: number, zooming: {type: string}, panning: boolean, panKey: string},
                         title: { text: string, align: string},
-                        subtitle: { text: string, align: string},
+                        subtitle: { text: string, align: string}, 
                         rangeSelector: { enabled: boolean, inputPosition: {align: string, x: number, y: number}, 
                         //buttons: {type: string, count: number, text: string, title: string }[], 
                                         selected: number, buttonPosition: {align: string, x: number, y: number}},
@@ -1758,6 +1758,10 @@ module StreamStats.Controllers {
             //console.log('NWS Forecast', this.NWSforecast)
             this.chartConfig = {
                 chart: {
+                    events: {
+                        load: null
+                        //this.destroyResetZoom()
+                    },
                     height: 550,
                     width: 800,
                     zooming: {
@@ -2433,6 +2437,8 @@ module StreamStats.Controllers {
             });
         }
 
+
+
         //dropdown for choosing flood statistics
         public chooseFloodStats() {
             let chart = $('#chart1').highcharts();
@@ -2468,6 +2474,7 @@ module StreamStats.Controllers {
                 chart.yAxis[0].update({ type: 'logarithmic' });
             } else {
                 chart.yAxis[0].update({ type: 'linear' });
+                //chart.resetZoomButton.hide();
             }
         };
         //checkbox to plot peaks on one year (2022 for now)
@@ -2554,6 +2561,27 @@ module StreamStats.Controllers {
                 }})
             }
         };
+
+
+        public destroyResetZoom() {
+            console.log('DESTROY')
+            let chart = $('#chart1').highcharts();
+            //if (this.peaksOnYear) {
+                console.log('load test', chart)
+                chart.showResetZoom();
+                chart.resetZoomButton.hide();
+            //}
+            //chart.accessibility.chart.resetZoomButton.hide();
+        }
+        public resetZoom () {
+            let chart = $('#chart1').highcharts();
+            if (this.peaksOnYear) {
+                console.log(chart)
+                console.log('reset to one year')
+            } else {
+                console.log('reset to full extent')
+            }
+        }
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-

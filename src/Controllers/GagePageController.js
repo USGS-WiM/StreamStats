@@ -1521,6 +1521,9 @@ var StreamStats;
                 var _this_1 = this;
                 this.chartConfig = {
                     chart: {
+                        events: {
+                            load: null
+                        },
                         height: 550,
                         width: 800,
                         zooming: {
@@ -2312,6 +2315,23 @@ var StreamStats;
                 }
             };
             ;
+            GagePageController.prototype.destroyResetZoom = function () {
+                console.log('DESTROY');
+                var chart = $('#chart1').highcharts();
+                console.log('load test', chart);
+                chart.showResetZoom();
+                chart.resetZoomButton.hide();
+            };
+            GagePageController.prototype.resetZoom = function () {
+                var chart = $('#chart1').highcharts();
+                if (this.peaksOnYear) {
+                    console.log(chart);
+                    console.log('reset to one year');
+                }
+                else {
+                    console.log('reset to full extent');
+                }
+            };
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;
                 this.getGagePage();
