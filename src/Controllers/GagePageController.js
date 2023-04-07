@@ -1601,6 +1601,7 @@ var StreamStats;
                             lineWidth: null,
                             data: this.formattedPeakDatesOnYear,
                             linkedTo: null,
+                            visible: true,
                             id: null,
                             marker: {
                                 symbol: 'circle',
@@ -1635,6 +1636,7 @@ var StreamStats;
                             lineWidth: null,
                             data: this.formattedEstPeakDatesOnYear,
                             linkedTo: null,
+                            visible: true,
                             id: null,
                             marker: {
                                 symbol: 'square',
@@ -1662,6 +1664,7 @@ var StreamStats;
                             lineWidth: 0,
                             data: this.formattedP90to100,
                             linkedTo: null,
+                            visible: true,
                             id: null,
                             marker: {
                                 symbol: null,
@@ -1689,6 +1692,7 @@ var StreamStats;
                             lineWidth: 0,
                             data: this.formattedP0to10,
                             linkedTo: ':previous',
+                            visible: true,
                             id: null,
                             marker: {
                                 symbol: null,
@@ -1716,6 +1720,7 @@ var StreamStats;
                             lineWidth: 0,
                             data: this.formattedP10to25,
                             linkedTo: ':previous',
+                            visible: true,
                             id: null,
                             marker: {
                                 symbol: null,
@@ -1743,6 +1748,7 @@ var StreamStats;
                             lineWidth: 0,
                             data: this.formattedP25to75,
                             linkedTo: ':previous',
+                            visible: true,
                             id: null,
                             marker: {
                                 symbol: null,
@@ -1770,6 +1776,7 @@ var StreamStats;
                             lineWidth: 0,
                             data: this.formattedP75to90,
                             linkedTo: ':previous',
+                            visible: true,
                             id: null,
                             marker: {
                                 symbol: null,
@@ -1799,6 +1806,7 @@ var StreamStats;
                             lineWidth: 1.5,
                             data: this.formattedDailyFlow,
                             linkedTo: null,
+                            visible: true,
                             id: null,
                             marker: {
                                 symbol: 'circle',
@@ -1828,6 +1836,7 @@ var StreamStats;
                             lineWidth: 1.5,
                             data: this.NWSforecast,
                             linkedTo: null,
+                            visible: true,
                             id: null,
                             marker: {
                                 symbol: '',
@@ -1849,6 +1858,7 @@ var StreamStats;
                             lineWidth: null,
                             data: null,
                             linkedTo: null,
+                            visible: true,
                             id: 'dummyAEP',
                             marker: {
                                 symbol: 'line',
@@ -1870,6 +1880,7 @@ var StreamStats;
                             lineWidth: null,
                             data: null,
                             linkedTo: null,
+                            visible: false,
                             id: 'oneDay',
                             marker: {
                                 symbol: 'line',
@@ -1891,6 +1902,7 @@ var StreamStats;
                             lineWidth: null,
                             data: null,
                             linkedTo: null,
+                            visible: false,
                             id: 'sevenDay',
                             marker: {
                                 symbol: 'line',
@@ -1912,6 +1924,7 @@ var StreamStats;
                             lineWidth: null,
                             data: null,
                             linkedTo: null,
+                            visible: false,
                             id: 'fourteenDay',
                             marker: {
                                 symbol: 'line',
@@ -1933,6 +1946,7 @@ var StreamStats;
                             lineWidth: null,
                             data: null,
                             linkedTo: null,
+                            visible: false,
                             id: 'thirtyDay',
                             marker: {
                                 symbol: 'line',
@@ -1954,6 +1968,7 @@ var StreamStats;
                             lineWidth: null,
                             data: null,
                             linkedTo: null,
+                            visible: false,
                             id: 'contrOneDay',
                             marker: {
                                 symbol: 'line',
@@ -1975,6 +1990,7 @@ var StreamStats;
                             lineWidth: null,
                             data: null,
                             linkedTo: null,
+                            visible: true,
                             id: 'altAEP',
                             marker: {
                                 symbol: 'line',
@@ -1996,6 +2012,7 @@ var StreamStats;
                             lineWidth: null,
                             data: null,
                             linkedTo: null,
+                            visible: false,
                             id: 'contrSevenDay',
                             marker: {
                                 symbol: 'line',
@@ -2017,6 +2034,7 @@ var StreamStats;
                             lineWidth: null,
                             data: null,
                             linkedTo: null,
+                            visible: false,
                             id: 'contrFourteenDay',
                             marker: {
                                 symbol: 'line',
@@ -2038,6 +2056,7 @@ var StreamStats;
                             lineWidth: null,
                             data: null,
                             linkedTo: null,
+                            visible: false,
                             id: 'contrThirtyDay',
                             marker: {
                                 symbol: 'line',
@@ -2059,6 +2078,7 @@ var StreamStats;
                             lineWidth: null,
                             data: null,
                             linkedTo: null,
+                            visible: false,
                             id: 'weightedOneDay',
                             marker: {
                                 symbol: 'line',
@@ -2080,6 +2100,7 @@ var StreamStats;
                             lineWidth: null,
                             data: null,
                             linkedTo: null,
+                            visible: false,
                             id: 'weightedSevenDay',
                             marker: {
                                 symbol: 'line',
@@ -2101,6 +2122,7 @@ var StreamStats;
                             lineWidth: null,
                             data: null,
                             linkedTo: null,
+                            visible: false,
                             id: 'weightedThirtyDay',
                             marker: {
                                 symbol: 'line',
@@ -2152,19 +2174,6 @@ var StreamStats;
             };
             GagePageController.prototype.chooseFloodStats = function () {
                 var chart = $('#chart1').highcharts();
-                if (this.formattedFloodFreq.length > 0) {
-                    chart.series[10].hide();
-                    chart.series[11].hide();
-                    chart.series[12].hide();
-                    chart.series[13].hide();
-                    chart.series[14].hide();
-                    chart.series[16].hide();
-                    chart.series[17].hide();
-                    chart.series[18].hide();
-                    chart.series[19].hide();
-                    chart.series[20].hide();
-                    chart.series[21].hide();
-                }
                 var floodSeries = chart.series[this.selectedFloodFreqStats.seriesIndex];
                 if (this.selectedFloodFreqStats.name === this.selectedFloodFreqStats.name) {
                     this.allFloodFreqStats.forEach(function (stat) {

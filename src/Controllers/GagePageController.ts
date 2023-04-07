@@ -250,7 +250,7 @@ module StreamStats.Controllers {
                         xAxis: {  type: string, title: {text: string}, custom: { allowNegativeLog: Boolean }},
                         yAxis: { title: {text: string}, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
                         series: { name: string; showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
-                                fillOpacity: number, lineWidth: number, data: number[], linkedTo: string, id: string, marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
+                                fillOpacity: number, lineWidth: number, data: number[], linkedTo: string, visible: boolean, id: string, marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
         constructor($scope: IGagePageControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
@@ -1839,6 +1839,7 @@ module StreamStats.Controllers {
                     lineWidth: null,
                     data    : this.formattedPeakDatesOnYear,
                     linkedTo: null,
+                    visible: true,
                     id: null,
                     marker: {
                         symbol: 'circle',
@@ -1872,6 +1873,7 @@ module StreamStats.Controllers {
                     lineWidth: null,
                     data    : this.formattedEstPeakDatesOnYear,
                     linkedTo: null,
+                    visible: true,
                     id: null,
                     marker: {
                         symbol: 'square',
@@ -1899,6 +1901,7 @@ module StreamStats.Controllers {
                     lineWidth: 0,
                     data: this.formattedP90to100,
                     linkedTo: null,
+                    visible: true,
                     id: null,
                     marker: {
                         symbol: null,
@@ -1926,6 +1929,7 @@ module StreamStats.Controllers {
                     lineWidth: 0,
                     data: this.formattedP0to10,
                     linkedTo: ':previous',
+                    visible: true,
                     id: null,
                     marker: {
                         symbol: null,
@@ -1953,6 +1957,7 @@ module StreamStats.Controllers {
                     lineWidth: 0,
                     data: this.formattedP10to25,
                     linkedTo: ':previous',
+                    visible: true,
                     id: null,
                     marker: {
                         symbol: null,
@@ -1980,6 +1985,7 @@ module StreamStats.Controllers {
                     lineWidth: 0,
                     data: this.formattedP25to75,
                     linkedTo: ':previous',
+                    visible: true,
                     id: null,
                     marker: {
                         symbol: null,
@@ -2007,6 +2013,7 @@ module StreamStats.Controllers {
                     lineWidth: 0,
                     data: this.formattedP75to90,
                     linkedTo: ':previous',
+                    visible: true,
                     id: null,
                     marker: {
                         symbol: null,
@@ -2037,6 +2044,7 @@ module StreamStats.Controllers {
                     lineWidth: 1.5,
                     data    : this.formattedDailyFlow,
                     linkedTo: null,
+                    visible: true,
                     id: null,
                     marker: {
                         symbol: 'circle',
@@ -2066,6 +2074,7 @@ module StreamStats.Controllers {
                     lineWidth: 1.5,
                     data    : this.NWSforecast,
                     linkedTo: null,
+                    visible: true,
                     id: null,
                     marker: {
                         symbol: '',
@@ -2087,6 +2096,7 @@ module StreamStats.Controllers {
                     lineWidth: null,
                     data: null,
                     linkedTo: null,
+                    visible: true,
                     id: 'dummyAEP',
                     marker: {
                         symbol: 'line',
@@ -2108,6 +2118,7 @@ module StreamStats.Controllers {
                     lineWidth: null,
                     data: null,
                     linkedTo: null,
+                    visible: false,
                     id: 'oneDay',
                     marker: {
                         symbol: 'line',
@@ -2129,6 +2140,7 @@ module StreamStats.Controllers {
                     lineWidth: null,
                     data: null,
                     linkedTo: null,
+                    visible: false,
                     id: 'sevenDay',
                     marker: {
                         symbol: 'line',
@@ -2150,6 +2162,7 @@ module StreamStats.Controllers {
                     lineWidth: null,
                     data: null,
                     linkedTo: null,
+                    visible: false,
                     id: 'fourteenDay',
                     marker: {
                         symbol: 'line',
@@ -2171,6 +2184,7 @@ module StreamStats.Controllers {
                     lineWidth: null,
                     data: null,
                     linkedTo: null,
+                    visible: false,
                     id: 'thirtyDay',
                     marker: {
                         symbol: 'line',
@@ -2192,6 +2206,7 @@ module StreamStats.Controllers {
                     lineWidth: null,
                     data: null,
                     linkedTo: null,
+                    visible: false,
                     id: 'contrOneDay',
                     marker: {
                         symbol: 'line',
@@ -2213,6 +2228,7 @@ module StreamStats.Controllers {
                     lineWidth: null,
                     data: null,
                     linkedTo: null,
+                    visible: true,
                     id: 'altAEP',
                     marker: {
                         symbol: 'line',
@@ -2234,6 +2250,7 @@ module StreamStats.Controllers {
                     lineWidth: null,
                     data: null,
                     linkedTo: null,
+                    visible: false,
                     id: 'contrSevenDay',
                     marker: {
                         symbol: 'line',
@@ -2255,6 +2272,7 @@ module StreamStats.Controllers {
                     lineWidth: null,
                     data: null,
                     linkedTo: null,
+                    visible: false,
                     id: 'contrFourteenDay',
                     marker: {
                         symbol: 'line',
@@ -2276,6 +2294,7 @@ module StreamStats.Controllers {
                     lineWidth: null,
                     data: null,
                     linkedTo: null,
+                    visible: false,
                     id: 'contrThirtyDay',
                     marker: {
                         symbol: 'line',
@@ -2297,6 +2316,7 @@ module StreamStats.Controllers {
                     lineWidth: null,
                     data: null,
                     linkedTo: null,
+                    visible: false,
                     id: 'weightedOneDay',
                     marker: {
                         symbol: 'line',
@@ -2318,6 +2338,7 @@ module StreamStats.Controllers {
                     lineWidth: null,
                     data: null,
                     linkedTo: null,
+                    visible: false,
                     id: 'weightedSevenDay',
                     marker: {
                         symbol: 'line',
@@ -2339,6 +2360,7 @@ module StreamStats.Controllers {
                     lineWidth: null,
                     data: null,
                     linkedTo: null,
+                    visible: false,
                     id: 'weightedThirtyDay',
                     marker: {
                         symbol: 'line',
@@ -2347,7 +2369,7 @@ module StreamStats.Controllers {
                     showInLegend: false
                 }
             ] 
-            } 
+            }
             this.formattedFloodFreq.forEach((formattedFloodFreqItem) => {
                 this.chartConfig.series.push(formattedFloodFreqItem)
             });
@@ -2392,19 +2414,6 @@ module StreamStats.Controllers {
         //dropdown for choosing flood statistics
         public chooseFloodStats() {
             let chart = $('#chart1').highcharts();
-            if (this.formattedFloodFreq.length > 0) {
-            chart.series[10].hide();
-            chart.series[11].hide();
-            chart.series[12].hide();
-            chart.series[13].hide();
-            chart.series[14].hide();
-            chart.series[16].hide();
-            chart.series[17].hide();
-            chart.series[18].hide();
-            chart.series[19].hide();
-            chart.series[20].hide();
-            chart.series[21].hide();
-            }
             let floodSeries = chart.series[this.selectedFloodFreqStats.seriesIndex]
             //figure out how to have this option loaded when the plot is instantiated
             if (this.selectedFloodFreqStats.name === this.selectedFloodFreqStats.name) {
