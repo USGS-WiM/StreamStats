@@ -1015,13 +1015,13 @@ module StreamStats.Controllers {
             if (this.oneDayStats) {
                 this.formattedOneDayStats = [];
                 const oneDayStatsColors = {
-                    82: '#f58231',
-                    83: '#9A6324',
-                    84: '#e6194B',
-                    85: '#fabed4',
-                    596: '#9A6324',
-                    820: '#9A6324',
-                    1737: '#dcbeff'
+                    82: '#e6194B',
+                    83: '#f58231',
+                    84: '#ffe119',
+                    85: '#bfef45',
+                    596: '#3cb44b',
+                    820: '#42d4f4',
+                    1737: '#911eb4'
                 };
                 this.oneDayStats.forEach((oneDayItem) => {
                     let colorIndex = oneDayItem.regressionTypeID;
@@ -1071,14 +1071,14 @@ module StreamStats.Controllers {
                 this.formattedSevenDayStats = [];
                 const sevenDayStatsColors = {
                     90: '#9A6324',
-                    91: '#800000',
-                    92: '#e6194B',
-                    93: '#ffd8b1',
-                    589: '#f58231',
-                    822: '#ffe119',
-                    1165: '#bfef45',
-                    1166: '#3cb44b',
-                    1167: '#42d4f4'
+                    91: '#e6194B',
+                    92: '#f58231',
+                    93: '#ffe119',
+                    589: '#bfef45',
+                    822: '#3cb44b',
+                    1165: '#42d4f4',
+                    1166: '#911eb4',
+                    1167: '#dcbeff'
                 };
                 this.sevenDayStats.forEach((sevenDayItem) => {
                     let colorIndex = sevenDayItem.regressionTypeID;
@@ -1127,12 +1127,12 @@ module StreamStats.Controllers {
             if (this.fourteenDayStats) {
                 this.formattedFourteenDayStats = [];
                 const fourteenDayStatsColors = {
-                    94: '#9A6324',
-                    95: '#800000',
-                    96: '#e6194B',
-                    97: '#ffd8b1',
-                    828: '#f58231',
-                    829: '#ffe119'
+                    94: '#e6194B',
+                    95: '#f58231',
+                    96: '#ffe119',
+                    97: '#3cb44b',
+                    828: '#42d4f4',
+                    829: '#911eb4'
                 };
                 this.fourteenDayStats.forEach((fourteenDayItem) => {
                     let colorIndex = fourteenDayItem.regressionTypeID;
@@ -1182,14 +1182,14 @@ module StreamStats.Controllers {
                 this.formattedThirtyDayStats = [];
                 const thirtyDayStatsColors = {
                     98: '#9A6324',
-                    99: '#800000',
-                    100: '#e6194B',
-                    101: '#ffd8b1',
-                    657: '#f58231',
-                    830: '#ffe119',
-                    1174: '#bfef45',
-                    1175: '#3cb44b',
-                    1176: '#42d4f4'
+                    99: '#e6194B',
+                    100: '#f58231',
+                    101: '#ffe119',
+                    657: '#bfef45',
+                    830: '#3cb44b',
+                    1174: '#42d4f4',
+                    1175: '#911eb4',
+                    1176: '#dcbeff'
                 };
                 this.thirtyDayStats.forEach((thirtyDayItem) => {
                     let colorIndex = thirtyDayItem.regressionTypeID;
@@ -1238,12 +1238,12 @@ module StreamStats.Controllers {
             if (this.contrOneDayStats) {
                 this.formattedContrOneDayStats = [];
                 const contrOneDayStatsColors = {
-                    1081: '#bfef45',
-                    1712: '#9A6324',
-                    1744: '#800000',
-                    1753: '#e6194B',
-                    1766: '#ffd8b1',
-                    1773: '#f58231'
+                    1081: '#ffe119',
+                    1712: '#911eb4',
+                    1744: '#3cb44b',
+                    1753: '#e6194B', 
+                    1766: '#42d4f4',
+                    1773: '#f58231' 
                 };
                 this.contrOneDayStats.forEach((contrOneDayItem) => {
                     let colorIndex = contrOneDayItem.regressionTypeID;
@@ -1292,12 +1292,12 @@ module StreamStats.Controllers {
             if (this.contrSevenDayStats) {
                 this.formattedContrSevenDayStats = [];
                 const contrSevenDayStatsColors = {
-                    1082: '#9A6324',
-                    1083: '#800000',
-                    1992: '#e6194B',
-                    2015: '#ffd8b1',
-                    2039: '#f58231',
-                    2048: '#ffe119'
+                    1082: '#e6194B',
+                    1083: '#ffe119',
+                    1992: '#911eb4',
+                    2015: '#3cb44b',
+                    2039: '#42d4f4',
+                    2048: '#f58231'
                 };
                 this.contrSevenDayStats.forEach((contrSevenDayItem) => {
                     let colorIndex = contrSevenDayItem.regressionTypeID;
@@ -1346,12 +1346,12 @@ module StreamStats.Controllers {
             if (this.contrFourteenDayStats) {
                 this.formattedContrFourteenDayStats = [];
                 const contrFourteenDayStatsColors = {
-                    1645: '#9A6324',
-                    1652: '#800000',
-                    1662: '#e6194B',
-                    1669: '#ffd8b1',
-                    1677: '#f58231',
-                    1683: '#ffe119'
+                    1645: '#911eb4',
+                    1652: '#ffe119',
+                    1662: '#3cb44b',
+                    1669: '#e6194B',
+                    1677: '#42d4f4',
+                    1683: '#f58231'
                 };
                 this.contrFourteenDayStats.forEach((contrFourteenDayItem) => {
                     let colorIndex = contrFourteenDayItem.regressionTypeID;
@@ -1400,12 +1400,12 @@ module StreamStats.Controllers {
             if (this.contrThirtyDayStats) {
                 this.formattedContrThirtyDayStats = [];
                 const contrThirtyDayStatsColors = {
-                    1084: '#f58231',
+                    1084: '#e6194B',
                     1085: '#ffe119',
-                    1837: '#9A6324',
-                    1861: '#800000',
-                    1882: '#e6194B',
-                    1891: '#ffd8b1'
+                    1837: '#911eb4',
+                    1861: '#3cb44b',
+                    1882: '#42d4f4',
+                    1891: '#f58231'
                 };
                 this.contrThirtyDayStats.forEach((contrThirtyDayItem) => {
                     let colorIndex = contrThirtyDayItem.regressionTypeID;
@@ -1454,10 +1454,10 @@ module StreamStats.Controllers {
             if (this.weightedOneDayStats) {
                 this.formattedWeightedOneDayStats = [];
                 const contrweightedOneStatsColors = {
-                    1755: '#9A6324',
-                    1775: '#800000',
-                    1732: '#e6194B',
-                    1746: '#ffd8b1'
+                    1755: '#e6194B',
+                    1775: '#ffe119',
+                    1732: '#3cb44b',
+                    1746: '#42d4f4'
                 };
                 this.weightedOneDayStats.forEach((weightedOneDayItem) => {
                     let colorIndex = weightedOneDayItem.regressionTypeID;
@@ -1506,12 +1506,12 @@ module StreamStats.Controllers {
             if (this.weightedSevenDayStats) {
                 this.formattedWeightedSevenDayStats = [];
                 const contrweightedSevenStatsColors = {
-                    2025: '#9A6324',
-                    2050: '#800000',
-                    2001: '#800000',
-                    2017: '#e6194B',
-                    2041: '#ffd8b1',
-                    2007: '#f58231'
+                    2025: '#e6194B',
+                    2050: '#f58231',
+                    2001: '#ffe119',
+                    2017: '#3cb44b',
+                    2041: '#42d4f4',
+                    2007: '#911eb4'
                 };
                 this.weightedSevenDayStats.forEach((weightedSevenDayItem) => {
                     let colorIndex = weightedSevenDayItem.regressionTypeID;
@@ -1560,12 +1560,12 @@ module StreamStats.Controllers {
             if (this.weightedThirtyDayStats) {
                 this.formattedWeightedThirtyDayStats = [];
                 const contrweightedThirtyStatsColors = {
-                    1871: '#9A6324',
-                    1893: '#800000',
-                    1845: '#e6194B',
-                    1863: '#ffd8b1',
-                    1884: '#f58231',
-                    1854: '#ffe119'
+                    1871: '#e6194B',
+                    1893: '#f58231',
+                    1845: '#ffe119',
+                    1863: '#3cb44b',
+                    1884: '#42d4f4',
+                    1854: '#911eb4'
                 };
                 this.weightedThirtyDayStats.forEach((weightedThirtyDayItem) => {
                     let colorIndex = weightedThirtyDayItem.regressionTypeID;
@@ -1731,7 +1731,7 @@ module StreamStats.Controllers {
                             },
                             })
                     });
-            this.allFloodFreqStats.push(this.formattedFloodFreq, this.formattedAltFloodFreq, this.formattedOneDayStats, this.formattedSevenDayStats, this.formattedFourteenDayStats, this.formattedThirtyDayStats, this.formattedContrOneDayStats, this.formattedContrOneDayStats, this.formattedContrSevenDayStats, this.formattedContrFourteenDayStats, this.formattedContrThirtyDayStats, this.formattedWeightedOneDayStats, this.formattedWeightedSevenDayStats, this.formattedWeightedThirtyDayStats);
+            this.allFloodFreqStats.push(this.formattedFloodFreq, this.formattedAltFloodFreq, this.formattedOneDayStats, this.formattedSevenDayStats, this.formattedFourteenDayStats, this.formattedThirtyDayStats, this.formattedContrOneDayStats, this.formattedContrSevenDayStats, this.formattedContrFourteenDayStats, this.formattedContrThirtyDayStats, this.formattedWeightedOneDayStats, this.formattedWeightedSevenDayStats, this.formattedWeightedThirtyDayStats);
             
             this.allFloodFreqStats = this.allFloodFreqStats.filter(group => group.length > 0);
 
@@ -2228,7 +2228,7 @@ module StreamStats.Controllers {
                     lineWidth: null,
                     data: null,
                     linkedTo: null,
-                    visible: true,
+                    visible: this.formattedFloodFreq.length === 0,
                     id: 'altAEP',
                     marker: {
                         symbol: 'line',
