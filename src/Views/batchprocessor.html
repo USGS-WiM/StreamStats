@@ -24,7 +24,7 @@
                 <label><strong>State / Region:</strong></label>
                 <select ng-model="vm.selectedRegion"
                     ng-options="region.Code as region.Name for region in vm.regionList track by region.Code"
-                    ng-change="vm.getFlowStatsAndParams(vm.selectedRegion)"></select>
+                    ng-change="vm.getFlowStatsAndParams(vm.selectedRegion)" required></select>
             </div><!-- End select region -->
             
             <!-- Start checkboxes for different sections -->
@@ -115,15 +115,22 @@
                             data to be
                             joined with the batch results.</span>
                     </span>
-                    <input type="text" id="idField" ng-model="user.idField">
+                    <input type="text" id="idField" ng-model="user.idField" required>
                 </div>
                 <div class="col-md-7">
                     <span><strong>Email Address:</strong>
-                        <input type="text" id="emailField" ng-model="user.email"></span>
+                        <input type="text" id="emailField" ng-model="user.email" required></span>
                 </div>
             </div> <!-- End user information-->
 
-            <!-- Button to submit batch that is disabled until vm.selectedRegion, user.idField, and user.email are all true-->
+            <!-- Create a file upload button and specify it needs to be a zipped shapefile -->
+            <div style="padding-top: 15px;">
+                <label for="shapefile"><strong>Upload Shapefile (.zip):</strong></label>
+                <input type="file" id="shapefile" name="shapefile" ngf-select ng-model="shapefileToUpload" accept=".zip"
+                    ngf-pattern="'application/zip'" ngf-keep="false" ngf-accept="'application/zip'" required>
+            </div>
+
+            <!-- Button to submit batch that is disabled until vm.selectedRegion, user.idField, and user.email are all true and a shapefile has been uploaded -->
             <div style="padding-top: 15px;">
                 <button ng-disabled="!vm.selectedRegion || !user.idField || !user.email" class="btn-blue fullwidth"
                     ng-click="vm.submitBatch(user.idField, user.email)">
