@@ -240,7 +240,7 @@ module StreamStats.Controllers {
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
-        chartConfig: {  chart: { events: {load: Function}, height: number, width: number, zooming: {type: string}, panning: boolean, panKey: string},
+        chartConfig: {  chart: {height: number, width: number, zooming: {type: string}, panning: boolean, panKey: string},
                         title: { text: string, align: string},
                         subtitle: { text: string, align: string}, 
                         rangeSelector: { enabled: boolean, inputPosition: {align: string, x: number, y: number}, 
@@ -1751,15 +1751,18 @@ module StreamStats.Controllers {
             //console.log('peak value plot data', this.formattedPeakDates);
             //console.log('estimated peak plot data', this.formattedEstPeakDates);
             //console.log('daily flow plot data', this.formattedDailyFlow);
-            //console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear)
+            console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear.length)
             //console.log(this.formattedP90to100);
             //console.log('NWS Forecast', this.NWSforecast)
+            let selectedButton;
+                if (this.formattedPeakDatesOnYear.length > 0) {
+                    selectedButton = 4
+                } else {
+                    selectedButton = 5
+                }
+
             this.chartConfig = {
                 chart: {
-                    events: {
-                        load: null
-                        //this.destroyResetZoom()
-                    },
                     height: 550,
                     width: 800,
                     zooming: {
@@ -1783,7 +1786,7 @@ module StreamStats.Controllers {
                         x: 0,
                         y: 0
                     },
-                    selected: 4,
+                    selected: selectedButton,
                     buttonPosition: {
                         align: 'right',
                         x: 0,

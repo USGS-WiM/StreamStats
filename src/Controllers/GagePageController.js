@@ -1516,11 +1516,16 @@ var StreamStats;
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
+                console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear.length);
+                var selectedButton;
+                if (this.formattedPeakDatesOnYear.length > 0) {
+                    selectedButton = 4;
+                }
+                else {
+                    selectedButton = 5;
+                }
                 this.chartConfig = {
                     chart: {
-                        events: {
-                            load: null
-                        },
                         height: 550,
                         width: 800,
                         zooming: {
@@ -1544,7 +1549,7 @@ var StreamStats;
                             x: 0,
                             y: 0
                         },
-                        selected: 4,
+                        selected: selectedButton,
                         buttonPosition: {
                             align: 'right',
                             x: 0,
