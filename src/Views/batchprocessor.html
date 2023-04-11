@@ -1,4 +1,16 @@
 ﻿<!-- Modal -->
+<head>
+    <style>
+        input:required:invalid {
+            border: 2px solid yellow;
+        }           
+
+        select:required:invalid {
+            border: 2px solid yellow;
+        }
+    </style>
+</head>
+
 
 <div class="modal-header">
     <button class="close" ng-click="vm.Close()">
@@ -24,7 +36,9 @@
                 <label><strong>State / Region:</strong></label>
                 <select ng-model="vm.selectedRegion"
                     ng-options="region.Code as region.Name for region in vm.regionList track by region.Code"
-                    ng-change="vm.getFlowStatsAndParams(vm.selectedRegion)" required></select>
+                    ng-change="vm.getFlowStatsAndParams(vm.selectedRegion)" required>
+                    <option value="">Select a State / Region</option>
+                </select>
             </div><!-- End select region -->
             
             <!-- Start checkboxes for different sections -->
