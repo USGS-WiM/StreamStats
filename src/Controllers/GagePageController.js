@@ -131,6 +131,7 @@ var StreamStats;
                 _this_1.formattedEstPeakDates = [];
                 _this_1.formattedDailyFlow = [];
                 _this_1.dailyDatesOnly = [];
+                _this_1.startAndEnd = [];
                 _this_1.showFloodStats = true;
                 _this_1.logScale = false;
                 _this_1.peaksOnYear = true;
@@ -795,6 +796,7 @@ var StreamStats;
                         endDate = this.formattedPeakDatesOnYear[finalPeakOnYearIndex].x;
                     }
                 }
+                this.startAndEnd.push(startDate, endDate);
                 var endYear = endDate.getUTCFullYear();
                 var endOfFinalYear = new Date(12 + '/' + 31 + '/' + endYear);
                 if (this.oneDayStats) {
@@ -1516,14 +1518,14 @@ var StreamStats;
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
-                console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear.length);
-                var selectedButton;
+                var min;
                 if (this.formattedPeakDatesOnYear.length > 0) {
-                    selectedButton = 4;
+                    min = (new Date(1 + '/' + 1 + '/' + this.startAndEnd[1].getFullYear())).getTime();
                 }
                 else {
-                    selectedButton = 5;
+                    min = this.startAndEnd[0].getTime();
                 }
+                var max = (new Date(12 + '/' + 31 + '/' + this.startAndEnd[1].getFullYear())).getTime();
                 this.chartConfig = {
                     chart: {
                         height: 550,
@@ -1538,6 +1540,16 @@ var StreamStats;
                         text: 'Annual Peak Streamflow',
                         align: 'center'
                     },
+                    legend: {
+                        useHTML: true,
+                        symbolPadding: null,
+                        symbolWidth: null,
+                        symbolHeight: null,
+                        squareSymbol: null,
+                        labelFormatter: function () {
+                            return this.name;
+                        }
+                    },
                     subtitle: {
                         text: 'Click and drag to zoom in. Hold down shift key to pan.<br>AEP = Annual Exceedance Probability',
                         align: 'center'
@@ -1549,18 +1561,16 @@ var StreamStats;
                             x: 0,
                             y: 0
                         },
-                        selected: selectedButton,
-                        buttonPosition: {
-                            align: 'right',
-                            x: 0,
-                            y: 0
-                        },
+                        buttons: [],
                     },
                     navigator: {
                         enabled: true
                     },
                     xAxis: {
                         type: 'datetime',
+                        gridLineWidth: 0,
+                        min: min,
+                        max: max,
                         title: {
                             text: 'Date'
                         },
@@ -1572,6 +1582,7 @@ var StreamStats;
                         title: {
                             text: 'Discharge (Q), in ft³/s'
                         },
+                        gridLineWidth: 0,
                         custom: {
                             allowNegativeLog: true
                         },
@@ -2232,10 +2243,13 @@ var StreamStats;
             ;
             GagePageController.prototype.togglePeakYear = function () {
                 var chart = $('#chart1').highcharts();
+                var min = this.startAndEnd[0].getTime();
+                var oneYearMin = (new Date(1 + '/' + 1 + '/' + this.startAndEnd[1].getFullYear())).getTime();
+                var max = (new Date(12 + '/' + 31 + '/' + this.startAndEnd[1].getFullYear())).getTime();
                 if (this.peaksOnYear) {
                     chart.series[0].update({ data: this.formattedPeakDatesOnYear });
                     chart.series[1].update({ data: this.formattedEstPeakDatesOnYear });
-                    chart.rangeSelector.update({ selected: 3 });
+                    chart.xAxis[0].setExtremes(oneYearMin, max);
                     chart.series[0].update({ tooltip: {
                             headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Latest Year',
                             pointFormatter: function () {
@@ -2276,7 +2290,7 @@ var StreamStats;
                 else {
                     chart.series[0].update({ data: this.formattedPeakDates });
                     chart.series[1].update({ data: this.formattedEstPeakDates });
-                    chart.rangeSelector.update({ selected: 5 });
+                    chart.xAxis[0].setExtremes(min, max);
                     chart.series[0].update({ tooltip: {
                             headerFormat: '<b>Annual Peak Streamflow</b>',
                             pointFormatter: function () {
@@ -2323,15 +2337,31 @@ var StreamStats;
             };
             GagePageController.prototype.resetZoom = function () {
                 var chart = $('#chart1').highcharts();
+                var min = this.startAndEnd[0].getTime();
+                var oneYearMin = (new Date(1 + '/' + 1 + '/' + this.startAndEnd[1].getFullYear())).getTime();
+                var max = (new Date(12 + '/' + 31 + '/' + this.startAndEnd[1].getFullYear())).getTime();
                 if (this.peaksOnYear) {
-                    console.log('reset to one year');
-                    chart.rangeSelector.update({ selected: 3 });
+                    chart.xAxis[0].setExtremes(oneYearMin, max);
                     chart.yAxis[0].setExtremes();
                 }
                 else {
-                    console.log('reset to full extent');
                     chart.yAxis[0].setExtremes();
-                    chart.xAxis[0].setExtremes();
+                    chart.xAxis[0].setExtremes(min, max);
+                }
+            };
+            GagePageController.prototype.getExtremes = function () {
+                var chart = $('#chart1').highcharts();
+                var extremes = chart.xAxis[0].getExtremes();
+                var minUnformatted = chart.xAxis[0].getExtremes().min;
+                var maxUnformatted = chart.xAxis[0].getExtremes().max;
+                var min = new Date(extremes.min);
+                var max = new Date(extremes.max);
+                function inMonths(d1, d2) {
+                    var d1Y = d1.getFullYear();
+                    var d2Y = d2.getFullYear();
+                    var d1M = d1.getMonth();
+                    var d2M = d2.getMonth();
+                    return (d2M + 12 * d2Y) - (d1M + 12 * d1Y);
                 }
             };
             GagePageController.prototype.init = function () {

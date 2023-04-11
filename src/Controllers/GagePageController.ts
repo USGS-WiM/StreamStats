@@ -236,6 +236,7 @@ module StreamStats.Controllers {
         public formattedEstPeakDates = [];
         public formattedDailyFlow = [];
         public dailyDatesOnly = [];
+        public startAndEnd = []; 
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -243,12 +244,14 @@ module StreamStats.Controllers {
         chartConfig: {  chart: {height: number, width: number, zooming: {type: string}, panning: boolean, panKey: string},
                         title: { text: string, align: string},
                         subtitle: { text: string, align: string}, 
+                        legend: { useHTML: true, symbolPadding: number, symbolWidth: number, symbolHeight: number, squareSymbol: boolean, labelFormatter: Function},
                         rangeSelector: { enabled: boolean, inputPosition: {align: string, x: number, y: number}, 
-                        //buttons: {type: string, count: number, text: string, title: string }[], 
-                                        selected: number, buttonPosition: {align: string, x: number, y: number}},
+                        buttons: {type: string, count: number, text: string}[], 
+                                       // selected: number, buttonPosition: {align: string, x: number, y: number}
+                                    },
                         navigator: { enabled: boolean}, 
-                        xAxis: {  type: string, title: {text: string}, custom: { allowNegativeLog: Boolean }},
-                        yAxis: { title: {text: string}, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
+                        xAxis: {  type: string, gridLineWidth: number, min: number, max: number, title: {text: string}, custom: { allowNegativeLog: Boolean }},
+                        yAxis: { title: {text: string}, gridLineWidth: number, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
                         series: { name: string; showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
                                 fillOpacity: number, lineWidth: number, data: number[], linkedTo: string, visible: boolean, id: string, zIndex: number, marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
         constructor($scope: IGagePageControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
@@ -1010,6 +1013,7 @@ module StreamStats.Controllers {
                         endDate = this.formattedPeakDatesOnYear[finalPeakOnYearIndex].x
                     }
                 }
+            this.startAndEnd.push(startDate, endDate);
             let endYear = endDate.getUTCFullYear();
             let endOfFinalYear = new Date(12 + '/' + 31 + '/' + endYear)            
             if (this.oneDayStats) {
@@ -1751,16 +1755,16 @@ module StreamStats.Controllers {
             //console.log('peak value plot data', this.formattedPeakDates);
             //console.log('estimated peak plot data', this.formattedEstPeakDates);
             //console.log('daily flow plot data', this.formattedDailyFlow);
-            console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear.length)
+            //console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear.length)
             //console.log(this.formattedP90to100);
             //console.log('NWS Forecast', this.NWSforecast)
-            let selectedButton;
+            let min;
                 if (this.formattedPeakDatesOnYear.length > 0) {
-                    selectedButton = 4
+                    min = (new Date(1 +'/' + 1 + '/' + this.startAndEnd[1].getFullYear())).getTime()
                 } else {
-                    selectedButton = 5
+                    min = this.startAndEnd[0].getTime()
                 }
-
+            let max = (new Date(12 +'/' + 31 + '/' + this.startAndEnd[1].getFullYear())).getTime()
             this.chartConfig = {
                 chart: {
                     height: 550,
@@ -1775,6 +1779,21 @@ module StreamStats.Controllers {
                     text: 'Annual Peak Streamflow',
                     align: 'center'
                 },
+                legend: {
+                    useHTML: true,
+                    symbolPadding: null,
+                    symbolWidth: null,
+                    symbolHeight: null,
+                    squareSymbol: null,
+                    labelFormatter: function() {
+                    return this.name
+                    //     if (this.name === 'Shaded Daily Statistics') {
+                    //     return this.name + '<img src="./images/shadedLegend.png" width="15" height="15">'
+                    // } else {
+                    //     return this.name
+                    // }
+                }
+                },
                 subtitle: {
                     text: 'Click and drag to zoom in. Hold down shift key to pan.<br>AEP = Annual Exceedance Probability',
                     align: 'center'
@@ -1786,20 +1805,22 @@ module StreamStats.Controllers {
                         x: 0,
                         y: 0
                     },
-                    selected: selectedButton,
-                    buttonPosition: {
-                        align: 'right',
-                        x: 0,
-                        y: 0
-                    },
+                    buttons: [], 
+                    // selected: selectedButton,
+                    // buttonPosition: {
+                    //     align: 'right',
+                    //     x: 0,
+                    //     y: 0
+                    // },
                 },
                 navigator: {
                     enabled: true
                 },
                 xAxis: {
                     type: 'datetime',
-                    //min: 1875,
-                    // max: 2050,
+                    gridLineWidth: 0,
+                    min: min,
+                    max: max,
                     title: {
                         text: 'Date'
                     },
@@ -1811,6 +1832,7 @@ module StreamStats.Controllers {
                     title: {
                         text: 'Discharge (Q), in ft³/s'
                     },
+                    gridLineWidth: 0,
                     custom: {
                         allowNegativeLog: true
                     },
@@ -2438,7 +2460,11 @@ module StreamStats.Controllers {
             });
         }
 
-
+        // //buttons reset Y axis too
+        // public resetY() {
+        //     let chart = $('#chart1').highcharts();
+        //     chart.yAxis[0].setExtremes();
+        // }
 
         //dropdown for choosing flood statistics
         public chooseFloodStats() {
@@ -2481,12 +2507,13 @@ module StreamStats.Controllers {
         public peaksOnYear = true; 
         public togglePeakYear () {
             let chart = $('#chart1').highcharts();
+            let min = this.startAndEnd[0].getTime()
+            let oneYearMin = (new Date(1 +'/' + 1 + '/' + this.startAndEnd[1].getFullYear())).getTime()
+            let max = (new Date(12 +'/' + 31 + '/' + this.startAndEnd[1].getFullYear())).getTime()
             if (this.peaksOnYear) {
-                //var finalIndex = this.formattedDailyFlow.length-1;
-                //var finalYear = (this.formattedDailyFlow[finalIndex].x).getUTCFullYear();
                 chart.series[0].update({ data: this.formattedPeakDatesOnYear });
                 chart.series[1].update({ data: this.formattedEstPeakDatesOnYear});
-                chart.rangeSelector.update({ selected: 3 });
+                chart.xAxis[0].setExtremes(oneYearMin, max);
                 chart.series[0].update( {tooltip: {
                     headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Latest Year',
                     pointFormatter: function(){
@@ -2524,7 +2551,7 @@ module StreamStats.Controllers {
             } else {
                 chart.series[0].update({ data: this.formattedPeakDates });
                 chart.series[1].update({ data: this.formattedEstPeakDates});
-                chart.rangeSelector.update({ selected: 5 });
+                chart.xAxis[0].setExtremes(min, max);
                 chart.series[0].update({ tooltip: {
                     headerFormat:'<b>Annual Peak Streamflow</b>',
                     pointFormatter: function(){
@@ -2571,15 +2598,35 @@ module StreamStats.Controllers {
 
         public resetZoom () {
             let chart = $('#chart1').highcharts();
+            let min = this.startAndEnd[0].getTime()
+            let oneYearMin = (new Date(1 +'/' + 1 + '/' + this.startAndEnd[1].getFullYear())).getTime()
+            let max = (new Date(12 +'/' + 31 + '/' + this.startAndEnd[1].getFullYear())).getTime()
             if (this.peaksOnYear) {
-                console.log('reset to one year')
-                chart.rangeSelector.update({ selected: 3 });
+                //reset to one year
+                chart.xAxis[0].setExtremes(oneYearMin, max);
                 chart.yAxis[0].setExtremes();
             } else {
-                console.log('reset to full extent')
+                //reset to full extent
                 chart.yAxis[0].setExtremes();
-                chart.xAxis[0].setExtremes();
+                chart.xAxis[0].setExtremes(min, max);
             }
+        }
+        public getExtremes () {
+            let chart = $('#chart1').highcharts();
+            let extremes = chart.xAxis[0].getExtremes()
+            let minUnformatted = chart.xAxis[0].getExtremes().min;
+            let maxUnformatted = chart.xAxis[0].getExtremes().max;
+            let min = new Date(extremes.min)
+            let max = new Date(extremes.max)
+            
+            function inMonths(d1, d2) {
+                var d1Y = d1.getFullYear();
+                var d2Y = d2.getFullYear();
+                var d1M = d1.getMonth();
+                var d2M = d2.getMonth();
+                return (d2M+12*d2Y)-(d1M+12*d1Y);
+            }
+            //console.log(min, max, inMonths(min, max))
         }
         
         //Helper Methods
