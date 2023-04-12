@@ -1568,6 +1568,11 @@ var StreamStats;
                     },
                     xAxis: {
                         type: 'datetime',
+                        events: {
+                            afterSetExtremes: function () {
+                                console.log('the x axis has been resized');
+                            }
+                        },
                         gridLineWidth: 0,
                         min: min,
                         max: max,
@@ -1662,7 +1667,7 @@ var StreamStats;
                             },
                             showInLegend: this.formattedEstPeakDates.length > 0
                         }, {
-                            name: 'Shaded Daily Statistics',
+                            name: 'Daily Percentile Streamflow',
                             showInNavigator: false,
                             tooltip: {
                                 headerFormat: '<b>P 90-100 %</b>',
@@ -2349,7 +2354,7 @@ var StreamStats;
                     chart.xAxis[0].setExtremes(min, max);
                 }
             };
-            GagePageController.prototype.getExtremes = function () {
+            GagePageController.prototype.updateShadedStats = function () {
                 var chart = $('#chart1').highcharts();
                 var extremes = chart.xAxis[0].getExtremes();
                 var minUnformatted = chart.xAxis[0].getExtremes().min;
@@ -2362,6 +2367,28 @@ var StreamStats;
                     var d1M = d1.getMonth();
                     var d2M = d2.getMonth();
                     return (d2M + 12 * d2Y) - (d1M + 12 * d1Y);
+                }
+                if ((inMonths(min, max)) <= 12) {
+                    console.log(max.getFullYear());
+                    this.formattedP0to10.forEach(function (index) {
+                        index.x.setUTCFullYear(max.getFullYear());
+                    });
+                    this.formattedP10to25.forEach(function (index) {
+                        var year = index.x.getFullYear();
+                        index.x.setUTCFullYear(max.getFullYear());
+                    });
+                    this.formattedP25to75.forEach(function (index) {
+                        var year = index.x.getFullYear();
+                        index.x.setUTCFullYear(max.getFullYear());
+                    });
+                    this.formattedP75to90.forEach(function (index) {
+                        var year = index.x.getFullYear();
+                        index.x.setUTCFullYear(max.getFullYear());
+                    });
+                    this.formattedP90to100.forEach(function (index) {
+                        var year = index.x.getFullYear();
+                        index.x.setUTCFullYear(max.getFullYear());
+                    });
                 }
             };
             GagePageController.prototype.init = function () {

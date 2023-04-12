@@ -250,7 +250,7 @@ module StreamStats.Controllers {
                                        // selected: number, buttonPosition: {align: string, x: number, y: number}
                                     },
                         navigator: { enabled: boolean}, 
-                        xAxis: {  type: string, gridLineWidth: number, min: number, max: number, title: {text: string}, custom: { allowNegativeLog: Boolean }},
+                        xAxis: {  type: string, events: { afterSetExtremes: Function}, gridLineWidth: number, min: number, max: number, title: {text: string}, custom: { allowNegativeLog: Boolean }},
                         yAxis: { title: {text: string}, gridLineWidth: number, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
                         series: { name: string; showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
                                 fillOpacity: number, lineWidth: number, data: number[], linkedTo: string, visible: boolean, id: string, zIndex: number, marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
@@ -1818,6 +1818,12 @@ module StreamStats.Controllers {
                 },
                 xAxis: {
                     type: 'datetime',
+                    events: {
+                        afterSetExtremes: function() {
+                            console.log('the x axis has been resized')
+                        //this.updateShadedStats()
+                        }
+                    },
                     gridLineWidth: 0,
                     min: min,
                     max: max,
@@ -1910,7 +1916,7 @@ module StreamStats.Controllers {
                     },
                     showInLegend: this.formattedEstPeakDates.length > 0 //still showing up in legend if y is NaN
                 },{
-                    name: 'Shaded Daily Statistics', //P 90 - 100 %
+                    name: 'Daily Percentile Streamflow', //P 90 - 100 %
                     showInNavigator: false,
                     tooltip: {
                         headerFormat:'<b>P 90-100 %</b>',
@@ -2611,7 +2617,7 @@ module StreamStats.Controllers {
                 chart.xAxis[0].setExtremes(min, max);
             }
         }
-        public getExtremes () {
+        public updateShadedStats () {
             let chart = $('#chart1').highcharts();
             let extremes = chart.xAxis[0].getExtremes()
             let minUnformatted = chart.xAxis[0].getExtremes().min;
@@ -2625,6 +2631,28 @@ module StreamStats.Controllers {
                 var d1M = d1.getMonth();
                 var d2M = d2.getMonth();
                 return (d2M+12*d2Y)-(d1M+12*d1Y);
+            }
+            if ((inMonths(min, max)) <= 12) {
+                console.log(max.getFullYear())
+                this.formattedP0to10.forEach(index => {
+                    index.x.setUTCFullYear(max.getFullYear())
+                })
+                this.formattedP10to25.forEach(index => {
+                    let year = index.x.getFullYear()
+                    index.x.setUTCFullYear(max.getFullYear())
+                })
+                this.formattedP25to75.forEach(index => {
+                    let year = index.x.getFullYear()
+                    index.x.setUTCFullYear(max.getFullYear())
+                })
+                this.formattedP75to90.forEach(index => {
+                    let year = index.x.getFullYear()
+                    index.x.setUTCFullYear(max.getFullYear())
+                })
+                this.formattedP90to100.forEach(index => {
+                    let year = index.x.getFullYear()
+                    index.x.setUTCFullYear(max.getFullYear())
+                })
             }
             //console.log(min, max, inMonths(min, max))
         }

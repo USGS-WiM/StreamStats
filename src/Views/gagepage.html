@@ -235,7 +235,7 @@
                             <input type="checkbox" ng-if="vm.formattedDailyFlow.length > 0" id="logScale" name="logScale" ng-model="vm.logScale" ng-change="vm.toggleLogLinear()" checked>
                             <label for="logScale" ng-if="vm.formattedDailyFlow.length > 0"> Log Scale</label>&nbsp;&nbsp;
                             <button ng-click="vm.resetZoom()" style="height:80%">Reset Zoom</button>
-                            <button ng-click="vm.getExtremes()" style="height:80%">Get Extremes</button>
+                            <button ng-click="vm.updateShadedStats()" style="height:80%">Update Shaded Stats</button>
                         </div>
                         <br><highchart id="chart1" config="vm.chartConfig" ng-init="vm.destroyResetZoom()"></highchart><br>
                         </center>
