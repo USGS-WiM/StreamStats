@@ -2,13 +2,31 @@
 <head>
     <style>
         input:required:invalid {
-            border: 2px solid yellow;
+            border: 2px solid #FBEC5D;
         }           
 
         select:required:invalid {
-            border: 2px solid yellow;
+            border: 2px solid #FBEC5D;
         }
+
+        .bp-submit-success {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 14px 18px;
+            margin: 10px 0;
+            font-size: 9pt;
+            letter-spacing: 0.8px;
+            border: 1px solid #d3d3d3;
+            color: #FFFFFF;
+            border-radius: 3px;
+            font-weight: 400;
+            background-color: green;
+            text-align: center;
+        }
+        
     </style>
+    <script src="../node_modules/angularjs-toaster/toaster.js"></script>
 </head>
 
 
@@ -33,7 +51,7 @@
            
             <!-- Start select region -->
             <div id="selectRegionID">
-                <label><strong>State / Region:</strong></label>
+                <label> State / Region: </label>
                 <select ng-model="vm.selectedRegion"
                     ng-options="region.Code as region.Name for region in vm.regionList track by region.Code"
                     ng-change="vm.getFlowStatsAndParams(vm.selectedRegion)" required>
@@ -122,34 +140,38 @@
 
             <!-- Start user information -->
             <div style="padding-top: 15px;" class="row">
-                <div class="col-md-5"><strong>ID Field:</strong>
+                <div class="col-md-5"> ID Field: 
                     <i ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-question-circle"></i>
                     <span ng-show="showTooltip" class="report-tooltip">
                         <span>This is the field heading from the shapefile of points that is unique to each point and allows the
                             data to be
                             joined with the batch results.</span>
                     </span>
-                    <input type="text" id="idField" ng-model="user.idField" required>
+                    <input type="text" id="idField" ng-model="vm.submitBatchData.idField" required>
                 </div>
                 <div class="col-md-7">
-                    <span><strong>Email Address:</strong>
-                        <input type="text" id="emailField" ng-model="user.email" required></span>
+                    <span> Email Address: 
+                        <input type="text" id="emailField" ng-model="vm.submitBatchData.email" required></span>
                 </div>
             </div> <!-- End user information-->
 
             <!-- Create a file upload button and specify it needs to be a zipped shapefile -->
             <div style="padding-top: 15px;">
-                <label for="shapefile"><strong>Upload Shapefile (.zip):</strong></label>
-                <input type="file" id="shapefile" name="shapefile" ngf-select ng-model="shapefileToUpload" accept=".zip"
-                    ngf-pattern="'application/zip'" ngf-keep="false" ngf-accept="'application/zip'" required>
+                <span>Upload Shapefile (.zip):</span><br />
+                <label for="shapefile" style="border: 1px solid #ccc; display: inline-block; padding: 6px 12px; cursor: pointer;"> Select file</label>
+                <input type="file" ngf-select ng-model="vm.submitBatchData.attachment" id="shapefile" name="shapefile" accept=".zip" ngf-accept="application/zip" required style="display: none;">
+                <span ng-show="vm.submitBatchData.attachment">
+                    <i class="fa fa-check" style="color:green"></i>&nbsp;&nbsp;{{vm.submitBatchData.attachment.name}}<button class="close removeItem"
+                        style="" ng-click="vm.submitBatchData.attachment = null">&times;</button>
+                </span>
             </div>
 
-            <!-- Button to submit batch that is disabled until vm.selectedRegion, user.idField, and user.email are all true and a shapefile has been uploaded -->
-            <div style="padding-top: 15px;">
-                <button ng-disabled="!vm.selectedRegion || !user.idField || !user.email" class="btn-blue fullwidth"
-                    ng-click="vm.submitBatch(user.idField, user.email)">
-                    <span>Submit Batch</span>
-                </button>
+            <!-- Button to submit batch  -->
+            <div style="padding-top: 15px; text-align: center;">
+                <button type="submit" class="btn-wim-default" ng-click="vm.submitBatch()"
+                    ng-disabled="vm.submittingBatch || !vm.selectedRegion || !vm.submitBatchData.idField || !vm.submitBatchData.email"><i class="fa fa-share"></i><span>&nbsp;&nbsp;Submit Batch</span></button>
+                <div class="bp-submit-success" ng-show="vm.submittingBatch">The batch was submitted successfully. You will be notified by email when results are available.
+                </div>
             </div> <!-- End submit batch button -->
 
         </div><!-- End submit batch -->

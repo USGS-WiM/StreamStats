@@ -50,6 +50,12 @@ module StreamStats.Controllers {
         public toggleable: boolean;
     }
 
+    class SubmitBatchData {
+        public email: string;
+        public idField: string;
+        public attachment: any;
+    }
+
     class BatchProcessorController extends WiM.Services.HTTPServiceBase implements IBatchProcessorController {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -59,8 +65,7 @@ module StreamStats.Controllers {
         private nssService: Services.InssService;
         public selectedBatchProcessorTabName: string;
         public displayMessage: string;
-        public isValid: boolean;
-        public submitBatchInfo: string;
+        public toaster: any;
 
         // Regions
         public regionList: Object;
@@ -79,24 +84,31 @@ module StreamStats.Controllers {
         public showBasinCharacteristics: boolean;
 
         // POST methods
-        public id_field: string;
+        public submittingBatch: boolean;
+        public showSuccessAlert: boolean;
+        public submitBatchData: SubmitBatchData;
+
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', '$modalInstance'];
-        constructor($scope: IBatchProcessorControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, nssService: Services.InssService, modal: ng.ui.bootstrap.IModalServiceInstance) {
+        static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', '$modalInstance', 'toaster'];
+        constructor($scope: IBatchProcessorControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, nssService: Services.InssService, modal: ng.ui.bootstrap.IModalServiceInstance, toaster) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
             this.modalInstance = modal;
             this.modalService = modalService;
             this.selectedBatchProcessorTabName = "submitBatch";
             this.nssService = nssService;
+            this.toaster = toaster;
             this.selectedFlowStatsList = [];
             this.selectedParamList = [];
             this.availableParamList = [];
             this.flowStatsAllChecked = true;
             this.parametersAllChecked = true;
             this.showBasinCharacteristics = false;
+            this.submittingBatch = false; 
+            this.showSuccessAlert = false;
+            this.submitBatchData = new SubmitBatchData();
             this.init();
         }
 
@@ -104,6 +116,7 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
 
         public Close(): void {
+            this.showSuccessAlert = false;
             this.modalInstance.dismiss('cancel')
         }
 
@@ -431,9 +444,52 @@ module StreamStats.Controllers {
                 });
         }
 
-        public submitBatch(idField: string, email: string): void {
-            console.log("idField: " + idField);
-            console.log("email: " + email);
+        // public submitBatch(idField: string, email: string): void {
+        //     console.log("idField: " + idField);
+        //     console.log("email: " + email);
+        // }
+        public submitBatch(): void {
+
+            if (!this.submitBatchData.attachment) {
+
+                this.toaster.pop('warning', "Please select a file to upload", "", 5000);
+                return;
+            }
+            
+            var url = null;
+
+            var formdata = new FormData();
+
+            formdata.append('submit_batch[email]', this.submitBatchData.email);
+            formdata.append('submit_batch[subject]', this.submitBatchData.idField);
+            formdata.append('submit_batch[attachments][][resource]', this.submitBatchData.attachment, this.submitBatchData.attachment.name);
+            
+            // successful toaster pop message
+            this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
+
+            var headers = {
+                "tdb": "tbd"
+            };
+
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers, angular.identity);
+
+            this.submittingBatch = true;
+
+            // this.Execute(request).then(
+            //     (response: any) => {
+            //         //console.log('Successfully submitted help ticket: ', response);
+
+            //         //clear out fields
+            //         this.submitBatchData = new SubmitBatchData();
+
+            //         //show user feedback
+            //         this.showSuccessAlert = true;
+
+            //     }, (error) => {
+            //         //sm when error
+            //     }).finally(() => {
+            //         this.submittingBatch = false;
+            //     });
         }
 
         // Helper Methods
