@@ -431,23 +431,13 @@ module StreamStats.Controllers {
                     }
 
                     else {
-                        // this.streamStatsAvailable = false;
-                        // this.toaster.pop('error', "No parameters available for this region", "Please select another region");
                     }
                     return paramRaw;
                 }, (error) => {
-                    // console.log('Bad response from the regression service');
-                    // this.streamStatsAvailable = false;
-                    // this.toaster.pop('warning', "StreamStats not available here at this time", "", 5000);
-
                 }).finally(() => {
                 });
         }
 
-        // public submitBatch(idField: string, email: string): void {
-        //     console.log("idField: " + idField);
-        //     console.log("email: " + email);
-        // }
         public submitBatch(): void {
 
             if (!this.submitBatchData.attachment) {
@@ -475,6 +465,7 @@ module StreamStats.Controllers {
 
             this.submittingBatch = true;
 
+            // will be uncommented when ready to submit to server
             // this.Execute(request).then(
             //     (response: any) => {
             //         //console.log('Successfully submitted help ticket: ', response);
