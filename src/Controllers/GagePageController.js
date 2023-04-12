@@ -1140,10 +1140,10 @@ var StreamStats;
             GagePageController.prototype.toggleLogLinearDischarge = function () {
                 console.log('toggleLogLinearDischarge() called');
                 var chart = $('#chart3').highcharts();
+                console.log('logScaleDischarge', this.logScaleDischarge);
                 if (this.logScaleDischarge) {
                     chart.xAxis[0].update({ type: 'logarithmic' });
                     chart.yAxis[0].update({ type: 'logarithmic' });
-                    console.log('logScaleDischarge', this.logScaleDischarge);
                 }
                 else {
                     chart.xAxis[0].update({ type: 'linear' });
@@ -1152,31 +1152,13 @@ var StreamStats;
             };
             ;
             GagePageController.prototype.toggleDischargeData = function (dataType) {
-                var _this_1 = this;
                 var chart = $('#chart3').highcharts();
+                var currentUSGSMeasuredData = chart.series[2].data;
                 console.log('datatype', dataType);
-                if (dataType === 'age') {
-                    this.measuredObj.forEach(function (row) {
-                        row.color = row.ageColor;
-                        console.log('is age working', _this_1.measuredObj);
-                    });
-                }
-                else if (dataType === 'quality') {
-                    this.measuredObj.forEach(function (row) {
-                        row.color = row.qualityColor;
-                        console.log('is quality working', _this_1.measuredObj);
-                    });
-                }
-                if (this.logScaleDischarge) {
-                    chart.xAxis[0].update({ type: 'linear' });
-                    chart.yAxis[0].update({ type: 'linear' });
-                    chart.xAxis[0].update({ type: 'logarithmic' });
-                    chart.yAxis[0].update({ type: 'logarithmic' });
-                }
-                else {
-                    chart.xAxis[0].update({ type: 'linear' });
-                    chart.yAxis[0].update({ type: 'linear' });
-                }
+                currentUSGSMeasuredData.forEach(function (row) {
+                    row.color = (dataType == 'age') ? row.ageColor : row.qualityColor;
+                });
+                chart.series[2].update({ data: currentUSGSMeasuredData });
             };
             ;
             GagePageController.prototype.init = function () {

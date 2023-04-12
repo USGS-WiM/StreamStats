@@ -1440,10 +1440,10 @@ public createDailyRasterPlot(): void {
         public toggleLogLinearDischarge () {
             console.log('toggleLogLinearDischarge() called');
             let chart = $('#chart3').highcharts();
+            console.log('logScaleDischarge', this.logScaleDischarge);
             if (this.logScaleDischarge) {
                 chart.xAxis[0].update({ type: 'logarithmic' });
                 chart.yAxis[0].update({ type: 'logarithmic' });
-                console.log('logScaleDischarge', this.logScaleDischarge);
             } else {
                 chart.xAxis[0].update({ type: 'linear' });
                 chart.yAxis[0].update({ type: 'linear' });
@@ -1455,27 +1455,20 @@ public createDailyRasterPlot(): void {
 
         public toggleDischargeData (dataType) {
             let chart = $('#chart3').highcharts();
-            console.log('datatype', dataType)
-            if (dataType === 'age') {
-                this.measuredObj.forEach(row => {
-                    row.color = row.ageColor;
-                    console.log('is age working', this.measuredObj)
-                });
-            } else if (dataType === 'quality') {
-                this.measuredObj.forEach(row => {
-                    row.color = row.qualityColor;
-                    console.log('is quality working', this.measuredObj)
-                });
-            }
-            if (this.logScaleDischarge) {
-                chart.xAxis[0].update({ type: 'linear' });
-                chart.yAxis[0].update({ type: 'linear' });
-                chart.xAxis[0].update({ type: 'logarithmic' });
-                chart.yAxis[0].update({ type: 'logarithmic' });
-            } else {
-                chart.xAxis[0].update({ type: 'linear' });
-                chart.yAxis[0].update({ type: 'linear' });
-            }
+            let currentUSGSMeasuredData = chart.series[2].data; // Store a copy of the current data used for the USGS Measured data series
+
+            console.log('datatype', dataType) 
+
+            // Change the color in the currentUSGSMeasuredData object
+            // The code you had here earlier worked fine, but here is another way to do the same thing!
+            // It uses the JavaScript Ternary Operator; more info: https://www.programiz.com/javascript/ternary-operator
+            currentUSGSMeasuredData.forEach(row => {
+                row.color = (dataType == 'age') ? row.ageColor : row.qualityColor;
+            });
+            
+            // Now update the USGS Measured data series on the chart
+            // This will force the chart to redraw/update, which will correctly handle the log/linear scales
+            chart.series[2].update({data:currentUSGSMeasuredData});
         };
 
         // another
