@@ -264,8 +264,8 @@ var StreamStats;
                 });
             };
             BatchProcessorController.prototype.submitBatch = function () {
-                if (!this.submitBatchData.attachment) {
-                    this.toaster.pop('warning', "Please select a file to upload", "", 5000);
+                if (this.submitBatchData.attachment.type != "application/zip") {
+                    this.toaster.pop('warning', "Please select a .zip file to upload and click Submit Batch again.", "", 5000);
                     return;
                 }
                 var url = null;

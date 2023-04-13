@@ -440,9 +440,10 @@ module StreamStats.Controllers {
 
         public submitBatch(): void {
 
-            if (!this.submitBatchData.attachment) {
+            // validate that the file is a .zip
+            if (this.submitBatchData.attachment.type != "application/zip") {
 
-                this.toaster.pop('warning', "Please select a file to upload", "", 5000);
+                this.toaster.pop('warning', "Please select a .zip file to upload and click Submit Batch again.", "", 5000);
                 return;
             }
             
