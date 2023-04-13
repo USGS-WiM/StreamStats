@@ -191,9 +191,7 @@ module StreamStats.Controllers {
         public annualFlowPlot: any;
         public peakValues: any;
         public dischargeObj = undefined; // Stage vs. Discharge Plot
-        public ratingCurve = undefined; // Stage vs. Discharge Plot
         public measuredObj = undefined; // Stage vs. Discharge Plot
-        public USGSMeasured = undefined; // Stage vs. Discharge Plot
         public floodFreq = undefined;
         public peakDates = undefined;
         public estPeakDates = undefined;
@@ -204,7 +202,6 @@ module StreamStats.Controllers {
         public formattedDailyPlusAvg = [];
         public formattedEstPeakDates = [];
         public formattedDailyFlow = [];
-        public dailyRange = [];
         public formattedDischargePeakDates = []; // Stage vs. Discharge Plot
         public dailyValuesOnly = [];
         public ageQualityData = 'age'; //Stage vs. Discharge Plot
@@ -721,14 +718,12 @@ module StreamStats.Controllers {
                             x: parseFloat(dataRow[2]),
                             y: parseFloat(dataRow[0])
                         };
-                        // console.log('ratingcurve data', dataRow)
                         this.dischargeObj.push(object) 
                    });
                    // console.log('this.discharge obj 1st one', this.dischargeObj)
                     // console.log('dischargeObj', dischargeValue)
                 }, (error) => {
                     // console.log(error)
-                    // this.ratingCurve = this.dischargeObj;
                 }).finally(() => {
                     this.getUSGSMeasured()
                 });
@@ -1127,28 +1122,28 @@ module StreamStats.Controllers {
             });
         }
 
-public stageDischargeAgeColor(date): string {
-    let days = (new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24)
-        if (days <= 31) {
-            // console.log("first month", days)
-            return 'red'; // orange
-        } else if (days <= 365) {
-            return 'orange'; // orange    
-        } else if (days <= 730) {
-            return "#0000cdcc"; // blue
-        } else {
-            return "#0000cd4d"; // light blue
+        public stageDischargeAgeColor(date): string {
+            let days = (new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24)
+                if (days <= 31) {
+                    // console.log("first month", days)
+                    return 'red'; // orange
+                } else if (days <= 365) {
+                    return 'orange'; // orange    
+                } else if (days <= 730) {
+                    return "#0000cdcc"; // blue
+                } else {
+                    return "#0000cd4d"; // light blue
+                }
         }
-}
 
-public stageDischargeQualityColor(quality) {
-    if (quality === "Good") {
-      return "#2ED017";
-    } else if (quality === "Fair") {
-      return "#E7F317";
-    } else { (quality === "Poor") }
-      return "#FFA200";
-    } 
+        public stageDischargeQualityColor(quality) {
+            if (quality === "Good") {
+            return "#2ED017";
+            } else if (quality === "Fair") {
+            return "#E7F317";
+            } else { (quality === "Poor") }
+            return "#FFA200";
+            } 
 
 
 
@@ -1434,83 +1429,29 @@ public createDailyRasterPlot(): void {
                 }
             }; 
             
-            
         //checkbox to linear to log scale for discharge plot
         public logScaleDischarge = false; // starts with it uncehcked
-        public toggleLogLinearDischarge () {
-            console.log('toggleLogLinearDischarge() called');
-            let chart = $('#chart3').highcharts();
-            if (this.logScaleDischarge) {
-                chart.xAxis[0].update({ type: 'logarithmic' });
-                chart.yAxis[0].update({ type: 'logarithmic' });
-                console.log('logScaleDischarge', this.logScaleDischarge);
-            } else {
-                chart.xAxis[0].update({ type: 'linear' });
-                chart.yAxis[0].update({ type: 'linear' });
-            }
-        };
-        
-        // public ageQualityData = true; // starts with it checked
-        //radio to show age in discharge plot
+            public toggleLogLinearDischarge() {
+                // console.log('toggleLogLinearDischarge() called');
+                let chart = $('#chart3').highcharts();
+                // console.log('logScaleDischarge', this.logScaleDischarge);
+                if (this.logScaleDischarge) {
+                    chart.xAxis[0].update({ type: 'logarithmic' });
+                    chart.yAxis[0].update({ type: 'logarithmic' });
+                } else {
+                    chart.xAxis[0].update({ type: 'linear' });
+                    chart.yAxis[0].update({ type: 'linear' });
+                }
+            };
 
         public toggleDischargeData (dataType) {
             let chart = $('#chart3').highcharts();
-            console.log('datatype', dataType)
-            if (dataType === 'age') {
-                this.measuredObj.forEach(row => {
-                    row.color = row.ageColor;
-                    console.log('is age working', this.measuredObj)
-                });
-            } else if (dataType === 'quality') {
-                this.measuredObj.forEach(row => {
-                    row.color = row.qualityColor;
-                    console.log('is quality working', this.measuredObj)
-                });
-            }
-            if (this.logScaleDischarge) {
-                chart.xAxis[0].update({ type: 'linear' });
-                chart.yAxis[0].update({ type: 'linear' });
-                chart.xAxis[0].update({ type: 'logarithmic' });
-                chart.yAxis[0].update({ type: 'logarithmic' });
-            } else {
-                chart.xAxis[0].update({ type: 'linear' });
-                chart.yAxis[0].update({ type: 'linear' });
-            }
-        };
+            let currentUSGSMeasuredData = chart.series[2].data;
+            currentUSGSMeasuredData.forEach(row => {
+                row.color = (dataType == 'age') ? row.ageColor : row.qualityColor;
+            });
+            chart.series[2].update({data:currentUSGSMeasuredData});
 
-        // another
-        // public toggleDischargeData (dataType) {
-        //     let chart = $('#chart3').highcharts();
-        //     if (dataType === 'age') {
-        //         this.measuredObj.forEach(row => {
-        //             row.color = row.ageColor;
-        //         });
-        //     } else if (dataType === 'quality') {
-        //         this.measuredObj.forEach(row => {
-        //             row.color = row.qualityColor;
-        //         });
-        //     }
-        //     this.toggleLogLinearDischarge(); // call the function to update axis scale type
-        // };
-        
-
-        // original
-        // public toggleDischargeData (dataType) {
-        //     // console.log('this is age data')
-        //     let chart = $('#chart3').highcharts();
-        //     // console.log('this is chart data', chart)
-        //     // console.log('this is measuredObj data', this.measuredObj)
-        //     if (dataType === 'age') {
-        //         this.measuredObj.forEach(row => {
-        //             row.color = row.ageColor
-        //         });
-        //     }
-        //         else {
-        //             this.measuredObj.forEach(row => {
-        //                 row.color = row.qualityColor
-        //             });
-        //     };
-        // }
             // to be used to create a slide based on month or year
             // scope.slider_draggable_range = {
             //     minValue: 1,
