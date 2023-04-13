@@ -1,12 +1,18 @@
 ﻿<!-- Modal -->
 
+<!-- Start modal header -->
 <div class="modal-header">
     <button class="close" ng-click="vm.Close()">
         &times;
     </button>
     <h4 class="modal-title">StreamStats Batch Processor</h4>
 </div>
+<!-- End modal header -->
+
+<!-- Start modal body-->
 <div class="modal-body">
+
+    <!-- Start batch processor tabs -->
     <ul id="bpTabs" class="nav nav-tabs">
         <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'submitBatch'}"><a
                 ng-click="vm.selectBatchProcessorTab('submitBatch')"><i class="fa fa-file"></i>&nbsp;Submit
@@ -14,7 +20,9 @@
         <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'batchStatus'}"><a
                 ng-click="vm.selectBatchProcessorTab('batchStatus')"><i class="fa fa-info-circle"></i>&nbsp;Batch
                 Status</a></li>
-    </ul>
+    </ul><-- End batch processor tabs -->
+
+    
     <div style="padding-top: 10px;">
         <!-- Start submit batch -->
         <div id="submitBatch" ng-if="vm.selectedBatchProcessorTabName==='submitBatch'">
@@ -145,15 +153,6 @@
                 </table>
             </div><!-- End parameter selection -->
 
-            <!-- Button to submit batch  -->
-            <div style="padding-top: 15px; text-align: center;">
-                <button type="submit" class="btn-wim-default" ng-click="vm.submitBatch()"
-                    ng-disabled="vm.submittingBatch || !vm.selectedRegion || !vm.submitBatchData.idField || !vm.submitBatchData.email || !vm.submitBatchData.attachment"><i class="fa fa-share"></i><span>&nbsp;&nbsp;Submit Batch</span></button>
-
-                <div class="bp-submit-success" ng-show="vm.submittingBatch">The batch was submitted successfully. You will be notified by email when results are available.
-                </div>
-            </div> <!-- End submit batch button -->
-
         </div><!-- End submit batch -->
         
 
@@ -162,9 +161,24 @@
             <p>This is the batch status tab</p>
         </div> <!-- End batch status -->
        
-    </div> <!-- End of modal body -->
+</div> <!-- End of modal body -->
 
-        <div class="modal-footer">
-            <button ng-click="vm.Close()" class="btn-black"><i
-                    class="fa fa-close"></i><span>&nbsp;&nbsp;Close</span></button>
+<!-- Start modal footer -->
+<div class="modal-footer">
+    <div class="row" style="justify-content: center;">
+        <!-- Button to submit batch -->
+        <button ng-if="vm.selectedBatchProcessorTabName==='submitBatch'" type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.submitBatch()"
+            ng-disabled="vm.submittingBatch || !vm.selectedRegion || !vm.submitBatchData.idField || !vm.submitBatchData.email || !vm.submitBatchData.attachment"><i
+                class="fa fa-share"></i><span>&nbsp;&nbsp;Submit Batch</span></button>
+    
+        <div class="bp-submit-success" ng-show="vm.submittingBatch">The batch was submitted successfully. You will be
+            notified by email when results are available.
         </div>
+        <!-- End submit batch button -->
+
+        <!-- Button to close modal -->
+        <button ng-click="vm.Close()" class="btn-black><i
+                class="fa fa-close"></i><span>&nbsp;&nbsp;Close</span></button>
+        <!-- End close modal button -->
+    </div>
+</div><!-- End modal footer -->
