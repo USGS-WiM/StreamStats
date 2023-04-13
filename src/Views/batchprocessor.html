@@ -41,7 +41,11 @@
                 <!-- Start file upload button-->
                 <div>
                     <span>Upload Shapefile (.zip):</span><br />
-                    <label for="shapefile" style="border: 1px solid #ccc; display: inline-block; padding: 6px 12px; cursor: pointer;">
+                    <label ng-if="!vm.submitBatchData.attachment" for="shapefile" 
+                    class="bp-attach-false">
+                        Select file</label>
+                    <label ng-if="vm.submitBatchData.attachment" for="shapefile"
+                        class="bp-attach-true">
                         Select file</label>
                     <input type="file" ngf-select ng-model="vm.submitBatchData.attachment" id="shapefile" name="shapefile" accept=".zip"
                         ngf-accept="application/zip" required style="display: none;">

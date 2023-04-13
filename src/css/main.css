@@ -1385,6 +1385,28 @@ select:required:invalid {
     text-align: center;
 }
 
+.bp-attach-true {
+    border: 2px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.bp-attach-true:hover {
+    filter: brightness(75%);
+}
+
+.bp-attach-false {
+    border: 2px solid #FBEC5D;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.bp-attach-false:hover {
+    filter: brightness(75%);
+}
+
 /*
     Report
     Report
