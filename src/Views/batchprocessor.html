@@ -169,7 +169,8 @@
             <!-- Button to submit batch  -->
             <div style="padding-top: 15px; text-align: center;">
                 <button type="submit" class="btn-wim-default" ng-click="vm.submitBatch()"
-                    ng-disabled="vm.submittingBatch || !vm.selectedRegion || !vm.submitBatchData.idField || !vm.submitBatchData.email"><i class="fa fa-share"></i><span>&nbsp;&nbsp;Submit Batch</span></button>
+                    ng-disabled="vm.submittingBatch || !vm.selectedRegion || !vm.submitBatchData.idField || !vm.submitBatchData.email || !vm.submitBatchData.attachment"><i class="fa fa-share"></i><span>&nbsp;&nbsp;Submit Batch</span></button>
+
                 <div class="bp-submit-success" ng-show="vm.submittingBatch">The batch was submitted successfully. You will be notified by email when results are available.
                 </div>
             </div> <!-- End submit batch button -->
