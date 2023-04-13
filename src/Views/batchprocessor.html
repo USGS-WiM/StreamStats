@@ -9,7 +9,7 @@
 <div class="modal-body">
     <ul id="bpTabs" class="nav nav-tabs">
         <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'submitBatch'}"><a
-                ng-click="vm.selectBatchProcessorTab('submitBatch')"><i class="fa fa-question-circle"></i>&nbsp;Submit
+                ng-click="vm.selectBatchProcessorTab('submitBatch')"><i class="fa fa-file"></i>&nbsp;Submit
                 Batch</a></li>
         <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'batchStatus'}"><a
                 ng-click="vm.selectBatchProcessorTab('batchStatus')"><i class="fa fa-info-circle"></i>&nbsp;Batch
@@ -51,7 +51,7 @@
                         ngf-accept="application/zip" required style="display: none;">
                     <span ng-show="vm.submitBatchData.attachment">
                         <i class="fa fa-check" style="color:green"></i>&nbsp;&nbsp;{{vm.submitBatchData.attachment.name}}<button
-                            class="close removeItem" style="" ng-click="vm.submitBatchData.attachment = null">&times;</button>
+                            class="close removeItem" ng-click="vm.submitBatchData.attachment = null">&times;</button>
                     </span>
                 </div><!-- End file upload button-->
             </div><!-- End user information-->
