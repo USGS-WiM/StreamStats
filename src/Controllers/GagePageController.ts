@@ -205,7 +205,7 @@ module StreamStats.Controllers {
         public formattedDischargePeakDates = []; // Stage vs. Discharge Plot
         public dailyValuesOnly = [];
         public ageQualityData = 'age'; //Stage vs. Discharge Plot
-        public error: any;
+        public error: any; //Stage vs. Discharge Plot
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -1150,8 +1150,6 @@ module StreamStats.Controllers {
 //Create discharge and rating curve chart
 public createDischargePlot(): void {
     // console.log('peak value plot data', this.formattedPeakDates);
-    // console.log('estimated peak plot data', this.formattedEstPeakDates);
-    // console.log('this.discharge obj 2nd one', this.dischargeObj)
     this.dischargeChartConfig = {
         chart: {
             height: 450,
@@ -1451,32 +1449,6 @@ public createDailyRasterPlot(): void {
                 row.color = (dataType == 'age') ? row.ageColor : row.qualityColor;
             });
             chart.series[2].update({data:currentUSGSMeasuredData});
-
-            // to be used to create a slide based on month or year
-            // scope.slider_draggable_range = {
-            //     minValue: 1,
-            //     maxValue: 8,
-            //     options: {
-            //         ceil: 10,
-            //         floor: 0,
-            //         draggableRange: true
-            //     }
-            // };
-              
-
-        // public dischargeSlider = false;
-        //     public dischargeSliderSlides 
-        //     sliderValue: number = 1;
-        //     sliderOptions = {
-        //         minValue: 1,
-        //         maxValue: 8,
-        //         options: {
-        //           floor: 0,
-        //           ceil: 10,
-        //           draggableRange: true
-        //         }
-        //       };
-
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
