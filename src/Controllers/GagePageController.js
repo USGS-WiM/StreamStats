@@ -599,6 +599,7 @@ var StreamStats;
                     var NWScode = self.crossWalk[nwisCode];
                     if (NWScode !== undefined) {
                         var url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + NWScode;
+                        console.log('NWS forecast url', url);
                         var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
                         self.Execute(request).then(function (response) {
                             var xmlDocument = new DOMParser().parseFromString(response.data, "text/xml");
@@ -719,7 +720,6 @@ var StreamStats;
                         } while (data.length > 0);
                     }
                     var fiveYearsPercentiles = meanPercentileStats1.concat(meanPercentileStats2, meanPercentileStats3, meanPercentileStats4, meanPercentileStats5);
-                    console.log(fiveYearsPercentiles);
                     _this_1.meanPercent = fiveYearsPercentiles;
                     _this_1.formatData();
                 });
@@ -1579,6 +1579,7 @@ var StreamStats;
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
+                console.log('NWS Forecast', this.NWSforecast);
                 var min;
                 if (this.formattedPeakDatesOnYear.length > 0) {
                     min = (new Date(1 + '/' + 1 + '/' + this.startAndEnd[1].getFullYear())).getTime();
@@ -1731,7 +1732,7 @@ var StreamStats;
                             name: 'Daily Percentile Streamflow',
                             showInNavigator: false,
                             tooltip: {
-                                headerFormat: '<b>P 90-100 %</b>',
+                                headerFormat: '<b>90-100% Streamflow</b>',
                                 pointFormatter: function () {
                                     var UTCday = this.x.getUTCDate();
                                     var year = this.x.getUTCFullYear();
@@ -1760,7 +1761,7 @@ var StreamStats;
                             name: 'P 0-10%',
                             showInNavigator: false,
                             tooltip: {
-                                headerFormat: '<b>P 0-10 %</b>',
+                                headerFormat: '<b>0-10% Streamflow</b>',
                                 pointFormatter: function () {
                                     var UTCday = this.x.getUTCDate();
                                     var year = this.x.getUTCFullYear();
@@ -1789,7 +1790,7 @@ var StreamStats;
                             name: 'p 10-25 %',
                             showInNavigator: false,
                             tooltip: {
-                                headerFormat: '<b>P 10-25 %</b>',
+                                headerFormat: '<b>10-25% Streamflow</b>',
                                 pointFormatter: function () {
                                     var UTCday = this.x.getUTCDate();
                                     var year = this.x.getUTCFullYear();
@@ -1818,7 +1819,7 @@ var StreamStats;
                             name: 'p 25-75 %',
                             showInNavigator: false,
                             tooltip: {
-                                headerFormat: '<b>P 25-75 %</b>',
+                                headerFormat: '<b>25-75% Streamflow</b>',
                                 pointFormatter: function () {
                                     var UTCday = this.x.getUTCDate();
                                     var year = this.x.getUTCFullYear();
@@ -1847,7 +1848,7 @@ var StreamStats;
                             name: 'p 75-90 %',
                             showInNavigator: false,
                             tooltip: {
-                                headerFormat: '<b>P 75-90 %</b>',
+                                headerFormat: '<b>75-90% Streamflow</b>',
                                 pointFormatter: function () {
                                     var UTCday = this.x.getUTCDate();
                                     var year = this.x.getUTCFullYear();
@@ -1910,12 +1911,21 @@ var StreamStats;
                                 headerFormat: '<b>NWS Forecast</b>',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
+                                        var hours = this.x.getUTCHours();
+                                        if (hours < 10) {
+                                            hours = '0' + hours;
+                                        }
+                                        var minutes = this.x.getUTCMinutes();
+                                        if (minutes < 10) {
+                                            minutes = '0' + minutes;
+                                        }
+                                        console.log(hours + ":" + minutes);
                                         var UTCday = this.x.getUTCDate();
                                         var year = this.x.getUTCFullYear();
                                         var month = this.x.getUTCMonth();
                                         month += 1;
                                         var formattedUTCDailyDate = month + '/' + UTCday + '/' + year;
-                                        return '<br>Date: <b>' + formattedUTCDailyDate + '</b><br>Value: <b>' + this.y + ' ft³/s';
+                                        return '<br>Date: <b>' + formattedUTCDailyDate + ' (' + hours + ':' + minutes + ')</b><br>Value: <b>' + this.y + ' ft³/s';
                                     }
                                 }
                             },
@@ -2418,8 +2428,6 @@ var StreamStats;
             GagePageController.prototype.updateShadedStats = function () {
                 var chart = $('#chart1').highcharts();
                 var extremes = chart.xAxis[0].getExtremes();
-                var minUnformatted = chart.xAxis[0].getExtremes().min;
-                var maxUnformatted = chart.xAxis[0].getExtremes().max;
                 var min = new Date(extremes.min);
                 var max = new Date(extremes.max);
                 function inMonths(d1, d2) {
