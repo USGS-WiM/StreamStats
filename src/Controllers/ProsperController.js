@@ -129,6 +129,7 @@ var StreamStats;
                 }
             };
             ProsperController.prototype.Query = function () {
+                gtag('event', 'ExplorationTools', { 'Category': 'QueryProsper' });
                 this._prosperServices.CanQuery = true;
                 this.modalInstance.dismiss();
             };
