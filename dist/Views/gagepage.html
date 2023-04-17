@@ -224,14 +224,62 @@
                     <div ng-if="!vm.chartConfig" class="panel panel-default reportSpinner">
                         &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
                     </div>
-                    <div class="panel panel-default" ng-if="vm.chartConfig">
-                        <center>
+                    <center>
+                    <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.chartConfig">
                         <input type="checkbox" ng-if="vm.formattedFloodFreq.length > 0" id="yesAEPLines" name="yesAEPLines" ng-model="vm.plotlines" ng-change="vm.togglePlotLines()" checked>
                         <label for="yesAEPLines" ng-if="vm.formattedFloodFreq.length > 0"> AEP Plot Lines&nbsp;&nbsp;</label>
                         <input type="checkbox" ng-if="vm.formattedDailyFlow.length > 0" id="logScale" name="logScale" ng-model="vm.logScale" ng-change="vm.toggleLogLinear()" checked>
                         <label for="logScale" ng-if="vm.formattedDailyFlow.length > 0"> Log Scale</label>
-                        <br><highchart id="chart1" config="vm.chartConfig"></highchart><br>
-                        </center>
+                        <highchart id="chart1" config="vm.chartConfig"></highchart>
+                    </div>
+                    </center>
+                    <center>
+                        <div ng-if="!vm.heatChartConfig" class="panel panel-default reportSpinner">
+                            &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
+                        </div>
+                        <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.heatChartConfig">
+                            <highchart id="chart2" config="vm.heatChartConfig"></highchart>
+                        </div>
+                    </center>
+                    <center>
+                        <div ng-if="!vm.dischargeChartConfig" class="panel panel-default reportSpinner">
+                            &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
+                        </div>
+                        <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.dischargeChartConfig">
+
+                            <input type="checkbox" ng-if="vm.formattedDischargePeakDates.length > 0" id="logScaleDischarge" name="logScaleDischarge" ng-model="vm.logScaleDischarge" ng-change="vm.toggleLogLinearDischarge()">
+                            <label for="logScaleDischarge" ng-if="vm.formattedDischargePeakDates.length > 0"> Log Scale</label>
+
+                            <input type="radio" ng-if="vm.error == false" id="ageData" name="ageQualityData" ng-model="vm.ageQualityData" value="age" ng-change="vm.toggleDischargeData('age')"> 
+                            <label for="ageData" ng-if="vm.error == false">  Age</label>
+                           
+                            <input type="radio" ng-if="vm.error == false" id="qualityData" name="ageQualityData" ng-model="vm.ageQualityData" value="quality" ng-change="vm.toggleDischargeData('quality')"> 
+                            <label for="qualityData" ng-if="vm.error == false"> Quality</label>
+
+                            <!-- <div class="group-wrapper">
+                                <label>Start Year:</label>
+                                <input type="number" name="sdate" ng-model="vm.StartYear" min="vm.YearRange.floor" max="vm.YearRange.ceil" required>
+            
+                                <label>End Year:</label>
+                                <input type="number" name="edate" ng-model="vm.EndYear" min="vm.YearRange.floor" max="vm.YearRange.ceil" required>
+                                
+                                
+                                <rzslider
+                                rz-slider-model="vm.minValue" 
+                                rz-slider-high="vm.maxValue" 
+                                rz-slider-options="vm.sliderOptions">
+                                </rzslider>
+                                
+                                <button type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.GetWaterUse()" ng-disabled="!vm.CanContinue"><span ng-class="vm.CanContinue && !vm.GetWaterUseLabel ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;{{ vm.CanContinue || vm.GetWaterUseLabel ? 'Get water use' : 'Initializing...' }}</button> -->
+                            <!-- </div> -->
+
+
+                            <!-- <rzslider rz-slider-model="slider_draggable_range.minValue" rz-slider-high="slider_draggable_range.maxValue" rz-slider-options="slider_draggable_range.options"></rzslider> -->
+                            <highchart id="chart3" config="vm.dischargeChartConfig"></highchart>
+                        </div>
+<!-- 
+                            <highchart id="chart3" config="vm.dischargeChartConfig"></highchart> -->
+                        </center> 
                     </div>
                 </div>
             </div>
