@@ -599,7 +599,6 @@ var StreamStats;
                     var NWScode = self.crossWalk[nwisCode];
                     if (NWScode !== undefined) {
                         var url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + NWScode;
-                        console.log('NWS forecast url', url);
                         var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
                         self.Execute(request).then(function (response) {
                             var xmlDocument = new DOMParser().parseFromString(response.data, "text/xml");
@@ -796,7 +795,6 @@ var StreamStats;
                     dates = dateRange(this.formattedDailyFlow[0].x, this.formattedDailyFlow[finalIndex].x);
                     dates = dates.map(function (date) { return (date.getUTCMonth() + 1) + "/" + date.getUTCDate() + "/" + date.getUTCFullYear(); });
                     var observedDates = this.dailyDatesOnly.map(function (observedDate) { return (observedDate.getUTCMonth() + 1) + "/" + observedDate.getUTCDate() + "/" + observedDate.getUTCFullYear(); });
-                    console.log('daily array', this.dailyDatesOnly);
                     var differences = difference(dates, observedDates);
                     differences.forEach(function (date) { return _this_1.formattedDailyFlow.push({ x: date, y: null }); });
                     this.formattedDailyFlow.sort(function (a, b) { return a.x - b.x; });
@@ -859,7 +857,6 @@ var StreamStats;
                     }
                 }
                 this.startAndEnd.push(startDate, endDate);
-                console.log('start and end', this.startAndEnd);
                 var endYear = endDate.getUTCFullYear();
                 var endOfFinalYear = new Date(12 + '/' + 31 + '/' + endYear);
                 if (this.oneDayStats) {
@@ -1634,7 +1631,6 @@ var StreamStats;
                         type: 'datetime',
                         events: {
                             afterSetExtremes: function () {
-                                console.log('the x axis has been resized');
                                 self.updateShadedStats();
                             }
                         },
@@ -1922,7 +1918,6 @@ var StreamStats;
                                         if (minutes < 10) {
                                             minutes = '0' + minutes;
                                         }
-                                        console.log(hours + ":" + minutes);
                                         var UTCday = this.x.getUTCDate();
                                         var year = this.x.getUTCFullYear();
                                         var month = this.x.getUTCMonth();
@@ -2430,15 +2425,19 @@ var StreamStats;
             };
             GagePageController.prototype.dateRangePicker = function () {
                 var chart = $('#chart1').highcharts();
-                var inputStart = Date.parse($('#dischargeStart').val());
-                var inputEnd = Date.parse($('#dischargeEnd').val());
-                console.log(new Date(inputStart), new Date(inputEnd), chart);
-                chart.yAxis[0].setExtremes();
-                chart.xAxis[0].setExtremes(inputStart, inputEnd);
+                if (($('#dischargeStart').val()).length === 10 && ($('#dischargeEnd').val()).length === 10) {
+                    var inputStart = Date.parse($('#dischargeStart').val());
+                    var inputEnd = Date.parse($('#dischargeEnd').val());
+                    console.log(new Date(inputStart), new Date(inputEnd), chart);
+                    chart.yAxis[0].setExtremes();
+                    chart.xAxis[0].setExtremes(inputStart, inputEnd);
+                }
+                else {
+                    console.log('Please enter a valid date format');
+                }
             };
             GagePageController.prototype.updateShadedStats = function () {
                 var chart = $('#chart1').highcharts();
-                console.log('function called');
                 var extremes = chart.xAxis[0].getExtremes();
                 var min = new Date(extremes.min);
                 var max = new Date(extremes.max);

@@ -797,7 +797,7 @@ module StreamStats.Controllers {
                 var NWScode = self.crossWalk[nwisCode];
                 if (NWScode !== undefined) {
                     var url =  "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage="+ NWScode;
-                    console.log('NWS forecast url', url)
+                    //console.log('NWS forecast url', url)
                     const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
                     self.Execute(request).then(
                         (response: any) => {
@@ -1008,7 +1008,6 @@ module StreamStats.Controllers {
             
             let observedDates = this.dailyDatesOnly.map(observedDate => (observedDate.getUTCMonth() + 1) + "/" + observedDate.getUTCDate() + "/" + observedDate.getUTCFullYear());
             //find the difference between the two arrays (which dates are in the dates array but not the observedDates array)
-                console.log('daily array', this.dailyDatesOnly)
             let differences = difference(dates, observedDates)
             //add the difference dates to the plot data with null values so that there can be breaks in the line when there are no recordings
             differences.forEach(date => this.formattedDailyFlow.push({x: date, y: null}))
@@ -1074,7 +1073,6 @@ module StreamStats.Controllers {
                     }
                 }
             this.startAndEnd.push(startDate, endDate);
-            console.log('start and end', this.startAndEnd)
             let endYear = endDate.getUTCFullYear();
             let endOfFinalYear = new Date(12 + '/' + 31 + '/' + endYear)            
             if (this.oneDayStats) {
@@ -1882,10 +1880,7 @@ module StreamStats.Controllers {
                     type: 'datetime',
                     events: {
                         afterSetExtremes: 
-                        //this.updateShadedStats
                         function() {
-                            console.log('the x axis has been resized')
-                            
                             self.updateShadedStats();
                         }
                     },
@@ -2172,7 +2167,6 @@ module StreamStats.Controllers {
                                 if (minutes < 10)  {
                                     minutes = '0'+minutes;
                                 }
-                                console.log(hours + ":" + minutes)
                                 let UTCday = this.x.getUTCDate();
                                 let year = this.x.getUTCFullYear();
                                 let month = this.x.getUTCMonth();
@@ -2694,16 +2688,19 @@ module StreamStats.Controllers {
 
         public dateRangePicker () {
             let chart = $('#chart1').highcharts();
+            if (($('#dischargeStart').val()).length === 10 && ($('#dischargeEnd').val()).length === 10) {
             let inputStart = Date.parse($('#dischargeStart').val())
             let inputEnd = Date.parse($('#dischargeEnd').val());
             console.log(new Date(inputStart), new Date(inputEnd), chart)
             chart.yAxis[0].setExtremes();
             chart.xAxis[0].setExtremes(inputStart, inputEnd);
+            } else {
+                console.log('Please enter a valid date format')
+            }
         }
         
         public updateShadedStats () {
             let chart = $('#chart1').highcharts();
-            console.log('function called')
             let extremes = chart.xAxis[0].getExtremes()
             let min = new Date(extremes.min)
             let max = new Date(extremes.max)
