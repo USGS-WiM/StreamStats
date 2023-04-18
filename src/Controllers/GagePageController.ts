@@ -1008,7 +1008,7 @@ module StreamStats.Controllers {
             
             let observedDates = this.dailyDatesOnly.map(observedDate => (observedDate.getUTCMonth() + 1) + "/" + observedDate.getUTCDate() + "/" + observedDate.getUTCFullYear());
             //find the difference between the two arrays (which dates are in the dates array but not the observedDates array)
-
+                console.log('daily array', this.dailyDatesOnly)
             let differences = difference(dates, observedDates)
             //add the difference dates to the plot data with null values so that there can be breaks in the line when there are no recordings
             differences.forEach(date => this.formattedDailyFlow.push({x: date, y: null}))
@@ -1074,6 +1074,7 @@ module StreamStats.Controllers {
                     }
                 }
             this.startAndEnd.push(startDate, endDate);
+            console.log('start and end', this.startAndEnd)
             let endYear = endDate.getUTCFullYear();
             let endOfFinalYear = new Date(12 + '/' + 31 + '/' + endYear)            
             if (this.oneDayStats) {
@@ -1817,7 +1818,8 @@ module StreamStats.Controllers {
             //console.log('daily flow plot data', this.formattedDailyFlow);
             //console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear.length)
             //console.log('0-10', this.formattedP0to10);
-            console.log('NWS Forecast', this.NWSforecast)
+            //console.log('NWS Forecast', this.NWSforecast)
+            var self = this
             let min;
                 if (this.formattedPeakDatesOnYear.length > 0) {
                     min = (new Date(1 +'/' + 1 + '/' + this.startAndEnd[1].getFullYear())).getTime()
@@ -1859,7 +1861,7 @@ module StreamStats.Controllers {
                     align: 'center'
                 },
                 rangeSelector: {
-                    enabled: true,
+                    enabled: false,
                     inputPosition: {
                         align: 'left',
                         x: 0,
@@ -1884,7 +1886,7 @@ module StreamStats.Controllers {
                         function() {
                             console.log('the x axis has been resized')
                             
-                            //this.updateShadedStats();
+                            self.updateShadedStats();
                         }
                     },
                     gridLineWidth: 0,
@@ -2689,8 +2691,19 @@ module StreamStats.Controllers {
                 chart.xAxis[0].setExtremes(min, max);
             }
         }
+
+        public dateRangePicker () {
+            let chart = $('#chart1').highcharts();
+            let inputStart = Date.parse($('#dischargeStart').val())
+            let inputEnd = Date.parse($('#dischargeEnd').val());
+            console.log(new Date(inputStart), new Date(inputEnd), chart)
+            chart.yAxis[0].setExtremes();
+            chart.xAxis[0].setExtremes(inputStart, inputEnd);
+        }
+        
         public updateShadedStats () {
             let chart = $('#chart1').highcharts();
+            console.log('function called')
             let extremes = chart.xAxis[0].getExtremes()
             let min = new Date(extremes.min)
             let max = new Date(extremes.max)
@@ -2709,6 +2722,11 @@ module StreamStats.Controllers {
             let first = this.formattedP0to10[0].x.getUTCFullYear();
             if ((inMonths(min, max)) <= 60) {
                 let maxYear = max.getFullYear()
+                chart.series[3].show();
+                chart.series[4].show();
+                chart.series[5].show();
+                chart.series[6].show();
+                chart.series[2].show();
                 this.formattedP0to10.forEach(index => {
                     if (index.x.getFullYear() === fifth) {
                         index.x.setUTCFullYear(maxYear)
@@ -2794,6 +2812,13 @@ module StreamStats.Controllers {
                         index.x.setUTCFullYear(maxYear - 4)
                     }
                 })
+            } else {
+                chart.series[3].hide();
+                chart.series[4].hide();
+                chart.series[5].hide();
+                chart.series[6].hide();
+                chart.series[2].hide();
+
             }
             //console.log(min, max, inMonths(min, max))
         }

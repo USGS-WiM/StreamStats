@@ -796,6 +796,7 @@ var StreamStats;
                     dates = dateRange(this.formattedDailyFlow[0].x, this.formattedDailyFlow[finalIndex].x);
                     dates = dates.map(function (date) { return (date.getUTCMonth() + 1) + "/" + date.getUTCDate() + "/" + date.getUTCFullYear(); });
                     var observedDates = this.dailyDatesOnly.map(function (observedDate) { return (observedDate.getUTCMonth() + 1) + "/" + observedDate.getUTCDate() + "/" + observedDate.getUTCFullYear(); });
+                    console.log('daily array', this.dailyDatesOnly);
                     var differences = difference(dates, observedDates);
                     differences.forEach(function (date) { return _this_1.formattedDailyFlow.push({ x: date, y: null }); });
                     this.formattedDailyFlow.sort(function (a, b) { return a.x - b.x; });
@@ -858,6 +859,7 @@ var StreamStats;
                     }
                 }
                 this.startAndEnd.push(startDate, endDate);
+                console.log('start and end', this.startAndEnd);
                 var endYear = endDate.getUTCFullYear();
                 var endOfFinalYear = new Date(12 + '/' + 31 + '/' + endYear);
                 if (this.oneDayStats) {
@@ -1579,7 +1581,7 @@ var StreamStats;
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
-                console.log('NWS Forecast', this.NWSforecast);
+                var self = this;
                 var min;
                 if (this.formattedPeakDatesOnYear.length > 0) {
                     min = (new Date(1 + '/' + 1 + '/' + this.startAndEnd[1].getFullYear())).getTime();
@@ -1617,7 +1619,7 @@ var StreamStats;
                         align: 'center'
                     },
                     rangeSelector: {
-                        enabled: true,
+                        enabled: false,
                         inputPosition: {
                             align: 'left',
                             x: 0,
@@ -1633,6 +1635,7 @@ var StreamStats;
                         events: {
                             afterSetExtremes: function () {
                                 console.log('the x axis has been resized');
+                                self.updateShadedStats();
                             }
                         },
                         gridLineWidth: 0,
@@ -2425,8 +2428,17 @@ var StreamStats;
                     chart.xAxis[0].setExtremes(min, max);
                 }
             };
+            GagePageController.prototype.dateRangePicker = function () {
+                var chart = $('#chart1').highcharts();
+                var inputStart = Date.parse($('#dischargeStart').val());
+                var inputEnd = Date.parse($('#dischargeEnd').val());
+                console.log(new Date(inputStart), new Date(inputEnd), chart);
+                chart.yAxis[0].setExtremes();
+                chart.xAxis[0].setExtremes(inputStart, inputEnd);
+            };
             GagePageController.prototype.updateShadedStats = function () {
                 var chart = $('#chart1').highcharts();
+                console.log('function called');
                 var extremes = chart.xAxis[0].getExtremes();
                 var min = new Date(extremes.min);
                 var max = new Date(extremes.max);
@@ -2444,6 +2456,11 @@ var StreamStats;
                 var first = this.formattedP0to10[0].x.getUTCFullYear();
                 if ((inMonths(min, max)) <= 60) {
                     var maxYear_1 = max.getFullYear();
+                    chart.series[3].show();
+                    chart.series[4].show();
+                    chart.series[5].show();
+                    chart.series[6].show();
+                    chart.series[2].show();
                     this.formattedP0to10.forEach(function (index) {
                         if (index.x.getFullYear() === fifth) {
                             index.x.setUTCFullYear(maxYear_1);
@@ -2529,6 +2546,13 @@ var StreamStats;
                             index.x.setUTCFullYear(maxYear_1 - 4);
                         }
                     });
+                }
+                else {
+                    chart.series[3].hide();
+                    chart.series[4].hide();
+                    chart.series[5].hide();
+                    chart.series[6].hide();
+                    chart.series[2].hide();
                 }
             };
             GagePageController.prototype.init = function () {

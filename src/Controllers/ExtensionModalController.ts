@@ -94,6 +94,7 @@ module StreamStats.Controllers {
                 });
                 if (newval != oldval) this.getNWISDailyValues();
             });
+            console.log(this.dateRange.dates)
             $scope.$watch(() => this.studyAreaService.allIndexGages, (newval) => {
                 if (newval == undefined) {
                     this.isBusy = true;

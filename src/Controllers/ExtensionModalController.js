@@ -56,6 +56,7 @@ var StreamStats;
                     if (newval != oldval)
                         _this.getNWISDailyValues();
                 });
+                console.log(_this.dateRange.dates);
                 $scope.$watch(function () { return _this.studyAreaService.allIndexGages; }, function (newval) {
                     if (newval == undefined) {
                         _this.isBusy = true;
