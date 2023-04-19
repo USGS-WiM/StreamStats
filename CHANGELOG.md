@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed  
 
+- Updated national status map (now includes D.C. as undergoing implementation)
+- Changed national status map from image URL to downloaded image in images folder
+
 ### Deprecated 
 
 ### Removed 
@@ -17,6 +20,29 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed  
 
 ### Security  
+
+## [v4.14.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.14.1) - 2023-03-29
+  
+### Added 
+- Google analytic tag for querying Propser
+- Lat/Long to google analytic tag for edited basin
+
+### Changed  
+- Enabled edit basin button for all local delineations
+
+## [v4.14.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.14.0) - 2023-03-09
+
+### Changed  
+- Updated how About modal is filled
+
+### Deprecated 
+- Basin edit button is now disabled
+
+## [v4.13.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.13.0) - 2023-02-09
+
+### Added 
+- Enabled scenarios for WI 
+- Added "Localres" application for DRB
 
 ## [v4.12.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.12.0) - 2023-01-11
   
@@ -46,6 +72,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bug that shows out of range parameter warning after parameters have been edited to be within range and report is reopened
 - Printed gage page now shows all table content instead of cutting of scrolling tables
 - Disclaimers on report are now not delimited by commas when downloaded as a CSV
+- Spelling error in the Google Analytics (DraingeArea to DrainageArea)
 
 ## [v4.11.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.11.1) - 2022-10-14
 

@@ -1,4 +1,4 @@
-﻿﻿<!-- Modal -->
+﻿<!-- Modal -->
 <div id="print-content">
     <div class="modal-header">
         <button class="close hidden-print"
@@ -224,28 +224,76 @@
                     <div ng-if="!vm.chartConfig" class="panel panel-default reportSpinner">
                         &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
                     </div>
-                    <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.chartConfig">
-                        <center>
-                        <div class="plot-filters">
-                            <input type="checkbox" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" id="toggleFloodStats" name="toggleFloodStats" ng-model="vm.showFloodStats" ng-change="vm.toggleFloodStats()" checked>
-                            <label for="toggleFloodStats" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" > Show Flood Statistics:</label>
-                            <select id="gageFloodStatsSelect" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0 " style="width:10%" name="gageFloodStatsSelect" ng-model="vm.selectedFloodFreqStats" ng-options="floodFreqStat.name for floodFreqStat in vm.allFloodFreqStats" ng-change="vm.chooseFloodStats()" ng-disabled="vm.showFloodStats == false"></select>&nbsp;&nbsp;&nbsp;                      
-                            <input type="checkbox" ng-if="vm.formattedPeakDates.length > 0" id="togglePeaks" name="togglePeaks" ng-model="vm.peaksOnYear" ng-change="vm.togglePeakYear()" checked>
-                            <label for="togglePeaks" ng-if="vm.formattedPeakDates.length > 0"> Plot Peaks on Latest Year&nbsp;&nbsp;</label>
-                            <input type="checkbox" ng-if="vm.formattedDailyFlow.length > 0" id="logScale" name="logScale" ng-model="vm.logScale" ng-change="vm.toggleLogLinear()" checked>
-                            <label for="logScale" ng-if="vm.formattedDailyFlow.length > 0"> Log Scale</label>&nbsp;&nbsp;
-                            <button ng-click="vm.resetZoom()" style="height:80%">Reset Zoom</button><br>
-                            <!-- <button ng-click="vm.updateShadedStats()" style="height:80%">Update Shaded Stats</button><br> -->
-                            <!-- <label for="dischargeStart"> Date Range:</label>
-                            <input date-range-picker class="form-control date-picker" type="text" style="width:20%; height:80%" id="dischargeStart" length=10 ng-model="vm.dailyDatesOnly" min="vm.startAndEnd[0]" max="vmstartAndEnd[1]" options="vm.dailyDatesOnly"> -->
-                            <label for="dischargeStart"> Start Date:</label>
-                            <input type="text" style="width:11%; height:80%" id="dischargeStart" length=10 placeholder="MM-DD-YYYY">
-                            <label for="dischargeEnd"> End Date:</label>
-                            <input type="text" style="width:11%; height:80%" id="dischargeEnd" length=10 placeholder="MM-DD-YYYY">
-                            <button ng-click="vm.dateRangePicker()" style="height:80%">Load Date Range</button>
+                    <center>
+                        <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.chartConfig">
+                            <div class="plot-filters">
+                                <input type="checkbox" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" id="toggleFloodStats" name="toggleFloodStats" ng-model="vm.showFloodStats" ng-change="vm.toggleFloodStats()" checked>
+                                <label for="toggleFloodStats" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" > Show Flood Statistics:</label>
+                                <select id="gageFloodStatsSelect" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0 " style="width:10%" name="gageFloodStatsSelect" ng-model="vm.selectedFloodFreqStats" ng-options="floodFreqStat.name for floodFreqStat in vm.allFloodFreqStats" ng-change="vm.chooseFloodStats()" ng-disabled="vm.showFloodStats == false"></select>&nbsp;&nbsp;&nbsp;                      
+                                <input type="checkbox" ng-if="vm.formattedPeakDates.length > 0" id="togglePeaks" name="togglePeaks" ng-model="vm.peaksOnYear" ng-change="vm.togglePeakYear()" checked>
+                                <label for="togglePeaks" ng-if="vm.formattedPeakDates.length > 0"> Plot Peaks on Latest Year&nbsp;&nbsp;</label>
+                                <input type="checkbox" ng-if="vm.formattedDailyFlow.length > 0" id="logScale" name="logScale" ng-model="vm.logScale" ng-change="vm.toggleLogLinear()" checked>
+                                <label for="logScale" ng-if="vm.formattedDailyFlow.length > 0"> Log Scale</label>&nbsp;&nbsp;
+                                <button ng-click="vm.resetZoom()" style="height:80%">Reset Zoom</button><br>
+                                <!-- <button ng-click="vm.updateShadedStats()" style="height:80%">Update Shaded Stats</button><br> -->
+                                <!-- <label for="dischargeStart"> Date Range:</label>
+                                <input date-range-picker class="form-control date-picker" type="text" style="width:20%; height:80%" id="dischargeStart" length=10 ng-model="vm.dailyDatesOnly" min="vm.startAndEnd[0]" max="vmstartAndEnd[1]" options="vm.dailyDatesOnly"> -->
+                                <label for="dischargeStart"> Start Date:</label>
+                                <input type="text" style="width:11%; height:80%" id="dischargeStart" length=10 placeholder="MM-DD-YYYY">
+                                <label for="dischargeEnd"> End Date:</label>
+                                <input type="text" style="width:11%; height:80%" id="dischargeEnd" length=10 placeholder="MM-DD-YYYY">
+                                <button ng-click="vm.dateRangePicker()" style="height:80%">Load Date Range</button>
+                            </div>
+                            <br><highchart id="chart1" config="vm.chartConfig" ng-init="vm.destroyResetZoom()"></highchart><br>
                         </div>
-                        <br><highchart id="chart1" config="vm.chartConfig" ng-init="vm.destroyResetZoom()"></highchart><br>
-                        </center>
+                    </center>
+                    <center>
+                        <div ng-if="!vm.heatChartConfig" class="panel panel-default reportSpinner">
+                            &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
+                        </div>
+                        <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.heatChartConfig">
+                            <highchart id="chart2" config="vm.heatChartConfig"></highchart>
+                        </div>
+                    </center>
+                    <center>
+                        <div ng-if="!vm.dischargeChartConfig" class="panel panel-default reportSpinner">
+                            &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
+                        </div>
+                        <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.dischargeChartConfig">
+
+                            <input type="checkbox" ng-if="vm.formattedDischargePeakDates.length > 0" id="logScaleDischarge" name="logScaleDischarge" ng-model="vm.logScaleDischarge" ng-change="vm.toggleLogLinearDischarge()">
+                            <label for="logScaleDischarge" ng-if="vm.formattedDischargePeakDates.length > 0"> Log Scale</label>
+
+                            <input type="radio" ng-if="vm.error == false" id="ageData" name="ageQualityData" ng-model="vm.ageQualityData" value="age" ng-change="vm.toggleDischargeData('age')"> 
+                            <label for="ageData" ng-if="vm.error == false">  Age</label>
+                
+                            <input type="radio" ng-if="vm.error == false" id="qualityData" name="ageQualityData" ng-model="vm.ageQualityData" value="quality" ng-change="vm.toggleDischargeData('quality')"> 
+                            <label for="qualityData" ng-if="vm.error == false"> Quality</label>
+
+                            <!-- <div class="group-wrapper">
+                                <label>Start Year:</label>
+                                <input type="number" name="sdate" ng-model="vm.StartYear" min="vm.YearRange.floor" max="vm.YearRange.ceil" required>
+            
+                                <label>End Year:</label>
+                                <input type="number" name="edate" ng-model="vm.EndYear" min="vm.YearRange.floor" max="vm.YearRange.ceil" required>
+                                
+                                
+                                <rzslider
+                                rz-slider-model="vm.minValue" 
+                                rz-slider-high="vm.maxValue" 
+                                rz-slider-options="vm.sliderOptions">
+                                </rzslider>
+                                
+                                <button type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.GetWaterUse()" ng-disabled="!vm.CanContinue"><span ng-class="vm.CanContinue && !vm.GetWaterUseLabel ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;{{ vm.CanContinue || vm.GetWaterUseLabel ? 'Get water use' : 'Initializing...' }}</button> -->
+                            <!-- </div> -->
+
+
+                            <!-- <rzslider rz-slider-model="slider_draggable_range.minValue" rz-slider-high="slider_draggable_range.maxValue" rz-slider-options="slider_draggable_range.options"></rzslider> -->
+                            <highchart id="chart3" config="vm.dischargeChartConfig"></highchart>
+                        </div>
+<!-- 
+                            <highchart id="chart3" config="vm.dischargeChartConfig"></highchart> -->
+                        </center> 
                     </div>
                 </div>
             </div>

@@ -55,6 +55,7 @@ var StreamStats;
                 _this.NSSServicesVersion = '';
                 _this.streamgagesVisible = true;
                 _this.additionalFeaturesLoaded = false;
+                _this.global = true;
                 _this.extensionDateRange = null;
                 _this.extensionsConfigured = false;
                 _this.loadingDrainageArea = false;
@@ -202,6 +203,18 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 request.withCredentials = true;
                 this.Execute(request).then(function (response) {
+                    try {
+                        var RELATEDOID = response.data.featurecollection.filter(function (f) { return f.name == "globalwatershed"; })[0].feature.features[0].properties.RELATEDOID;
+                        if (RELATEDOID == " ") {
+                            _this.global = false;
+                        }
+                        else {
+                            _this.global = true;
+                        }
+                    }
+                    catch (e) {
+                        _this.global = true;
+                    }
                     if (_this.regionService.selectedRegion.Applications.indexOf('StormDrain') > -1) {
                         if (response.data.layers && response.data.layers.features && response.data.layers.features[1].geometry.coordinates.length > 0) {
                             _this.selectedStudyArea.Disclaimers['isStormDrain'] = true;
@@ -948,7 +961,7 @@ var StreamStats;
                                 var daValue = val.value;
                                 if (val.unit.toLowerCase().trim() == 'square kilometers')
                                     daValue = daValue / 2.59;
-                                gtag('event', 'Calculate', { 'Category': 'DraingeArea', 'Location': latLong, 'Value': daValue.toFixed(0) });
+                                gtag('event', 'Calculate', { 'Category': 'DrainageArea', 'Location': latLong, 'Value': daValue.toFixed(0) });
                             }
                             value.value = val.value;
                             value.loaded = val.loaded;
