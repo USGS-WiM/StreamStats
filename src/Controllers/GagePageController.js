@@ -2428,7 +2428,6 @@ var StreamStats;
                 if (($('#dischargeStart').val()).length === 10 && ($('#dischargeEnd').val()).length === 10) {
                     var inputStart = Date.parse($('#dischargeStart').val());
                     var inputEnd = Date.parse($('#dischargeEnd').val());
-                    console.log(new Date(inputStart), new Date(inputEnd), chart);
                     chart.yAxis[0].setExtremes();
                     chart.xAxis[0].setExtremes(inputStart, inputEnd);
                 }
@@ -2448,11 +2447,11 @@ var StreamStats;
                     var d2M = d2.getMonth();
                     return (d2M + 12 * d2Y) - (d1M + 12 * d1Y);
                 }
-                var fifth = this.formattedP0to10[1600].x.getUTCFullYear();
-                var fourth = this.formattedP0to10[1200].x.getUTCFullYear();
-                var third = this.formattedP0to10[800].x.getUTCFullYear();
-                var second = this.formattedP0to10[367].x.getUTCFullYear();
-                var first = this.formattedP0to10[0].x.getUTCFullYear();
+                var fifthYear = this.formattedP0to10[1600].x.getUTCFullYear();
+                var fourthYear = this.formattedP0to10[1200].x.getUTCFullYear();
+                var thirdYear = this.formattedP0to10[800].x.getUTCFullYear();
+                var secondYear = this.formattedP0to10[367].x.getUTCFullYear();
+                var firstYear = this.formattedP0to10[0].x.getUTCFullYear();
                 if ((inMonths(min, max)) <= 60) {
                     var maxYear_1 = max.getFullYear();
                     chart.series[3].show();
@@ -2461,90 +2460,95 @@ var StreamStats;
                     chart.series[6].show();
                     chart.series[2].show();
                     this.formattedP0to10.forEach(function (index) {
-                        if (index.x.getFullYear() === fifth) {
+                        if (index.x.getFullYear() === fifthYear) {
                             index.x.setUTCFullYear(maxYear_1);
                         }
-                        if (index.x.getFullYear() === fourth) {
+                        if (index.x.getFullYear() === fourthYear) {
                             index.x.setUTCFullYear(maxYear_1 - 1);
                         }
-                        if (index.x.getFullYear() === third) {
+                        if (index.x.getFullYear() === thirdYear) {
                             index.x.setUTCFullYear(maxYear_1 - 2);
                         }
-                        if (index.x.getFullYear() === second) {
+                        if (index.x.getFullYear() === secondYear) {
                             index.x.setUTCFullYear(maxYear_1 - 3);
                         }
-                        if (index.x.getFullYear() === first) {
+                        if (index.x.getFullYear() === firstYear) {
                             index.x.setUTCFullYear(maxYear_1 - 4);
                         }
                     });
                     this.formattedP10to25.forEach(function (index) {
-                        if (index.x.getFullYear() === fifth) {
+                        if (index.x.getFullYear() === fifthYear) {
                             index.x.setUTCFullYear(maxYear_1);
                         }
-                        if (index.x.getFullYear() === fourth) {
+                        if (index.x.getFullYear() === fourthYear) {
                             index.x.setUTCFullYear(maxYear_1 - 1);
                         }
-                        if (index.x.getFullYear() === third) {
+                        if (index.x.getFullYear() === thirdYear) {
                             index.x.setUTCFullYear(maxYear_1 - 2);
                         }
-                        if (index.x.getFullYear() === second) {
+                        if (index.x.getFullYear() === secondYear) {
                             index.x.setUTCFullYear(maxYear_1 - 3);
                         }
-                        if (index.x.getFullYear() === first) {
+                        if (index.x.getFullYear() === firstYear) {
                             index.x.setUTCFullYear(maxYear_1 - 4);
                         }
                     });
                     this.formattedP25to75.forEach(function (index) {
-                        if (index.x.getFullYear() === fifth) {
+                        if (index.x.getFullYear() === fifthYear) {
                             index.x.setUTCFullYear(maxYear_1);
                         }
-                        if (index.x.getFullYear() === fourth) {
+                        if (index.x.getFullYear() === fourthYear) {
                             index.x.setUTCFullYear(maxYear_1 - 1);
                         }
-                        if (index.x.getFullYear() === third) {
+                        if (index.x.getFullYear() === thirdYear) {
                             index.x.setUTCFullYear(maxYear_1 - 2);
                         }
-                        if (index.x.getFullYear() === second) {
+                        if (index.x.getFullYear() === secondYear) {
                             index.x.setUTCFullYear(maxYear_1 - 3);
                         }
-                        if (index.x.getFullYear() === first) {
+                        if (index.x.getFullYear() === firstYear) {
                             index.x.setUTCFullYear(maxYear_1 - 4);
                         }
                     });
                     this.formattedP75to90.forEach(function (index) {
-                        if (index.x.getFullYear() === fifth) {
+                        if (index.x.getFullYear() === fifthYear) {
                             index.x.setUTCFullYear(maxYear_1);
                         }
-                        if (index.x.getFullYear() === fourth) {
+                        if (index.x.getFullYear() === fourthYear) {
                             index.x.setUTCFullYear(maxYear_1 - 1);
                         }
-                        if (index.x.getFullYear() === third) {
+                        if (index.x.getFullYear() === thirdYear) {
                             index.x.setUTCFullYear(maxYear_1 - 2);
                         }
-                        if (index.x.getFullYear() === second) {
+                        if (index.x.getFullYear() === secondYear) {
                             index.x.setUTCFullYear(maxYear_1 - 3);
                         }
-                        if (index.x.getFullYear() === first) {
+                        if (index.x.getFullYear() === firstYear) {
                             index.x.setUTCFullYear(maxYear_1 - 4);
                         }
                     });
                     this.formattedP90to100.forEach(function (index) {
-                        if (index.x.getFullYear() === fifth) {
+                        if (index.x.getFullYear() === fifthYear) {
                             index.x.setUTCFullYear(maxYear_1);
                         }
-                        if (index.x.getFullYear() === fourth) {
+                        if (index.x.getFullYear() === fourthYear) {
                             index.x.setUTCFullYear(maxYear_1 - 1);
                         }
-                        if (index.x.getFullYear() === third) {
+                        if (index.x.getFullYear() === thirdYear) {
                             index.x.setUTCFullYear(maxYear_1 - 2);
                         }
-                        if (index.x.getFullYear() === second) {
+                        if (index.x.getFullYear() === secondYear) {
                             index.x.setUTCFullYear(maxYear_1 - 3);
                         }
-                        if (index.x.getFullYear() === first) {
+                        if (index.x.getFullYear() === firstYear) {
                             index.x.setUTCFullYear(maxYear_1 - 4);
                         }
                     });
+                    this.formattedP0to10.sort(function (a, b) { return a.x - b.x; });
+                    this.formattedP10to25.sort(function (a, b) { return a.x - b.x; });
+                    this.formattedP25to75.sort(function (a, b) { return a.x - b.x; });
+                    this.formattedP75to90.sort(function (a, b) { return a.x - b.x; });
+                    this.formattedP90to100.sort(function (a, b) { return a.x - b.x; });
                 }
                 else {
                     chart.series[3].hide();
