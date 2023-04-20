@@ -1461,12 +1461,9 @@ div.leaflet-top > .elevation {
     padding-top: 5px;
 }
 
-#printArea span {
-    padding: 0 0 0 3px !important;
-}
-/* #printArea span:not(rzslider span) {
+#printArea span:not(rzslider span) {
     padding: 0 0 0 3px;
-} */
+}
 
 .collapsible {
     cursor: pointer;

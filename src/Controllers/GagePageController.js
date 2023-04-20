@@ -88,9 +88,7 @@ var StreamStats;
                 };
                 _this_1.URLsToDisplay = [];
                 _this_1.dischargeObj = undefined;
-                _this_1.ratingCurve = undefined;
                 _this_1.measuredObj = undefined;
-                _this_1.USGSMeasured = undefined;
                 _this_1.floodFreq = undefined;
                 _this_1.peakDates = undefined;
                 _this_1.estPeakDates = undefined;
@@ -101,10 +99,8 @@ var StreamStats;
                 _this_1.formattedDailyPlusAvg = [];
                 _this_1.formattedEstPeakDates = [];
                 _this_1.formattedDailyFlow = [];
-                _this_1.dailyRange = [];
                 _this_1.formattedDischargePeakDates = [];
                 _this_1.dailyValuesOnly = [];
-                _this_1.ageQualityData = 'age';
                 _this_1.plotlines = true;
                 _this_1.logScale = false;
                 _this_1.logScaleDischarge = false;
@@ -542,7 +538,24 @@ var StreamStats;
                 }, function (error) {
                 }).finally(function () {
                     _this_1.formatData();
+                    _this_1.updateChart();
                 });
+            };
+            GagePageController.prototype.onSliderChange = function (sliderId, modelValue, highValue) {
+                var startMonthStr = moment(new Date(2012, modelValue, 1)).format("MMM");
+                var endMonthStr = moment(new Date(2012, highValue, 1)).format("MMM");
+                document.getElementById("months2show").innerText = "".concat(startMonthStr, " - ").concat(endMonthStr);
+                this.updateChart(modelValue, highValue);
+            };
+            GagePageController.prototype.updateChart = function (startMonth, endMonth) {
+                var filteredData = this.measuredObj.filter(function (item) {
+                    var itemDate = new Date(item.dateTime);
+                    return itemDate.getMonth() + 1 >= startMonth && itemDate.getMonth() + 1 <= endMonth;
+                });
+                var chart = $('#chart3').highcharts();
+                if (chart) {
+                    chart.series[2].setData(filteredData);
+                }
             };
             GagePageController.prototype.formatData = function () {
                 var _this_1 = this;
@@ -854,14 +867,13 @@ var StreamStats;
                 return "#FFA200";
             };
             GagePageController.prototype.createDischargePlot = function () {
-                this.startMonth = 1;
-                this.endMonth = 12;
                 this.monthSliderOptions = {
                     floor: 1,
                     ceil: 12,
                     draggableRange: true,
                     noSwitching: true,
-                    showTicks: false
+                    showTicks: false,
+                    onChange: this.onSliderChange.bind(this)
                 };
                 this.dischargeChartConfig = {
                     chart: {
@@ -1149,28 +1161,22 @@ var StreamStats;
             GagePageController.prototype.toggleLogLinearDischarge = function () {
                 var chart = $('#chart3').highcharts();
                 if (this.logScaleDischarge) {
-                    chart.yAxis[0].update({ type: 'logarithmic' });
                     chart.xAxis[0].update({ type: 'logarithmic' });
+                    chart.yAxis[0].update({ type: 'logarithmic' });
                 }
                 else {
-                    chart.yAxis[0].update({ type: 'linear' });
                     chart.xAxis[0].update({ type: 'linear' });
+                    chart.yAxis[0].update({ type: 'linear' });
                 }
             };
             ;
             GagePageController.prototype.toggleDischargeData = function (dataType) {
                 var chart = $('#chart3').highcharts();
-                if (dataType === 'age') {
-                    this.measuredObj.forEach(function (row) {
-                        row.color = row.ageColor;
-                    });
-                }
-                else {
-                    this.measuredObj.forEach(function (row) {
-                        row.color = row.qualityColor;
-                    });
-                }
-                ;
+                var currentUSGSMeasuredData = chart.series[2].data;
+                currentUSGSMeasuredData.forEach(function (row) {
+                    row.color = (dataType == 'age') ? row.ageColor : row.qualityColor;
+                });
+                chart.series[2].update({ data: currentUSGSMeasuredData });
             };
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;
