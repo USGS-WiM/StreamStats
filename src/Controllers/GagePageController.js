@@ -541,22 +541,21 @@ var StreamStats;
                     _this_1.updateChart();
                 });
             };
-            GagePageController.prototype.onSliderChange = function (sliderId, modelValue, highValue) {
-                var startMonthStr = moment(new Date(2012, modelValue, 1)).format("MMM");
-                var endMonthStr = moment(new Date(2012, highValue, 1)).format("MMM");
-                document.getElementById("months2show").innerText = "".concat(startMonthStr, " - ").concat(endMonthStr);
-                this.updateChart(modelValue, highValue);
-            };
-            GagePageController.prototype.updateChart = function (startMonth, endMonth) {
+            GagePageController.prototype.updateChart = function () {
+                var _this_1 = this;
                 var filteredData = this.measuredObj.filter(function (item) {
                     var itemDate = new Date(item.dateTime);
-                    return itemDate.getMonth() + 1 >= startMonth && itemDate.getMonth() + 1 <= endMonth;
+                    return itemDate.getMonth() + 1 >= _this_1.startMonth && itemDate.getMonth() + 1 <= _this_1.endMonth;
                 });
                 var chart = $('#chart3').highcharts();
                 if (chart) {
                     chart.series[2].setData(filteredData);
                 }
             };
+            GagePageController.prototype.onSliderChange = function () {
+                this.updateChart();
+            };
+            ;
             GagePageController.prototype.formatData = function () {
                 var _this_1 = this;
                 if (this.peakDates) {
@@ -867,13 +866,19 @@ var StreamStats;
                 return "#FFA200";
             };
             GagePageController.prototype.createDischargePlot = function () {
+                var _this_1 = this;
+                this.startMonth = 1;
+                this.endMonth = 12;
                 this.monthSliderOptions = {
                     floor: 1,
                     ceil: 12,
                     draggableRange: true,
                     noSwitching: true,
                     showTicks: false,
-                    onChange: this.onSliderChange.bind(this)
+                    draggableRange: true,
+                    onChange: function (sliderId, modelValue, highValue) {
+                        _this_1.onSliderChange();
+                    }
                 };
                 this.dischargeChartConfig = {
                     chart: {

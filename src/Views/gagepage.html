@@ -256,18 +256,17 @@
                             <input type="radio" ng-if="vm.error == false" id="qualityData" name="ageQualityData" ng-model="vm.ageQualityData" value="quality" ng-change="vm.toggleDischargeData('quality')"> 
                             <label for="qualityData" ng-if="vm.error == false"> Quality</label>
 
-                            <!-- Start Month Slider -->
-                            <!-- <br>
+                            <br>
                             <span style="width:50%">Plot USGS Measurements Between Months:</span>
+                            <br>
                             <rzslider class="rzSlider" style="width:50%" rz-slider-model="vm.startMonth" rz-slider-high="vm.endMonth" rz-slider-options="vm.monthSliderOptions"></rzslider>
-                            <br> -->
-                            <span>Plot USGS Measurements Between Months:</span>
-                            <rzslider
-                              rz-slider-model="vm.startMonth"
-                              rz-slider-high="vm.endMonth"
-                              rz-slider-options="vm.monthSliderOptions"
-                            ></rzslider>
                             <span id="months2show"></span>
+
+                            <br>
+                            <span style="width:50%">Plot USGS Measurements Between Years:</span>
+                            <br>
+                            <rzslider class="rzSlider" style="width:50%" rz-slider-model="vm.startYear" rz-slider-high="vm.endYear" rz-slider-options="vm.yearSliderOptions"></rzslider>
+                            <span id="years2show"></span>
                             
                             <!-- <div class="group-wrapper">
                                 <label>Start Year:</label>
@@ -275,14 +274,7 @@
             
                                 <label>End Year:</label>
                                 <input type="number" name="edate" ng-model="vm.EndYear" min="vm.YearRange.floor" max="vm.YearRange.ceil" required>
-                                
-                                
-                                <rzslider
-                                rz-slider-model="vm.minValue" 
-                                rz-slider-high="vm.maxValue" 
-                                rz-slider-options="vm.sliderOptions">
-                                </rzslider>
-                                
+                                                                
                                 <button type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.GetWaterUse()" ng-disabled="!vm.CanContinue"><span ng-class="vm.CanContinue && !vm.GetWaterUseLabel ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;{{ vm.CanContinue || vm.GetWaterUseLabel ? 'Get water use' : 'Initializing...' }}</button> -->
                             <!-- </div> -->
 

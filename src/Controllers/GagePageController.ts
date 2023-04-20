@@ -204,11 +204,11 @@ module StreamStats.Controllers {
         public formattedDailyFlow = [];
         public formattedDischargePeakDates = []; // Stage vs. Discharge Plot
         public dailyValuesOnly = [];
-        public monthSliderOptions: any; //Stage vs. Discharge Plot
-        public startMonth: number; //Stage vs. Discharge Plot
-        public endMonth: number; //Stage vs. Discharge Plot
-        public error: any;      
-       
+        public error: any;     
+        public monthSliderOptions: any;
+        public startMonth: number;
+        public endMonth: number;
+
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
@@ -785,26 +785,21 @@ module StreamStats.Controllers {
                 });
         } 
       
-        public onSliderChange(sliderId, modelValue, highValue) {
-            let startMonthStr = moment(new Date(2012, modelValue, 1)).format("MMM");
-            let endMonthStr = moment(new Date(2012, highValue, 1)).format("MMM");
-            document.getElementById("months2show").innerText = `${startMonthStr} - ${endMonthStr}`;
+        public updateChart() {
+            const filteredData = this.measuredObj.filter((item) => {
+                const itemDate = new Date(item.dateTime);
+                return itemDate.getMonth() + 1 >= this.startMonth && itemDate.getMonth() + 1 <= this.endMonth;
+            });
         
-            this.updateChart(modelValue, highValue);
+            let chart = $('#chart3').highcharts();
+            if (chart) {
+                chart.series[2].setData(filteredData);
+            }
         }
 
-        public updateChart(startMonth, endMonth) {
-        const filteredData = this.measuredObj.filter((item) => {
-            const itemDate = new Date(item.dateTime);
-            return itemDate.getMonth() + 1 >= startMonth && itemDate.getMonth() + 1 <= endMonth;
-        });
-
-        let chart = $('#chart3').highcharts();
-        if (chart) {
-            chart.series[2].setData(filteredData);
-        }
-        }
-
+        public onSliderChange() {
+            this.updateChart();
+        };
         
         // working here
 
@@ -1179,14 +1174,19 @@ public createDischargePlot(): void {
     // console.log('peak value plot data', this.formattedPeakDates);
 
     // Set up month slider
+    this.startMonth = 1;
+    this.endMonth = 12;
     this.monthSliderOptions = { 
-        floor: 1, 
-        ceil: 12, 
-        draggableRange: true, 
-        noSwitching: true, 
+        floor: 1,
+        ceil: 12,
+        draggableRange: true,
+        noSwitching: true,
         showTicks: false,
-        onChange: this.onSliderChange.bind(this) // Add this line
-    };
+        draggableRange: true,
+        onChange: (sliderId, modelValue, highValue) => {
+            this.onSliderChange();
+    }
+};
 
     this.dischargeChartConfig = {
         chart: {
