@@ -213,6 +213,7 @@ module StreamStats.Controllers {
         public NWSforecast = undefined;
         public meanPercentileStats = undefined;
         public meanPercent = undefined;
+        public rawShaded = undefined;
         public formattedP0to10 = [];
         public formattedP10to25 = [];
         public formattedP25to75 = [];
@@ -868,33 +869,21 @@ module StreamStats.Controllers {
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
-                    const meanPercentileStats5 = [];
-                    const meanPercentileStats4 = [];
-                    const meanPercentileStats3 = [];
-                    const meanPercentileStats2 = [];
-                    const meanPercentileStats1 = [];
+                    const meanPercentileStats = [];
+                    let raw = [];
                     const data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") });
                     if (data.length > 0) {
                     data.shift().split('\t');
                     data.shift();
                     do {
-                        //let dataRow = data;
-                        //console.log('dataRow', dataRow)
                         let nonArrayDataRow = data.shift().split('\t');
+                        raw.push(nonArrayDataRow)
                         var finalIndex = this.dailyFlow.length-1;
                         var finalDate = new Date(this.dailyFlow[finalIndex].dateTime)
                         var finalYear = finalDate.getUTCFullYear();
-                        var fourthYear = finalYear -1
-                        var thirdYear = finalYear -2
-                        var secondYear = finalYear -3
-                        var firstYear = finalYear -4
-                        let stringDate5 = new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + finalYear);
-                        let stringDate4 = new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + fourthYear);
-                        let stringDate3 = new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + thirdYear);
-                        let stringDate2 = new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + secondYear);
-                        let stringDate1 = new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + firstYear);
-                        const meanPercentiles5 = {
-                            date: stringDate5.toUTCString(),
+                        let stringDate = new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + finalYear);
+                        const meanPercentiles = {
+                            date: stringDate.toUTCString,
                             begin_yr: parseFloat(nonArrayDataRow[7]),
                             end_yr: parseFloat(nonArrayDataRow[8]),
                             min_va: parseFloat(nonArrayDataRow[13]),
@@ -904,62 +893,13 @@ module StreamStats.Controllers {
                             p90_va: parseFloat(nonArrayDataRow[22]),
                             max_va: parseFloat(nonArrayDataRow[11])
                         }
-                        const meanPercentiles4 = {
-                            date: stringDate4.toUTCString(),
-                            begin_yr: parseFloat(nonArrayDataRow[7]),
-                            end_yr: parseFloat(nonArrayDataRow[8]),
-                            min_va: parseFloat(nonArrayDataRow[13]),
-                            p10_va: parseFloat(nonArrayDataRow[16]),
-                            p25_va: parseFloat(nonArrayDataRow[18]),
-                            p75_va: parseFloat(nonArrayDataRow[20]),
-                            p90_va: parseFloat(nonArrayDataRow[22]),
-                            max_va: parseFloat(nonArrayDataRow[11])
-                        }
-                        const meanPercentiles3 = {
-                            date: stringDate3.toUTCString(),
-                            begin_yr: parseFloat(nonArrayDataRow[7]),
-                            end_yr: parseFloat(nonArrayDataRow[8]),
-                            min_va: parseFloat(nonArrayDataRow[13]),
-                            p10_va: parseFloat(nonArrayDataRow[16]),
-                            p25_va: parseFloat(nonArrayDataRow[18]),
-                            p75_va: parseFloat(nonArrayDataRow[20]),
-                            p90_va: parseFloat(nonArrayDataRow[22]),
-                            max_va: parseFloat(nonArrayDataRow[11])
-                        }
-                        const meanPercentiles2 = {
-                            date: stringDate2.toUTCString(),
-                            begin_yr: parseFloat(nonArrayDataRow[7]),
-                            end_yr: parseFloat(nonArrayDataRow[8]),
-                            min_va: parseFloat(nonArrayDataRow[13]),
-                            p10_va: parseFloat(nonArrayDataRow[16]),
-                            p25_va: parseFloat(nonArrayDataRow[18]),
-                            p75_va: parseFloat(nonArrayDataRow[20]),
-                            p90_va: parseFloat(nonArrayDataRow[22]),
-                            max_va: parseFloat(nonArrayDataRow[11])
-                        }
-                        const meanPercentiles1 = {
-                            date: stringDate1.toUTCString(),
-                            begin_yr: parseFloat(nonArrayDataRow[7]),
-                            end_yr: parseFloat(nonArrayDataRow[8]),
-                            min_va: parseFloat(nonArrayDataRow[13]),
-                            p10_va: parseFloat(nonArrayDataRow[16]),
-                            p25_va: parseFloat(nonArrayDataRow[18]),
-                            p75_va: parseFloat(nonArrayDataRow[20]),
-                            p90_va: parseFloat(nonArrayDataRow[22]),
-                            max_va: parseFloat(nonArrayDataRow[11])
-                        }
-                        meanPercentileStats5.push(meanPercentiles5);
-                        meanPercentileStats4.push(meanPercentiles4);
-                        meanPercentileStats3.push(meanPercentiles3);
-                        meanPercentileStats2.push(meanPercentiles2);
-                        meanPercentileStats1.push(meanPercentiles1);
+                        meanPercentileStats.push(meanPercentiles);
                     } while (data.length > 0);
                 }
-                    const fiveYearsPercentiles = meanPercentileStats1.concat(meanPercentileStats2, meanPercentileStats3, meanPercentileStats4, meanPercentileStats5)
-                    this.meanPercent = fiveYearsPercentiles;
+                    this.meanPercent = meanPercentileStats;
+                    this.rawShaded = raw;
                     this.getRatingCurve();
                 });
-            
         }
 
         public getRatingCurve() {
@@ -1122,9 +1062,14 @@ module StreamStats.Controllers {
                     this.formattedP25to75.push({x: new Date(stats.date), low: stats.p25_va, high: stats.p75_va});
                     this.formattedP75to90.push({x: new Date(stats.date), low: stats.p75_va, high: stats.p90_va});
                     this.formattedP90to100.push({x: new Date(stats.date), low: stats.p90_va, high: stats.max_va});
-
                 })
             }
+            this.formattedP0to10.sort((a, b) => a.x - b.x);
+            this.formattedP10to25.sort((a, b) => a.x - b.x);
+            this.formattedP25to75.sort((a, b) => a.x - b.x);
+            this.formattedP75to90.sort((a, b) => a.x - b.x);
+            this.formattedP90to100.sort((a, b) => a.x - b.x);
+
             if (this.dailyFlow) {
                 this.dailyFlow.forEach(dailyObj => {
                     if (parseFloat(dailyObj.value) !== -999999) {
@@ -3233,6 +3178,9 @@ public createDailyRasterPlot(): void {
             let extremes = chart.xAxis[0].getExtremes()
             let min = new Date(extremes.min)
             let max = new Date(extremes.max)
+            let maxYear = max.getFullYear();
+            let minYear = min.getFullYear();
+            
             function inMonths(d1, d2) {
                 var d1Y = d1.getFullYear();
                 var d2Y = d2.getFullYear();
@@ -3240,108 +3188,65 @@ public createDailyRasterPlot(): void {
                 var d2M = d2.getMonth();
                 return (d2M+12*d2Y)-(d1M+12*d1Y);
             }
-            let fifthYear = this.formattedP0to10[1600].x.getUTCFullYear();
-            let fourthYear = this.formattedP0to10[1200].x.getUTCFullYear();
-            let thirdYear = this.formattedP0to10[800].x.getUTCFullYear();
-            let secondYear = this.formattedP0to10[367].x.getUTCFullYear();
-            let firstYear = this.formattedP0to10[0].x.getUTCFullYear();
+            function generateYearsBetween(startYear = 2000, endYear) {
+                const endDate = endYear || new Date().getFullYear();
+                let years = [];
+            
+                for (var i = startYear; i <= endDate; i++) {
+                    years.push(startYear);
+                    startYear++;
+                }
+                return years;
+            }
             if ((inMonths(min, max)) <= 60) {
-                let maxYear = max.getFullYear()
                 chart.series[3].show();
                 chart.series[4].show();
+                
+            const yearsArray = generateYearsBetween(minYear, maxYear);
+            let newData = [];
+            //console.log('in the function', this.rawShaded)
+            yearsArray.forEach(year => {
+                this.rawShaded.forEach(index => {
+                    const data = {
+                        date: new Date(parseFloat(index[5]) + '/' + parseFloat(index[6]) + '/' + year),
+                        //new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + year),
+                        begin_yr: parseFloat(index[7]),
+                        end_yr: parseFloat(index[8]),
+                        min_va: parseFloat(index[13]),
+                        p10_va: parseFloat(index[16]),
+                        p25_va: parseFloat(index[18]),
+                        p75_va: parseFloat(index[20]),
+                        p90_va: parseFloat(index[22]),
+                        max_va: parseFloat(index[11])
+                        }
+                        //console.log('here', data)
+                        newData.push(data);
+                })
+            })
+            let newP0to10 = [];
+            let newP10to25 = [];
+            let newP25to75 = [];
+            let newP75to90 = [];
+            let newP90to100 = [];
+            if (newData) {
+                newData.forEach(stats => {
+                    newP0to10.push({x: stats.date, low: stats.min_va, high: stats.p10_va});
+                    newP10to25.push({x: stats.date, low: stats.p10_va, high: stats.p25_va});
+                    newP25to75.push({x: stats.date, low: stats.p25_va, high: stats.p75_va});
+                    newP75to90.push({x: stats.date, low: stats.p75_va, high: stats.p90_va});
+                    newP90to100.push({x: stats.date, low: stats.p90_va, high: stats.max_va});
+                })
+            }
+            console.log('updated', newP0to10, newP10to25, newP25to75, newP75to90, newP90to100)
                 chart.series[5].show();
                 chart.series[6].show();
                 chart.series[2].show();
-                this.formattedP0to10.forEach(index => {
-                    if (index.x.getFullYear() === fifthYear) {
-                        index.x.setUTCFullYear(maxYear)
-                    }
-                    if (index.x.getFullYear() === fourthYear) {
-                        index.x.setUTCFullYear(maxYear - 1)
-                    }
-                    if (index.x.getFullYear() === thirdYear) {
-                    index.x.setUTCFullYear(maxYear - 2)
-                    }
-                    if (index.x.getFullYear() === secondYear) {
-                    index.x.setUTCFullYear(maxYear - 3)
-                    }
-                    if (index.x.getFullYear() === firstYear) {
-                    index.x.setUTCFullYear(maxYear - 4)
-                    }
-                })
-                this.formattedP10to25.forEach(index => {
-                    if (index.x.getFullYear() === fifthYear) {
-                        index.x.setUTCFullYear(maxYear)
-                    }
-                    if (index.x.getFullYear() === fourthYear) {
-                        index.x.setUTCFullYear(maxYear - 1)
-                    }
-                    if (index.x.getFullYear() === thirdYear) {
-                        index.x.setUTCFullYear(maxYear - 2)
-                    }
-                    if (index.x.getFullYear() === secondYear) {
-                        index.x.setUTCFullYear(maxYear - 3)
-                    }
-                    if (index.x.getFullYear() === firstYear) {
-                        index.x.setUTCFullYear(maxYear - 4)
-                    }
-                })
-                this.formattedP25to75.forEach(index => {
-                    if (index.x.getFullYear() === fifthYear) {
-                        index.x.setUTCFullYear(maxYear)
-                    }
-                    if (index.x.getFullYear() === fourthYear) {
-                        index.x.setUTCFullYear(maxYear - 1)
-                    }
-                    if (index.x.getFullYear() === thirdYear) {
-                        index.x.setUTCFullYear(maxYear - 2)
-                    }
-                    if (index.x.getFullYear() === secondYear) {
-                        index.x.setUTCFullYear(maxYear - 3)
-                    }
-                    if (index.x.getFullYear() === firstYear) {
-                        index.x.setUTCFullYear(maxYear - 4)
-                    }
-                })
-                this.formattedP75to90.forEach(index => {
-                    if (index.x.getFullYear() === fifthYear) {
-                        index.x.setUTCFullYear(maxYear)
-                    }
-                    if (index.x.getFullYear() === fourthYear) {
-                        index.x.setUTCFullYear(maxYear - 1)
-                    }
-                    if (index.x.getFullYear() === thirdYear) {
-                        index.x.setUTCFullYear(maxYear - 2)
-                    }
-                    if (index.x.getFullYear() === secondYear) {
-                        index.x.setUTCFullYear(maxYear - 3)
-                    }
-                    if (index.x.getFullYear() === firstYear) {
-                        index.x.setUTCFullYear(maxYear - 4)
-                    }
-                })
-                this.formattedP90to100.forEach(index => {
-                    if (index.x.getFullYear() === fifthYear) {
-                        index.x.setUTCFullYear(maxYear)
-                        }
-                    if (index.x.getFullYear() === fourthYear) {
-                    index.x.setUTCFullYear(maxYear - 1)
-                    }
-                    if (index.x.getFullYear() === thirdYear) {
-                        index.x.setUTCFullYear(maxYear - 2)
-                    }
-                    if (index.x.getFullYear() === secondYear) {
-                        index.x.setUTCFullYear(maxYear - 3)
-                    }
-                    if (index.x.getFullYear() === firstYear) {
-                        index.x.setUTCFullYear(maxYear - 4)
-                    }
-                })
-                this.formattedP0to10.sort((a, b) => a.x - b.x);
-                this.formattedP10to25.sort((a, b) => a.x - b.x);
-                this.formattedP25to75.sort((a, b) => a.x - b.x);
-                this.formattedP75to90.sort((a, b) => a.x - b.x);
-                this.formattedP90to100.sort((a, b) => a.x - b.x);
+                
+                chart.series[3].update({data: newP0to10});
+                chart.series[4].update({data: newP10to25});
+                chart.series[5].update({data: newP25to75});
+                chart.series[6].update({data: newP75to90});
+                chart.series[2].update({data: newP90to100});
             } else {
                 chart.series[3].hide();
                 chart.series[4].hide();
@@ -3350,7 +3255,7 @@ public createDailyRasterPlot(): void {
                 chart.series[2].hide();
 
             }
-            //console.log(min, max, inMonths(min, max))
+            
         }
             
         //checkbox to linear to log scale for discharge plot

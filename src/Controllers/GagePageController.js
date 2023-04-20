@@ -108,6 +108,7 @@ var StreamStats;
                 _this_1.NWSforecast = undefined;
                 _this_1.meanPercentileStats = undefined;
                 _this_1.meanPercent = undefined;
+                _this_1.rawShaded = undefined;
                 _this_1.formattedP0to10 = [];
                 _this_1.formattedP10to25 = [];
                 _this_1.formattedP25to75 = [];
@@ -644,31 +645,21 @@ var StreamStats;
                 var url = 'https://waterservices.usgs.gov/nwis/stat/?format=rdb,1.0&indent=on&sites=' + this.gage.code + '&statReportType=daily&statTypeCd=all&parameterCd=00060';
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
-                    var meanPercentileStats5 = [];
-                    var meanPercentileStats4 = [];
-                    var meanPercentileStats3 = [];
-                    var meanPercentileStats2 = [];
-                    var meanPercentileStats1 = [];
+                    var meanPercentileStats = [];
+                    var raw = [];
                     var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
                     if (data.length > 0) {
                         data.shift().split('\t');
                         data.shift();
                         do {
                             var nonArrayDataRow = data.shift().split('\t');
+                            raw.push(nonArrayDataRow);
                             var finalIndex = _this_1.dailyFlow.length - 1;
                             var finalDate = new Date(_this_1.dailyFlow[finalIndex].dateTime);
                             var finalYear = finalDate.getUTCFullYear();
-                            var fourthYear = finalYear - 1;
-                            var thirdYear = finalYear - 2;
-                            var secondYear = finalYear - 3;
-                            var firstYear = finalYear - 4;
-                            var stringDate5 = new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + finalYear);
-                            var stringDate4 = new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + fourthYear);
-                            var stringDate3 = new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + thirdYear);
-                            var stringDate2 = new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + secondYear);
-                            var stringDate1 = new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + firstYear);
-                            var meanPercentiles5 = {
-                                date: stringDate5.toUTCString(),
+                            var stringDate = new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + finalYear);
+                            var meanPercentiles = {
+                                date: stringDate.toUTCString,
                                 begin_yr: parseFloat(nonArrayDataRow[7]),
                                 end_yr: parseFloat(nonArrayDataRow[8]),
                                 min_va: parseFloat(nonArrayDataRow[13]),
@@ -678,59 +669,11 @@ var StreamStats;
                                 p90_va: parseFloat(nonArrayDataRow[22]),
                                 max_va: parseFloat(nonArrayDataRow[11])
                             };
-                            var meanPercentiles4 = {
-                                date: stringDate4.toUTCString(),
-                                begin_yr: parseFloat(nonArrayDataRow[7]),
-                                end_yr: parseFloat(nonArrayDataRow[8]),
-                                min_va: parseFloat(nonArrayDataRow[13]),
-                                p10_va: parseFloat(nonArrayDataRow[16]),
-                                p25_va: parseFloat(nonArrayDataRow[18]),
-                                p75_va: parseFloat(nonArrayDataRow[20]),
-                                p90_va: parseFloat(nonArrayDataRow[22]),
-                                max_va: parseFloat(nonArrayDataRow[11])
-                            };
-                            var meanPercentiles3 = {
-                                date: stringDate3.toUTCString(),
-                                begin_yr: parseFloat(nonArrayDataRow[7]),
-                                end_yr: parseFloat(nonArrayDataRow[8]),
-                                min_va: parseFloat(nonArrayDataRow[13]),
-                                p10_va: parseFloat(nonArrayDataRow[16]),
-                                p25_va: parseFloat(nonArrayDataRow[18]),
-                                p75_va: parseFloat(nonArrayDataRow[20]),
-                                p90_va: parseFloat(nonArrayDataRow[22]),
-                                max_va: parseFloat(nonArrayDataRow[11])
-                            };
-                            var meanPercentiles2 = {
-                                date: stringDate2.toUTCString(),
-                                begin_yr: parseFloat(nonArrayDataRow[7]),
-                                end_yr: parseFloat(nonArrayDataRow[8]),
-                                min_va: parseFloat(nonArrayDataRow[13]),
-                                p10_va: parseFloat(nonArrayDataRow[16]),
-                                p25_va: parseFloat(nonArrayDataRow[18]),
-                                p75_va: parseFloat(nonArrayDataRow[20]),
-                                p90_va: parseFloat(nonArrayDataRow[22]),
-                                max_va: parseFloat(nonArrayDataRow[11])
-                            };
-                            var meanPercentiles1 = {
-                                date: stringDate1.toUTCString(),
-                                begin_yr: parseFloat(nonArrayDataRow[7]),
-                                end_yr: parseFloat(nonArrayDataRow[8]),
-                                min_va: parseFloat(nonArrayDataRow[13]),
-                                p10_va: parseFloat(nonArrayDataRow[16]),
-                                p25_va: parseFloat(nonArrayDataRow[18]),
-                                p75_va: parseFloat(nonArrayDataRow[20]),
-                                p90_va: parseFloat(nonArrayDataRow[22]),
-                                max_va: parseFloat(nonArrayDataRow[11])
-                            };
-                            meanPercentileStats5.push(meanPercentiles5);
-                            meanPercentileStats4.push(meanPercentiles4);
-                            meanPercentileStats3.push(meanPercentiles3);
-                            meanPercentileStats2.push(meanPercentiles2);
-                            meanPercentileStats1.push(meanPercentiles1);
+                            meanPercentileStats.push(meanPercentiles);
                         } while (data.length > 0);
                     }
-                    var fiveYearsPercentiles = meanPercentileStats1.concat(meanPercentileStats2, meanPercentileStats3, meanPercentileStats4, meanPercentileStats5);
-                    _this_1.meanPercent = fiveYearsPercentiles;
+                    _this_1.meanPercent = meanPercentileStats;
+                    _this_1.rawShaded = raw;
                     _this_1.getRatingCurve();
                 });
             };
@@ -816,6 +759,11 @@ var StreamStats;
                         _this_1.formattedP90to100.push({ x: new Date(stats.date), low: stats.p90_va, high: stats.max_va });
                     });
                 }
+                this.formattedP0to10.sort(function (a, b) { return a.x - b.x; });
+                this.formattedP10to25.sort(function (a, b) { return a.x - b.x; });
+                this.formattedP25to75.sort(function (a, b) { return a.x - b.x; });
+                this.formattedP75to90.sort(function (a, b) { return a.x - b.x; });
+                this.formattedP90to100.sort(function (a, b) { return a.x - b.x; });
                 if (this.dailyFlow) {
                     this.dailyFlow.forEach(function (dailyObj) {
                         if (parseFloat(dailyObj.value) !== -999999) {
@@ -2870,10 +2818,13 @@ var StreamStats;
                 }
             };
             GagePageController.prototype.updateShadedStats = function () {
+                var _this_1 = this;
                 var chart = $('#chart1').highcharts();
                 var extremes = chart.xAxis[0].getExtremes();
                 var min = new Date(extremes.min);
                 var max = new Date(extremes.max);
+                var maxYear = max.getFullYear();
+                var minYear = min.getFullYear();
                 function inMonths(d1, d2) {
                     var d1Y = d1.getFullYear();
                     var d2Y = d2.getFullYear();
@@ -2881,108 +2832,60 @@ var StreamStats;
                     var d2M = d2.getMonth();
                     return (d2M + 12 * d2Y) - (d1M + 12 * d1Y);
                 }
-                var fifthYear = this.formattedP0to10[1600].x.getUTCFullYear();
-                var fourthYear = this.formattedP0to10[1200].x.getUTCFullYear();
-                var thirdYear = this.formattedP0to10[800].x.getUTCFullYear();
-                var secondYear = this.formattedP0to10[367].x.getUTCFullYear();
-                var firstYear = this.formattedP0to10[0].x.getUTCFullYear();
+                function generateYearsBetween(startYear, endYear) {
+                    if (startYear === void 0) { startYear = 2000; }
+                    var endDate = endYear || new Date().getFullYear();
+                    var years = [];
+                    for (var i = startYear; i <= endDate; i++) {
+                        years.push(startYear);
+                        startYear++;
+                    }
+                    return years;
+                }
                 if ((inMonths(min, max)) <= 60) {
-                    var maxYear_1 = max.getFullYear();
                     chart.series[3].show();
                     chart.series[4].show();
+                    var yearsArray = generateYearsBetween(minYear, maxYear);
+                    var newData_1 = [];
+                    yearsArray.forEach(function (year) {
+                        _this_1.rawShaded.forEach(function (index) {
+                            var data = {
+                                date: new Date(parseFloat(index[5]) + '/' + parseFloat(index[6]) + '/' + year),
+                                begin_yr: parseFloat(index[7]),
+                                end_yr: parseFloat(index[8]),
+                                min_va: parseFloat(index[13]),
+                                p10_va: parseFloat(index[16]),
+                                p25_va: parseFloat(index[18]),
+                                p75_va: parseFloat(index[20]),
+                                p90_va: parseFloat(index[22]),
+                                max_va: parseFloat(index[11])
+                            };
+                            newData_1.push(data);
+                        });
+                    });
+                    var newP0to10_1 = [];
+                    var newP10to25_1 = [];
+                    var newP25to75_1 = [];
+                    var newP75to90_1 = [];
+                    var newP90to100_1 = [];
+                    if (newData_1) {
+                        newData_1.forEach(function (stats) {
+                            newP0to10_1.push({ x: stats.date, low: stats.min_va, high: stats.p10_va });
+                            newP10to25_1.push({ x: stats.date, low: stats.p10_va, high: stats.p25_va });
+                            newP25to75_1.push({ x: stats.date, low: stats.p25_va, high: stats.p75_va });
+                            newP75to90_1.push({ x: stats.date, low: stats.p75_va, high: stats.p90_va });
+                            newP90to100_1.push({ x: stats.date, low: stats.p90_va, high: stats.max_va });
+                        });
+                    }
+                    console.log('updated', newP0to10_1, newP10to25_1, newP25to75_1, newP75to90_1, newP90to100_1);
                     chart.series[5].show();
                     chart.series[6].show();
                     chart.series[2].show();
-                    this.formattedP0to10.forEach(function (index) {
-                        if (index.x.getFullYear() === fifthYear) {
-                            index.x.setUTCFullYear(maxYear_1);
-                        }
-                        if (index.x.getFullYear() === fourthYear) {
-                            index.x.setUTCFullYear(maxYear_1 - 1);
-                        }
-                        if (index.x.getFullYear() === thirdYear) {
-                            index.x.setUTCFullYear(maxYear_1 - 2);
-                        }
-                        if (index.x.getFullYear() === secondYear) {
-                            index.x.setUTCFullYear(maxYear_1 - 3);
-                        }
-                        if (index.x.getFullYear() === firstYear) {
-                            index.x.setUTCFullYear(maxYear_1 - 4);
-                        }
-                    });
-                    this.formattedP10to25.forEach(function (index) {
-                        if (index.x.getFullYear() === fifthYear) {
-                            index.x.setUTCFullYear(maxYear_1);
-                        }
-                        if (index.x.getFullYear() === fourthYear) {
-                            index.x.setUTCFullYear(maxYear_1 - 1);
-                        }
-                        if (index.x.getFullYear() === thirdYear) {
-                            index.x.setUTCFullYear(maxYear_1 - 2);
-                        }
-                        if (index.x.getFullYear() === secondYear) {
-                            index.x.setUTCFullYear(maxYear_1 - 3);
-                        }
-                        if (index.x.getFullYear() === firstYear) {
-                            index.x.setUTCFullYear(maxYear_1 - 4);
-                        }
-                    });
-                    this.formattedP25to75.forEach(function (index) {
-                        if (index.x.getFullYear() === fifthYear) {
-                            index.x.setUTCFullYear(maxYear_1);
-                        }
-                        if (index.x.getFullYear() === fourthYear) {
-                            index.x.setUTCFullYear(maxYear_1 - 1);
-                        }
-                        if (index.x.getFullYear() === thirdYear) {
-                            index.x.setUTCFullYear(maxYear_1 - 2);
-                        }
-                        if (index.x.getFullYear() === secondYear) {
-                            index.x.setUTCFullYear(maxYear_1 - 3);
-                        }
-                        if (index.x.getFullYear() === firstYear) {
-                            index.x.setUTCFullYear(maxYear_1 - 4);
-                        }
-                    });
-                    this.formattedP75to90.forEach(function (index) {
-                        if (index.x.getFullYear() === fifthYear) {
-                            index.x.setUTCFullYear(maxYear_1);
-                        }
-                        if (index.x.getFullYear() === fourthYear) {
-                            index.x.setUTCFullYear(maxYear_1 - 1);
-                        }
-                        if (index.x.getFullYear() === thirdYear) {
-                            index.x.setUTCFullYear(maxYear_1 - 2);
-                        }
-                        if (index.x.getFullYear() === secondYear) {
-                            index.x.setUTCFullYear(maxYear_1 - 3);
-                        }
-                        if (index.x.getFullYear() === firstYear) {
-                            index.x.setUTCFullYear(maxYear_1 - 4);
-                        }
-                    });
-                    this.formattedP90to100.forEach(function (index) {
-                        if (index.x.getFullYear() === fifthYear) {
-                            index.x.setUTCFullYear(maxYear_1);
-                        }
-                        if (index.x.getFullYear() === fourthYear) {
-                            index.x.setUTCFullYear(maxYear_1 - 1);
-                        }
-                        if (index.x.getFullYear() === thirdYear) {
-                            index.x.setUTCFullYear(maxYear_1 - 2);
-                        }
-                        if (index.x.getFullYear() === secondYear) {
-                            index.x.setUTCFullYear(maxYear_1 - 3);
-                        }
-                        if (index.x.getFullYear() === firstYear) {
-                            index.x.setUTCFullYear(maxYear_1 - 4);
-                        }
-                    });
-                    this.formattedP0to10.sort(function (a, b) { return a.x - b.x; });
-                    this.formattedP10to25.sort(function (a, b) { return a.x - b.x; });
-                    this.formattedP25to75.sort(function (a, b) { return a.x - b.x; });
-                    this.formattedP75to90.sort(function (a, b) { return a.x - b.x; });
-                    this.formattedP90to100.sort(function (a, b) { return a.x - b.x; });
+                    chart.series[3].update({ data: newP0to10_1 });
+                    chart.series[4].update({ data: newP10to25_1 });
+                    chart.series[5].update({ data: newP25to75_1 });
+                    chart.series[6].update({ data: newP75to90_1 });
+                    chart.series[2].update({ data: newP90to100_1 });
                 }
                 else {
                     chart.series[3].hide();
