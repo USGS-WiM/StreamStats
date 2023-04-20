@@ -27,6 +27,16 @@
         <!-- Start submit batch -->
         <div id="submitBatch" ng-if="vm.selectedBatchProcessorTabName==='submitBatch'">
            
+            <!-- Start select region -->
+            <div id="selectRegionID" style="padding-top: 15px;">
+                <label> State / Region: </label>
+                <select class="bp-select" ng-model="vm.selectedRegion"
+                    ng-options="region.Code as region.Name for region in vm.regionList track by region.Code"
+                    ng-change="vm.getFlowStatsAndParams(vm.selectedRegion)" required>
+                    <option value="">Select a State / Region</option>
+                </select>
+            </div><!-- End select region -->
+            
             <!-- start user information-->
             <div style="padding-top: 15px">
                 <!-- Start idfield -->
@@ -61,23 +71,13 @@
                     <input type="file" ngf-select="vm.validateZipFile($files)" ng-model="vm.submitBatchData.attachment" id="shapefile" name="shapefile" accept=".zip"
 
                         ngf-accept="application/zip" required style="display: none;">
-                    <span ng-show="vm.submitBatchData.attachment && vm.submitBatchData.attachment.type == 'application/zip'">
+                    <span ng-show="vm.submitBatchData.attachment">
 
                         <i class="fa fa-check" style="color:green"></i>&nbsp;&nbsp;{{vm.submitBatchData.attachment.name}}<button
                             class="close removeItem" ng-click="vm.submitBatchData.attachment = null">&times;</button>
                     </span>
                 </div><!-- End file upload button-->
             </div><!-- End user information-->
-
-            <!-- Start select region -->
-            <div id="selectRegionID" style="padding-top: 15px;">
-                <label> State / Region: </label>
-                <select class="bp-select" ng-model="vm.selectedRegion"
-                    ng-options="region.Code as region.Name for region in vm.regionList track by region.Code"
-                    ng-change="vm.getFlowStatsAndParams(vm.selectedRegion)" required>
-                    <option value="">Select a State / Region</option>
-                </select>
-            </div><!-- End select region -->
             
             <!-- Start checkboxes for different sections -->
             <div style="padding-top: 15px;">
@@ -173,18 +173,18 @@
     <div class="row" style="justify-content: center;">
         <!-- Button to submit batch -->
         <button ng-if="vm.selectedBatchProcessorTabName==='submitBatch'" type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.submitBatch()"
-            ng-disabled="vm.submittingBatch || !vm.selectedRegion || !vm.submitBatchData.idField || !vm.submitBatchData.email || !vm.submitBatchData.attachment || this.submitBatchData.attachment.type != 'application/zip'"><i
+            ng-disabled="vm.submittingBatch || !vm.selectedRegion || !vm.submitBatchData.idField || !vm.submitBatchData.email || !vm.submitBatchData.attachment"><i
 
                 class="fa fa-share"></i><span>&nbsp;&nbsp;Submit Batch</span></button>
-    
-        <div class="bp-submit-success" ng-show="vm.submittingBatch">The batch was submitted successfully. You will be
-            notified by email when results are available.
-        </div>
         <!-- End submit batch button -->
 
         <!-- Button to close modal -->
         <button ng-click="vm.Close()" class="btn-black><i
                 class="fa fa-close"></i><span>&nbsp;&nbsp;Close</span></button>
         <!-- End close modal button -->
+    </div>
+
+    <div class="bp-submit-success" ng-show="vm.submittingBatch">The batch was submitted successfully. You will be
+        notified by email when results are available.
     </div>
 </div><!-- End modal footer -->

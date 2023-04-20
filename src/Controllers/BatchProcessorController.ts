@@ -440,7 +440,8 @@ module StreamStats.Controllers {
 
         public validateZipFile($files): void {
             // validate that the file is a .zip
-            if ($files[0].type != "application/zip") {
+            console.log($files)
+            if ($files[0].type != "application/x-zip-compressed") {
                 this.toaster.pop('warning', "Please upload a .zip file.", "", 5000);
                 this.submitBatchData.attachment = null;
             }
@@ -449,7 +450,6 @@ module StreamStats.Controllers {
         
         public submitBatch(): void {
 
-            
             var url = null;
 
             var formdata = new FormData();
