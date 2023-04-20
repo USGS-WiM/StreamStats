@@ -438,14 +438,17 @@ module StreamStats.Controllers {
                 });
         }
 
+        public validateZipFile($files): void {
+            // validate that the file is a .zip
+            if ($files[0].type != "application/zip") {
+                this.toaster.pop('warning', "Please upload a .zip file.", "", 5000);
+                this.submitBatchData.attachment = null;
+            }
+            return;
+        }
+        
         public submitBatch(): void {
 
-            // validate that the file is a .zip
-            if (this.submitBatchData.attachment.type != "application/zip") {
-
-                this.toaster.pop('warning', "Please select a .zip file to upload and click Submit Batch again.", "", 5000);
-                return;
-            }
             
             var url = null;
 
