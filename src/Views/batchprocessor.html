@@ -57,7 +57,8 @@
                     <label ng-if="vm.submitBatchData.attachment" for="shapefile"
                         class="bp-attach-true">
                         Select file</label>
-                    <input type="file" ngf-select ng-model="vm.submitBatchData.attachment" id="shapefile" name="shapefile" accept=".zip"
+                    <input type="file" ngf-select="vm.validateZipFile($files)" ng-model="vm.submitBatchData.attachment" id="shapefile" name="shapefile" accept=".zip"
+
                         ngf-accept="application/zip" required style="display: none;">
                     <span ng-show="vm.submitBatchData.attachment && vm.submitBatchData.attachment.type == 'application/zip'">
 
