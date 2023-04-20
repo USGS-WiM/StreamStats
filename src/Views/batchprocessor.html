@@ -173,7 +173,8 @@
     <div class="row" style="justify-content: center;">
         <!-- Button to submit batch -->
         <button ng-if="vm.selectedBatchProcessorTabName==='submitBatch'" type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.submitBatch()"
-            ng-disabled="vm.submittingBatch || !vm.selectedRegion || !vm.submitBatchData.idField || !vm.submitBatchData.email || !vm.submitBatchData.attachment"><i
+            ng-disabled="vm.submittingBatch || !vm.selectedRegion || !vm.submitBatchData.idField || !vm.submitBatchData.email || !vm.submitBatchData.attachment || this.submitBatchData.attachment.type != 'application/zip'"><i
+
                 class="fa fa-share"></i><span>&nbsp;&nbsp;Submit Batch</span></button>
     
         <div class="bp-submit-success" ng-show="vm.submittingBatch">The batch was submitted successfully. You will be
