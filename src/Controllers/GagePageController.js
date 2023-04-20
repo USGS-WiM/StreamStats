@@ -2877,7 +2877,6 @@ var StreamStats;
                             newP90to100_1.push({ x: stats.date, low: stats.p90_va, high: stats.max_va });
                         });
                     }
-                    console.log('updated', newP0to10_1, newP10to25_1, newP25to75_1, newP75to90_1, newP90to100_1);
                     chart.series[5].show();
                     chart.series[6].show();
                     chart.series[2].show();
