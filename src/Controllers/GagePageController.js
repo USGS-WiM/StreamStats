@@ -539,7 +539,16 @@ var StreamStats;
                 }).finally(function () {
                     _this_1.formatData();
                     _this_1.updateChart();
+                    _this_1.onSliderChange();
+                    _this_1.getMinYear();
                 });
+            };
+            GagePageController.prototype.getMinYear = function () {
+                var minYear = Math.min.apply(null, this.measuredObj.map(function (item) {
+                    var itemDate = new Date(item.dateTime);
+                    return itemDate.getFullYear();
+                }));
+                return minYear;
             };
             GagePageController.prototype.updateChart = function () {
                 var _this_1 = this;
@@ -879,6 +888,21 @@ var StreamStats;
                     onChange: function (sliderId, modelValue, highValue) {
                         _this_1.onSliderChange();
                     }
+                };
+                var minYear = this.getMinYear();
+                this.startYear = minYear;
+                this.endYear = new Date().getFullYear();
+                this.yearSliderOptions = {
+                    floor: this.startYear,
+                    ceil: this.endYear,
+                    draggableRange: true,
+                    noSwitching: true,
+                    showTicks: false,
+                    onChange: function (sliderId, modelValue, highValue) {
+                        _this_1.startYear = modelValue;
+                        _this_1.endYear = highValue;
+                        _this_1.updateChart();
+                    },
                 };
                 this.dischargeChartConfig = {
                     chart: {

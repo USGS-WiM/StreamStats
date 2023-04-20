@@ -209,6 +209,10 @@ module StreamStats.Controllers {
         public startMonth: number;
         public endMonth: number;
 
+        public startYear: number;
+        public endYear: number;
+        public yearSliderOptions: any;
+
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
@@ -782,8 +786,21 @@ module StreamStats.Controllers {
                 }).finally(() => {
                     this.formatData()
                     this.updateChart()
+                    this.onSliderChange()
+                    this.getMinYear()
                 });
         } 
+
+        public getMinYear() {
+            const minYear = Math.min.apply(
+              null,
+              this.measuredObj.map((item) => {
+                const itemDate = new Date(item.dateTime);
+                return itemDate.getFullYear();
+              })
+            );
+            return minYear;
+          }
       
         public updateChart() {
             const filteredData = this.measuredObj.filter((item) => {
@@ -1187,6 +1204,25 @@ public createDischargePlot(): void {
             this.onSliderChange();
     }
 };
+
+    // set up year slider
+    const minYear = this.getMinYear();
+    this.startYear = minYear;
+    this.endYear = new Date().getFullYear();
+
+    this.yearSliderOptions = {
+    floor: this.startYear,
+    ceil: this.endYear,
+    draggableRange: true,
+    noSwitching: true,
+    showTicks: false,
+    onChange: (sliderId, modelValue, highValue) => {
+        this.startYear = modelValue;
+        this.endYear = highValue;
+        this.updateChart();
+    },
+    };
+
 
     this.dischargeChartConfig = {
         chart: {
