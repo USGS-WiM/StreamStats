@@ -59,7 +59,8 @@
                         Select file</label>
                     <input type="file" ngf-select ng-model="vm.submitBatchData.attachment" id="shapefile" name="shapefile" accept=".zip"
                         ngf-accept="application/zip" required style="display: none;">
-                    <span ng-show="vm.submitBatchData.attachment">
+                    <span ng-show="vm.submitBatchData.attachment && vm.submitBatchData.attachment.type == 'application/zip'">
+
                         <i class="fa fa-check" style="color:green"></i>&nbsp;&nbsp;{{vm.submitBatchData.attachment.name}}<button
                             class="close removeItem" ng-click="vm.submitBatchData.attachment = null">&times;</button>
                     </span>
