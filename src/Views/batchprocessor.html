@@ -37,13 +37,13 @@
                             data to be
                             joined with the batch results.</span>
                     </span>
-                    <input type="text" id="idField" ng-model="vm.submitBatchData.idField" required>
+                    <input class="bp-input" type="text" id="idField" ng-model="vm.submitBatchData.idField" required>
                 </div><br /><!-- End idfield -->
 
                 <!-- Start email field -->
                 <div>
                     <span> Email Address:
-                        <input type="email" id="emailField" ng-model="vm.submitBatchData.email" required></span>
+                        <input class="bp-input" type="email" id="emailField" ng-model="vm.submitBatchData.email" required></span>
 
                 </div><br /><!-- End email field -->
                 
@@ -72,7 +72,7 @@
             <!-- Start select region -->
             <div id="selectRegionID" style="padding-top: 15px;">
                 <label> State / Region: </label>
-                <select ng-model="vm.selectedRegion"
+                <select class="bp-select" ng-model="vm.selectedRegion"
                     ng-options="region.Code as region.Name for region in vm.regionList track by region.Code"
                     ng-change="vm.getFlowStatsAndParams(vm.selectedRegion)" required>
                     <option value="">Select a State / Region</option>

@@ -263,11 +263,14 @@ var StreamStats;
                 }).finally(function () {
                 });
             };
-            BatchProcessorController.prototype.submitBatch = function () {
-                if (this.submitBatchData.attachment.type != "application/zip") {
-                    this.toaster.pop('warning', "Please select a .zip file to upload and click Submit Batch again.", "", 5000);
-                    return;
+            BatchProcessorController.prototype.validateZipFile = function ($files) {
+                if ($files[0].type != "application/zip") {
+                    this.toaster.pop('warning', "Please upload a .zip file.", "", 5000);
+                    this.submitBatchData.attachment = null;
                 }
+                return;
+            };
+            BatchProcessorController.prototype.submitBatch = function () {
                 var url = null;
                 var formdata = new FormData();
                 formdata.append('submit_batch[email]', this.submitBatchData.email);

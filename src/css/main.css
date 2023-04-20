@@ -1361,11 +1361,11 @@ div.leaflet-top > .elevation {
 /* 
 Batch processor modal
 */
-input:required:invalid {
+.bp-input:required:invalid {
     border: 2px solid #FBEC5D;
 }
 
-select:required:invalid {
+.bp-select:required:invalid {
     border: 2px solid #FBEC5D;
 }
 
