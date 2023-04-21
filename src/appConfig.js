@@ -5,16 +5,14 @@ configuration.environment = 'development';
 configuration.baseurls =
     {
         'NWISurl': 'https://waterservices.usgs.gov/nwis',
-        'StreamStatsServices': 'https://streamstats.usgs.gov',
+        'StreamStatsServices': 'https://test.streamstats.usgs.gov',
         'StreamStatsMapServices': 'https://gis.streamstats.usgs.gov',
         'NSS': 'https://test.streamstats.usgs.gov/nssservices',
-        'WaterUseServices': 'https://streamstats.usgs.gov/wateruseservices',
-        'StormRunoffServices': 'https://streamstats.usgs.gov/runoffmodelingservices',
+        'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
+        'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
         'ScienceBase': 'https://gis.usgs.gov/sciencebase2',
-        'GageStatsServices': 'https://streamstats.usgs.gov/gagestatsservices',
-        'WeightingServices': 'https://ss-weightingservices.streamstats.usgs.gov',
-        'SCStormRunoffServices': 'https://streamstats.usgs.gov/local/scrunoffservices',
-        'NationalMapServices': 'https://hydro.nationalmap.gov/arcgis/rest/services',
+        'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices',
+        'WeightingServices': 'https://streamstats.usgs.gov/channelweightingservices',
         'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices'
     };
 

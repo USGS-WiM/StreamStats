@@ -831,7 +831,7 @@ var StreamStats;
                     var dateArray = [];
                     var currentDate = new Date(startDate);
                     while (currentDate <= new Date(endDate)) {
-                        dateArray.push(new Date(currentDate));
+                        dateArray.push(currentDate);
                         currentDate.setUTCDate(currentDate.getUTCDate() + steps);
                     }
                     return dateArray;
@@ -2823,6 +2823,18 @@ var StreamStats;
                 var extremes = chart.xAxis[0].getExtremes();
                 var min = new Date(extremes.min);
                 var max = new Date(extremes.max);
+                var minDateString = new Date(min.getTime() - (min.getTimezoneOffset() * 60000))
+                    .toISOString()
+                    .split("T")[0];
+                var maxDateString = new Date(max.getTime() - (min.getTimezoneOffset() * 60000))
+                    .toISOString()
+                    .split("T")[0];
+                var minAndMax = {
+                    min: minDateString,
+                    max: maxDateString
+                };
+                this.extremes = minAndMax;
+                console.log(this.extremes, this.extremes.min, this.extremes.max);
                 var maxYear = max.getFullYear();
                 var minYear = min.getFullYear();
                 function inMonths(d1, d2) {

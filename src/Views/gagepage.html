@@ -234,15 +234,15 @@
                                 <label for="togglePeaks" ng-if="vm.formattedPeakDates.length > 0"> Plot Peaks on Latest Year&nbsp;&nbsp;</label>
                                 <input type="checkbox" ng-if="vm.formattedDailyFlow.length > 0" id="logScale" name="logScale" ng-model="vm.logScale" ng-change="vm.toggleLogLinear()" checked>
                                 <label for="logScale" ng-if="vm.formattedDailyFlow.length > 0"> Log Scale</label>&nbsp;&nbsp;
-                                <button ng-click="vm.resetZoom()" style="height:80%">Reset Zoom</button><br>
+                                <button ng-click="vm.resetZoom()">Reset Zoom</button><br>
                                 <!-- <button ng-click="vm.updateShadedStats()" style="height:80%">Update Shaded Stats</button><br> -->
                                 <!-- <label for="dischargeStart"> Date Range:</label>
                                 <input date-range-picker class="form-control date-picker" type="text" style="width:20%; height:80%" id="dischargeStart" length=10 ng-model="vm.dailyDatesOnly" min="vm.startAndEnd[0]" max="vmstartAndEnd[1]" options="vm.dailyDatesOnly"> -->
                                 <label for="dischargeStart"> Start Date:</label>
-                                <input type="date" style="width:11%; height:80%" id="dischargeStart">
+                                <input type="date" style="width:12%" id="dischargeStart" value="vm.extremes.min">&nbsp;
                                 <label for="dischargeEnd"> End Date:</label>
-                                <input type="date" style="width:11%; height:80%" id="dischargeEnd">
-                                <button ng-click="vm.dateRangePicker()" style="height:80%">Load Date Range</button>
+                                <input type="date" style="width:12%" id="dischargeEnd" value="vm.extremes.max">&nbsp;
+                                <button ng-click="vm.dateRangePicker()" >Load Date Range</button>
                             </div>
                             <br><highchart id="chart1" config="vm.chartConfig" ng-init="vm.destroyResetZoom()"></highchart><br>
                         </div>
