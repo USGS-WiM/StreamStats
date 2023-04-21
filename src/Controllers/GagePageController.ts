@@ -875,9 +875,9 @@ module StreamStats.Controllers {
                         var finalIndex = this.dailyFlow.length-1;
                         var finalDate = new Date(this.dailyFlow[finalIndex].dateTime)
                         var finalYear = finalDate.getUTCFullYear();
-                        let date = new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + finalYear);
+                        let stringDate = new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + finalYear);
                         const meanPercentiles = {
-                            date: date,
+                            date: stringDate.toUTCString,
                             begin_yr: parseFloat(nonArrayDataRow[7]),
                             end_yr: parseFloat(nonArrayDataRow[8]),
                             min_va: parseFloat(nonArrayDataRow[13]),
@@ -1049,14 +1049,13 @@ module StreamStats.Controllers {
                     }
                 });
             }
-            console.log(this.meanPercent)
             if (this.meanPercent) {
                 this.meanPercent.forEach(stats => {
-                    this.formattedP0to10.push({x: stats.date, low: stats.min_va, high: stats.p10_va});
-                    this.formattedP10to25.push({x: stats.date, low: stats.p10_va, high: stats.p25_va});
-                    this.formattedP25to75.push({x: stats.date, low: stats.p25_va, high: stats.p75_va});
-                    this.formattedP75to90.push({x: stats.date, low: stats.p75_va, high: stats.p90_va});
-                    this.formattedP90to100.push({x: stats.date, low: stats.p90_va, high: stats.max_va});
+                    this.formattedP0to10.push({x: new Date(stats.date), low: stats.min_va, high: stats.p10_va});
+                    this.formattedP10to25.push({x: new Date(stats.date), low: stats.p10_va, high: stats.p25_va});
+                    this.formattedP25to75.push({x: new Date(stats.date), low: stats.p25_va, high: stats.p75_va});
+                    this.formattedP75to90.push({x: new Date(stats.date), low: stats.p75_va, high: stats.p90_va});
+                    this.formattedP90to100.push({x: new Date(stats.date), low: stats.p90_va, high: stats.max_va});
                 })
             }
             this.formattedP0to10.sort((a, b) => a.x - b.x);
@@ -1126,8 +1125,7 @@ module StreamStats.Controllers {
                 const dateArray = [];
                 let currentDate = new Date(startDate);
                 while (currentDate <= new Date(endDate)) {
-                    dateArray.push(currentDate);
-
+                    dateArray.push(new Date(currentDate));
                   // Use UTC date to prevent problems with time zones and DST
                 currentDate.setUTCDate(currentDate.getUTCDate() + steps);
                 }
@@ -2078,7 +2076,7 @@ module StreamStats.Controllers {
                     title: {
                         text: 'Discharge (Q), in ft³/s'
                     },
-                    gridLineWidth: 1,
+                    gridLineWidth: 0,
                     custom: {
                         allowNegativeLog: true
                     },
@@ -3159,7 +3157,7 @@ module StreamStats.Controllers {
             chart.yAxis[0].setExtremes();
             chart.xAxis[0].setExtremes(inputStart, inputEnd);
             } else {
-                //console.log('Please enter a valid date format')
+                console.log('Please enter a valid date format')
             }
         }
         
