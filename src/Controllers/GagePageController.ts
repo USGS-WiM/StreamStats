@@ -1126,7 +1126,8 @@ module StreamStats.Controllers {
                 const dateArray = [];
                 let currentDate = new Date(startDate);
                 while (currentDate <= new Date(endDate)) {
-                    dateArray.push(new Date(currentDate));
+                    dateArray.push(currentDate);
+```-
                   // Use UTC date to prevent problems with time zones and DST
                 currentDate.setUTCDate(currentDate.getUTCDate() + steps);
                 }
