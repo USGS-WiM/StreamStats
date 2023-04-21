@@ -250,10 +250,10 @@
                             <input type="checkbox" ng-if="vm.formattedDischargePeakDates.length > 0" id="logScaleDischarge" name="logScaleDischarge" ng-model="vm.logScaleDischarge" ng-change="vm.toggleLogLinearDischarge()">
                             <label for="logScaleDischarge" ng-if="vm.formattedDischargePeakDates.length > 0"> Log Scale</label>
 
-                            <input type="radio" ng-if="vm.error == false" id="ageData" name="ageQualityData" ng-model="vm.ageQualityData" value="age" ng-change="vm.toggleDischargeData('age')"> 
+                            <input type="radio" ng-if="vm.error == false" id="ageData" name="toggleDischargeData" ng-model="vm.ageQualityData" value="age" ng-change="vm.toggleDischargeData('age')"> 
                             <label for="ageData" ng-if="vm.error == false">  Age</label>
                            
-                            <input type="radio" ng-if="vm.error == false" id="qualityData" name="ageQualityData" ng-model="vm.ageQualityData" value="quality" ng-change="vm.toggleDischargeData('quality')"> 
+                            <input type="radio" ng-if="vm.error == false" id="qualityData" name="toggleDischargeData" ng-model="vm.ageQualityData" value="quality" ng-change="vm.toggleDischargeData('quality')">
                             <label for="qualityData" ng-if="vm.error == false"> Quality</label>
 
                             <br>

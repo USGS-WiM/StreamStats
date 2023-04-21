@@ -554,7 +554,10 @@ var StreamStats;
                 var _this_1 = this;
                 var filteredData = this.measuredObj.filter(function (item) {
                     var itemDate = new Date(item.dateTime);
-                    return itemDate.getMonth() + 1 >= _this_1.startMonth && itemDate.getMonth() + 1 <= _this_1.endMonth;
+                    var itemMonth = itemDate.getMonth() + 1;
+                    var itemYear = itemDate.getFullYear();
+                    return itemMonth >= _this_1.startMonth && itemMonth <= _this_1.endMonth &&
+                        itemYear >= _this_1.startYear && itemYear <= _this_1.endYear;
                 });
                 var chart = $('#chart3').highcharts();
                 if (chart) {
@@ -885,9 +888,10 @@ var StreamStats;
                     noSwitching: true,
                     showTicks: false,
                     draggableRange: true,
-                    onChange: function (sliderId, modelValue, highValue) {
+                    onChange: function () {
                         _this_1.onSliderChange();
-                    }
+                        _this_1.updateChart();
+                    },
                 };
                 var minYear = this.getMinYear();
                 this.startYear = minYear;
@@ -898,10 +902,9 @@ var StreamStats;
                     draggableRange: true,
                     noSwitching: true,
                     showTicks: false,
-                    onChange: function (sliderId, modelValue, highValue) {
-                        _this_1.startYear = modelValue;
-                        _this_1.endYear = highValue;
+                    onChange: function () {
                         _this_1.updateChart();
+                        _this_1.onSliderChange();
                     },
                 };
                 this.dischargeChartConfig = {

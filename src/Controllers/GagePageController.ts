@@ -793,7 +793,7 @@ module StreamStats.Controllers {
 
         public getMinYear() {
             const minYear = Math.min.apply(
-              null,
+              null, 
               this.measuredObj.map((item) => {
                 const itemDate = new Date(item.dateTime);
                 return itemDate.getFullYear();
@@ -805,7 +805,10 @@ module StreamStats.Controllers {
         public updateChart() {
             const filteredData = this.measuredObj.filter((item) => {
                 const itemDate = new Date(item.dateTime);
-                return itemDate.getMonth() + 1 >= this.startMonth && itemDate.getMonth() + 1 <= this.endMonth;
+                const itemMonth = itemDate.getMonth() + 1;
+                const itemYear = itemDate.getFullYear();
+                return itemMonth >= this.startMonth && itemMonth <= this.endMonth &&
+                itemYear >= this.startYear && itemYear <= this.endYear;
             });
         
             let chart = $('#chart3').highcharts();
@@ -818,10 +821,6 @@ module StreamStats.Controllers {
             this.updateChart();
         };
         
-        // working here
-
-
-
         // using this to eventually show flood stage
         // public getFloodStage() {
         //     const url = 'https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=' + this.nwsStations
@@ -1200,26 +1199,25 @@ public createDischargePlot(): void {
         noSwitching: true,
         showTicks: false,
         draggableRange: true,
-        onChange: (sliderId, modelValue, highValue) => {
+        onChange: () => {
             this.onSliderChange();
-    }
-};
+            this.updateChart(); 
+    },
+    };
 
     // set up year slider
     const minYear = this.getMinYear();
     this.startYear = minYear;
     this.endYear = new Date().getFullYear();
-
     this.yearSliderOptions = {
     floor: this.startYear,
     ceil: this.endYear,
     draggableRange: true,
     noSwitching: true,
     showTicks: false,
-    onChange: (sliderId, modelValue, highValue) => {
-        this.startYear = modelValue;
-        this.endYear = highValue;
+    onChange: () => {
         this.updateChart();
+        this.onSliderChange();
     },
     };
 
