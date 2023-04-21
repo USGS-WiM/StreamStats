@@ -659,7 +659,7 @@ var StreamStats;
                             var finalYear = finalDate.getUTCFullYear();
                             var stringDate = new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + finalYear);
                             var meanPercentiles = {
-                                date: stringDate.toUTCString,
+                                date: stringDate,
                                 begin_yr: parseFloat(nonArrayDataRow[7]),
                                 end_yr: parseFloat(nonArrayDataRow[8]),
                                 min_va: parseFloat(nonArrayDataRow[13]),
@@ -752,11 +752,11 @@ var StreamStats;
                 }
                 if (this.meanPercent) {
                     this.meanPercent.forEach(function (stats) {
-                        _this_1.formattedP0to10.push({ x: new Date(stats.date), low: stats.min_va, high: stats.p10_va });
-                        _this_1.formattedP10to25.push({ x: new Date(stats.date), low: stats.p10_va, high: stats.p25_va });
-                        _this_1.formattedP25to75.push({ x: new Date(stats.date), low: stats.p25_va, high: stats.p75_va });
-                        _this_1.formattedP75to90.push({ x: new Date(stats.date), low: stats.p75_va, high: stats.p90_va });
-                        _this_1.formattedP90to100.push({ x: new Date(stats.date), low: stats.p90_va, high: stats.max_va });
+                        _this_1.formattedP0to10.push({ x: stats.date, low: stats.min_va, high: stats.p10_va });
+                        _this_1.formattedP10to25.push({ x: stats.date, low: stats.p10_va, high: stats.p25_va });
+                        _this_1.formattedP25to75.push({ x: stats.date, low: stats.p25_va, high: stats.p75_va });
+                        _this_1.formattedP75to90.push({ x: stats.date, low: stats.p75_va, high: stats.p90_va });
+                        _this_1.formattedP90to100.push({ x: stats.date, low: stats.p90_va, high: stats.max_va });
                     });
                 }
                 this.formattedP0to10.sort(function (a, b) { return a.x - b.x; });
@@ -1733,7 +1733,7 @@ var StreamStats;
                         title: {
                             text: 'Discharge (Q), in ft³/s'
                         },
-                        gridLineWidth: 0,
+                        gridLineWidth: 1,
                         custom: {
                             allowNegativeLog: true
                         },
