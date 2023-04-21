@@ -235,9 +235,6 @@
                                 <input type="checkbox" ng-if="vm.formattedDailyFlow.length > 0" id="logScale" name="logScale" ng-model="vm.logScale" ng-change="vm.toggleLogLinear()" checked>
                                 <label for="logScale" ng-if="vm.formattedDailyFlow.length > 0"> Log Scale</label>&nbsp;&nbsp;
                                 <button ng-click="vm.resetZoom()">Reset Zoom</button><br>
-                                <!-- <button ng-click="vm.updateShadedStats()" style="height:80%">Update Shaded Stats</button><br> -->
-                                <!-- <label for="dischargeStart"> Date Range:</label>
-                                <input date-range-picker class="form-control date-picker" type="text" style="width:20%; height:80%" id="dischargeStart" length=10 ng-model="vm.dailyDatesOnly" min="vm.startAndEnd[0]" max="vmstartAndEnd[1]" options="vm.dailyDatesOnly"> -->
                                 <label for="dischargeStart"> Start Date:</label>
                                 <input type="date" style="width:12%" id="dischargeStart" ng-value="vm.extremes.min">&nbsp;
                                 <label for="dischargeEnd"> End Date:</label>

@@ -251,7 +251,7 @@ module StreamStats.Controllers {
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
-        chartConfig: {  chart: {height: number, width: number, zooming: {type: string}, panning: boolean, panKey: string},
+        chartConfig: {  chart: {height: number, width: number, zooming: {type: string}, panning: boolean, panKey: string, events: {load: Function}},
                         title: { text: string, align: string},
                         subtitle: { text: string, align: string}, 
                         legend: { useHTML: true, symbolPadding: number, symbolWidth: number, symbolHeight: number, squareSymbol: boolean, labelFormatter: Function},
@@ -2018,7 +2018,12 @@ module StreamStats.Controllers {
                         type: 'xy'
                     },
                     panning: true, 
-                    panKey: 'shift'
+                    panKey: 'shift',
+                    events: {
+                        load: function () {
+                            self.updateShadedStats();
+                        }
+                    }
                 },
                 title: {
                     text: 'Annual Peak Streamflow',
@@ -3158,7 +3163,7 @@ module StreamStats.Controllers {
             chart.yAxis[0].setExtremes();
             chart.xAxis[0].setExtremes(inputStart, inputEnd);
             } else {
-                console.log('Please enter a valid date format')
+                //console.log('Please enter a valid date format')
             }
         }
         
@@ -3168,18 +3173,16 @@ module StreamStats.Controllers {
             let min = new Date(extremes.min)
             let max = new Date(extremes.max)
             var minDateString = new Date(min.getTime() - (min.getTimezoneOffset() * 60000 ))
-            .toISOString()
-            .split("T")[0];
-    var maxDateString = new Date(max.getTime() - (min.getTimezoneOffset() * 60000 ))
-            .toISOString()
-            .split("T")[0];
-    //let extremes = chart.xAxis[0].getExtremes()
-    let minAndMax = {
-        min: minDateString,
-        max: maxDateString
-    }
-    this.extremes = minAndMax;
-    console.log(this.extremes, this.extremes.min, this.extremes.max)
+                .toISOString()
+                .split("T")[0];
+            var maxDateString = new Date(max.getTime() - (min.getTimezoneOffset() * 60000 ))
+                    .toISOString()
+                            .split("T")[0];
+            let minAndMax = {
+                min: minDateString,
+                max: maxDateString
+            }
+            this.extremes = minAndMax;
             let maxYear = max.getFullYear();
             let minYear = min.getFullYear();
             

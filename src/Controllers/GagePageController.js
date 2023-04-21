@@ -1680,7 +1680,12 @@ var StreamStats;
                             type: 'xy'
                         },
                         panning: true,
-                        panKey: 'shift'
+                        panKey: 'shift',
+                        events: {
+                            load: function () {
+                                self.updateShadedStats();
+                            }
+                        }
                     },
                     title: {
                         text: 'Annual Peak Streamflow',
@@ -2814,7 +2819,6 @@ var StreamStats;
                     chart.xAxis[0].setExtremes(inputStart, inputEnd);
                 }
                 else {
-                    console.log('Please enter a valid date format');
                 }
             };
             GagePageController.prototype.updateShadedStats = function () {
@@ -2834,7 +2838,6 @@ var StreamStats;
                     max: maxDateString
                 };
                 this.extremes = minAndMax;
-                console.log(this.extremes, this.extremes.min, this.extremes.max);
                 var maxYear = max.getFullYear();
                 var minYear = min.getFullYear();
                 function inMonths(d1, d2) {
