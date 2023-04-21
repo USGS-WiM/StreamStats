@@ -1,4 +1,4 @@
-﻿//------------------------------------------------------------------------------
+﻿﻿//------------------------------------------------------------------------------
 //----- GagePage ---------------------------------------------------------------
 //------------------------------------------------------------------------------
 
@@ -1126,7 +1126,7 @@ module StreamStats.Controllers {
                 const dateArray = [];
                 let currentDate = new Date(startDate);
                 while (currentDate <= new Date(endDate)) {
-                    dateArray.push(currentDate);
+                    dateArray.push(new Date(currentDate));
                   // Use UTC date to prevent problems with time zones and DST
                 currentDate.setUTCDate(currentDate.getUTCDate() + steps);
                 }
@@ -3168,18 +3168,18 @@ module StreamStats.Controllers {
             let min = new Date(extremes.min)
             let max = new Date(extremes.max)
             var minDateString = new Date(min.getTime() - (min.getTimezoneOffset() * 60000 ))
-                    .toISOString()
-                    .split("T")[0];
-            var maxDateString = new Date(max.getTime() - (min.getTimezoneOffset() * 60000 ))
-                    .toISOString()
-                    .split("T")[0];
-            //let extremes = chart.xAxis[0].getExtremes()
-            let minAndMax = {
-                min: minDateString,
-                max: maxDateString
-            }
-            this.extremes = minAndMax;
-            console.log(this.extremes, this.extremes.min, this.extremes.max)
+            .toISOString()
+            .split("T")[0];
+    var maxDateString = new Date(max.getTime() - (min.getTimezoneOffset() * 60000 ))
+            .toISOString()
+            .split("T")[0];
+    //let extremes = chart.xAxis[0].getExtremes()
+    let minAndMax = {
+        min: minDateString,
+        max: maxDateString
+    }
+    this.extremes = minAndMax;
+    console.log(this.extremes, this.extremes.min, this.extremes.max)
             let maxYear = max.getFullYear();
             let minYear = min.getFullYear();
             
