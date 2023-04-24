@@ -135,6 +135,7 @@ var StreamStats;
                 _this_1.formattedDailyFlow = [];
                 _this_1.dailyDatesOnly = [];
                 _this_1.startAndEnd = [];
+                _this_1.loading = false;
                 _this_1.formattedDailyHeat = [];
                 _this_1.formattedDailyPlusAvg = [];
                 _this_1.formattedDischargePeakDates = [];
@@ -2674,6 +2675,14 @@ var StreamStats;
                 };
             };
             ;
+            GagePageController.prototype.containsNegatives = function () {
+                if (this.dailyValuesOnly.some(function (v) { return v <= 0; })) {
+                    return true;
+                }
+                if (this.dailyValuesOnly.some(function (v) { return v > 0; })) {
+                    return false;
+                }
+            };
             GagePageController.prototype.togglePlotLines = function () {
                 var chart = $('#chart1').highcharts();
                 if (this.plotlines) {
@@ -2704,6 +2713,8 @@ var StreamStats;
             ;
             GagePageController.prototype.togglePeakYear = function () {
                 var chart = $('#chart1').highcharts();
+                this.loading = true;
+                console.log(this.loading);
                 var min = this.startAndEnd[0].getTime();
                 var oneYearMin = (new Date(1 + '/' + 1 + '/' + this.startAndEnd[1].getFullYear())).getTime();
                 var max = (new Date(12 + '/' + 31 + '/' + this.startAndEnd[1].getFullYear())).getTime();
@@ -2789,6 +2800,8 @@ var StreamStats;
                             }
                         } });
                 }
+                this.loading = false;
+                console.log(this.loading);
             };
             ;
             GagePageController.prototype.destroyResetZoom = function () {

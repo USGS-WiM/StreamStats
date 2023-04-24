@@ -13,7 +13,9 @@ configuration.baseurls =
         'ScienceBase': 'https://gis.usgs.gov/sciencebase2',
         'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices',
         'WeightingServices': 'https://streamstats.usgs.gov/channelweightingservices',
-        'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices'
+        'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices',
+        'SCStormRunoffServices': 'https://streamstats.usgs.gov/local/scrunoffservices',
+        'NationalMapServices': 'https://hydro.nationalmap.gov/arcgis/rest/services'
     };
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server

@@ -241,6 +241,7 @@ module StreamStats.Controllers {
         public dailyDatesOnly = [];
         public startAndEnd = []; 
         public extremes;
+        public loading = false;
         public formattedDailyHeat = [];
         public formattedDailyPlusAvg = [];
         public formattedDischargePeakDates = []; // Stage vs. Discharge Plot
@@ -3011,15 +3012,24 @@ module StreamStats.Controllers {
                 }]
             }
         };
+
+        public containsNegatives() {
+            if (this.dailyValuesOnly.some(v => v <= 0)) {
+                return true
+            }
+            if (this.dailyValuesOnly.some(v => v > 0)) {
+                return false
+            }
+        }
         
         //checkbox for turning plotLines on and off
         public plotlines = true;
-            public togglePlotLines () {
-                let chart = $('#chart1').highcharts();
-                if (this.plotlines) {
-                this.chartConfig.yAxis.plotLines.forEach((plotLine) => {
-                    chart.yAxis[0].addPlotLine(plotLine);
-                });
+        public togglePlotLines () {
+            let chart = $('#chart1').highcharts();
+            if (this.plotlines) {
+            this.chartConfig.yAxis.plotLines.forEach((plotLine) => {
+                chart.yAxis[0].addPlotLine(plotLine);
+            });
             }
         }
 
@@ -3043,13 +3053,15 @@ module StreamStats.Controllers {
                 chart.yAxis[0].update({ type: 'logarithmic' });
             } else {
                 chart.yAxis[0].update({ type: 'linear' });
-                //chart.resetZoomButton.hide();
             }
         };
         //checkbox to plot peaks on one year (2022 for now)
-        public peaksOnYear = true; 
+        public peaksOnYear = true;
         public togglePeakYear () {
             let chart = $('#chart1').highcharts();
+            this.loading = true
+            console.log(this.loading)
+            //chart.showLoading('loading...')
             let min = this.startAndEnd[0].getTime()
             let oneYearMin = (new Date(1 +'/' + 1 + '/' + this.startAndEnd[1].getFullYear())).getTime()
             let max = (new Date(12 +'/' + 31 + '/' + this.startAndEnd[1].getFullYear())).getTime()
@@ -3130,8 +3142,10 @@ module StreamStats.Controllers {
                     }
                 }})
             }
+            this.loading = false;
+            console.log(this.loading);
+            //chart.hideLoading();
         };
-
 
         public destroyResetZoom() {
             let chart = $('#chart1').highcharts();
@@ -3258,9 +3272,7 @@ module StreamStats.Controllers {
                 chart.series[5].hide();
                 chart.series[6].hide();
                 chart.series[2].hide();
-
             }
-            
         }
             
         //checkbox to linear to log scale for discharge plot
