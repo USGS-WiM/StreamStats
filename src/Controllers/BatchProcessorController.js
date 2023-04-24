@@ -23,25 +23,35 @@ var StreamStats;
             }
             return Parameter;
         }());
+        var SubmitBatchData = (function () {
+            function SubmitBatchData() {
+            }
+            return SubmitBatchData;
+        }());
         var BatchProcessorController = (function (_super) {
             __extends(BatchProcessorController, _super);
-            function BatchProcessorController($scope, $http, modalService, nssService, modal) {
+            function BatchProcessorController($scope, $http, modalService, nssService, modal, toaster) {
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
                 $scope.vm = _this;
                 _this.modalInstance = modal;
                 _this.modalService = modalService;
                 _this.selectedBatchProcessorTabName = "submitBatch";
                 _this.nssService = nssService;
+                _this.toaster = toaster;
                 _this.selectedFlowStatsList = [];
                 _this.selectedParamList = [];
                 _this.availableParamList = [];
                 _this.flowStatsAllChecked = true;
                 _this.parametersAllChecked = true;
                 _this.showBasinCharacteristics = false;
+                _this.submittingBatch = false;
+                _this.showSuccessAlert = false;
+                _this.submitBatchData = new SubmitBatchData();
                 _this.init();
                 return _this;
             }
             BatchProcessorController.prototype.Close = function () {
+                this.showSuccessAlert = false;
                 this.modalInstance.dismiss('cancel');
             };
             BatchProcessorController.prototype.selectBatchProcessorTab = function (tabname) {
@@ -253,6 +263,26 @@ var StreamStats;
                 }).finally(function () {
                 });
             };
+            BatchProcessorController.prototype.validateZipFile = function ($files) {
+                if ($files[0].type != "application/x-zip-compressed") {
+                    this.toaster.pop('warning', "Please upload a .zip file.", "", 5000);
+                    this.submitBatchData.attachment = null;
+                }
+                return;
+            };
+            BatchProcessorController.prototype.submitBatch = function () {
+                var url = null;
+                var formdata = new FormData();
+                formdata.append('submit_batch[email]', this.submitBatchData.email);
+                formdata.append('submit_batch[subject]', this.submitBatchData.idField);
+                formdata.append('submit_batch[attachments][][resource]', this.submitBatchData.attachment, this.submitBatchData.attachment.name);
+                this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
+                var headers = {
+                    "tdb": "tbd"
+                };
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers, angular.identity);
+                this.submittingBatch = true;
+            };
             BatchProcessorController.prototype.init = function () {
                 this.getRegions();
             };
@@ -281,7 +311,7 @@ var StreamStats;
                     return false;
                 }
             };
-            BatchProcessorController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', '$modalInstance'];
+            BatchProcessorController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', '$modalInstance', 'toaster'];
             return BatchProcessorController;
         }(WiM.Services.HTTPServiceBase));
         angular.module('StreamStats.Controllers')
