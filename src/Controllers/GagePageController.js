@@ -831,7 +831,7 @@ var StreamStats;
                     var dateArray = [];
                     var currentDate = new Date(startDate);
                     while (currentDate <= new Date(endDate)) {
-                        dateArray.push(new Date(currentDate));
+                        dateArray.push(currentDate);
                         currentDate.setUTCDate(currentDate.getUTCDate() + steps);
                     }
                     return dateArray;
