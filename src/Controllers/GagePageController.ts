@@ -1,4 +1,4 @@
-﻿﻿//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //----- GagePage ---------------------------------------------------------------
 //------------------------------------------------------------------------------
 
@@ -241,7 +241,6 @@ module StreamStats.Controllers {
         public dailyDatesOnly = [];
         public startAndEnd = []; 
         public extremes;
-        public loading = false;
         public formattedDailyHeat = [];
         public formattedDailyPlusAvg = [];
         public formattedDischargePeakDates = []; // Stage vs. Discharge Plot
@@ -3059,12 +3058,8 @@ module StreamStats.Controllers {
         public peaksOnYear = true;
         public togglePeakYear () {
             let chart = $('#chart1').highcharts();
-            this.loading = true
-            console.log(this.loading)
-
+            chart.showLoading('Loading...')
             setTimeout(() => {
-            
-                //chart.showLoading('loading...')
                 let min = this.startAndEnd[0].getTime()
                 let oneYearMin = (new Date(1 +'/' + 1 + '/' + this.startAndEnd[1].getFullYear())).getTime()
                 let max = (new Date(12 +'/' + 31 + '/' + this.startAndEnd[1].getFullYear())).getTime()
@@ -3145,9 +3140,7 @@ module StreamStats.Controllers {
                         }
                     }})
                 }
-                this.loading = false;
-                console.log(this.loading);
-                //chart.hideLoading();
+                chart.hideLoading();
             }, 100);
         };
 
