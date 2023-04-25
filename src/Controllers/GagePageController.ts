@@ -210,6 +210,7 @@ module StreamStats.Controllers {
         public peakDates = undefined;
         public estPeakDates = undefined;
         public dailyFlow = undefined;
+        public instFlow = undefined;
         public NWSforecast = undefined;
         public meanPercentileStats = undefined;
         public meanPercent = undefined;
@@ -238,6 +239,7 @@ module StreamStats.Controllers {
         public formattedEstPeakDatesOnYear = [];
         public formattedEstPeakDates = [];
         public formattedDailyFlow = [];
+        public formattedInstFlow = [];
         public dailyDatesOnly = [];
         public startAndEnd = []; 
         public extremes;
@@ -795,7 +797,7 @@ module StreamStats.Controllers {
 
         //Pull in data for daily flow values
         public getDailyFlow() {
-            var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01';
+            var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01&endDT=2023-04-18';
             //console.log('GetDailyFlowURL', url);
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
@@ -813,9 +815,36 @@ module StreamStats.Controllers {
                     });
                     this.dailyFlow = filteredDaily;
                     }
-                    this.getNWSForecast();
+                    this.getInstantaneousFlow();
                 }); 
             }
+        
+        public getInstantaneousFlow(){
+            //change the above url to have an end dt that is the same as this start dt
+            var startDT; //two weeks ago or something
+            var endDT; //now / today's date
+            var url = 'https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&startDT=' + '2023-04-18';
+            const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+            this.Execute(request).then(
+                (response: any) => {
+                    console.log(response)
+                    const data = response.data.value.timeSeries;
+                    if (data.length !== 0) {
+                        var instValues = data[0].values[0].value
+                    }
+                    else {
+                        instValues = 0
+                    };
+                    if (instValues !== 0) {
+                    const filteredInst = instValues.filter(item => {
+                        return (parseFloat(item.value) !== -999999)
+                    });
+                    this.instFlow = filteredInst;
+                    }
+                    console.log('inst', this.instFlow)
+                    this.getNWSForecast();
+                });
+        }
 
         public getNWSForecast() {
             var self = this;
@@ -1105,6 +1134,13 @@ module StreamStats.Controllers {
                 }
                 });
             }
+            if (this.instFlow) {
+                this.instFlow.forEach(instObj => {
+                    if (parseFloat(instObj.value) !== -999999) {
+                    this.formattedInstFlow.push({x: new Date(instObj.dateTime), y: parseFloat(instObj.value)})
+                }
+            })
+            }
             //checking for the latest year between the peaks and the daily flow
             let finalPeakorDailyDate = new Date('January 1, 1800') // assign way in past
             if (this.formattedPeakDates.length > 0) {
@@ -1126,7 +1162,7 @@ module StreamStats.Controllers {
                 const dateArray = [];
                 let currentDate = new Date(startDate);
                 while (currentDate <= new Date(endDate)) {
-                    dateArray.push(new Date(currentDate));
+                    dateArray.push(currentDate);
                   // Use UTC date to prevent problems with time zones and DST
                 currentDate.setUTCDate(currentDate.getUTCDate() + steps);
                 }
@@ -2674,6 +2710,38 @@ module StreamStats.Controllers {
                         radius: 0.1
                     },
                     showInLegend: false
+                },{
+                    name    : 'Instantaneous Streamflow',
+                    showInNavigator: true,
+                    tooltip: {
+                        headerFormat:'<b>Instantaneous Streamflow</b>',
+                        pointFormatter: function(){
+                            if (this.formattedInstFlow !== null){
+                                let UTCday = this.x.getUTCDate();
+                                let year = this.x.getUTCFullYear();
+                                let month = this.x.getUTCMonth();
+                                    month += 1; // adding a month to the UTC months (which are zero-indexed)
+                                let formattedUTCDailyDate = month + '/' + UTCday + '/' + year;
+                                return '<br>Date: <b>'  + formattedUTCDailyDate + '</b><br>Value: <b>' + this.y + ' ft³/s'
+                            }
+                        }
+                    },
+                    turboThreshold: 0, 
+                    type    : 'line',
+                    color   : '#1434A4',
+                    //color   : '#add8f2',
+                    fillOpacity: null, 
+                    lineWidth: 1.5,
+                    data    : this.formattedInstFlow,
+                    linkedTo: null,
+                    visible: true,
+                    id: null,
+                    zIndex: 4,
+                    marker: {
+                        symbol: 'circle',
+                        radius: 3
+                    },
+                    showInLegend: this.formattedInstFlow.length > 0
                 }
             ] 
             }

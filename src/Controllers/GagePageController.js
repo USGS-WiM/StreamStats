@@ -105,6 +105,7 @@ var StreamStats;
                 _this_1.peakDates = undefined;
                 _this_1.estPeakDates = undefined;
                 _this_1.dailyFlow = undefined;
+                _this_1.instFlow = undefined;
                 _this_1.NWSforecast = undefined;
                 _this_1.meanPercentileStats = undefined;
                 _this_1.meanPercent = undefined;
@@ -133,6 +134,7 @@ var StreamStats;
                 _this_1.formattedEstPeakDatesOnYear = [];
                 _this_1.formattedEstPeakDates = [];
                 _this_1.formattedDailyFlow = [];
+                _this_1.formattedInstFlow = [];
                 _this_1.dailyDatesOnly = [];
                 _this_1.startAndEnd = [];
                 _this_1.formattedDailyHeat = [];
@@ -583,7 +585,7 @@ var StreamStats;
             };
             GagePageController.prototype.getDailyFlow = function () {
                 var _this_1 = this;
-                var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01';
+                var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01&endDT=2023-04-18';
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var data = response.data.value.timeSeries;
@@ -600,6 +602,32 @@ var StreamStats;
                         });
                         _this_1.dailyFlow = filteredDaily;
                     }
+                    _this_1.getInstantaneousFlow();
+                });
+            };
+            GagePageController.prototype.getInstantaneousFlow = function () {
+                var _this_1 = this;
+                var startDT;
+                var endDT;
+                var url = 'https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&startDT=' + '2023-04-18';
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.Execute(request).then(function (response) {
+                    console.log(response);
+                    var data = response.data.value.timeSeries;
+                    if (data.length !== 0) {
+                        var instValues = data[0].values[0].value;
+                    }
+                    else {
+                        instValues = 0;
+                    }
+                    ;
+                    if (instValues !== 0) {
+                        var filteredInst = instValues.filter(function (item) {
+                            return (parseFloat(item.value) !== -999999);
+                        });
+                        _this_1.instFlow = filteredInst;
+                    }
+                    console.log('inst', _this_1.instFlow);
                     _this_1.getNWSForecast();
                 });
             };
@@ -811,6 +839,13 @@ var StreamStats;
                         }
                     });
                 }
+                if (this.instFlow) {
+                    this.instFlow.forEach(function (instObj) {
+                        if (parseFloat(instObj.value) !== -999999) {
+                            _this_1.formattedInstFlow.push({ x: new Date(instObj.dateTime), y: parseFloat(instObj.value) });
+                        }
+                    });
+                }
                 var finalPeakorDailyDate = new Date('January 1, 1800');
                 if (this.formattedPeakDates.length > 0) {
                     var finalPeakIndex = this.formattedPeakDates.length - 1;
@@ -831,7 +866,7 @@ var StreamStats;
                     var dateArray = [];
                     var currentDate = new Date(startDate);
                     while (currentDate <= new Date(endDate)) {
-                        dateArray.push(new Date(currentDate));
+                        dateArray.push(currentDate);
                         currentDate.setUTCDate(currentDate.getUTCDate() + steps);
                     }
                     return dateArray;
@@ -2331,6 +2366,37 @@ var StreamStats;
                                 radius: 0.1
                             },
                             showInLegend: false
+                        }, {
+                            name: 'Instantaneous Streamflow',
+                            showInNavigator: true,
+                            tooltip: {
+                                headerFormat: '<b>Instantaneous Streamflow</b>',
+                                pointFormatter: function () {
+                                    if (this.formattedInstFlow !== null) {
+                                        var UTCday = this.x.getUTCDate();
+                                        var year = this.x.getUTCFullYear();
+                                        var month = this.x.getUTCMonth();
+                                        month += 1;
+                                        var formattedUTCDailyDate = month + '/' + UTCday + '/' + year;
+                                        return '<br>Date: <b>' + formattedUTCDailyDate + '</b><br>Value: <b>' + this.y + ' ft³/s';
+                                    }
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: 'line',
+                            color: '#1434A4',
+                            fillOpacity: null,
+                            lineWidth: 1.5,
+                            data: this.formattedInstFlow,
+                            linkedTo: null,
+                            visible: true,
+                            id: null,
+                            zIndex: 4,
+                            marker: {
+                                symbol: 'circle',
+                                radius: 3
+                            },
+                            showInLegend: this.formattedInstFlow.length > 0
                         }
                     ]
                 };
