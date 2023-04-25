@@ -2713,11 +2713,7 @@ var StreamStats;
             GagePageController.prototype.togglePeakYear = function () {
                 var _this_1 = this;
                 var chart = $('#chart1').highcharts();
-<<<<<<< HEAD
                 chart.showLoading('Loading...');
-=======
-                chart.showLoading('loading...');
->>>>>>> eb8fc14bb591b59b0415709e81590c4427b035c6
                 setTimeout(function () {
                     var min = _this_1.startAndEnd[0].getTime();
                     var oneYearMin = (new Date(1 + '/' + 1 + '/' + _this_1.startAndEnd[1].getFullYear())).getTime();

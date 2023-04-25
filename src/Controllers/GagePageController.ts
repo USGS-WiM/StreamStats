@@ -1,4 +1,4 @@
-﻿//------------------------------------------------------------------------------
+﻿﻿﻿//------------------------------------------------------------------------------
 //----- GagePage ---------------------------------------------------------------
 //------------------------------------------------------------------------------
 
@@ -3058,15 +3058,10 @@ module StreamStats.Controllers {
         public peaksOnYear = true;
         public togglePeakYear () {
             let chart = $('#chart1').highcharts();
-<<<<<<< HEAD
             chart.showLoading('Loading...')
-            setTimeout(() => {
-=======
-            chart.showLoading('loading...')
 
             setTimeout(() => {
         
->>>>>>> eb8fc14bb591b59b0415709e81590c4427b035c6
                 let min = this.startAndEnd[0].getTime()
                 let oneYearMin = (new Date(1 +'/' + 1 + '/' + this.startAndEnd[1].getFullYear())).getTime()
                 let max = (new Date(12 +'/' + 31 + '/' + this.startAndEnd[1].getFullYear())).getTime()
