@@ -163,6 +163,7 @@ module StreamStats.Controllers {
         public statCitationList;
         public charCitationList;
         public statIds;
+        public crossWalk: Object;
         public statIdsChar;
         public showPreferred = false;
         public multiselectOptions = {
@@ -204,14 +205,15 @@ module StreamStats.Controllers {
         public formattedDailyFlow = [];
         public formattedDischargePeakDates = []; // Stage vs. Discharge Plot
         public dailyValuesOnly = [];
+        public ageQualityData = 'age';
         public error: any;     
         public monthSliderOptions: any;
         public startMonth: number;
         public endMonth: number;
-
         public startYear: number;
         public endYear: number;
         public yearSliderOptions: any;
+        public NWSforecast = undefined;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -697,9 +699,69 @@ module StreamStats.Controllers {
                         dailyValues = 0
                     };
                     this.dailyFlow = dailyValues
-                    this.getRatingCurve();
+                    this.getNWSForecast();
                 }); 
             }
+
+            public getNWSForecast() {
+                var self = this;
+                var nwisCode = this.gage.code;
+            
+                this.$http.get('./data/gageNumberCrossWalk.json').then(function(response) {
+                    self.crossWalk = response.data;
+                    var NWScode = self.crossWalk[nwisCode];
+            
+                    if (NWScode !== undefined) {
+                        var url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + NWScode;
+                        const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
+            
+                        self.Execute(request).then(function(response) {
+                            const xmlDocument = new DOMParser().parseFromString(response as string, "text/xml");
+
+                            const sigStages = xmlDocument.querySelector("sigstages");
+            
+                            const action = parseFloat(sigStages.querySelector("action").textContent);
+                            const flood = parseFloat(sigStages.querySelector("flood").textContent);
+                            const moderate = parseFloat(sigStages.querySelector("moderate").textContent);
+                            const major = parseFloat(sigStages.querySelector("major").textContent);
+                            const record = parseFloat(sigStages.querySelector("record").textContent);
+
+                            console.log("action:", action);
+                            console.log("flood:", flood);
+                            console.log("moderate:", moderate);
+            
+                            const forecastData = xmlDocument.querySelectorAll("forecast");
+            
+                            if (forecastData[0] !== undefined) {
+                                const smallerData = forecastData[0].childNodes;
+                                let forecastArray = [];
+            
+                                smallerData.forEach(datum => {
+                                    if (datum.childNodes[0] !== undefined) {
+                                        const forecastObj = {
+                                            x: new Date(datum.childNodes[0].textContent),
+                                            y: parseFloat(datum.childNodes[2].textContent)
+                                        };
+            
+                                        if ((smallerData[2].childNodes[2].getAttribute("units")) === 'kcfs') {
+                                            forecastObj.y *= 1000;
+                                        }
+            
+                                        forecastArray.push(forecastObj);
+                                        self.NWSforecast = forecastArray;
+                                    }
+                                });
+                            }
+            
+                            self.getRatingCurve();
+                        });
+                    } else {
+                        self.getRatingCurve();
+                    }
+                });
+            }
+            
+
 
         public getRatingCurve() {
             const url = 'https://waterdata.usgs.gov/nwisweb/get_ratings?site_no=' + this.gage.code + '&file_type=exsa'
@@ -786,7 +848,6 @@ module StreamStats.Controllers {
                 }).finally(() => {
                     this.formatData()
                     this.updateChart()
-                    this.onSliderChange()
                     this.getMinYear()
                 });
         } 
@@ -803,6 +864,9 @@ module StreamStats.Controllers {
           }
       
         public updateChart() {
+            console.log('measured obj',this.measuredObj )
+            let chart = $('#chart3').highcharts();
+            chart.series[2].update({data:[]});
             const filteredData = this.measuredObj.filter((item) => {
                 const itemDate = new Date(item.dateTime);
                 const itemMonth = itemDate.getMonth() + 1;
@@ -810,16 +874,13 @@ module StreamStats.Controllers {
                 return itemMonth >= this.startMonth && itemMonth <= this.endMonth &&
                 itemYear >= this.startYear && itemYear <= this.endYear;
             });
+            console.log('filtered data',filteredData )
         
-            let chart = $('#chart3').highcharts();
             if (chart) {
-                chart.series[2].setData(filteredData);
+                console.log('test', chart)
+                chart.series[2].update({data:filteredData});
             }
         }
-
-        public onSliderChange() {
-            this.updateChart();
-        };
         
         // using this to eventually show flood stage
         // public getFloodStage() {
@@ -1195,12 +1256,10 @@ public createDischargePlot(): void {
     this.monthSliderOptions = { 
         floor: 1,
         ceil: 12,
-        draggableRange: true,
         noSwitching: true,
         showTicks: false,
         draggableRange: true,
         onChange: () => {
-            this.onSliderChange();
             this.updateChart(); 
     },
     };
@@ -1217,7 +1276,6 @@ public createDischargePlot(): void {
     showTicks: false,
     onChange: () => {
         this.updateChart();
-        this.onSliderChange();
     },
     };
 
@@ -1520,7 +1578,7 @@ public createDailyRasterPlot(): void {
             currentUSGSMeasuredData.forEach(row => {
                 row.color = (dataType == 'age') ? row.ageColor : row.qualityColor;
             });
-            chart.series[2].update({data:currentUSGSMeasuredData});
+            chart.series[2].update({data:currentUSGSMeasuredData})
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-

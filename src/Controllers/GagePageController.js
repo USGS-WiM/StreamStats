@@ -101,6 +101,8 @@ var StreamStats;
                 _this_1.formattedDailyFlow = [];
                 _this_1.formattedDischargePeakDates = [];
                 _this_1.dailyValuesOnly = [];
+                _this_1.ageQualityData = 'age';
+                _this_1.NWSforecast = undefined;
                 _this_1.plotlines = true;
                 _this_1.logScale = false;
                 _this_1.logScaleDischarge = false;
@@ -481,7 +483,53 @@ var StreamStats;
                     }
                     ;
                     _this_1.dailyFlow = dailyValues;
-                    _this_1.getRatingCurve();
+                    _this_1.getNWSForecast();
+                });
+            };
+            GagePageController.prototype.getNWSForecast = function () {
+                var self = this;
+                var nwisCode = this.gage.code;
+                this.$http.get('./data/gageNumberCrossWalk.json').then(function (response) {
+                    self.crossWalk = response.data;
+                    var NWScode = self.crossWalk[nwisCode];
+                    if (NWScode !== undefined) {
+                        var url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + NWScode;
+                        var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
+                        self.Execute(request).then(function (response) {
+                            var xmlDocument = new DOMParser().parseFromString(response, "text/xml");
+                            var sigStages = xmlDocument.querySelector("sigstages");
+                            var action = parseFloat(sigStages.querySelector("action").textContent);
+                            var flood = parseFloat(sigStages.querySelector("flood").textContent);
+                            var moderate = parseFloat(sigStages.querySelector("moderate").textContent);
+                            var major = parseFloat(sigStages.querySelector("major").textContent);
+                            var record = parseFloat(sigStages.querySelector("record").textContent);
+                            console.log("action:", action);
+                            console.log("flood:", flood);
+                            console.log("moderate:", moderate);
+                            var forecastData = xmlDocument.querySelectorAll("forecast");
+                            if (forecastData[0] !== undefined) {
+                                var smallerData_1 = forecastData[0].childNodes;
+                                var forecastArray_1 = [];
+                                smallerData_1.forEach(function (datum) {
+                                    if (datum.childNodes[0] !== undefined) {
+                                        var forecastObj = {
+                                            x: new Date(datum.childNodes[0].textContent),
+                                            y: parseFloat(datum.childNodes[2].textContent)
+                                        };
+                                        if ((smallerData_1[2].childNodes[2].getAttribute("units")) === 'kcfs') {
+                                            forecastObj.y *= 1000;
+                                        }
+                                        forecastArray_1.push(forecastObj);
+                                        self.NWSforecast = forecastArray_1;
+                                    }
+                                });
+                            }
+                            self.getRatingCurve();
+                        });
+                    }
+                    else {
+                        self.getRatingCurve();
+                    }
                 });
             };
             GagePageController.prototype.getRatingCurve = function () {
@@ -539,7 +587,6 @@ var StreamStats;
                 }).finally(function () {
                     _this_1.formatData();
                     _this_1.updateChart();
-                    _this_1.onSliderChange();
                     _this_1.getMinYear();
                 });
             };
@@ -552,6 +599,9 @@ var StreamStats;
             };
             GagePageController.prototype.updateChart = function () {
                 var _this_1 = this;
+                console.log('measured obj', this.measuredObj);
+                var chart = $('#chart3').highcharts();
+                chart.series[2].update({ data: [] });
                 var filteredData = this.measuredObj.filter(function (item) {
                     var itemDate = new Date(item.dateTime);
                     var itemMonth = itemDate.getMonth() + 1;
@@ -559,15 +609,12 @@ var StreamStats;
                     return itemMonth >= _this_1.startMonth && itemMonth <= _this_1.endMonth &&
                         itemYear >= _this_1.startYear && itemYear <= _this_1.endYear;
                 });
-                var chart = $('#chart3').highcharts();
+                console.log('filtered data', filteredData);
                 if (chart) {
-                    chart.series[2].setData(filteredData);
+                    console.log('test', chart);
+                    chart.series[2].update({ data: filteredData });
                 }
             };
-            GagePageController.prototype.onSliderChange = function () {
-                this.updateChart();
-            };
-            ;
             GagePageController.prototype.formatData = function () {
                 var _this_1 = this;
                 if (this.peakDates) {
@@ -884,12 +931,10 @@ var StreamStats;
                 this.monthSliderOptions = {
                     floor: 1,
                     ceil: 12,
-                    draggableRange: true,
                     noSwitching: true,
                     showTicks: false,
                     draggableRange: true,
                     onChange: function () {
-                        _this_1.onSliderChange();
                         _this_1.updateChart();
                     },
                 };
@@ -904,7 +949,6 @@ var StreamStats;
                     showTicks: false,
                     onChange: function () {
                         _this_1.updateChart();
-                        _this_1.onSliderChange();
                     },
                 };
                 this.dischargeChartConfig = {
