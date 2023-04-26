@@ -797,7 +797,14 @@ module StreamStats.Controllers {
 
         //Pull in data for daily flow values
         public getDailyFlow() {
-            var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01&endDT=2023-04-18';
+            var date = new Date ();
+			var timeInMillisec = date.getTime ();	// the milliseconds elapsed since 01 January, 1970 00:00:00 UTC
+			timeInMillisec -= 14 * 24 * 60 * 60 * 1000; 	// 14 days in milliseconds
+			date.setTime (timeInMillisec);
+            var twoWeeksAgo = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 ))
+                    .toISOString()
+                    .split("T")[0];
+            var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01&endDT=' + twoWeeksAgo;
             //console.log('GetDailyFlowURL', url);
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
@@ -821,9 +828,14 @@ module StreamStats.Controllers {
         
         public getInstantaneousFlow(){
             //change the above url to have an end dt that is the same as this start dt
-            var startDT; //two weeks ago or something
-            var endDT; //now / today's date
-            var url = 'https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&startDT=' + '2023-04-18';
+            var date = new Date ();
+			var timeInMillisec = date.getTime ();	// the milliseconds elapsed since 01 January, 1970 00:00:00 UTC
+			timeInMillisec -= 14 * 24 * 60 * 60 * 1000; 	// 14 days in milliseconds
+			date.setTime (timeInMillisec);
+            var twoWeeksAgo = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 ))
+                    .toISOString()
+                    .split("T")[0];
+            var url = 'https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&startDT=' + twoWeeksAgo;
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
@@ -841,7 +853,7 @@ module StreamStats.Controllers {
                     });
                     this.instFlow = filteredInst;
                     }
-                    console.log('inst', this.instFlow)
+                    //console.log('inst', this.instFlow)
                     this.getNWSForecast();
                 });
         }

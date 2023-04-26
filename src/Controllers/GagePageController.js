@@ -585,7 +585,14 @@ var StreamStats;
             };
             GagePageController.prototype.getDailyFlow = function () {
                 var _this_1 = this;
-                var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01&endDT=2023-04-18';
+                var date = new Date();
+                var timeInMillisec = date.getTime();
+                timeInMillisec -= 14 * 24 * 60 * 60 * 1000;
+                date.setTime(timeInMillisec);
+                var twoWeeksAgo = new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
+                    .toISOString()
+                    .split("T")[0];
+                var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01&endDT=' + twoWeeksAgo;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var data = response.data.value.timeSeries;
@@ -607,9 +614,14 @@ var StreamStats;
             };
             GagePageController.prototype.getInstantaneousFlow = function () {
                 var _this_1 = this;
-                var startDT;
-                var endDT;
-                var url = 'https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&startDT=' + '2023-04-18';
+                var date = new Date();
+                var timeInMillisec = date.getTime();
+                timeInMillisec -= 14 * 24 * 60 * 60 * 1000;
+                date.setTime(timeInMillisec);
+                var twoWeeksAgo = new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
+                    .toISOString()
+                    .split("T")[0];
+                var url = 'https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&startDT=' + twoWeeksAgo;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     console.log(response);
