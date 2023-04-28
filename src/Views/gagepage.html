@@ -204,8 +204,8 @@
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
-                                        <th >Name</th>
-                                        <th >Value</th>
+                                        <th>Name</th>
+                                        <th>Value</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -225,13 +225,24 @@
                         &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
                     </div>
                     <center>
-                    <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.chartConfig">
-                        <input type="checkbox" ng-if="vm.formattedFloodFreq.length > 0" id="yesAEPLines" name="yesAEPLines" ng-model="vm.plotlines" ng-change="vm.togglePlotLines()" checked>
-                        <label for="yesAEPLines" ng-if="vm.formattedFloodFreq.length > 0"> AEP Plot Lines&nbsp;&nbsp;</label>
-                        <input type="checkbox" ng-if="vm.formattedDailyFlow.length > 0" id="logScale" name="logScale" ng-model="vm.logScale" ng-change="vm.toggleLogLinear()" checked>
-                        <label for="logScale" ng-if="vm.formattedDailyFlow.length > 0"> Log Scale</label>
-                        <highchart id="chart1" config="vm.chartConfig"></highchart>
-                    </div>
+                        <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.chartConfig">
+                            <highchart id="chart1" config="vm.chartConfig" ng-init="vm.destroyResetZoom()"></highchart>
+                            <div class="plot-filters">
+                                <label for="dischargeStart"> Start Date:</label>
+                                <input type="date" style="width:12%;" id="dischargeStart" ng-value="vm.extremes.min">&nbsp;
+                                <label for="dischargeEnd"> End Date:</label>
+                                <input type="date" style="width:12%" id="dischargeEnd" ng-value="vm.extremes.max">&nbsp;
+                                <button ng-click="vm.dateRangePicker()" >Load Date Range</button><br>
+                                <input type="checkbox" ng-if="vm.formattedPeakDates.length > 0" id="togglePeaks" name="togglePeaks" ng-model="vm.peaksOnYear" ng-change="vm.togglePeakYear()" checked>
+                                <label for="togglePeaks" ng-if="vm.formattedPeakDates.length > 0">Plot Annual Streamflow Peaks on Latest Year</label>
+                                &nbsp;&nbsp;<input type="checkbox" ng-if="vm.containsNegatives() === false" id="logScale" name="logScale" ng-model="vm.logScale" ng-change="vm.toggleLogLinear()" checked>
+                                <label for="logScale" ng-if="vm.containsNegatives() === false"> Log Scale&nbsp;&nbsp;</label>
+                                <button ng-click="vm.resetZoom()">Reset Zoom</button><br>
+                                <input type="checkbox" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" id="toggleFloodStats" name="toggleFloodStats" ng-model="vm.showFloodStats" ng-change="vm.toggleFloodStats()" checked>
+                                <label for="toggleFloodStats" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" > Show Flood Statistics:</label>
+                                <select id="gageFloodStatsSelect" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0 " style="width:31%; text-align-last:center; margin-top: 5px;" name="gageFloodStatsSelect" ng-model="vm.selectedFloodFreqStats" ng-options="floodFreqStat.name for floodFreqStat in vm.allFloodFreqStats" ng-change="vm.chooseFloodStats()" ng-disabled="vm.showFloodStats == false"></select><br>              
+                            </div>
+                            </div>
                     </center>
                     <center>
                         <div ng-if="!vm.heatChartConfig" class="panel panel-default reportSpinner">
@@ -252,7 +263,7 @@
 
                             <input type="radio" ng-if="vm.error == false" id="ageData" name="ageQualityData" ng-model="vm.ageQualityData" value="age" ng-change="vm.toggleDischargeData('age')"> 
                             <label for="ageData" ng-if="vm.error == false">  Age</label>
-                           
+                
                             <input type="radio" ng-if="vm.error == false" id="qualityData" name="ageQualityData" ng-model="vm.ageQualityData" value="quality" ng-change="vm.toggleDischargeData('quality')"> 
                             <label for="qualityData" ng-if="vm.error == false"> Quality</label>
 
