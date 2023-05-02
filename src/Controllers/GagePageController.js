@@ -587,7 +587,7 @@ var StreamStats;
                 var _this_1 = this;
                 var date = new Date();
                 var timeInMillisec = date.getTime();
-                timeInMillisec -= 14 * 24 * 60 * 60 * 1000;
+                timeInMillisec -= 15 * 24 * 60 * 60 * 1000;
                 date.setTime(timeInMillisec);
                 var twoWeeksAgo = new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
                     .toISOString()
@@ -608,6 +608,7 @@ var StreamStats;
                             return (parseFloat(item.value) !== -999999);
                         });
                         _this_1.dailyFlow = filteredDaily;
+                        console.log('daily flow', _this_1.dailyFlow);
                     }
                     _this_1.getInstantaneousFlow();
                 });
@@ -616,12 +617,14 @@ var StreamStats;
                 var _this_1 = this;
                 var date = new Date();
                 var timeInMillisec = date.getTime();
-                timeInMillisec -= 14 * 24 * 60 * 60 * 1000;
+                timeInMillisec -= 15 * 24 * 60 * 60 * 1000;
                 date.setTime(timeInMillisec);
                 var twoWeeksAgo = new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
                     .toISOString()
                     .split("T")[0];
+                console.log(twoWeeksAgo);
                 var url = 'https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&startDT=' + twoWeeksAgo;
+                console.log(url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     console.log(response);
@@ -638,8 +641,8 @@ var StreamStats;
                             return (parseFloat(item.value) !== -999999);
                         });
                         _this_1.instFlow = filteredInst;
+                        console.log('inst', _this_1.instFlow);
                     }
-                    console.log('inst', _this_1.instFlow);
                     _this_1.getNWSForecast();
                 });
             };
@@ -807,7 +810,9 @@ var StreamStats;
                 if (this.dailyFlow) {
                     this.dailyFlow.forEach(function (dailyObj) {
                         if (parseFloat(dailyObj.value) !== -999999) {
-                            _this_1.formattedDailyFlow.push({ x: new Date(dailyObj.dateTime), y: parseFloat(dailyObj.value) });
+                            var date = new Date(dailyObj.dateTime);
+                            date.setHours(12, 0, 0);
+                            _this_1.formattedDailyFlow.push({ x: date, y: parseFloat(dailyObj.value) });
                             _this_1.dailyDatesOnly.push(new Date(dailyObj.dateTime));
                         }
                         var now = new Date(dailyObj.dateTime);
@@ -826,7 +831,6 @@ var StreamStats;
                         }
                         ;
                         if (parseInt(dailyObj.value) !== -999999) {
-                            _this_1.formattedDailyFlow.push({ x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value) });
                             _this_1.dailyValuesOnly.push(parseInt(dailyObj.value));
                             if (isLeapYear(year) == false && doy > 59) {
                                 doy += 1;
@@ -854,7 +858,12 @@ var StreamStats;
                 if (this.instFlow) {
                     this.instFlow.forEach(function (instObj) {
                         if (parseFloat(instObj.value) !== -999999) {
-                            _this_1.formattedInstFlow.push({ x: new Date(instObj.dateTime), y: parseFloat(instObj.value) });
+                            var index = _this_1.formattedDailyFlow.length - 1;
+                            var finalDate = _this_1.formattedDailyFlow[index].x;
+                            var instDates = new Date(instObj.dateTime);
+                            if (instDates > finalDate) {
+                                _this_1.formattedInstFlow.push({ x: instDates, y: parseFloat(instObj.value) });
+                            }
                         }
                     });
                 }
@@ -1710,6 +1719,7 @@ var StreamStats;
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
+                console.log('Inst Flow', this.formattedInstFlow);
                 var self = this;
                 var min;
                 if (this.formattedPeakDatesOnYear.length > 0) {
@@ -2010,10 +2020,10 @@ var StreamStats;
                             },
                             showInLegend: false
                         }, {
-                            name: 'Daily Streamflow',
+                            name: 'Daily Mean Streamflow',
                             showInNavigator: true,
                             tooltip: {
-                                headerFormat: '<b>Daily Streamflow</b>',
+                                headerFormat: '<b>Daily Mean Streamflow</b>',
                                 pointFormatter: function () {
                                     if (this.formattedDailyFlow !== null) {
                                         var UTCday = this.x.getUTCDate();
@@ -2385,12 +2395,21 @@ var StreamStats;
                                 headerFormat: '<b>Instantaneous Streamflow</b>',
                                 pointFormatter: function () {
                                     if (this.formattedInstFlow !== null) {
+                                        var hours = this.x.getUTCHours();
+                                        hours -= 4;
+                                        if (hours < 10) {
+                                            hours = '0' + hours;
+                                        }
+                                        var minutes = this.x.getUTCMinutes();
+                                        if (minutes < 10) {
+                                            minutes = '0' + minutes;
+                                        }
                                         var UTCday = this.x.getUTCDate();
                                         var year = this.x.getUTCFullYear();
                                         var month = this.x.getUTCMonth();
                                         month += 1;
                                         var formattedUTCDailyDate = month + '/' + UTCday + '/' + year;
-                                        return '<br>Date: <b>' + formattedUTCDailyDate + '</b><br>Value: <b>' + this.y + ' ft³/s';
+                                        return '<br>Date: <b>' + formattedUTCDailyDate + ' (' + hours + ':' + minutes + ')</b><br>Value: <b>' + this.y + ' ft³/s';
                                     }
                                 }
                             },

@@ -799,7 +799,7 @@ module StreamStats.Controllers {
         public getDailyFlow() {
             var date = new Date ();
 			var timeInMillisec = date.getTime ();	// the milliseconds elapsed since 01 January, 1970 00:00:00 UTC
-			timeInMillisec -= 14 * 24 * 60 * 60 * 1000; 	// 14 days in milliseconds
+			timeInMillisec -= 15 * 24 * 60 * 60 * 1000; 	// 14 days in milliseconds
 			date.setTime (timeInMillisec);
             var twoWeeksAgo = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 ))
                     .toISOString()
@@ -821,6 +821,8 @@ module StreamStats.Controllers {
                         return (parseFloat(item.value) !== -999999)
                     });
                     this.dailyFlow = filteredDaily;
+                    console.log('daily flow', this.dailyFlow)
+
                     }
                     this.getInstantaneousFlow();
                 }); 
@@ -830,12 +832,14 @@ module StreamStats.Controllers {
             //change the above url to have an end dt that is the same as this start dt
             var date = new Date ();
 			var timeInMillisec = date.getTime ();	// the milliseconds elapsed since 01 January, 1970 00:00:00 UTC
-			timeInMillisec -= 14 * 24 * 60 * 60 * 1000; 	// 14 days in milliseconds
+			timeInMillisec -= 15 * 24 * 60 * 60 * 1000; 	// 14 days in milliseconds
 			date.setTime (timeInMillisec);
             var twoWeeksAgo = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 ))
                     .toISOString()
                     .split("T")[0];
+                    console.log(twoWeeksAgo)
             var url = 'https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&startDT=' + twoWeeksAgo;
+            console.log(url)
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
@@ -849,9 +853,10 @@ module StreamStats.Controllers {
                     };
                     if (instValues !== 0) {
                     const filteredInst = instValues.filter(item => {
-                        return (parseFloat(item.value) !== -999999)
+                        return (parseFloat(item.value) !== -999999 )
                     });
                     this.instFlow = filteredInst;
+                    console.log('inst', this.instFlow)
                     }
                     //console.log('inst', this.instFlow)
                     this.getNWSForecast();
@@ -1109,9 +1114,13 @@ module StreamStats.Controllers {
             if (this.dailyFlow) {
                 this.dailyFlow.forEach(dailyObj => {
                     if (parseFloat(dailyObj.value) !== -999999) {
-                    this.formattedDailyFlow.push({x: new Date(dailyObj.dateTime), y: parseFloat(dailyObj.value)})
+                    var date = new Date(dailyObj.dateTime);
+                    date.setHours(12, 0, 0);
+                    this.formattedDailyFlow.push({x: date, y: parseFloat(dailyObj.value)})
                     this.dailyDatesOnly.push(new Date(dailyObj.dateTime))
                 }
+                //console.log('before', this.formattedDailyFlow)
+
                 let now = new Date(dailyObj.dateTime);
                     let year = new Date(dailyObj.dateTime).getUTCFullYear();
                     //Getting dates in Julian days
@@ -1125,7 +1134,6 @@ module StreamStats.Controllers {
                         return year % 4 === 0;
                     };
                     if (parseInt(dailyObj.value) !== -999999) {
-                    this.formattedDailyFlow.push({x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value)})
                     this.dailyValuesOnly.push(parseInt(dailyObj.value));
 
                     if (isLeapYear(year) == false && doy > 59) {
@@ -1149,7 +1157,12 @@ module StreamStats.Controllers {
             if (this.instFlow) {
                 this.instFlow.forEach(instObj => {
                     if (parseFloat(instObj.value) !== -999999) {
-                    this.formattedInstFlow.push({x: new Date(instObj.dateTime), y: parseFloat(instObj.value)})
+                        let index  = this.formattedDailyFlow.length-1
+                        let finalDate = this.formattedDailyFlow[index].x
+                        let instDates = new Date(instObj.dateTime)
+                        if (instDates > finalDate) {
+                    this.formattedInstFlow.push({x: instDates, y: parseFloat(instObj.value)})
+                        }
                 }
             })
             }
@@ -2050,6 +2063,7 @@ module StreamStats.Controllers {
             //console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear.length)
             //console.log('0-10', this.formattedP0to10);
             //console.log('NWS Forecast', this.NWSforecast)
+            console.log('Inst Flow', this.formattedInstFlow)
             var self = this
             let min;
                 if (this.formattedPeakDatesOnYear.length > 0) {
@@ -2353,10 +2367,10 @@ module StreamStats.Controllers {
                     },
                     showInLegend: false
                 },{
-                    name    : 'Daily Streamflow',
+                    name    : 'Daily Mean Streamflow',
                     showInNavigator: true,
                     tooltip: {
-                        headerFormat:'<b>Daily Streamflow</b>',
+                        headerFormat:'<b>Daily Mean Streamflow</b>',
                         pointFormatter: function(){
                             if (this.formattedDailyFlow !== null){
                                 let UTCday = this.x.getUTCDate();
@@ -2729,12 +2743,21 @@ module StreamStats.Controllers {
                         headerFormat:'<b>Instantaneous Streamflow</b>',
                         pointFormatter: function(){
                             if (this.formattedInstFlow !== null){
+                                let hours = this.x.getUTCHours();
+                                hours-= 4
+                                if (hours < 10)  {
+                                    hours = '0'+hours;
+                                }
+                                let minutes = this.x.getUTCMinutes();
+                                if (minutes < 10)  {
+                                    minutes = '0'+minutes;
+                                }
                                 let UTCday = this.x.getUTCDate();
                                 let year = this.x.getUTCFullYear();
                                 let month = this.x.getUTCMonth();
                                     month += 1; // adding a month to the UTC months (which are zero-indexed)
                                 let formattedUTCDailyDate = month + '/' + UTCday + '/' + year;
-                                return '<br>Date: <b>'  + formattedUTCDailyDate + '</b><br>Value: <b>' + this.y + ' ft³/s'
+                                return '<br>Date: <b>'  + formattedUTCDailyDate + ' (' + hours + ':' + minutes + ')</b><br>Value: <b>' + this.y + ' ft³/s'
                             }
                         }
                     },
