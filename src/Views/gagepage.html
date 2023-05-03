@@ -269,9 +269,17 @@
                             <span id="years2show"></span>
 
 
-                            <div class="ageQualityLegend">
+                            <div class="legend-container">
+                                <div *ngFor="let item of legendItems" class="legend-item">
+                                  <span class="legend-color" [style.background-color]="item.color"></span>
+                                  <span>{{item.text}}</span>
+                                </div>
+                              </div>
+                              
+                              
+
+                            <!-- <div class="ageQualityLegend">
                                 <ng-container *ngIf="!showQuality; else qualityLegend">
-                                  <!-- Your existing age legend code goes here -->
                                 </ng-container>
                               
                                 <ng-template #qualityLegend>
@@ -288,7 +296,7 @@
                                     <span style="color: #FFA200;">Poor</span>
                                   </div>
                                 </ng-template>
-                              </div>
+                              </div> -->
                               
                               <!-- <ng-template #ageLegend>
                               <div class="ageQualityLegend">

@@ -213,6 +213,7 @@ module StreamStats.Controllers {
         public startYear: number;
         public endYear: number;
         public yearSliderOptions: any;
+        public showQuality: any;
         public NWSforecast = undefined;
 
         //Constructor
@@ -849,6 +850,7 @@ module StreamStats.Controllers {
                     this.formatData()
                     this.updateChart()
                     this.getMinYear()
+                    this.updateLegend()
                 });
         } 
 
@@ -881,7 +883,63 @@ module StreamStats.Controllers {
                 chart.series[2].update({data:filteredData});
             }
         }
+
+        public legendItems: any[] = [];
+        public qualityValues: string[] = ['Good', 'Fair', 'Poor'];
+
+
+        public updateLegend(): void {
+            console.log('updateLegend() called'); // Log that the updateLegend function is being called
         
+            if (this.showQuality) {
+                console.log('showQuality is true'); // Log that showQuality is true
+        
+                this.legendItems = this.qualityValues.map(quality => {
+                    console.log('Adding quality item:', quality); // Log the quality item being added
+                    return {
+                        text: quality,
+                        color: this.stageDischargeQualityColor(quality),
+                    };
+                });
+        
+                console.log('Updated legendItems:', this.legendItems); // Log the updated legendItems array
+            } else {
+                console.log('showQuality is false'); // Log that showQuality is false
+        
+                this.legendItems = [
+                    { text: 'Most Recent Measurement', color: 'red' },
+                    { text: 'Measurements in the Last Year', color: 'orange' },
+                    { text: 'Newer', color: '#0000cdcc' },
+                    { text: 'Older Measurements', color: '#0000cd4d' },
+                ];
+        
+                console.log('Updated legendItems:', this.legendItems); // Log the updated legendItems array
+            }
+        }
+        
+          
+          
+          
+
+            public onButtonClick(type: string): void {
+            console.log('onButtonClick() called with type:', type);
+            if (type === 'quality') {
+                this.showQuality = !this.showQuality;
+                console.log('showQuality value:', this.showQuality);
+                this.updateLegend();
+            } else {
+                // Handle other button types if needed
+            }
+            }
+
+          
+          ngOnInit(): void {
+            console.log('ngOnInit() called');
+            this.updateLegend();
+          }
+          
+          
+          
         // using this to eventually show flood stage
         // public getFloodStage() {
         //     const url = 'https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=' + this.nwsStations
@@ -1572,13 +1630,16 @@ public createDailyRasterPlot(): void {
                 }
             };
 
-        public toggleDischargeData (dataType) {
-            let chart = $('#chart3').highcharts();
-            let currentUSGSMeasuredData = chart.series[2].data;
-            currentUSGSMeasuredData.forEach(row => {
-                row.color = (dataType == 'age') ? row.ageColor : row.qualityColor;
-            });
-            chart.series[2].update({data:currentUSGSMeasuredData})
+            public toggleDischargeData(dataType) {
+                let chart = $('#chart3').highcharts();
+                let currentUSGSMeasuredData = chart.series[2].data;
+                currentUSGSMeasuredData.forEach(row => {
+                  row.color = dataType == 'age' ? row.ageColor : row.qualityColor;
+                });
+                chart.series[2].update({ data: currentUSGSMeasuredData });
+                this.updateLegend(); // Add this line
+              }
+              
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-

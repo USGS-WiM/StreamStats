@@ -103,6 +103,8 @@ var StreamStats;
                 _this_1.dailyValuesOnly = [];
                 _this_1.ageQualityData = 'age';
                 _this_1.NWSforecast = undefined;
+                _this_1.legendItems = [];
+                _this_1.qualityValues = ['Good', 'Fair', 'Poor'];
                 _this_1.plotlines = true;
                 _this_1.logScale = false;
                 _this_1.logScaleDischarge = false;
@@ -588,6 +590,7 @@ var StreamStats;
                     _this_1.formatData();
                     _this_1.updateChart();
                     _this_1.getMinYear();
+                    _this_1.updateLegend();
                 });
             };
             GagePageController.prototype.getMinYear = function () {
@@ -614,6 +617,45 @@ var StreamStats;
                     console.log('test', chart);
                     chart.series[2].update({ data: filteredData });
                 }
+            };
+            GagePageController.prototype.updateLegend = function () {
+                var _this_1 = this;
+                console.log('updateLegend() called');
+                if (this.showQuality) {
+                    console.log('showQuality is true');
+                    this.legendItems = this.qualityValues.map(function (quality) {
+                        console.log('Adding quality item:', quality);
+                        return {
+                            text: quality,
+                            color: _this_1.stageDischargeQualityColor(quality),
+                        };
+                    });
+                    console.log('Updated legendItems:', this.legendItems);
+                }
+                else {
+                    console.log('showQuality is false');
+                    this.legendItems = [
+                        { text: 'Most Recent Measurement', color: 'red' },
+                        { text: 'Measurements in the Last Year', color: 'orange' },
+                        { text: 'Newer', color: '#0000cdcc' },
+                        { text: 'Older Measurements', color: '#0000cd4d' },
+                    ];
+                    console.log('Updated legendItems:', this.legendItems);
+                }
+            };
+            GagePageController.prototype.onButtonClick = function (type) {
+                console.log('onButtonClick() called with type:', type);
+                if (type === 'quality') {
+                    this.showQuality = !this.showQuality;
+                    console.log('showQuality value:', this.showQuality);
+                    this.updateLegend();
+                }
+                else {
+                }
+            };
+            GagePageController.prototype.ngOnInit = function () {
+                console.log('ngOnInit() called');
+                this.updateLegend();
             };
             GagePageController.prototype.formatData = function () {
                 var _this_1 = this;
@@ -1250,9 +1292,10 @@ var StreamStats;
                 var chart = $('#chart3').highcharts();
                 var currentUSGSMeasuredData = chart.series[2].data;
                 currentUSGSMeasuredData.forEach(function (row) {
-                    row.color = (dataType == 'age') ? row.ageColor : row.qualityColor;
+                    row.color = dataType == 'age' ? row.ageColor : row.qualityColor;
                 });
                 chart.series[2].update({ data: currentUSGSMeasuredData });
+                this.updateLegend();
             };
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;
