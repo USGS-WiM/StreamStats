@@ -211,6 +211,7 @@ module StreamStats.Controllers {
         public estPeakDates = undefined;
         public dailyFlow = undefined;
         public instFlow = undefined;
+        public gageTimeZone = undefined;
         public NWSforecast = undefined;
         public meanPercentileStats = undefined;
         public meanPercent = undefined;
@@ -255,6 +256,7 @@ module StreamStats.Controllers {
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
         chartConfig: {  chart: {height: number, width: number, zooming: {type: string}, panning: boolean, panKey: string, events: {load: Function}},
                         title: { text: string, align: string},
+                        time: { useUTC: false, timezone: string},
                         subtitle: { text: string, align: string}, 
                         legend: { useHTML: true, symbolPadding: number, symbolWidth: number, symbolHeight: number, squareSymbol: boolean, labelFormatter: Function},
                         rangeSelector: { enabled: boolean, inputPosition: {align: string, x: number, y: number}, 
@@ -821,8 +823,6 @@ module StreamStats.Controllers {
                         return (parseFloat(item.value) !== -999999)
                     });
                     this.dailyFlow = filteredDaily;
-                    console.log('daily flow', this.dailyFlow)
-
                     }
                     this.getInstantaneousFlow();
                 }); 
@@ -837,16 +837,17 @@ module StreamStats.Controllers {
             var twoWeeksAgo = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 ))
                     .toISOString()
                     .split("T")[0];
-                    console.log(twoWeeksAgo)
+                    //console.log(twoWeeksAgo)
             var url = 'https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&startDT=' + twoWeeksAgo;
-            console.log(url)
+            //console.log(url)
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
-                    console.log(response)
                     const data = response.data.value.timeSeries;
                     if (data.length !== 0) {
                         var instValues = data[0].values[0].value
+                        var timeZoneInfo = data[0].sourceInfo.timeZoneInfo;
+                        this.gageTimeZone = timeZoneInfo;
                     }
                     else {
                         instValues = 0
@@ -856,7 +857,6 @@ module StreamStats.Controllers {
                         return (parseFloat(item.value) !== -999999 )
                     });
                     this.instFlow = filteredInst;
-                    console.log('inst', this.instFlow)
                     }
                     //console.log('inst', this.instFlow)
                     this.getNWSForecast();
@@ -2063,7 +2063,31 @@ module StreamStats.Controllers {
             //console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear.length)
             //console.log('0-10', this.formattedP0to10);
             //console.log('NWS Forecast', this.NWSforecast)
-            console.log('Inst Flow', this.formattedInstFlow)
+            //console.log('Inst Flow', this.formattedInstFlow)
+            let timezone;
+            let zoneAbbreviation = this.gageTimeZone.defaultTimeZone.zoneAbbreviation
+            console.log(zoneAbbreviation)
+            if (zoneAbbreviation === 'EST') {
+                timezone = 'America/New_York'
+            }
+            if (zoneAbbreviation === 'CST') {
+                timezone = 'America/Chicago'
+            }
+            if (zoneAbbreviation === 'MST') {
+                timezone = 'America/Denver'
+            }
+            if (zoneAbbreviation === 'PST') {
+                timezone === 'America/Los_Angeles'
+            }
+            // if (zoneAbbreviation === '') {
+            //     timezone === 'America/Anchorage'
+            // }
+            // if (zoneAbbreviation === '') {
+            //     timezone === 'Pacific/Honolulu'
+            // }
+        
+            console.log(timezone)
+
             var self = this
             let min;
                 if (this.formattedPeakDatesOnYear.length > 0) {
@@ -2090,6 +2114,10 @@ module StreamStats.Controllers {
                 title: {
                     text: 'Annual Peak Streamflow',
                     align: 'center'
+                },
+                time: {
+                    useUTC: false, 
+                    timezone: 'America/New_York'
                 },
                 legend: {
                     useHTML: true,
@@ -2744,7 +2772,7 @@ module StreamStats.Controllers {
                         pointFormatter: function(){
                             if (this.formattedInstFlow !== null){
                                 let hours = this.x.getUTCHours();
-                                hours-= 4
+                                hours-= 5 // need to make this work if hours is < 5
                                 if (hours < 10)  {
                                     hours = '0'+hours;
                                 }
@@ -2763,7 +2791,7 @@ module StreamStats.Controllers {
                     },
                     turboThreshold: 0, 
                     type    : 'line',
-                    color   : '#1434A4',
+                    color   : '#008000',
                     //color   : '#add8f2',
                     fillOpacity: null, 
                     lineWidth: 1.5,

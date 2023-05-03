@@ -106,6 +106,7 @@ var StreamStats;
                 _this_1.estPeakDates = undefined;
                 _this_1.dailyFlow = undefined;
                 _this_1.instFlow = undefined;
+                _this_1.gageTimeZone = undefined;
                 _this_1.NWSforecast = undefined;
                 _this_1.meanPercentileStats = undefined;
                 _this_1.meanPercent = undefined;
@@ -608,7 +609,6 @@ var StreamStats;
                             return (parseFloat(item.value) !== -999999);
                         });
                         _this_1.dailyFlow = filteredDaily;
-                        console.log('daily flow', _this_1.dailyFlow);
                     }
                     _this_1.getInstantaneousFlow();
                 });
@@ -622,15 +622,14 @@ var StreamStats;
                 var twoWeeksAgo = new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
                     .toISOString()
                     .split("T")[0];
-                console.log(twoWeeksAgo);
                 var url = 'https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&startDT=' + twoWeeksAgo;
-                console.log(url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
-                    console.log(response);
                     var data = response.data.value.timeSeries;
                     if (data.length !== 0) {
                         var instValues = data[0].values[0].value;
+                        var timeZoneInfo = data[0].sourceInfo.timeZoneInfo;
+                        _this_1.gageTimeZone = timeZoneInfo;
                     }
                     else {
                         instValues = 0;
@@ -641,7 +640,6 @@ var StreamStats;
                             return (parseFloat(item.value) !== -999999);
                         });
                         _this_1.instFlow = filteredInst;
-                        console.log('inst', _this_1.instFlow);
                     }
                     _this_1.getNWSForecast();
                 });
@@ -1719,7 +1717,22 @@ var StreamStats;
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
-                console.log('Inst Flow', this.formattedInstFlow);
+                var timezone;
+                var zoneAbbreviation = this.gageTimeZone.defaultTimeZone.zoneAbbreviation;
+                console.log(zoneAbbreviation);
+                if (zoneAbbreviation === 'EST') {
+                    timezone = 'America/New_York';
+                }
+                if (zoneAbbreviation === 'CST') {
+                    timezone = 'America/Chicago';
+                }
+                if (zoneAbbreviation === 'MST') {
+                    timezone = 'America/Denver';
+                }
+                if (zoneAbbreviation === 'PST') {
+                    timezone === 'America/Los_Angeles';
+                }
+                console.log(timezone);
                 var self = this;
                 var min;
                 if (this.formattedPeakDatesOnYear.length > 0) {
@@ -1747,6 +1760,10 @@ var StreamStats;
                     title: {
                         text: 'Annual Peak Streamflow',
                         align: 'center'
+                    },
+                    time: {
+                        useUTC: false,
+                        timezone: 'America/New_York'
                     },
                     legend: {
                         useHTML: true,
@@ -2396,7 +2413,7 @@ var StreamStats;
                                 pointFormatter: function () {
                                     if (this.formattedInstFlow !== null) {
                                         var hours = this.x.getUTCHours();
-                                        hours -= 4;
+                                        hours -= 5;
                                         if (hours < 10) {
                                             hours = '0' + hours;
                                         }
@@ -2415,7 +2432,7 @@ var StreamStats;
                             },
                             turboThreshold: 0,
                             type: 'line',
-                            color: '#1434A4',
+                            color: '#008000',
                             fillOpacity: null,
                             lineWidth: 1.5,
                             data: this.formattedInstFlow,
