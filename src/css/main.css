@@ -1087,7 +1087,31 @@ div.leaflet-top > .elevation {
 	        opacity: 1 !important;
 	    }
 
-
+        .ageQualityLegend {
+            position: absolute;
+            bottom: 120px;
+            left: 700px;
+            background-color: white;
+            border: 1px solid gray;
+            border-radius: 5px;
+            padding: 5px;
+            font-size: 13px;
+            font-weight: bold;
+            z-index: 100;
+          }
+          
+          .ageQualityLegend-item {
+            display: flex;
+            align-items: center;
+          }
+          
+          .ageQualityLegend-color {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            margin-right: 5px;
+          }
+          
     /*
         Legend list items
     */

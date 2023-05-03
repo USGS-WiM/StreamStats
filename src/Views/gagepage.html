@@ -267,6 +267,53 @@
                             <br>
                             <rzslider class="rzSlider" style="width:50%" rz-slider-model="vm.startYear" rz-slider-high="vm.endYear" rz-slider-options="vm.yearSliderOptions"></rzslider>
                             <span id="years2show"></span>
+
+
+                            <div class="ageQualityLegend">
+                                <ng-container *ngIf="!showQuality; else qualityLegend">
+                                  <!-- Your existing age legend code goes here -->
+                                </ng-container>
+                              
+                                <ng-template #qualityLegend>
+                                  <div class="ageQualityLegend-item">
+                                    <span class="ageQualityLegend-color" [style.backgroundColor]="'#2ED017'"></span>
+                                    <span style="color: #2ED017;">Excellent - Good</span>
+                                  </div>
+                                  <div class="ageQualityLegend-item">
+                                    <span class="ageQualityLegend-color" [style.backgroundColor]="'#E7F317'"></span>
+                                    <span style="color: #E7F317;">Fair</span>
+                                  </div>
+                                  <div class="ageQualityLegend-item">
+                                    <span class="ageQualityLegend-color" [style.backgroundColor]="'#FFA200'"></span>
+                                    <span style="color: #FFA200;">Poor</span>
+                                  </div>
+                                </ng-template>
+                              </div>
+                              
+                              <!-- <ng-template #ageLegend>
+                              <div class="ageQualityLegend">
+                                <div class="ageQualityLegend-item">
+                                  <span class="ageQualityLegend-color" [style.backgroundColor]="'red'"></span>
+                                  <span style="color: red;">Most Recent Measurement</span>
+                                </div>
+                                <div class="ageQualityLegend-item">
+                                  <span class="ageQualityLegend-color" [style.backgroundColor]="'orange'"></span>
+                                  Measurements in the Last Year
+                                </div>
+                                <div class="ageQualityLegend-item">
+                                  <span class="ageQualityLegend-color" [style.backgroundColor]="'rgba(0,0,205,0.8)'"></span>
+                                  Newer
+                                </div>
+                                <div class="ageQualityLegend-item">
+                                  <span class="ageQualityLegend-color" [style.backgroundColor]="'rgba(0,0,205,0.3)'"></span>
+                                  Older Measurements
+                                </div>
+                                </ng-template>
+                              </div> -->
+                              
+                              <!-- Button to toggle between age and quality legends -->
+                              <!-- <button (click)="onButtonClick('quality')">Toggle Quality Legend</button> -->
+                              
                             
                             <!-- <div class="group-wrapper">
                                 <label>Start Year:</label>
