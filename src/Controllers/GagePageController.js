@@ -102,9 +102,6 @@ var StreamStats;
                 _this_1.formattedDischargePeakDates = [];
                 _this_1.dailyValuesOnly = [];
                 _this_1.ageQualityData = 'age';
-                _this_1.NWSforecast = undefined;
-                _this_1.legendItems = [];
-                _this_1.qualityValues = ['Good', 'Fair', 'Poor'];
                 _this_1.plotlines = true;
                 _this_1.logScale = false;
                 _this_1.logScaleDischarge = false;
@@ -485,53 +482,7 @@ var StreamStats;
                     }
                     ;
                     _this_1.dailyFlow = dailyValues;
-                    _this_1.getNWSForecast();
-                });
-            };
-            GagePageController.prototype.getNWSForecast = function () {
-                var self = this;
-                var nwisCode = this.gage.code;
-                this.$http.get('./data/gageNumberCrossWalk.json').then(function (response) {
-                    self.crossWalk = response.data;
-                    var NWScode = self.crossWalk[nwisCode];
-                    if (NWScode !== undefined) {
-                        var url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + NWScode;
-                        var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
-                        self.Execute(request).then(function (response) {
-                            var xmlDocument = new DOMParser().parseFromString(response, "text/xml");
-                            var sigStages = xmlDocument.querySelector("sigstages");
-                            var action = parseFloat(sigStages.querySelector("action").textContent);
-                            var flood = parseFloat(sigStages.querySelector("flood").textContent);
-                            var moderate = parseFloat(sigStages.querySelector("moderate").textContent);
-                            var major = parseFloat(sigStages.querySelector("major").textContent);
-                            var record = parseFloat(sigStages.querySelector("record").textContent);
-                            console.log("action:", action);
-                            console.log("flood:", flood);
-                            console.log("moderate:", moderate);
-                            var forecastData = xmlDocument.querySelectorAll("forecast");
-                            if (forecastData[0] !== undefined) {
-                                var smallerData_1 = forecastData[0].childNodes;
-                                var forecastArray_1 = [];
-                                smallerData_1.forEach(function (datum) {
-                                    if (datum.childNodes[0] !== undefined) {
-                                        var forecastObj = {
-                                            x: new Date(datum.childNodes[0].textContent),
-                                            y: parseFloat(datum.childNodes[2].textContent)
-                                        };
-                                        if ((smallerData_1[2].childNodes[2].getAttribute("units")) === 'kcfs') {
-                                            forecastObj.y *= 1000;
-                                        }
-                                        forecastArray_1.push(forecastObj);
-                                        self.NWSforecast = forecastArray_1;
-                                    }
-                                });
-                            }
-                            self.getRatingCurve();
-                        });
-                    }
-                    else {
-                        self.getRatingCurve();
-                    }
+                    _this_1.getRatingCurve();
                 });
             };
             GagePageController.prototype.getRatingCurve = function () {
@@ -590,7 +541,7 @@ var StreamStats;
                     _this_1.formatData();
                     _this_1.updateChart();
                     _this_1.getMinYear();
-                    _this_1.updateLegend();
+                    _this_1.toggleLegend();
                 });
             };
             GagePageController.prototype.getMinYear = function () {
@@ -602,60 +553,34 @@ var StreamStats;
             };
             GagePageController.prototype.updateChart = function () {
                 var _this_1 = this;
-                console.log('measured obj', this.measuredObj);
                 var chart = $('#chart3').highcharts();
-                chart.series[2].update({ data: [] });
-                var filteredData = this.measuredObj.filter(function (item) {
-                    var itemDate = new Date(item.dateTime);
-                    var itemMonth = itemDate.getMonth() + 1;
-                    var itemYear = itemDate.getFullYear();
-                    return itemMonth >= _this_1.startMonth && itemMonth <= _this_1.endMonth &&
-                        itemYear >= _this_1.startYear && itemYear <= _this_1.endYear;
-                });
-                console.log('filtered data', filteredData);
                 if (chart) {
-                    console.log('test', chart);
-                    chart.series[2].update({ data: filteredData });
-                }
-            };
-            GagePageController.prototype.updateLegend = function () {
-                var _this_1 = this;
-                console.log('updateLegend() called');
-                if (this.showQuality) {
-                    console.log('showQuality is true');
-                    this.legendItems = this.qualityValues.map(function (quality) {
-                        console.log('Adding quality item:', quality);
-                        return {
-                            text: quality,
-                            color: _this_1.stageDischargeQualityColor(quality),
-                        };
+                    chart.series[2].update({ data: [] });
+                    var filteredData = structuredClone(this.measuredObj).filter(function (item) {
+                        var itemDate = new Date(item.dateTime);
+                        var itemMonth = itemDate.getMonth() + 1;
+                        var itemYear = itemDate.getFullYear();
+                        return itemMonth >= _this_1.startMonth && itemMonth <= _this_1.endMonth &&
+                            itemYear >= _this_1.startYear && itemYear <= _this_1.endYear;
                     });
-                    console.log('Updated legendItems:', this.legendItems);
-                }
-                else {
-                    console.log('showQuality is false');
-                    this.legendItems = [
-                        { text: 'Most Recent Measurement', color: 'red' },
-                        { text: 'Measurements in the Last Year', color: 'orange' },
-                        { text: 'Newer', color: '#0000cdcc' },
-                        { text: 'Older Measurements', color: '#0000cd4d' },
-                    ];
-                    console.log('Updated legendItems:', this.legendItems);
+                    filteredData.forEach(function (row) {
+                        row.color = (_this_1.ageQualityData == 'age') ? row.ageColor : row.qualityColor;
+                    });
+                    chart.series[2].update({ data: filteredData });
+                    this.toggleLegend();
                 }
             };
-            GagePageController.prototype.onButtonClick = function (type) {
-                console.log('onButtonClick() called with type:', type);
-                if (type === 'quality') {
-                    this.showQuality = !this.showQuality;
-                    console.log('showQuality value:', this.showQuality);
-                    this.updateLegend();
+            GagePageController.prototype.toggleLegend = function () {
+                var ageLegend = document.getElementById('ageLegend');
+                var qualityLegend = document.getElementById('qualityLegend');
+                if (this.ageQualityData === 'age') {
+                    ageLegend.style.display = 'block';
+                    qualityLegend.style.display = 'none';
                 }
                 else {
+                    ageLegend.style.display = 'none';
+                    qualityLegend.style.display = 'block';
                 }
-            };
-            GagePageController.prototype.ngOnInit = function () {
-                console.log('ngOnInit() called');
-                this.updateLegend();
             };
             GagePageController.prototype.formatData = function () {
                 var _this_1 = this;
@@ -1288,15 +1213,6 @@ var StreamStats;
                 }
             };
             ;
-            GagePageController.prototype.toggleDischargeData = function (dataType) {
-                var chart = $('#chart3').highcharts();
-                var currentUSGSMeasuredData = chart.series[2].data;
-                currentUSGSMeasuredData.forEach(function (row) {
-                    row.color = dataType == 'age' ? row.ageColor : row.qualityColor;
-                });
-                chart.series[2].update({ data: currentUSGSMeasuredData });
-                this.updateLegend();
-            };
             GagePageController.prototype.init = function () {
                 this.AppVersion = configuration.version;
                 this.getGagePage();

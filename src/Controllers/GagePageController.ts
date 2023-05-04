@@ -214,7 +214,7 @@ module StreamStats.Controllers {
         public endYear: number;
         public yearSliderOptions: any;
         public showQuality: any;
-        public NWSforecast = undefined;
+        // public NWSforecast = undefined; to be used for flood stage part
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -700,70 +700,69 @@ module StreamStats.Controllers {
                         dailyValues = 0
                     };
                     this.dailyFlow = dailyValues
-                    this.getNWSForecast();
+                    this.getRatingCurve();
                 }); 
             }
 
-            public getNWSForecast() {
-                var self = this;
-                var nwisCode = this.gage.code;
+            // to be used for flood stage part of graph
+            // public getNWSForecast() {
+            //     var self = this;
+            //     var nwisCode = this.gage.code;
             
-                this.$http.get('./data/gageNumberCrossWalk.json').then(function(response) {
-                    self.crossWalk = response.data;
-                    var NWScode = self.crossWalk[nwisCode];
+            //     this.$http.get('./data/gageNumberCrossWalk.json').then(function(response) {
+            //         self.crossWalk = response.data;
+            //         var NWScode = self.crossWalk[nwisCode];
             
-                    if (NWScode !== undefined) {
-                        var url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + NWScode;
-                        const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
+            //         if (NWScode !== undefined) {
+            //             var url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + NWScode;
+            //             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
             
-                        self.Execute(request).then(function(response) {
-                            const xmlDocument = new DOMParser().parseFromString(response as string, "text/xml");
+            //             self.Execute(request).then(function(response) {
+            //                 const xmlDocument = new DOMParser().parseFromString(response as string, "text/xml");
 
-                            const sigStages = xmlDocument.querySelector("sigstages");
+            //                 const sigStages = xmlDocument.querySelector("sigstages");
             
-                            const action = parseFloat(sigStages.querySelector("action").textContent);
-                            const flood = parseFloat(sigStages.querySelector("flood").textContent);
-                            const moderate = parseFloat(sigStages.querySelector("moderate").textContent);
-                            const major = parseFloat(sigStages.querySelector("major").textContent);
-                            const record = parseFloat(sigStages.querySelector("record").textContent);
+            //                 const action = parseFloat(sigStages.querySelector("action").textContent);
+            //                 const flood = parseFloat(sigStages.querySelector("flood").textContent);
+            //                 const moderate = parseFloat(sigStages.querySelector("moderate").textContent);
+            //                 const major = parseFloat(sigStages.querySelector("major").textContent);
+            //                 const record = parseFloat(sigStages.querySelector("record").textContent);
 
-                            console.log("action:", action);
-                            console.log("flood:", flood);
-                            console.log("moderate:", moderate);
+            //                 console.log("action:", action);
+            //                 console.log("flood:", flood);
+            //                 console.log("moderate:", moderate);
             
-                            const forecastData = xmlDocument.querySelectorAll("forecast");
+            //                 const forecastData = xmlDocument.querySelectorAll("forecast");
             
-                            if (forecastData[0] !== undefined) {
-                                const smallerData = forecastData[0].childNodes;
-                                let forecastArray = [];
+            //                 if (forecastData[0] !== undefined) {
+            //                     const smallerData = forecastData[0].childNodes;
+            //                     let forecastArray = [];
             
-                                smallerData.forEach(datum => {
-                                    if (datum.childNodes[0] !== undefined) {
-                                        const forecastObj = {
-                                            x: new Date(datum.childNodes[0].textContent),
-                                            y: parseFloat(datum.childNodes[2].textContent)
-                                        };
+            //                     smallerData.forEach(datum => {
+            //                         if (datum.childNodes[0] !== undefined) {
+            //                             const forecastObj = {
+            //                                 x: new Date(datum.childNodes[0].textContent),
+            //                                 y: parseFloat(datum.childNodes[2].textContent)
+            //                             };
             
-                                        if ((smallerData[2].childNodes[2].getAttribute("units")) === 'kcfs') {
-                                            forecastObj.y *= 1000;
-                                        }
+            //                             if ((smallerData[2].childNodes[2].getAttribute("units")) === 'kcfs') {
+            //                                 forecastObj.y *= 1000;
+            //                             }
             
-                                        forecastArray.push(forecastObj);
-                                        self.NWSforecast = forecastArray;
-                                    }
-                                });
-                            }
+            //                             forecastArray.push(forecastObj);
+            //                             self.NWSforecast = forecastArray;
+            //                         }
+            //                     });
+            //                 }
             
-                            self.getRatingCurve();
-                        });
-                    } else {
-                        self.getRatingCurve();
-                    }
-                });
-            }
+            //                 self.getRatingCurve();
+            //             });
+            //         } else {
+            //             self.getRatingCurve();
+            //         }
+            //     });
+            // }
             
-
-
         public getRatingCurve() {
             const url = 'https://waterdata.usgs.gov/nwisweb/get_ratings?site_no=' + this.gage.code + '&file_type=exsa'
             // console.log('getDischargeInfo', url)
@@ -835,8 +834,6 @@ module StreamStats.Controllers {
                             qualityColor: this.stageDischargeQualityColor(dataRow[10]),
                             color: this.stageDischargeAgeColor (new Date(dataRow[3])),
                             ageColor: this.stageDischargeAgeColor (new Date(dataRow[3]))
-                            // time: this.dateTime (dataRow[3]),
-                            // color: this.getQualityCorrectColor (dataRow[10])
                         };
                         // console.log(object)
                         this.measuredObj.push(object) 
@@ -850,7 +847,8 @@ module StreamStats.Controllers {
                     this.formatData()
                     this.updateChart()
                     this.getMinYear()
-                    this.updateLegend()
+                    this.toggleLegend()
+                    // this.updateLegend()
                 });
         } 
 
@@ -866,79 +864,43 @@ module StreamStats.Controllers {
           }
       
         public updateChart() {
-            console.log('measured obj',this.measuredObj )
             let chart = $('#chart3').highcharts();
-            chart.series[2].update({data:[]});
-            const filteredData = this.measuredObj.filter((item) => {
-                const itemDate = new Date(item.dateTime);
-                const itemMonth = itemDate.getMonth() + 1;
-                const itemYear = itemDate.getFullYear();
-                return itemMonth >= this.startMonth && itemMonth <= this.endMonth &&
-                itemYear >= this.startYear && itemYear <= this.endYear;
-            });
-            console.log('filtered data',filteredData )
-        
-            if (chart) {
-                console.log('test', chart)
-                chart.series[2].update({data:filteredData});
-            }
-        }
-
-        public legendItems: any[] = [];
-        public qualityValues: string[] = ['Good', 'Fair', 'Poor'];
-
-
-        public updateLegend(): void {
-            console.log('updateLegend() called'); // Log that the updateLegend function is being called
-        
-            if (this.showQuality) {
-                console.log('showQuality is true'); // Log that showQuality is true
-        
-                this.legendItems = this.qualityValues.map(quality => {
-                    console.log('Adding quality item:', quality); // Log the quality item being added
-                    return {
-                        text: quality,
-                        color: this.stageDischargeQualityColor(quality),
-                    };
+            // Move everything else to be inside the if(chart)
+            if(chart) {
+                chart.series[2].update({data:[]}); // Reset the data series 
+                // Start with a fresh copy of the original data series (this.measuredObj)
+                // To avoid affecting the data associated with the data series (this.measuredObj), create a "deep copy" of this.measuredObj with the structuredClone function
+                // Filter the data based on selected dates
+                const filteredData = structuredClone(this.measuredObj).filter((item) => {
+                    const itemDate = new Date(item.dateTime);
+                    const itemMonth = itemDate.getMonth() + 1;
+                    const itemYear = itemDate.getFullYear();
+                    return itemMonth >= this.startMonth && itemMonth <= this.endMonth &&
+                    itemYear >= this.startYear && itemYear <= this.endYear;
                 });
-        
-                console.log('Updated legendItems:', this.legendItems); // Log the updated legendItems array
-            } else {
-                console.log('showQuality is false'); // Log that showQuality is false
-        
-                this.legendItems = [
-                    { text: 'Most Recent Measurement', color: 'red' },
-                    { text: 'Measurements in the Last Year', color: 'orange' },
-                    { text: 'Newer', color: '#0000cdcc' },
-                    { text: 'Older Measurements', color: '#0000cd4d' },
-                ];
-        
-                console.log('Updated legendItems:', this.legendItems); // Log the updated legendItems array
-            }
-        }
-        
-          
-          
-          
-
-            public onButtonClick(type: string): void {
-            console.log('onButtonClick() called with type:', type);
-            if (type === 'quality') {
-                this.showQuality = !this.showQuality;
-                console.log('showQuality value:', this.showQuality);
-                this.updateLegend();
-            } else {
-                // Handle other button types if needed
-            }
+                // Assign the correct color based on age or quality selection
+                filteredData.forEach(row => {
+                    row.color = (this.ageQualityData == 'age') ? row.ageColor : row.qualityColor;
+                });
+                // Update the data for this series
+                chart.series[2].update({data:filteredData});
+                this.toggleLegend();
             }
 
-          
-          ngOnInit(): void {
-            console.log('ngOnInit() called');
-            this.updateLegend();
-          }
-          
-          
+
+            public toggleLegend() {
+                const ageLegend = document.getElementById('ageLegend');
+                const qualityLegend = document.getElementById('qualityLegend');
+            
+                if (this.ageQualityData === 'age') {
+                    ageLegend.style.display = 'block';
+                    qualityLegend.style.display = 'none';
+                } else {
+                    ageLegend.style.display = 'none';
+                    qualityLegend.style.display = 'block';
+                }
+            }
+
           
         // using this to eventually show flood stage
         // public getFloodStage() {
@@ -1630,16 +1592,6 @@ public createDailyRasterPlot(): void {
                 }
             };
 
-            public toggleDischargeData(dataType) {
-                let chart = $('#chart3').highcharts();
-                let currentUSGSMeasuredData = chart.series[2].data;
-                currentUSGSMeasuredData.forEach(row => {
-                  row.color = dataType == 'age' ? row.ageColor : row.qualityColor;
-                });
-                chart.series[2].update({ data: currentUSGSMeasuredData });
-                this.updateLegend(); // Add this line
-              }
-              
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-

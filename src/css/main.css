@@ -1086,11 +1086,10 @@ div.leaflet-top > .elevation {
 	    .legend-close-button:hover {
 	        opacity: 1 !important;
 	    }
-
-          
+         
         .ageQualityLegend {
             position: absolute;
-            bottom: 120px;
+            bottom: 125px;
             left: 700px;
             background-color: white;
             border: 1px solid gray;
@@ -1489,7 +1488,29 @@ div.leaflet-top > .elevation {
 #printArea span:not(rzslider span) {
     padding: 0 0 0 3px;
 }
+.slider-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 20%;
+  }
+  
+  .slider-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 30%;
+  }
+  .slider-text {
+    font-size: 14px; /* Adjust this value to change the text size */
+    white-space: nowrap;
+  }
+ 
+  #months2show, #years2show {
+    padding: 0 0 0 3px;
+  }
 
+        
 .collapsible {
     cursor: pointer;
     padding: 18px;
