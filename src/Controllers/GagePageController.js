@@ -1718,21 +1718,28 @@ var StreamStats;
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
                 var timezone;
-                var zoneAbbreviation = this.gageTimeZone.defaultTimeZone.zoneAbbreviation;
-                console.log(zoneAbbreviation);
-                if (zoneAbbreviation === 'EST') {
-                    timezone = 'America/New_York';
+                if (this.formattedInstFlow.length > 0) {
+                    var zoneAbbreviation = this.gageTimeZone.defaultTimeZone.zoneAbbreviation;
+                    console.log(zoneAbbreviation);
+                    if (zoneAbbreviation === 'EST') {
+                        timezone = 'America/New_York';
+                    }
+                    if (zoneAbbreviation === 'CST') {
+                        timezone = 'America/Chicago';
+                    }
+                    if (zoneAbbreviation === 'MST') {
+                        timezone = 'America/Denver';
+                    }
+                    if (zoneAbbreviation === 'PST') {
+                        timezone = 'America/Los_Angeles';
+                    }
+                    if (zoneAbbreviation === 'AKST' || zoneAbbreviation === 'AKDT') {
+                        timezone = 'America/Anchorage';
+                    }
+                    if (zoneAbbreviation === 'HST') {
+                        timezone === 'Pacific/Honolulu';
+                    }
                 }
-                if (zoneAbbreviation === 'CST') {
-                    timezone = 'America/Chicago';
-                }
-                if (zoneAbbreviation === 'MST') {
-                    timezone = 'America/Denver';
-                }
-                if (zoneAbbreviation === 'PST') {
-                    timezone === 'America/Los_Angeles';
-                }
-                console.log(timezone);
                 var self = this;
                 var min;
                 if (this.formattedPeakDatesOnYear.length > 0) {

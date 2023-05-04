@@ -2065,6 +2065,8 @@ module StreamStats.Controllers {
             //console.log('NWS Forecast', this.NWSforecast)
             //console.log('Inst Flow', this.formattedInstFlow)
             let timezone;
+            //	09383100
+            if (this.formattedInstFlow.length > 0) {
             let zoneAbbreviation = this.gageTimeZone.defaultTimeZone.zoneAbbreviation
             console.log(zoneAbbreviation)
             if (zoneAbbreviation === 'EST') {
@@ -2077,16 +2079,16 @@ module StreamStats.Controllers {
                 timezone = 'America/Denver'
             }
             if (zoneAbbreviation === 'PST') {
-                timezone === 'America/Los_Angeles'
+                timezone = 'America/Los_Angeles'
             }
-            // if (zoneAbbreviation === '') {
-            //     timezone === 'America/Anchorage'
-            // }
-            // if (zoneAbbreviation === '') {
-            //     timezone === 'Pacific/Honolulu'
-            // }
-        
-            console.log(timezone)
+            if (zoneAbbreviation === 'AKST' || zoneAbbreviation === 'AKDT') {
+                timezone = 'America/Anchorage' // test gage 15276000
+            }
+            if (zoneAbbreviation === 'HST') {
+                timezone === 'Pacific/Honolulu' // test gage 16759600
+            }
+            //console.log(timezone)
+            }
 
             var self = this
             let min;
