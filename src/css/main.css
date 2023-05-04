@@ -1502,7 +1502,7 @@ div.leaflet-top > .elevation {
     width: 30%;
   }
   .slider-text {
-    font-size: 14px; /* Adjust this value to change the text size */
+    font-size: 14px;
     white-space: nowrap;
   }
  

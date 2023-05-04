@@ -865,12 +865,9 @@ module StreamStats.Controllers {
       
         public updateChart() {
             let chart = $('#chart3').highcharts();
-            // Move everything else to be inside the if(chart)
+
             if(chart) {
-                chart.series[2].update({data:[]}); // Reset the data series 
-                // Start with a fresh copy of the original data series (this.measuredObj)
-                // To avoid affecting the data associated with the data series (this.measuredObj), create a "deep copy" of this.measuredObj with the structuredClone function
-                // Filter the data based on selected dates
+                chart.series[2].update({data:[]});
                 const filteredData = structuredClone(this.measuredObj).filter((item) => {
                     const itemDate = new Date(item.dateTime);
                     const itemMonth = itemDate.getMonth() + 1;
@@ -878,15 +875,12 @@ module StreamStats.Controllers {
                     return itemMonth >= this.startMonth && itemMonth <= this.endMonth &&
                     itemYear >= this.startYear && itemYear <= this.endYear;
                 });
-                // Assign the correct color based on age or quality selection
                 filteredData.forEach(row => {
                     row.color = (this.ageQualityData == 'age') ? row.ageColor : row.qualityColor;
                 });
-                // Update the data for this series
                 chart.series[2].update({data:filteredData});
                 this.toggleLegend();
             }
-
 
             public toggleLegend() {
                 const ageLegend = document.getElementById('ageLegend');
