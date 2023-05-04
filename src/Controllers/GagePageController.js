@@ -623,6 +623,7 @@ var StreamStats;
                     .toISOString()
                     .split("T")[0];
                 var url = 'https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&startDT=' + twoWeeksAgo;
+                console.log(url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var data = response.data.value.timeSeries;
@@ -858,9 +859,10 @@ var StreamStats;
                         if (parseFloat(instObj.value) !== -999999) {
                             var index = _this_1.formattedDailyFlow.length - 1;
                             var finalDate = _this_1.formattedDailyFlow[index].x;
-                            var instDates = new Date(instObj.dateTime);
-                            if (instDates > finalDate) {
-                                _this_1.formattedInstFlow.push({ x: instDates, y: parseFloat(instObj.value) });
+                            var stringDate = instObj.dateTime.split('.')[0];
+                            var instDate = new Date(stringDate);
+                            if (instDate > finalDate) {
+                                _this_1.formattedInstFlow.push({ x: instDate, y: parseFloat(instObj.value) });
                             }
                         }
                     });
@@ -1717,6 +1719,7 @@ var StreamStats;
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
+                console.log('Inst Flow', this.formattedInstFlow);
                 var timezone;
                 if (this.formattedInstFlow.length > 0) {
                     var zoneAbbreviation = this.gageTimeZone.defaultTimeZone.zoneAbbreviation;
@@ -2419,12 +2422,11 @@ var StreamStats;
                                 headerFormat: '<b>Instantaneous Streamflow</b>',
                                 pointFormatter: function () {
                                     if (this.formattedInstFlow !== null) {
-                                        var hours = this.x.getUTCHours();
-                                        hours -= 5;
+                                        var hours = this.x.getHours();
                                         if (hours < 10) {
                                             hours = '0' + hours;
                                         }
-                                        var minutes = this.x.getUTCMinutes();
+                                        var minutes = this.x.getMinutes();
                                         if (minutes < 10) {
                                             minutes = '0' + minutes;
                                         }

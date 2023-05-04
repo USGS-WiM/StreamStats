@@ -839,7 +839,7 @@ module StreamStats.Controllers {
                     .split("T")[0];
                     //console.log(twoWeeksAgo)
             var url = 'https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&startDT=' + twoWeeksAgo;
-            //console.log(url)
+            console.log(url)
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
@@ -1159,10 +1159,11 @@ module StreamStats.Controllers {
                     if (parseFloat(instObj.value) !== -999999) {
                         let index  = this.formattedDailyFlow.length-1
                         let finalDate = this.formattedDailyFlow[index].x
-                        let instDates = new Date(instObj.dateTime)
-                        if (instDates > finalDate) {
-                    this.formattedInstFlow.push({x: instDates, y: parseFloat(instObj.value)})
-                        }
+                        let stringDate = instObj.dateTime.split('.')[0];
+                        let instDate = new Date(stringDate);
+                    if (instDate > finalDate) {
+                    this.formattedInstFlow.push({x: instDate, y: parseFloat(instObj.value)})
+                    }
                 }
             })
             }
@@ -2063,7 +2064,7 @@ module StreamStats.Controllers {
             //console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear.length)
             //console.log('0-10', this.formattedP0to10);
             //console.log('NWS Forecast', this.NWSforecast)
-            //console.log('Inst Flow', this.formattedInstFlow)
+            console.log('Inst Flow', this.formattedInstFlow)
             let timezone;
             //	09383100
             if (this.formattedInstFlow.length > 0) {
@@ -2773,12 +2774,12 @@ module StreamStats.Controllers {
                         headerFormat:'<b>Instantaneous Streamflow</b>',
                         pointFormatter: function(){
                             if (this.formattedInstFlow !== null){
-                                let hours = this.x.getUTCHours();
-                                hours-= 5 // need to make this work if hours is < 5
+                                let hours = this.x.getHours();
+                                //hours-= 5 // need to make this work if hours is < 5
                                 if (hours < 10)  {
                                     hours = '0'+hours;
                                 }
-                                let minutes = this.x.getUTCMinutes();
+                                let minutes = this.x.getMinutes();
                                 if (minutes < 10)  {
                                     minutes = '0'+minutes;
                                 }
