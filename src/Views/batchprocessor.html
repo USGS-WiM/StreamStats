@@ -26,9 +26,20 @@
     <div style="padding-top: 10px;">
         <!-- Start submit batch -->
         <div id="submitBatch" ng-if="vm.selectedBatchProcessorTabName==='submitBatch'">
-           
+            <!-- Start instructions -->
+            <div id="submitBatchInstructions">
+                <ul>To submit a batch: <br>
+                    <li>All highlighted fields must be completed before submission</li>
+                    <li>Only points that are contained within the Selected Region will be processed</li>
+                    <li>Batches are limited to 250 points each and if it contians more, only the first 250 points will be
+                    processed</li>
+                    <li>Only point shapefiles will be processed so no polygon, polyline, or multipoint geometries</li>
+                </ul>
+            </div>
+            <!-- End instructions -->
+
             <!-- Start select region -->
-            <div id="selectRegionID" style="padding-top: 15px;">
+            <div id="selectRegionID" style="padding-top: 10px;">
                 <label> State / Region: </label>
                 <select class="bp-select" ng-model="vm.selectedRegion"
                     ng-options="region.Code as region.Name for region in vm.regionList track by region.Code"
