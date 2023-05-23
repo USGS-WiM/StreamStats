@@ -661,6 +661,7 @@ var StreamStats;
                                 var forecastArray_1 = [];
                                 var timeZoneOffset = self.gageTimeZone.defaultTimeZone.zoneOffset;
                                 var numberOffset_1 = parseFloat(timeZoneOffset);
+                                console.log('here', numberOffset_1);
                                 smallerData_1.forEach(function (datum) {
                                     if (datum.childNodes[0] !== undefined) {
                                         var date = new Date(datum.childNodes[0].textContent);
@@ -1722,7 +1723,7 @@ var StreamStats;
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
-                console.log('NWS Forecast', this.NWSforecast);
+                console.log('Inst Flow', this.formattedInstFlow.length);
                 var timezone;
                 if (this.formattedInstFlow.length > 0) {
                     var zoneAbbreviation = this.gageTimeZone.defaultTimeZone.zoneAbbreviation;
@@ -1814,7 +1815,7 @@ var StreamStats;
                         min: min,
                         max: max,
                         title: {
-                            text: 'Date (' + this.gageTimeZone.defaultTimeZone.zoneAbbreviation + ')'
+                            text: 'Date'
                         },
                         custom: {
                             allowNegativeLog: true

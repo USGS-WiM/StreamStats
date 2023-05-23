@@ -883,6 +883,7 @@ module StreamStats.Controllers {
                             let forecastArray = [];
                             let timeZoneOffset = self.gageTimeZone.defaultTimeZone.zoneOffset;
                             let numberOffset = parseFloat(timeZoneOffset);
+                            console.log('here', numberOffset);
                             smallerData.forEach(datum => {
                                 if (datum.childNodes[0] !== undefined) {
                                     let date = new Date(datum.childNodes[0].textContent)
@@ -2074,10 +2075,15 @@ module StreamStats.Controllers {
             //console.log('daily flow plot data', this.formattedDailyFlow);
             //console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear.length)
             //console.log('0-10', this.formattedP0to10);
-            console.log('NWS Forecast', this.NWSforecast)
-            //console.log('Inst Flow', this.formattedInstFlow)
+            //console.log('NWS Forecast', this.NWSforecast)
+            console.log('Inst Flow', this.formattedInstFlow.length)
             let timezone;
             //	09383100
+            // function zoneAbbr () {
+            //     if (this.formattedInstFlow.length > 0) {
+            //     return this.gageTimeZone.defaultTimeZone.zoneAbbreviation
+            //     }
+            // }
             if (this.formattedInstFlow.length > 0) {
             let zoneAbbreviation = this.gageTimeZone.defaultTimeZone.zoneAbbreviation
             //console.log(zoneAbbreviation)
@@ -2176,7 +2182,7 @@ module StreamStats.Controllers {
                     min: min,
                     max: max,
                     title: {
-                        text: 'Date (' + this.gageTimeZone.defaultTimeZone.zoneAbbreviation + ')'
+                        text: 'Date'
                     },
                     custom: {
                         allowNegativeLog: true
