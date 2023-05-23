@@ -30,8 +30,7 @@ var StreamStats;
                 _this.StudyAreaService = studyAreaService;
                 _this.regionService = region;
                 _this.selectedAboutTabName = "about";
-                _this.regionURL = "https://www.usgs.gov/streamstats/state-and-region-based-info";
-                _this.regionArticle = "<p>StreamStats is developed on a state-by-state or regional basis. To find information about the data used for your area of interest, see our <a href=" + _this.regionURL + ">State and Region</a> pages.</p>";
+                _this.selectedRegion = null;
                 _this.init();
                 return _this;
             }
@@ -57,25 +56,16 @@ var StreamStats;
                     return;
                 configuration.regions.forEach(function (value) {
                     if (value.Name === regionID) {
-                        if (!value.regionEnabled) {
-                            _this.regionArticle = '<div class="wim-alert">StreamStats has not been developed for <strong>' + value.Name + '</strong>.  Please contact the <a href="mailto:support@streamstats.freshdesk.com">streamstats team</a> if you would like StreamStats enabled for this State/Region.</div>';
-                        }
-                        else {
-                            if (value.URL == null) {
-                                _this.regionArticle = '<div class="wim-alert">There is currently no information page for <strong>' + value.Name + '</strong>.  Please contact the <a href="mailto:support@streamstats.freshdesk.com">streamstats team</a> with any questions.</div>';
-                            }
-                            else {
-                                _this.regionURL = value.URL;
-                                _this.regionArticle = "<p>To find information about the data used for <strong>" + value.Name + "</strong>, see our<a href=" + _this.regionURL + ">" + value.Name + " information</a>page.</p>";
-                            }
-                        }
+                        _this.selectedRegion = value;
                     }
                 });
             };
-            AboutController.prototype.convertUnsafe = function (x) {
-                return this.sce.trustAsHtml(x);
+            AboutController.prototype.openSubmitSupport = function (e) {
+                this.Close();
+                e.stopPropagation();
+                e.preventDefault();
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_help, { "tabName": "submitTicket" });
             };
-            ;
             AboutController.prototype.init = function () {
                 this.AppVersion = configuration.version;
                 this.getRegionHelpArticle();

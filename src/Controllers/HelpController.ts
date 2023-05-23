@@ -67,18 +67,19 @@ module StreamStats.Controllers {
         public faqArticles: Object;
         public helpArticles: Object;
         private freshdeskCreds: Object;
+        private modalService: Services.IModalService;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$http', '$sce', 'StreamStats.Services.StudyAreaService', '$modalInstance', 'Upload'];
-        constructor($scope: IHelpControllerScope, $http: ng.IHttpService, $sce: any, studyAreaService: StreamStats.Services.IStudyAreaService, modal: ng.ui.bootstrap.IModalServiceInstance, Upload) {
+        static $inject = ['$scope', '$http', '$sce', 'StreamStats.Services.StudyAreaService', '$modalInstance', 'Upload', 'StreamStats.Services.ModalService'];
+        constructor($scope: IHelpControllerScope, $http: ng.IHttpService, $sce: any, studyAreaService: StreamStats.Services.IStudyAreaService, modal: ng.ui.bootstrap.IModalServiceInstance, Upload, modalService: Services.IModalService) {
             super($http, '');
             $scope.vm = this;
             this.StudyArea = studyAreaService.selectedStudyArea;
             this.Upload = Upload;
             this.http = $http;
             this.sce = $sce;
-
+            this.modalService = modalService;
             this.modalInstance = modal;
             this.StudyAreaService = studyAreaService;
             this.StudyArea = studyAreaService.selectedStudyArea;
@@ -198,6 +199,10 @@ module StreamStats.Controllers {
             else this.RegionID = '';
             if (this.StudyArea && this.StudyArea.Server) this.Server = this.StudyArea.Server;
             else this.Server = '';
+
+            if (this.modalService.modalOptions) { // Open correct tab
+                if (this.modalService.modalOptions.tabName) this.selectHelpTab(this.modalService.modalOptions.tabName);
+            }
         }
 
         private getBrowser() {

@@ -25,13 +25,14 @@ var StreamStats;
         }());
         var HelpController = (function (_super) {
             __extends(HelpController, _super);
-            function HelpController($scope, $http, $sce, studyAreaService, modal, Upload) {
+            function HelpController($scope, $http, $sce, studyAreaService, modal, Upload, modalService) {
                 var _this = _super.call(this, $http, '') || this;
                 $scope.vm = _this;
                 _this.StudyArea = studyAreaService.selectedStudyArea;
                 _this.Upload = Upload;
                 _this.http = $http;
                 _this.sce = $sce;
+                _this.modalService = modalService;
                 _this.modalInstance = modal;
                 _this.StudyAreaService = studyAreaService;
                 _this.StudyArea = studyAreaService.selectedStudyArea;
@@ -128,6 +129,10 @@ var StreamStats;
                     this.Server = this.StudyArea.Server;
                 else
                     this.Server = '';
+                if (this.modalService.modalOptions) {
+                    if (this.modalService.modalOptions.tabName)
+                        this.selectHelpTab(this.modalService.modalOptions.tabName);
+                }
             };
             HelpController.prototype.getBrowser = function () {
                 if ((!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0)
@@ -143,7 +148,7 @@ var StreamStats;
                 if (false || !!document.documentMode)
                     this.Browser = "IE";
             };
-            HelpController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.StudyAreaService', '$modalInstance', 'Upload'];
+            HelpController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.StudyAreaService', '$modalInstance', 'Upload', 'StreamStats.Services.ModalService'];
             return HelpController;
         }(WiM.Services.HTTPServiceBase));
         angular.module('StreamStats.Controllers')
