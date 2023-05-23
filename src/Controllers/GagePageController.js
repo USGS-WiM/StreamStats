@@ -623,7 +623,6 @@ var StreamStats;
                     .toISOString()
                     .split("T")[0];
                 var url = 'https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&startDT=' + twoWeeksAgo;
-                console.log(url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var data = response.data.value.timeSeries;
@@ -660,10 +659,14 @@ var StreamStats;
                             if (forecastData[0] !== undefined) {
                                 var smallerData_1 = forecastData[0].childNodes;
                                 var forecastArray_1 = [];
+                                var timeZoneOffset = self.gageTimeZone.defaultTimeZone.zoneOffset;
+                                var numberOffset_1 = parseFloat(timeZoneOffset);
                                 smallerData_1.forEach(function (datum) {
                                     if (datum.childNodes[0] !== undefined) {
+                                        var date = new Date(datum.childNodes[0].textContent);
+                                        date.setUTCHours(date.getUTCHours() + numberOffset_1);
                                         var forecastObj = {
-                                            x: new Date(datum.childNodes[0].textContent),
+                                            x: date,
                                             y: parseFloat(datum.childNodes[2].textContent)
                                         };
                                         if ((smallerData_1[2].childNodes[2].getAttribute("units")) === 'kcfs') {
@@ -1719,11 +1722,10 @@ var StreamStats;
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
-                console.log('Inst Flow', this.formattedInstFlow);
+                console.log('NWS Forecast', this.NWSforecast);
                 var timezone;
                 if (this.formattedInstFlow.length > 0) {
                     var zoneAbbreviation = this.gageTimeZone.defaultTimeZone.zoneAbbreviation;
-                    console.log(zoneAbbreviation);
                     if (zoneAbbreviation === 'EST') {
                         timezone = 'America/New_York';
                     }
@@ -1812,7 +1814,7 @@ var StreamStats;
                         min: min,
                         max: max,
                         title: {
-                            text: 'Date'
+                            text: 'Date (' + this.gageTimeZone.defaultTimeZone.zoneAbbreviation + ')'
                         },
                         custom: {
                             allowNegativeLog: true
@@ -2084,20 +2086,20 @@ var StreamStats;
                                 headerFormat: '<b>NWS Forecast</b>',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
-                                        var hours = this.x.getUTCHours();
+                                        var hours = this.x.getHours();
                                         if (hours < 10) {
                                             hours = '0' + hours;
                                         }
-                                        var minutes = this.x.getUTCMinutes();
+                                        var minutes = this.x.getMinutes();
                                         if (minutes < 10) {
                                             minutes = '0' + minutes;
                                         }
-                                        var UTCday = this.x.getUTCDate();
-                                        var year = this.x.getUTCFullYear();
-                                        var month = this.x.getUTCMonth();
+                                        var UTCday = this.x.getDate();
+                                        var year = this.x.getFullYear();
+                                        var month = this.x.getMonth();
                                         month += 1;
-                                        var formattedUTCDailyDate = month + '/' + UTCday + '/' + year;
-                                        return '<br>Date: <b>' + formattedUTCDailyDate + ' (' + hours + ':' + minutes + ')</b><br>Value: <b>' + this.y + ' ft³/s';
+                                        var formattedDailyDate = month + '/' + UTCday + '/' + year;
+                                        return '<br>Date: <b>' + formattedDailyDate + ' (' + hours + ':' + minutes + ')</b><br>Value: <b>' + this.y + ' ft³/s';
                                     }
                                 }
                             },

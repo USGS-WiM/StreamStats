@@ -660,7 +660,7 @@ module StreamStats.Controllers {
             this.Execute(request).then(
                 (response: any) => {
                     const peakValues = [];
-                    const estPeakValues = []; //dates that include a '-00'
+                    const estPeakValues = []; //dates that include a '-00'. Need to estimate these since they can't be date objects as they are not real dates.
                     const data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") });
                     data.shift().split('\t');
                     //remove extra random line
@@ -803,7 +803,7 @@ module StreamStats.Controllers {
 			var timeInMillisec = date.getTime ();	// the milliseconds elapsed since 01 January, 1970 00:00:00 UTC
 			timeInMillisec -= 15 * 24 * 60 * 60 * 1000; 	// 14 days in milliseconds
 			date.setTime (timeInMillisec);
-            var twoWeeksAgo = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 ))
+            var twoWeeksAgo = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 )) //ending date range two weeks ago to replace with IV
                     .toISOString()
                     .split("T")[0];
             var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01&endDT=' + twoWeeksAgo;
@@ -820,7 +820,7 @@ module StreamStats.Controllers {
                     };
                     if (dailyValues !== 0) {
                     const filteredDaily = dailyValues.filter(item => {
-                        return (parseFloat(item.value) !== -999999)
+                        return (parseFloat(item.value) !== -999999) //removes placeholder values
                     });
                     this.dailyFlow = filteredDaily;
                     }
@@ -828,18 +828,17 @@ module StreamStats.Controllers {
                 }); 
             }
         
+        //Pull in instantaneous flow value data from NWIS
         public getInstantaneousFlow(){
-            //change the above url to have an end dt that is the same as this start dt
             var date = new Date ();
 			var timeInMillisec = date.getTime ();	// the milliseconds elapsed since 01 January, 1970 00:00:00 UTC
 			timeInMillisec -= 15 * 24 * 60 * 60 * 1000; 	// 14 days in milliseconds
 			date.setTime (timeInMillisec);
             var twoWeeksAgo = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 ))
                     .toISOString()
-                    .split("T")[0];
-                    //console.log(twoWeeksAgo)
+                    .split("T")[0]; //removes the timezone offset so the dates will appear in their recorded timezone
             var url = 'https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&startDT=' + twoWeeksAgo;
-            console.log(url)
+            //console.log(url)
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
@@ -854,7 +853,7 @@ module StreamStats.Controllers {
                     };
                     if (instValues !== 0) {
                     const filteredInst = instValues.filter(item => {
-                        return (parseFloat(item.value) !== -999999 )
+                        return (parseFloat(item.value) !== -999999 ) //removes placeholder values
                     });
                     this.instFlow = filteredInst;
                     }
@@ -863,9 +862,11 @@ module StreamStats.Controllers {
                 });
         }
 
+        //Pull in NWS Forecasted flow values
         public getNWSForecast() {
             var self = this;
             var nwisCode = this.gage.code
+                //translates the gage code from NWIS to NWS using a crosswalk
                 this.$http.get('./data/gageNumberCrossWalk.json').then(function(response) {
                 self.crossWalk = response.data
                 var NWScode = self.crossWalk[nwisCode];
@@ -880,15 +881,24 @@ module StreamStats.Controllers {
                             if (forecastData[0] !== undefined) {
                             const smallerData = forecastData[0].childNodes;
                             let forecastArray = [];
+                            let timeZoneOffset = self.gageTimeZone.defaultTimeZone.zoneOffset;
+                            let numberOffset = parseFloat(timeZoneOffset);
                             smallerData.forEach(datum => {
                                 if (datum.childNodes[0] !== undefined) {
+                                    let date = new Date(datum.childNodes[0].textContent)
+                                    //console.log(date.getUTCHours());
+                                    date.setUTCHours(date.getUTCHours() + numberOffset); //this is going to be where we put it in the time zone of the gage,
+                                    //but I need to make it work for 1) the specific time zone and 2) when the subtracting spans multiple days
+                                    //ex: Sep 22 00:00:00 when you subtract 5 it goes onto a diff day but the set hours doesn't seem to like that
                                 const forecastObj = {
-                                    x: new Date(datum.childNodes[0].textContent),
+                                    x: date,
                                     //stage: parseFloat(datum.childNodes[1].textContent),
                                     y: parseFloat(datum.childNodes[2].textContent)
                                 }
+                                
+                                //forecastObj.x.setHours(12, 0, 0);
                                 if ((smallerData[2].childNodes[2].getAttribute("units")) === 'kcfs') {
-                                    forecastObj.y *= 1000
+                                    forecastObj.y *= 1000 //standardizing units (some were in kcfs and some were in cfs)
                                 }
                                 forecastArray.push(forecastObj);
                                 self.NWSforecast = forecastArray;
@@ -904,6 +914,7 @@ module StreamStats.Controllers {
                 });
         }
         
+        //Pull in Shaded Stats data
         public getShadedDailyStats() {
             var url = 'https://waterservices.usgs.gov/nwis/stat/?format=rdb,1.0&indent=on&sites=' + this.gage.code + '&statReportType=daily&statTypeCd=all&parameterCd=00060';
             //console.log('shaded url', url);
@@ -2063,13 +2074,13 @@ module StreamStats.Controllers {
             //console.log('daily flow plot data', this.formattedDailyFlow);
             //console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear.length)
             //console.log('0-10', this.formattedP0to10);
-            //console.log('NWS Forecast', this.NWSforecast)
-            console.log('Inst Flow', this.formattedInstFlow)
+            console.log('NWS Forecast', this.NWSforecast)
+            //console.log('Inst Flow', this.formattedInstFlow)
             let timezone;
             //	09383100
             if (this.formattedInstFlow.length > 0) {
             let zoneAbbreviation = this.gageTimeZone.defaultTimeZone.zoneAbbreviation
-            console.log(zoneAbbreviation)
+            //console.log(zoneAbbreviation)
             if (zoneAbbreviation === 'EST') {
                 timezone = 'America/New_York'
             }
@@ -2165,7 +2176,7 @@ module StreamStats.Controllers {
                     min: min,
                     max: max,
                     title: {
-                        text: 'Date'
+                        text: 'Date (' + this.gageTimeZone.defaultTimeZone.zoneAbbreviation + ')'
                     },
                     custom: {
                         allowNegativeLog: true
@@ -2436,20 +2447,20 @@ module StreamStats.Controllers {
                         headerFormat:'<b>NWS Forecast</b>',
                         pointFormatter: function(){
                             if (this.formattedPeakDates !== null){
-                                let hours = this.x.getUTCHours();
+                                let hours = this.x.getHours();
                                 if (hours < 10)  {
                                     hours = '0'+hours;
                                 }
-                                let minutes = this.x.getUTCMinutes();
+                                let minutes = this.x.getMinutes();
                                 if (minutes < 10)  {
                                     minutes = '0'+minutes;
                                 }
-                                let UTCday = this.x.getUTCDate();
-                                let year = this.x.getUTCFullYear();
-                                let month = this.x.getUTCMonth();
+                                let UTCday = this.x.getDate();
+                                let year = this.x.getFullYear();
+                                let month = this.x.getMonth();
                                     month += 1; // adding a month to the UTC months (which are zero-indexed)
-                                let formattedUTCDailyDate = month + '/' + UTCday + '/' + year;
-                                return '<br>Date: <b>'  + formattedUTCDailyDate + ' (' + hours + ':' + minutes + ')</b><br>Value: <b>' + this.y + ' ft³/s'
+                                let formattedDailyDate = month + '/' + UTCday + '/' + year;
+                                return '<br>Date: <b>'  + formattedDailyDate + ' (' + hours + ':' + minutes + ')</b><br>Value: <b>' + this.y + ' ft³/s'
                             }
                         }
                     },
