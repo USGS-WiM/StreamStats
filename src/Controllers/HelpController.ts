@@ -36,7 +36,7 @@ module StreamStats.Controllers {
         selectedHelpTabName: string;
     }
 
-    class FreshdeskTicketData {
+    class TicketData {
         public email: string;
         public description: string;
         public subject: string;
@@ -54,9 +54,7 @@ module StreamStats.Controllers {
         public sce: any;
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
         public selectedHelpTabName: string;
-        public user: string;
-        public token: string;
-        public freshdeskTicketData: FreshdeskTicketData;
+        public ticketData: TicketData;
         public showSuccessAlert: boolean;
         public submittingSupportTicket: boolean;
         public WorkspaceID: string;
@@ -64,9 +62,6 @@ module StreamStats.Controllers {
         public AppVersion: string;
         public Browser: string;
         public Server: string;
-        public faqArticles: Object;
-        public helpArticles: Object;
-        private freshdeskCreds: Object;
         private modalService: Services.IModalService;
 
         //Constructor
@@ -83,7 +78,7 @@ module StreamStats.Controllers {
             this.modalInstance = modal;
             this.StudyAreaService = studyAreaService;
             this.StudyArea = studyAreaService.selectedStudyArea;
-            this.freshdeskTicketData = new FreshdeskTicketData();
+            this.ticketData = new TicketData();
             this.selectedHelpTabName = "help";
             this.showSuccessAlert = false;
             this.submittingSupportTicket = false; 
@@ -99,78 +94,51 @@ module StreamStats.Controllers {
             this.modalInstance.dismiss('cancel');
         }
 
-        public submitFreshDeskTicket(isValid): void {
+        public submitTicket(isValid): void {
 
             if (!isValid) return;
 
-            var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.CreateTicket;
+            //var formdata = new FormData();
 
-            var formdata = new FormData();
-
-            formdata.append('helpdesk_ticket[email]', this.freshdeskTicketData.email);
-            formdata.append('helpdesk_ticket[subject]', this.freshdeskTicketData.subject);
-            formdata.append('helpdesk_ticket[description]', this.freshdeskTicketData.description);
-
-            formdata.append('helpdesk_ticket[custom_field][regionid_' + this.freshdeskCreds['AccountID'] + ']', this.RegionID);
-            formdata.append('helpdesk_ticket[custom_field][workspaceid_' + this.freshdeskCreds['AccountID'] + ']', this.WorkspaceID);
-            formdata.append('helpdesk_ticket[custom_field][server_' + this.freshdeskCreds['AccountID'] + ']', this.Server);
-            formdata.append('helpdesk_ticket[custom_field][browser_' + this.freshdeskCreds['AccountID'] + ']', this.Browser);
-            formdata.append('helpdesk_ticket[custom_field][softwareversion_' + this.freshdeskCreds['AccountID'] + ']', this.AppVersion);
-
-            //can loop over an opject and keep appending attachments here
-            if (this.freshdeskTicketData.attachment) formdata.append('helpdesk_ticket[attachments][][resource]', this.freshdeskTicketData.attachment, this.freshdeskTicketData.attachment.name);
-
-            var headers = {
-                "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
-                "Content-Type": undefined
-            };
-
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers, angular.identity);
+            // formdata.append('helpdesk_ticket[email]', this.ticketData.email);
+            // formdata.append('helpdesk_ticket[subject]', this.ticketData.subject);
+            // formdata.append('helpdesk_ticket[description]', this.ticketData.description);
+            // formdata.append('helpdesk_ticket[custom_field][regionid]', this.RegionID);
+            // formdata.append('helpdesk_ticket[custom_field][workspaceid]', this.WorkspaceID);
+            // formdata.append('helpdesk_ticket[custom_field][server]', this.Server);
+            // formdata.append('helpdesk_ticket[custom_field][browser]', this.Browser);
+            // formdata.append('helpdesk_ticket[custom_field][softwareversion]', this.AppVersion);
 
             this.submittingSupportTicket = true;
 
-            this.Execute(request).then(
-                (response: any) => {
-                    //console.log('Successfully submitted help ticket: ', response);
+            var description = this.ticketData.description + 
+            '\n\nRegion: ' + this.RegionID +
+            '\nWorkspaceID: ' + this.WorkspaceID +
+            '\nServer: ' + this.Server +
+            '\nBrowser: ' + this.Browser +
+            '\nAppVersion: ' + this.AppVersion 
+
+            var link = "mailto:streamstats@usgs.gov"
+            + "?subject=" + encodeURIComponent(this.ticketData.subject)
+            + "&body=" + encodeURIComponent(description);
+   
+            window.location.href = link;
+
+            // this.Execute(request).then(
+            //     (response: any) => {
+            //         //console.log('Successfully submitted help ticket: ', response);
                     
-                    //clear out fields
-                    this.freshdeskTicketData = new FreshdeskTicketData();
+            //         //clear out fields
+            //         this.ticketData = new TicketData();
 
-                    //show user feedback
-                    this.showSuccessAlert = true;
+            //         //show user feedback
+            //         this.showSuccessAlert = true;
 
-                }, (error) => {
-                    //sm when error
-                }).finally(() => {
-                    this.submittingSupportTicket = false;
-                });
-        }
-
-        public getFreshDeskArticles(folder: string): ng.IPromise<any> {
-
-            var headers = {
-                "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
-            };
-
-            var url = configuration.SupportTicketService.BaseURL + folder;
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
-
-            return this.Execute(request).then(
-                (response: any) => {
-                    var publishedArticles = [];
-                    if (response.data.folder.articles.length) {
-                        response.data.folder.articles.forEach(function (element) {
-                            if (element.status == 2) {
-                                publishedArticles.push(element);
-                            };
-                        });
-                        return publishedArticles;
-                    }
-                }, (error) => {
-                    return "There was a problem getting this article"
-                }).finally(() => {
-
-                });
+            //     }, (error) => {
+            //         //sm when error
+            //     }).finally(() => {
+            //         this.submittingSupportTicket = false;
+            //     });
         }
 
         public convertUnsafe(x:string) {
@@ -187,11 +155,6 @@ module StreamStats.Controllers {
         private init(): void {
             this.getBrowser();
             this.AppVersion = configuration.version;
-            this.freshdeskCreds = this.StudyAreaService.freshdeskCredentials;
-            if (this.freshdeskCreds) {
-                this.getFreshDeskArticles(configuration.SupportTicketService.FAQarticlesFolder).then(response => { this.faqArticles = response });
-                this.getFreshDeskArticles(configuration.SupportTicketService.UserManualArticlesFolder).then(response => { this.helpArticles = response });
-            }
 
             if (this.StudyArea && this.StudyArea.WorkspaceID) this.WorkspaceID = this.StudyArea.WorkspaceID;
             else this.WorkspaceID = '';

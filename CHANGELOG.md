@@ -13,11 +13,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Updated national status map (now includes D.C. as undergoing implementation)
 - Changed national status map from image URL to downloaded image in images folder
 - Open 'Submit a Support Request' tab when users click on 'StreamStats team' link
+- Ticket submission to send email to streamstats@usgs.gov
+- Freshdesk articles to link to streamstats webpages
 
 ### Deprecated 
 
 ### Removed 
-  
+- All Freshdesk implementation 
+
 ### Fixed  
 - Capitalization of StreamStats
 

@@ -18,15 +18,9 @@
     <div style="padding-top: 10px;">
         <div id="about" ng-if="vm.selectedHelpTabName==='help'">
             <div id="helpContent">
-                <div ng-hide="vm.helpArticles"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
-                <accordion id="helpArticles">
-                    <accordion-group ng-repeat="article in vm.helpArticles" is-open="article.open">
-                        <accordion-heading><i ng-class="vm.helpArticles[$index].open ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> {{article.title}}</accordion-heading>
-                        <div class="row">
-                            <div class="col-sm-12" ng-bind-html="vm.convertUnsafe(article.description)"></div>
-                        </div>
-                    </accordion-group>
-                </accordion>
+                <p>
+                    Our <a href="https://www.usgs.gov/streamstats/how-guides">how-to-guides</a> offer step-by-step instructions to guide users through the StreamStats workflow.
+                </p>
             </div>
         </div>
     </div>
@@ -34,15 +28,9 @@
     <div style="padding-top: 10px;">
         <div id="about" ng-if="vm.selectedHelpTabName==='faq'">
             <div id="faqContent" >
-             <div ng-hide="vm.faqArticles"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
-             <accordion id="faqArticles">
-                <accordion-group ng-repeat="article in vm.faqArticles" is-open="article.open">
-                  <accordion-heading><i ng-class="vm.faqArticles[$index].open ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i> {{article.title}}</accordion-heading>
-                  <div class="row">
-                    <div class="col-sm-12" ng-bind-html="vm.convertUnsafe(article.description)"></div>
-                  </div>
-                </accordion-group>
-              </accordion>
+                <p>
+                    Do you have a question about StreamStats? Check out our curated list of <a href="https://www.usgs.gov/streamstats/common-user-questions">frequently asked questions</a> from other StreamStats users.
+                </p>
             </div> 
         </div>
     </div>
@@ -50,35 +38,35 @@
     <div style="padding-top: 10px;">
         <div id="about" ng-if="vm.selectedHelpTabName==='submitTicket'">
 
-        <span>Use the form below to get support on a specific issue. Please include as much information as possible.</span> 
+        <span>Send any issues to <b>streamstats@usgs.gov</b> or use the form below to create an email. Please include as much information as possible.</span> 
                                        
         <form id="ticketForm" name="form">
             <div class="well well-sm">
                 <div class="row">
                     <div class="col-md-12">
-                            <div class="form-group">
+                            <!-- <div class="form-group">
                                 <label for="email">Email:</label>
-                                <input type="email" class="form-control" id="email" ng-model="vm.freshdeskTicketData.email" required>
-                            </div>
+                                <input type="email" class="form-control" id="email" ng-model="vm.ticketData.email" required>
+                            </div> -->
                             <div class="form-group">
                                 <label for="title">Subject:</label>
-                                <input class="form-control" id="title" ng-model="vm.freshdeskTicketData.subject" required>
+                                <input class="form-control" id="title" ng-model="vm.ticketData.subject" required>
                             </div>
                             <div class="form-group">
                                 <label for="message">Description:</label>
-                                <textarea class="form-control" rows="6" id="description" ng-model="vm.freshdeskTicketData.description" required></textarea>
+                                <textarea class="form-control" rows="6" id="description" ng-model="vm.ticketData.description" required></textarea>
                             </div>
-                            <div class="form-group">
+                            <!-- <div class="form-group">
                                 <label for="title">Upload an Attachment (optional):</label><br />
                                 <span class="btn-file">
-                                    <i class="fa fa-paperclip"></i>&nbsp;&nbsp;Attach File <input type="file" ngf-select ng-model="vm.freshdeskTicketData.attachment" name="file" ngf-accept="'image/*'">
+                                    <i class="fa fa-paperclip"></i>&nbsp;&nbsp;Attach File <input type="file" ngf-select ng-model="vm.ticketData.attachment" name="file" ngf-accept="'image/*'">
                                 </span>  
-                                <br /><span ng-show="vm.freshdeskTicketData.attachment"><i class="fa fa-check" style="color:green"></i>&nbsp;&nbsp;{{vm.freshdeskTicketData.attachment.name}}<button class="close removeItem" style="" ng-click="vm.freshdeskTicketData.attachment = null">&times;</button></span>
-                            </div>
+                                <br /><span ng-show="vm.ticketData.attachment"><i class="fa fa-check" style="color:green"></i>&nbsp;&nbsp;{{vm.ticketData.attachment.name}}<button class="close removeItem" ng-click="vm.ticketData.attachment = null">&times;</button></span>
+                            </div> -->
 
-                        <button type="submit" class="btn-wim-default" ng-click="vm.submitFreshDeskTicket(form.$valid)" ng-disabled="vm.submittingSupportTicket"><i class="fa fa-share"></i><span >&nbsp;&nbsp;Submit Support Request</span></button>
-                        <div class="wim-alert-primary" ng-show="vm.submittingSupportTicket">Your is being submitted, please be patient</div>
-                        <div class="wim-alert-primary" ng-show="vm.showSuccessAlert">Your support request has been successfully submitted.  A member of the StreamStats team will contact you as soon as possible.</div>
+                        <button type="submit" class="btn-wim-default" ng-click="vm.submitTicket(form.$valid)" ng-disabled="vm.submittingSupportTicket"><i class="fa fa-share"></i><span >&nbsp;&nbsp;Create Email</span></button>
+                        <div class="wim-alert-primary" ng-show="vm.submittingSupportTicket">Your is email is being created, please be patient. If you are having trouble, please send issues to <b>streamstats@usgs.gov</b>.</div>
+                        <!-- <div class="wim-alert-primary" ng-show="vm.showSuccessAlert">Your support request has been successfully submitted.  A member of the StreamStats team will contact you as soon as possible.</div> -->
                     </div>
                 </div>
                 <div class="row">

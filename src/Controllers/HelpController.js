@@ -18,10 +18,10 @@ var StreamStats;
     var Controllers;
     (function (Controllers) {
         'use string';
-        var FreshdeskTicketData = (function () {
-            function FreshdeskTicketData() {
+        var TicketData = (function () {
+            function TicketData() {
             }
-            return FreshdeskTicketData;
+            return TicketData;
         }());
         var HelpController = (function (_super) {
             __extends(HelpController, _super);
@@ -36,7 +36,7 @@ var StreamStats;
                 _this.modalInstance = modal;
                 _this.StudyAreaService = studyAreaService;
                 _this.StudyArea = studyAreaService.selectedStudyArea;
-                _this.freshdeskTicketData = new FreshdeskTicketData();
+                _this.ticketData = new TicketData();
                 _this.selectedHelpTabName = "help";
                 _this.showSuccessAlert = false;
                 _this.submittingSupportTicket = false;
@@ -47,57 +47,20 @@ var StreamStats;
                 this.showSuccessAlert = false;
                 this.modalInstance.dismiss('cancel');
             };
-            HelpController.prototype.submitFreshDeskTicket = function (isValid) {
-                var _this = this;
+            HelpController.prototype.submitTicket = function (isValid) {
                 if (!isValid)
                     return;
-                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.CreateTicket;
-                var formdata = new FormData();
-                formdata.append('helpdesk_ticket[email]', this.freshdeskTicketData.email);
-                formdata.append('helpdesk_ticket[subject]', this.freshdeskTicketData.subject);
-                formdata.append('helpdesk_ticket[description]', this.freshdeskTicketData.description);
-                formdata.append('helpdesk_ticket[custom_field][regionid_' + this.freshdeskCreds['AccountID'] + ']', this.RegionID);
-                formdata.append('helpdesk_ticket[custom_field][workspaceid_' + this.freshdeskCreds['AccountID'] + ']', this.WorkspaceID);
-                formdata.append('helpdesk_ticket[custom_field][server_' + this.freshdeskCreds['AccountID'] + ']', this.Server);
-                formdata.append('helpdesk_ticket[custom_field][browser_' + this.freshdeskCreds['AccountID'] + ']', this.Browser);
-                formdata.append('helpdesk_ticket[custom_field][softwareversion_' + this.freshdeskCreds['AccountID'] + ']', this.AppVersion);
-                if (this.freshdeskTicketData.attachment)
-                    formdata.append('helpdesk_ticket[attachments][][resource]', this.freshdeskTicketData.attachment, this.freshdeskTicketData.attachment.name);
-                var headers = {
-                    "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
-                    "Content-Type": undefined
-                };
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers, angular.identity);
                 this.submittingSupportTicket = true;
-                this.Execute(request).then(function (response) {
-                    _this.freshdeskTicketData = new FreshdeskTicketData();
-                    _this.showSuccessAlert = true;
-                }, function (error) {
-                }).finally(function () {
-                    _this.submittingSupportTicket = false;
-                });
-            };
-            HelpController.prototype.getFreshDeskArticles = function (folder) {
-                var headers = {
-                    "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
-                };
-                var url = configuration.SupportTicketService.BaseURL + folder;
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
-                return this.Execute(request).then(function (response) {
-                    var publishedArticles = [];
-                    if (response.data.folder.articles.length) {
-                        response.data.folder.articles.forEach(function (element) {
-                            if (element.status == 2) {
-                                publishedArticles.push(element);
-                            }
-                            ;
-                        });
-                        return publishedArticles;
-                    }
-                }, function (error) {
-                    return "There was a problem getting this article";
-                }).finally(function () {
-                });
+                var description = this.ticketData.description +
+                    '\n\nRegion: ' + this.RegionID +
+                    '\nWorkspaceID: ' + this.WorkspaceID +
+                    '\nServer: ' + this.Server +
+                    '\nBrowser: ' + this.Browser +
+                    '\nAppVersion: ' + this.AppVersion;
+                var link = "mailto:streamstats@usgs.gov"
+                    + "?subject=" + encodeURIComponent(this.ticketData.subject)
+                    + "&body=" + encodeURIComponent(description);
+                window.location.href = link;
             };
             HelpController.prototype.convertUnsafe = function (x) {
                 return this.sce.trustAsHtml(x);
@@ -109,14 +72,8 @@ var StreamStats;
                 this.selectedHelpTabName = tabname;
             };
             HelpController.prototype.init = function () {
-                var _this = this;
                 this.getBrowser();
                 this.AppVersion = configuration.version;
-                this.freshdeskCreds = this.StudyAreaService.freshdeskCredentials;
-                if (this.freshdeskCreds) {
-                    this.getFreshDeskArticles(configuration.SupportTicketService.FAQarticlesFolder).then(function (response) { _this.faqArticles = response; });
-                    this.getFreshDeskArticles(configuration.SupportTicketService.UserManualArticlesFolder).then(function (response) { _this.helpArticles = response; });
-                }
                 if (this.StudyArea && this.StudyArea.WorkspaceID)
                     this.WorkspaceID = this.StudyArea.WorkspaceID;
                 else

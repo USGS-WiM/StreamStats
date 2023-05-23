@@ -37,10 +37,6 @@ npm install -g concurrently
 npm install -g live-server
 ```
 
-For Freshdesk functionalities (used in the About and Help modals), you will need the secrets.json from [here](https://doimspp.sharepoint.com/sites/StreamStatsTeam/Shared%20Documents/Forms/AllItems.aspx?viewid=9f283fd0%2D4904%2D450b%2D80ce%2Da5211e70406e&id=%2Fsites%2FStreamStatsTeam%2FShared%20Documents%2FSS%5FTeamSpace%2FV4%20Freshdesk%20Creds). This requires access to the StreamStats Sharepoint, and should be placed locally at src/data.
-
-Note: the secrets file is in the .gitignore and should _never_ be uploaded to GitHub 
-
 ## Development Workflow
 
 An issue will be assigned to you via GitHub. Your workflow begins after assignment:
