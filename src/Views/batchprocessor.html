@@ -28,7 +28,7 @@
         <div id="submitBatch" ng-if="vm.selectedBatchProcessorTabName==='submitBatch'">
             <!-- Start instructions -->
             <div id="submitBatchInstructions"> To submit a batch: <br>
-                <ul>
+                <ul style="list-style-type: circle;">
                     <li>All highlighted fields must be completed before submission</li>
                     <li>Only points that are contained within the selected State/Region will be processed</li>
                     <li>Batches are limited to 250 points each and if it contains more, only the first 250 points will be
@@ -124,16 +124,15 @@
                             <th class="col-xs-3"></th>
                         </tr>
                     </thead>
-                <tbody ng-repeat="flowStat in vm.flowStatsList">
-                    <tr>
-                        <td>
-                            <checkbox large ng-model="flowStat.checked" ng-change="vm.setRegionStats(flowStat)">
-                            </checkbox>
-                        </td>
-                        <td><span>&nbsp;&nbsp;{{flowStat.statisticGroupName}}</span></td>
-                    </tr>
-                </tbody>
-
+                    <tbody ng-repeat="flowStat in vm.flowStatsList">
+                        <tr>
+                            <td>
+                                <checkbox large ng-model="flowStat.checked" ng-change="vm.setRegionStats(flowStat)">
+                                </checkbox>
+                            </td>
+                            <td><span>&nbsp;&nbsp;{{flowStat.statisticGroupName}}</span></td>
+                        </tr>
+                    </tbody>
                 </table>
             </div><!-- End select flow statistics -->
 
@@ -174,6 +173,15 @@
 
         <!-- Start batch status -->
         <div id="batchStatus" ng-if="vm.selectedBatchProcessorTabName==='batchStatus'">
+            <!-- Start instructions -->
+            <div id="batchStatusInstructions"> To check batch status: <br>
+                <ul style="list-style-type: circle;">
+                    <li>Enter your email address in the Email Address box</li>
+                    <li>When the results are ready for download, a hyperlink will appear in the <i>Results</i> field</li>
+                    <li>A batch can be deleted by clicking on the trash can icon and answering Yes to the question that pops up</li>
+                </ul>
+            </div>
+            <!-- End instructions -->
             <p>This is the batch status tab</p>
         </div> <!-- End batch status -->
        
