@@ -76,7 +76,6 @@ module StreamStats.Services {
         computeFlowAnywhereResults();
         computeRegressionEquation(regtype: string);
         updateExtensions(); 
-        freshdeskCredentials();
         extensionsConfigured: boolean;
         loadDrainageArea();
         loadingDrainageArea: boolean;
@@ -192,14 +191,6 @@ module StreamStats.Services {
         public allIndexGages;
         public extensionResultsChanged = 0;        
         public flowAnywhereData: any = null;
-        // freshdesk
-        private _freshdeskCreds: any;
-        public get freshdeskCredentials(): any {
-            return this._freshdeskCreds;
-        }
-        public set freshdeskCredentials(val: any) {
-            if (this._freshdeskCreds != val) this._freshdeskCreds = val;
-        }
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
