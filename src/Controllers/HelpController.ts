@@ -63,6 +63,7 @@ module StreamStats.Controllers {
         public Browser: string;
         public Server: string;
         private modalService: Services.IModalService;
+        public currentDate = new Date(); 
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -82,7 +83,6 @@ module StreamStats.Controllers {
             this.selectedHelpTabName = "help";
             this.showSuccessAlert = false;
             this.submittingSupportTicket = false; 
-
             this.init();
 
         }  
@@ -94,52 +94,52 @@ module StreamStats.Controllers {
             this.modalInstance.dismiss('cancel');
         }
 
-        public submitTicket(isValid): void {
+        // public submitFreshDeskTicket(isValid): void {
 
-            if (!isValid) return;
+        //     if (!isValid) return;
 
-            //var formdata = new FormData();
+        //     var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.CreateTicket;
 
-            // formdata.append('helpdesk_ticket[email]', this.ticketData.email);
-            // formdata.append('helpdesk_ticket[subject]', this.ticketData.subject);
-            // formdata.append('helpdesk_ticket[description]', this.ticketData.description);
-            // formdata.append('helpdesk_ticket[custom_field][regionid]', this.RegionID);
-            // formdata.append('helpdesk_ticket[custom_field][workspaceid]', this.WorkspaceID);
-            // formdata.append('helpdesk_ticket[custom_field][server]', this.Server);
-            // formdata.append('helpdesk_ticket[custom_field][browser]', this.Browser);
-            // formdata.append('helpdesk_ticket[custom_field][softwareversion]', this.AppVersion);
+        //     var formdata = new FormData();
 
-            this.submittingSupportTicket = true;
+        //     formdata.append('helpdesk_ticket[email]', this.freshdeskTicketData.email);
+        //     formdata.append('helpdesk_ticket[subject]', this.freshdeskTicketData.subject);
+        //     formdata.append('helpdesk_ticket[description]', this.freshdeskTicketData.description);
 
-            var description = this.ticketData.description + 
-            '\n\nRegion: ' + this.RegionID +
-            '\nWorkspaceID: ' + this.WorkspaceID +
-            '\nServer: ' + this.Server +
-            '\nBrowser: ' + this.Browser +
-            '\nAppVersion: ' + this.AppVersion 
+        //     formdata.append('helpdesk_ticket[custom_field][regionid_' + this.freshdeskCreds['AccountID'] + ']', this.RegionID);
+        //     formdata.append('helpdesk_ticket[custom_field][workspaceid_' + this.freshdeskCreds['AccountID'] + ']', this.WorkspaceID);
+        //     formdata.append('helpdesk_ticket[custom_field][server_' + this.freshdeskCreds['AccountID'] + ']', this.Server);
+        //     formdata.append('helpdesk_ticket[custom_field][browser_' + this.freshdeskCreds['AccountID'] + ']', this.Browser);
+        //     formdata.append('helpdesk_ticket[custom_field][softwareversion_' + this.freshdeskCreds['AccountID'] + ']', this.AppVersion);
 
-            var link = "mailto:streamstats@usgs.gov"
-            + "?subject=" + encodeURIComponent(this.ticketData.subject)
-            + "&body=" + encodeURIComponent(description);
-   
-            window.location.href = link;
+        //     //can loop over an opject and keep appending attachments here
+        //     if (this.freshdeskTicketData.attachment) formdata.append('helpdesk_ticket[attachments][][resource]', this.freshdeskTicketData.attachment, this.freshdeskTicketData.attachment.name);
 
-            // this.Execute(request).then(
-            //     (response: any) => {
-            //         //console.log('Successfully submitted help ticket: ', response);
+        //     var headers = {
+        //         "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
+        //         "Content-Type": undefined
+        //     };
+
+        //     var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers, angular.identity);
+
+        //     this.submittingSupportTicket = true;
+
+        //     this.Execute(request).then(
+        //         (response: any) => {
+        //             //console.log('Successfully submitted help ticket: ', response);
                     
-            //         //clear out fields
-            //         this.ticketData = new TicketData();
+        //             //clear out fields
+        //             this.freshdeskTicketData = new FreshdeskTicketData();
 
-            //         //show user feedback
-            //         this.showSuccessAlert = true;
+        //             //show user feedback
+        //             this.showSuccessAlert = true;
 
-            //     }, (error) => {
-            //         //sm when error
-            //     }).finally(() => {
-            //         this.submittingSupportTicket = false;
-            //     });
-        }
+        //         }, (error) => {
+        //             //sm when error
+        //         }).finally(() => {
+        //             this.submittingSupportTicket = false;
+        //         });
+        // }
 
         public convertUnsafe(x:string) {
             return this.sce.trustAsHtml(x);
@@ -153,15 +153,16 @@ module StreamStats.Controllers {
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
+            this.Browser = 'Not found'
             this.getBrowser();
             this.AppVersion = configuration.version;
 
             if (this.StudyArea && this.StudyArea.WorkspaceID) this.WorkspaceID = this.StudyArea.WorkspaceID;
-            else this.WorkspaceID = '';
+            else this.WorkspaceID = 'None';
             if (this.StudyArea && this.StudyArea.RegionID) this.RegionID = this.StudyArea.RegionID;
-            else this.RegionID = '';
+            else this.RegionID = 'None';
             if (this.StudyArea && this.StudyArea.Server) this.Server = this.StudyArea.Server;
-            else this.Server = '';
+            else this.Server = 'NA';
 
             if (this.modalService.modalOptions) { // Open correct tab
                 if (this.modalService.modalOptions.tabName) this.selectHelpTab(this.modalService.modalOptions.tabName);

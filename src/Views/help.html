@@ -40,24 +40,36 @@
     <div style="padding-top: 10px;">
         <div id="about" ng-if="vm.selectedHelpTabName==='submitTicket'">
 
-        <span>Send any issues to <b>streamstats@usgs.gov</b> or use the form below to create an email. Please include as much information as possible.</span> 
+        <span>Send any issues or questions to <b>streamstats@usgs.gov</b>. In your email please include as much information as possible along with the text block below.</span> 
                                        
         <form id="ticketForm" name="form">
             <div class="well well-sm">
                 <div class="row">
                     <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="message">Please include the below text in your email:</label>
+                                <textarea class="form-control" rows="6" id="description" disabled>
+Region: {{vm.RegionID}}
+WorkspaceID: {{vm.WorkspaceID}}
+Date: {{vm.currentDate}}
+Server: {{vm.Server}}
+Browser: {{vm.Browser}}
+AppVersion: {{vm.AppVersion}}
+                                </textarea>
+                            </div>
+
                             <!-- <div class="form-group">
                                 <label for="email">Email:</label>
                                 <input type="email" class="form-control" id="email" ng-model="vm.ticketData.email" required>
                             </div> -->
-                            <div class="form-group">
+                            <!-- <div class="form-group">
                                 <label for="title">Subject:</label>
                                 <input class="form-control" id="title" ng-model="vm.ticketData.subject" required>
                             </div>
                             <div class="form-group">
                                 <label for="message">Description:</label>
                                 <textarea class="form-control" rows="6" id="description" ng-model="vm.ticketData.description" required></textarea>
-                            </div>
+                            </div> -->
                             <!-- <div class="form-group">
                                 <label for="title">Upload an Attachment (optional):</label><br />
                                 <span class="btn-file">
@@ -66,8 +78,8 @@
                                 <br /><span ng-show="vm.ticketData.attachment"><i class="fa fa-check" style="color:green"></i>&nbsp;&nbsp;{{vm.ticketData.attachment.name}}<button class="close removeItem" ng-click="vm.ticketData.attachment = null">&times;</button></span>
                             </div> -->
 
-                        <button type="submit" class="btn-wim-default" ng-click="vm.submitTicket(form.$valid)" ng-disabled="vm.submittingSupportTicket"><i class="fa fa-share"></i><span >&nbsp;&nbsp;Create Email</span></button>
-                        <div class="wim-alert-primary" ng-show="vm.submittingSupportTicket">Your is email is being created, please be patient. If you are having trouble, please send issues to <b>streamstats@usgs.gov</b>.</div>
+                        <!-- <button type="submit" class="btn-wim-default" ng-click="vm.submitFreshDeskTicket(form.$valid)" ng-disabled="vm.submittingSupportTicket"><i class="fa fa-share"></i><span >&nbsp;&nbsp;Create Email</span></button>
+                        <div class="wim-alert-primary" ng-show="vm.submittingSupportTicket">Your is email is being created, please be patient. If you are having trouble, please send issues to <b>streamstats@usgs.gov</b>.</div> -->
                         <!-- <div class="wim-alert-primary" ng-show="vm.showSuccessAlert">Your support request has been successfully submitted.  A member of the StreamStats team will contact you as soon as possible.</div> -->
                     </div>
                 </div>

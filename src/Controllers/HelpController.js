@@ -27,6 +27,7 @@ var StreamStats;
             __extends(HelpController, _super);
             function HelpController($scope, $http, $sce, studyAreaService, modal, Upload, modalService) {
                 var _this = _super.call(this, $http, '') || this;
+                _this.currentDate = new Date();
                 $scope.vm = _this;
                 _this.StudyArea = studyAreaService.selectedStudyArea;
                 _this.Upload = Upload;
@@ -47,21 +48,6 @@ var StreamStats;
                 this.showSuccessAlert = false;
                 this.modalInstance.dismiss('cancel');
             };
-            HelpController.prototype.submitTicket = function (isValid) {
-                if (!isValid)
-                    return;
-                this.submittingSupportTicket = true;
-                var description = this.ticketData.description +
-                    '\n\nRegion: ' + this.RegionID +
-                    '\nWorkspaceID: ' + this.WorkspaceID +
-                    '\nServer: ' + this.Server +
-                    '\nBrowser: ' + this.Browser +
-                    '\nAppVersion: ' + this.AppVersion;
-                var link = "mailto:streamstats@usgs.gov"
-                    + "?subject=" + encodeURIComponent(this.ticketData.subject)
-                    + "&body=" + encodeURIComponent(description);
-                window.location.href = link;
-            };
             HelpController.prototype.convertUnsafe = function (x) {
                 return this.sce.trustAsHtml(x);
             };
@@ -72,20 +58,21 @@ var StreamStats;
                 this.selectedHelpTabName = tabname;
             };
             HelpController.prototype.init = function () {
+                this.Browser = 'Not found';
                 this.getBrowser();
                 this.AppVersion = configuration.version;
                 if (this.StudyArea && this.StudyArea.WorkspaceID)
                     this.WorkspaceID = this.StudyArea.WorkspaceID;
                 else
-                    this.WorkspaceID = '';
+                    this.WorkspaceID = 'None';
                 if (this.StudyArea && this.StudyArea.RegionID)
                     this.RegionID = this.StudyArea.RegionID;
                 else
-                    this.RegionID = '';
+                    this.RegionID = 'None';
                 if (this.StudyArea && this.StudyArea.Server)
                     this.Server = this.StudyArea.Server;
                 else
-                    this.Server = '';
+                    this.Server = 'NA';
                 if (this.modalService.modalOptions) {
                     if (this.modalService.modalOptions.tabName)
                         this.selectHelpTab(this.modalService.modalOptions.tabName);
