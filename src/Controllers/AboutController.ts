@@ -48,6 +48,7 @@ module StreamStats.Controllers {
         public regionArticle: Object;
         public AppVersion: string;
         public regionURL: string;
+        public selectedRegion; 
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -62,8 +63,7 @@ module StreamStats.Controllers {
             this.StudyAreaService = studyAreaService;
             this.regionService = region;
             this.selectedAboutTabName = "about";
-            this.regionURL = "https://www.usgs.gov/streamstats/state-and-region-based-info"
-            this.regionArticle = "<p>StreamStats is developed on a state-by-state or regional basis. To find information about the data used for your area of interest, see our <a href="+ this.regionURL +">State and Region</a> pages.</p>";
+            this.selectedRegion = null;
             this.init();  
         }  
         
@@ -98,26 +98,16 @@ module StreamStats.Controllers {
             configuration.regions.forEach((value) => {
                 //find this state/region
                 if (value.Name === regionID) {
-                    if (!value.regionEnabled) {
-                        this.regionArticle = '<div class="wim-alert">StreamStats has not been developed for <strong>' + value.Name + '</strong>.  Please contact the <a href="mailto:support@streamstats.freshdesk.com">streamstats team</a> if you would like StreamStats enabled for this State/Region.</div>';
-                    }
-                    //otherwise get region help url
-                    else {
-                        if (value.URL == null) { // Doesnt have state webpage
-                            this.regionArticle = '<div class="wim-alert">There is currently no information page for <strong>' + value.Name + '</strong>.  Please contact the <a href="mailto:support@streamstats.freshdesk.com">streamstats team</a> with any questions.</div>';
-                        } else { // Has state webpage
-                            this.regionURL = value.URL;
-                            this.regionArticle = "<p>To find information about the data used for <strong>"+ value.Name + "</strong>, see our<a href=" + this.regionURL + ">" + value.Name + " information</a>page.</p>";
-                        }
-                    }
+                    this.selectedRegion = value
                 }
             });
         }
 
-
-        public convertUnsafe(x: string) {
-            return this.sce.trustAsHtml(x);
-        };
+        public openSubmitSupport(e){
+            this.Close();
+            e.stopPropagation(); e.preventDefault();
+            this.modalService.openModal(Services.SSModalType.e_help, { "tabName": "submitTicket"});
+        }
 
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-

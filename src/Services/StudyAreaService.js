@@ -143,17 +143,6 @@ var StreamStats;
                 enumerable: false,
                 configurable: true
             });
-            Object.defineProperty(StudyAreaService.prototype, "freshdeskCredentials", {
-                get: function () {
-                    return this._freshdeskCreds;
-                },
-                set: function (val) {
-                    if (this._freshdeskCreds != val)
-                        this._freshdeskCreds = val;
-                },
-                enumerable: false,
-                configurable: true
-            });
             StudyAreaService.prototype.editBasin = function (selection) {
                 this.selectedStudyArea.Disclaimers['isEdited'] = true;
                 this.drawControlOption = selection;

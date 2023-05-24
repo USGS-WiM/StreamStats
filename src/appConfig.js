@@ -1,5 +1,5 @@
 var configuration = {};
-configuration.version = "4.14.1";
+configuration.version = "4.15.0";
 configuration.environment = 'development';
 
 configuration.baseurls =
@@ -81,19 +81,6 @@ configuration.queryparams =
         'FlowAnywhereEstimates': '/models/FLA/estimate?state={0}',
         'FlowAnywhereGages': '/arcgis/rest/services/IowaStreamEst/FlowAnywhere/MapServer/1/query?geometry={0},{1}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.da_pub_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
     };
-
-configuration.SupportTicketService = {
-    'BaseURL': 'https://streamstats.freshdesk.com',
-    'CreateTicket': '/helpdesk/tickets.json',
-    'AboutArticle': '/solution/categories/9000106503/folders/9000163536/articles/9000052344.json',
-    'RegionInfoFolder': '/solution/categories/9000106501/folders/9000163157.json',
-    'UserManualArticlesFolder': '/solution/categories/9000028363/folders/9000042933.json',
-    'FAQarticlesFolder': '/solution/categories/9000028363/folders/9000042932.json',
-    'ActiveNewsFolder': '/solution/categories/9000028363/folders/9000163894.json',
-    'PastNewsFolder': '/solution/categories/9000028363/folders/9000163895.json',
-    'DisclaimersArticle': '/solution/categories/9000106503/folders/9000163536/articles/9000127695.json',
-    'CreditsArticle': '/solution/categories/9000106503/folders/9000163536/articles/9000127697.json'
-};
 
 configuration.basemaps =
     {
