@@ -60,7 +60,6 @@ module StreamStats.Controllers {
         public WorkspaceID: string;
         public RegionID: string;
         public AppVersion: string;
-        public Browser: string;
         public Server: string;
         private modalService: Services.IModalService;
         public currentDate = new Date(); 
@@ -153,8 +152,6 @@ module StreamStats.Controllers {
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
-            this.Browser = 'Not found'
-            this.getBrowser();
             this.AppVersion = configuration.version;
 
             if (this.StudyArea && this.StudyArea.WorkspaceID) this.WorkspaceID = this.StudyArea.WorkspaceID;
@@ -167,23 +164,6 @@ module StreamStats.Controllers {
             if (this.modalService.modalOptions) { // Open correct tab
                 if (this.modalService.modalOptions.tabName) this.selectHelpTab(this.modalService.modalOptions.tabName);
             }
-        }
-
-        private getBrowser() {
-            //modified from https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
-
-            // Opera 8.0+
-            if ((!!(<any>window).opr && !!opr.addons) || !!(<any>window).opera || navigator.userAgent.indexOf(' OPR/') >= 0) this.Browser = "Opera";
-            // Firefox 1.0+
-            if (typeof InstallTrigger !== 'undefined') this.Browser = "Firefox";
-            // At least Safari 3+: "[object HTMLElementConstructor]"
-            if (Object.prototype.toString.call((<any>window).HTMLElement).indexOf('Constructor') > 0) this.Browser = "Safari";
-            // Chrome 1+
-            if (!!(<any>window).chrome && !!(<any>window).chrome.webstore) this.Browser = "Chrome";
-            // Edge 20+
-            if (!(/*@cc_on!@*/false || !!(<any>document).documentMode) && !!(<any>window).StyleMedia) this.Browser = "Edge";
-            // Internet Explorer 6-11
-            if (/*@cc_on!@*/false || !!(<any>document).documentMode) this.Browser = "IE";
         }
 
     }//end  class
