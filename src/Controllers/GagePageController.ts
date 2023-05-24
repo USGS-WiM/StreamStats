@@ -703,65 +703,144 @@ module StreamStats.Controllers {
                     this.getRatingCurve();
                 }); 
             }
+            
+            //to be used for flood stage part of graph
+            public getNWSForecast() {
+                var self = this;
+                var nwisCode = this.gage.code;
+            
+                this.$http.get('./data/gageNumberCrossWalk.json').then(function(response) {
+                    self.crossWalk = response.data;
+                    var NWScode = self.crossWalk[nwisCode];
+            
+                    if (NWScode !== undefined) {
+                        var url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + NWScode;
+                        const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
+            
+                        self.Execute(request).then(function(response) {
+                            const xmlDocument = new DOMParser().parseFromString(response as string, "text/xml");
+            
+                            const sigStages = xmlDocument.querySelector("sigstages");
+                            
+                            // parse out tag values from sigStages. These will be Y values
+                            const action = parseFloat(sigStages.querySelector("action").textContent);
+                            const flood = parseFloat(sigStages.querySelector("flood").textContent);
+                            const moderate = parseFloat(sigStages.querySelector("moderate").textContent);
+                            const major = parseFloat(sigStages.querySelector("major").textContent);
+                            const record = parseFloat(sigStages.querySelector("record").textContent);
+            
+                            console.log("Action: ", action);
+                            console.log("Flood: ", flood);
 
-            // to be used for flood stage part of graph
-            // public getNWSForecast() {
-            //     var self = this;
-            //     var nwisCode = this.gage.code;
+                            const forecastData = xmlDocument.querySelectorAll("forecast");
             
-            //     this.$http.get('./data/gageNumberCrossWalk.json').then(function(response) {
-            //         self.crossWalk = response.data;
-            //         var NWScode = self.crossWalk[nwisCode];
+                            if (forecastData[0] !== undefined) {
+                                const smallerData = forecastData[0].childNodes;
+                                let forecastArray = [];
             
-            //         if (NWScode !== undefined) {
-            //             var url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + NWScode;
-            //             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
+                                smallerData.forEach(datum => {
+                                    if (datum.childNodes[0] !== undefined) {
+                                        const forecastObj = {
+                                            x: new Date(datum.childNodes[0].textContent),
+                                            y: parseFloat(datum.childNodes[2].textContent)
+                                        };
             
-            //             self.Execute(request).then(function(response) {
-            //                 const xmlDocument = new DOMParser().parseFromString(response as string, "text/xml");
-
-            //                 const sigStages = xmlDocument.querySelector("sigstages");
+                                        if ((smallerData[2].childNodes[2].getAttribute("units")) === 'kcfs') {
+                                            forecastObj.y *= 1000;
+                                        }
             
-            //                 const action = parseFloat(sigStages.querySelector("action").textContent);
-            //                 const flood = parseFloat(sigStages.querySelector("flood").textContent);
-            //                 const moderate = parseFloat(sigStages.querySelector("moderate").textContent);
-            //                 const major = parseFloat(sigStages.querySelector("major").textContent);
-            //                 const record = parseFloat(sigStages.querySelector("record").textContent);
-
-            //                 console.log("action:", action);
-            //                 console.log("flood:", flood);
-            //                 console.log("moderate:", moderate);
+                                        forecastArray.push(forecastObj);
+                                        self.NWSforecast = forecastArray;
+                                    }
+                                });
+                            }
             
-            //                 const forecastData = xmlDocument.querySelectorAll("forecast");
+                            // Get the rating curve data
+                            let ratingCurve = self.getRatingCurve();
             
-            //                 if (forecastData[0] !== undefined) {
-            //                     const smallerData = forecastData[0].childNodes;
-            //                     let forecastArray = [];
+                            //  call curveLookup function for each flood stage
+                            let actionX = self.curveLookup('stage', action, ratingCurve);
+                            let floodX = self.curveLookup('stage', flood, ratingCurve);
+                            let moderateX = self.curveLookup('stage', moderate, ratingCurve);
+                            let majorX = self.curveLookup('stage', major, ratingCurve);
+                            let recordX = self.curveLookup('stage', record, ratingCurve);
             
-            //                     smallerData.forEach(datum => {
-            //                         if (datum.childNodes[0] !== undefined) {
-            //                             const forecastObj = {
-            //                                 x: new Date(datum.childNodes[0].textContent),
-            //                                 y: parseFloat(datum.childNodes[2].textContent)
-            //                             };
+                            console.log("action:", action);
+                            console.log("floodX:", floodX);
             
-            //                             if ((smallerData[2].childNodes[2].getAttribute("units")) === 'kcfs') {
-            //                                 forecastObj.y *= 1000;
-            //                             }
+                            // Prepare data for chart update
+                            let stages = [
+                                {name: 'action', x: actionX, y: action},
+                                {name: 'flood', x: floodX, y: flood},
+                                {name: 'moderate', x: moderateX, y: moderate},
+                                {name: 'major', x: majorX, y: major},
+                                {name: 'record', x: recordX, y: record}
+                            ];
             
-            //                             forecastArray.push(forecastObj);
-            //                             self.NWSforecast = forecastArray;
-            //                         }
-            //                     });
-            //                 }
+                            // Update chart
+                            self.updateChart(stages);
+                        });
+                    } else {
+                        self.getRatingCurve();
+                    }
+                });
+            }
             
-            //                 self.getRatingCurve();
-            //             });
-            //         } else {
-            //             self.getRatingCurve();
-            //         }
-            //     });
-            // }
+            public curveLookup(type: string, value: number, curve: any) {
+                let lookupValue;
+                let highx, highy, lowx, lowy;
+            
+                if (type === 'stage') {
+                    $.each(curve, function (key, val) {
+                        if (typeof (val) === 'undefined') return true;
+                        if (value === val.y) {
+                            lookupValue = val.x;
+                            return false;
+                        }
+                        if (value < val.y) {
+                            highx = val.x;
+                            highy = val.y;
+                            lowx = curve[key - 1].x;
+                            lowy = curve[key - 1].y;
+                            lookupValue = parseInt((((value - lowy) / (highy - lowy)) * (highx - lowx) + lowx).toFixed(0));
+                            return false;
+                        }
+                    });
+                }
+            
+                return lookupValue;
+            }
+            
+            public updateChart(stages) {
+                let chart = Highcharts.chart('container', {
+                    // chart options
+                });
+            
+                this.drawFloodStageLines(chart, stages);
+            }
+            
+            public drawFloodStageLines(chart: any, stages: any[]) {
+                // iterate over each stage
+                stages.forEach(stage => {
+                    // add horizontal line (y-axis)
+                    chart.yAxis[2].addPlotLine({
+                        value: stage.y, // the stage value on y-axis
+                        color: 'red', // or any color you want
+                        width: 2, // the line width
+                        id: stage.name // a unique id for later removal if necessary
+                    });
+            
+                    // add vertical line (x-axis)
+                    chart.xAxis[2].addPlotLine({
+                        value: stage.x, // the stage value on x-axis
+                        color: 'blue', // or any color you want
+                        width: 2, // the line width
+                        id: stage.name // a unique id for later removal if necessary
+                    });
+                });
+            }
+            
+            
             
         public getRatingCurve() {
             const url = 'https://waterdata.usgs.gov/nwisweb/get_ratings?site_no=' + this.gage.code + '&file_type=exsa'
@@ -863,6 +942,7 @@ module StreamStats.Controllers {
             return minYear;
           }
       
+          // for sliders
         public updateChart() {
             let chart = $('#chart3').highcharts();
 
@@ -882,6 +962,7 @@ module StreamStats.Controllers {
                 this.toggleLegend();
             }
 
+            // for sliders
             public toggleLegend() {
                 const ageLegend = document.getElementById('ageLegend');
                 const qualityLegend = document.getElementById('qualityLegend');
@@ -895,54 +976,6 @@ module StreamStats.Controllers {
                 }
             }
 
-          
-        // using this to eventually show flood stage
-        // public getFloodStage() {
-        //     const url = 'https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=' + this.nwsStations
-        //     //console.log('flood stage data', url)
-        //     const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-            
-        //     this.measuredObj = [];
-
-        //     this.Execute(request).then(
-        //         (response: any) => {
-        //             // console.log('response usgsmeasured', response)
-        //             const data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") });
-        //             // console.log('data', data)
-        //             data.shift().split('\t');
-        //             // console.log('data with shift', data)
-        //             data.shift();
-        //             //console.log('another data shift', data)
-        //             // let dataRow = data.shift().split('\t');
-        //             // console.log('datarow splits', dataRow)
-        //             // debugger;
-        //             data.forEach(row => {
-        //                 let dataRow = row.split('\t')
-        //                 // console.log('datarow', dataRow)
-        //                 const object = { 
-        //                     dateTime: dataRow[3],
-        //                     timeZone: dataRow[4],
-        //                     quality: dataRow[10],
-        //                     control: dataRow[13],
-        //                     x: parseFloat(dataRow[9]),
-        //                     y: parseFloat(dataRow[8]),
-        //                     qualityColor: this.stageDischargeQualityColor(dataRow[10]),
-        //                     color: this.stageDischargeAgeColor (new Date(dataRow[3]))
-        //                     // time: this.dateTime (dataRow[3]),
-        //                     // color: this.getQualityCorrectColor (dataRow[10])
-        //                 };
-        //                 // console.log(object)
-        //                 this.measuredObj.push(object) 
-        //             });
-        //             // console.log('measured obj', this.measuredObj)
-        //                 // console.log('dischargeObj', dischargeValue)
-        //         }, (error) => {
-        //             // console.log(error)
-        //         }).finally(() => {
-        //             this.formatData()
-        //         });
-
-        // } 
 
         //Get data into format necessary for plotting in Highcharts
         public formatData(): void {
@@ -1405,6 +1438,27 @@ public createDischargePlot(): void {
                 radius: 3
             },
             showInLegend: this.error == false //!this.measuredObj.every(item => isNaN(item.y)) 
+        },
+        {
+            name    : 'Flood Stages',
+            showInNavigator: false,
+            tooltip: {
+                headerFormat:'<b>Flood Stages</b>',
+                pointFormatter: function(){
+                    if (this.formattedPeakDates !== null){
+                        let UTCday = this.getUTCDate;
+                    }
+                }
+            },
+            turboThreshold: 0, 
+            type    : 'line',
+            color   : 'yellow',
+            data    : [],
+            marker: {
+                symbol: 'circle',
+                radius: 0
+            },
+            showInLegend: true
         }] 
     } 
 }
