@@ -10,20 +10,26 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed  
 
+### Deprecated 
+
+### Removed 
+
+### Fixed  
+
+### Security  
+
+## [v4.15.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.15.0) - 2023-05-24
+
+### Changed  
+
 - Updated national status map (now includes D.C. as undergoing implementation)
 - Changed national status map from image URL to downloaded image in images folder
 - Open 'Submit a Support Request' tab when users click on 'StreamStats team' link
 - Replaced Freshdesk ticket submission with a text to email streamstats@usgs.gov
 - Replaced Freshdesk articles with links to StreamStats webpages
 
-### Deprecated 
-
-### Removed 
-
 ### Fixed  
 - Capitalization of StreamStats
-
-### Security  
 
 ## [v4.14.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.14.1) - 2023-03-29
   
