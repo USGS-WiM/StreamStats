@@ -50,7 +50,20 @@
 
         <div id="regionInfo" ng-show="vm.selectedAboutTabName==='regionInfo'">
             <div id="supportContent">
-                <div ng-show="vm.regionArticle" ng-bind-html="vm.convertUnsafe(vm.regionArticle)"></div>
+                <div ng-if="!vm.selectedRegion">
+                    <p>StreamStats is developed on a state-by-state or regional basis. To find information about the data used for your area of interest, see our <a href="https://www.usgs.gov/streamstats/state-and-region-based-info">State and Region</a> pages.</p>
+                </div>
+                <div ng-if="vm.selectedRegion && !vm.selectedRegion.regionEnabled">
+                    <div class="wim-alert">StreamStats has not been developed for <strong>{{vm.selectedRegion.Name}}</strong>. Please<a ng-click="vm.openSubmitSupport($event)">contact the StreamStats team</a>if you would like StreamStats enabled for this State/Region.</div>
+
+                </div>
+                <div ng-if="vm.selectedRegion && vm.selectedRegion.regionEnabled && !vm.selectedRegion.URL">
+                    <div class="wim-alert">There is currently no information page for <strong>{{vm.selectedRegion.Name}}</strong>. Please<a ng-click="vm.openSubmitSupport($event)">contact the StreamStats team</a>with any questions.</div>
+
+                </div>
+                <div ng-if="vm.selectedRegion && vm.selectedRegion.regionEnabled && vm.selectedRegion.URL">
+                    <p>To find information about the data used for <strong>{{vm.selectedRegion.Name}}</strong>, see our<a href="{{vm.selectedRegion.URL}}"> {{vm.selectedRegion.Name}} information</a>page.</p>
+                </div>
             </div>
         </div>
 
