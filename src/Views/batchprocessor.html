@@ -41,7 +41,8 @@
 
             <!-- Start select region -->
             <div id="selectRegionID" style="padding-top: 10px;">
-                <label> State / Region: </label>
+                State / Region:
+
                 <select class="bp-select" ng-model="vm.selectedRegion"
                     ng-options="region.Code as region.Name for region in vm.regionList track by region.Code"
                     ng-change="vm.getFlowStatsAndParams(vm.selectedRegion)" required>
