@@ -58,8 +58,6 @@ var StreamStats;
                 this.selectedHelpTabName = tabname;
             };
             HelpController.prototype.init = function () {
-                this.Browser = 'Not found';
-                this.getBrowser();
                 this.AppVersion = configuration.version;
                 if (this.StudyArea && this.StudyArea.WorkspaceID)
                     this.WorkspaceID = this.StudyArea.WorkspaceID;
@@ -77,20 +75,6 @@ var StreamStats;
                     if (this.modalService.modalOptions.tabName)
                         this.selectHelpTab(this.modalService.modalOptions.tabName);
                 }
-            };
-            HelpController.prototype.getBrowser = function () {
-                if ((!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0)
-                    this.Browser = "Opera";
-                if (typeof InstallTrigger !== 'undefined')
-                    this.Browser = "Firefox";
-                if (Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0)
-                    this.Browser = "Safari";
-                if (!!window.chrome && !!window.chrome.webstore)
-                    this.Browser = "Chrome";
-                if (!(false || !!document.documentMode) && !!window.StyleMedia)
-                    this.Browser = "Edge";
-                if (false || !!document.documentMode)
-                    this.Browser = "IE";
             };
             HelpController.$inject = ['$scope', '$http', '$sce', 'StreamStats.Services.StudyAreaService', '$modalInstance', 'Upload', 'StreamStats.Services.ModalService'];
             return HelpController;
