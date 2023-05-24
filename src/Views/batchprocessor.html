@@ -27,15 +27,26 @@
         <!-- Start submit batch -->
         <div id="submitBatch" ng-if="vm.selectedBatchProcessorTabName==='submitBatch'">
             <!-- Start instructions -->
-            <div> To submit a batch: <br>
-
-                <ul style="list-style-type: circle;">
-                    <li>All highlighted fields must be completed before submission</li>
-                    <li>Only points that are contained within the selected State/Region will be processed</li>
-                    <li>Batches are limited to 250 points each and if it contains more, only the first 250 points will be
-                    processed</li>
-                    <li>Only point shapefiles will be processed so no polygon, polyline, or multipoint geometries</li>
-                </ul>
+            <div> The StreamStats Batch Processor allows users to run StreamStats for numerous points via an automated process.
+                <br>
+                <br>
+                <b>How to Submit a Batch</b>
+                <br>
+                <ol>
+                    <li>Create a point shapefile:</li>
+                    <ul style="list-style-type: disc; padding: 0px">
+                        <li>Ensure points are coincident with the stream grid used by StreamStats for delineation.</li>
+                        <li>Shapefile must have an ID field that uniquely identifies each point. </li>
+                        <li>Shapefile must be a point shapefile. Polyline, polygon, and multipoint geometries cannot be processed.
+                        </li>
+                        <li>Only the first 250 points will be processed.</li>
+                        <li>Only points contained within the requested State/Region will be processed.</li>
+                    </ul>
+                    <li>Complete the form below. Highlighted fields are required.</li>
+                    <li>Click the "Submit Batch" button and confirm that the batch was submitted successfully.</li>
+                    <li>Check your email or the "Batch Status" tab to see the batch status and retrieve file geodatabase results.
+                    </li>
+                </ol>
             </div>
             <!-- End instructions -->
 
@@ -176,13 +187,17 @@
         <!-- Start batch status -->
         <div id="batchStatus" ng-if="vm.selectedBatchProcessorTabName==='batchStatus'">
             <!-- Start instructions -->
-            <div> To check batch status: <br>
-
-                <ul style="list-style-type: circle;">
-                    <li>Enter your email address in the Email Address box</li>
-                    <li>When the results are ready for download, a hyperlink will appear in the <i>Results</i> field</li>
-                    <li>A batch can be deleted by clicking on the trash can icon and answering Yes to the question that pops up</li>
-                </ul>
+            <div>
+                Batches may take several hours or days to complete. Use this tab to check the status and results of your batches.
+                <br>
+                <br>
+                <b>How to Check Batch Status</b>
+                <ol>
+                    <li>Enter your email address.</li>
+                    <li>Batch status will appear in the <i>Status</i> column.</li>
+                    <li>When results are ready for download, a hyperlink will appear in the <i>Results</i> column.</li>
+                    <li>If you would like to remove a batch from the queue, click on the trash can icon.</li>
+                </ol>
             </div>
             <!-- End instructions -->
             <p>This is the batch status tab</p>
