@@ -642,6 +642,7 @@ var StreamStats;
                         _this_1.instFlow = filteredInst;
                     }
                     _this_1.getNWSForecast();
+                    console.log(_this_1.gageTimeZone);
                 });
             };
             GagePageController.prototype.getNWSForecast = function () {
@@ -1723,26 +1724,33 @@ var StreamStats;
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
                 var timezone;
+                var zoneAbbreviation;
                 if (this.formattedInstFlow.length > 0) {
-                    var zoneAbbreviation = this.gageTimeZone.defaultTimeZone.zoneAbbreviation;
-                    if (zoneAbbreviation === 'EST') {
+                    zoneAbbreviation = this.gageTimeZone.defaultTimeZone.zoneAbbreviation;
+                    if (zoneAbbreviation === 'EST' || zoneAbbreviation === 'EDT' || zoneAbbreviation === 'ET') {
                         timezone = 'America/New_York';
                     }
-                    if (zoneAbbreviation === 'CST') {
+                    if (zoneAbbreviation === 'CST' || zoneAbbreviation === 'CDT' || zoneAbbreviation === 'CT') {
                         timezone = 'America/Chicago';
                     }
-                    if (zoneAbbreviation === 'MST') {
+                    if (zoneAbbreviation === 'MST' || zoneAbbreviation === 'MDT' || zoneAbbreviation === 'MT') {
                         timezone = 'America/Denver';
                     }
-                    if (zoneAbbreviation === 'PST') {
+                    if (zoneAbbreviation === 'PST' || zoneAbbreviation === 'PDT' || zoneAbbreviation === 'PT') {
                         timezone = 'America/Los_Angeles';
                     }
-                    if (zoneAbbreviation === 'AKST' || zoneAbbreviation === 'AKDT') {
+                    if (zoneAbbreviation === 'AKST' || zoneAbbreviation === 'AKDT' || zoneAbbreviation === 'AKT') {
                         timezone = 'America/Anchorage';
                     }
-                    if (zoneAbbreviation === 'HST') {
+                    if (zoneAbbreviation === 'HST' || zoneAbbreviation === 'HT' || zoneAbbreviation === 'HDT') {
                         timezone === 'Pacific/Honolulu';
                     }
+                    if (zoneAbbreviation === 'AST' || zoneAbbreviation === 'ADT') {
+                        timezone === 'America/Puerto_Rico';
+                    }
+                }
+                if (zoneAbbreviation === undefined) {
+                    zoneAbbreviation = '';
                 }
                 var self = this;
                 var min;
@@ -1813,7 +1821,7 @@ var StreamStats;
                         min: min,
                         max: max,
                         title: {
-                            text: 'Date'
+                            text: 'Date '
                         },
                         custom: {
                             allowNegativeLog: true
@@ -2098,7 +2106,7 @@ var StreamStats;
                                         var month = this.x.getMonth();
                                         month += 1;
                                         var formattedDailyDate = month + '/' + UTCday + '/' + year;
-                                        return '<br>Date: <b>' + formattedDailyDate + ' (' + hours + ':' + minutes + ')</b><br>Value: <b>' + this.y + ' ft³/s';
+                                        return '<br>Date: <b>' + formattedDailyDate + ' (' + hours + ':' + minutes + ' ' + zoneAbbreviation + ')</b><br>Value: <b>' + this.y + ' ft³/s';
                                     }
                                 }
                             },
@@ -2436,7 +2444,7 @@ var StreamStats;
                                         var month = this.x.getUTCMonth();
                                         month += 1;
                                         var formattedUTCDailyDate = month + '/' + UTCday + '/' + year;
-                                        return '<br>Date: <b>' + formattedUTCDailyDate + ' (' + hours + ':' + minutes + ')</b><br>Value: <b>' + this.y + ' ft³/s';
+                                        return '<br>Date: <b>' + formattedUTCDailyDate + ' (' + hours + ':' + minutes + ' ' + zoneAbbreviation + ')</b><br>Value: <b>' + this.y + ' ft³/s';
                                     }
                                 }
                             },

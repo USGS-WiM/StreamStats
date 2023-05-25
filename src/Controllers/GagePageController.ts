@@ -859,6 +859,8 @@ module StreamStats.Controllers {
                     }
                     //console.log('inst', this.instFlow)
                     this.getNWSForecast();
+                                        console.log(this.gageTimeZone)
+
                 });
         }
 
@@ -2078,33 +2080,34 @@ module StreamStats.Controllers {
             //console.log('Inst Flow', this.formattedInstFlow.length)
             let timezone;
             //	09383100
-            // function zoneAbbr () {
-            //     if (this.formattedInstFlow.length > 0) {
-            //     return this.gageTimeZone.defaultTimeZone.zoneAbbreviation
-            //     }
-            // }
+            let zoneAbbreviation;
             if (this.formattedInstFlow.length > 0) {
-            let zoneAbbreviation = this.gageTimeZone.defaultTimeZone.zoneAbbreviation
+            zoneAbbreviation = this.gageTimeZone.defaultTimeZone.zoneAbbreviation
             //console.log(zoneAbbreviation)
-            if (zoneAbbreviation === 'EST') {
+            if (zoneAbbreviation === 'EST' || zoneAbbreviation === 'EDT' || zoneAbbreviation === 'ET') {
                 timezone = 'America/New_York'
             }
-            if (zoneAbbreviation === 'CST') {
+            if (zoneAbbreviation === 'CST' || zoneAbbreviation === 'CDT' || zoneAbbreviation === 'CT') {
                 timezone = 'America/Chicago'
             }
-            if (zoneAbbreviation === 'MST') {
+            if (zoneAbbreviation === 'MST' || zoneAbbreviation === 'MDT' || zoneAbbreviation === 'MT') {
                 timezone = 'America/Denver'
             }
-            if (zoneAbbreviation === 'PST') {
+            if (zoneAbbreviation === 'PST' || zoneAbbreviation === 'PDT' || zoneAbbreviation === 'PT') {
                 timezone = 'America/Los_Angeles'
             }
-            if (zoneAbbreviation === 'AKST' || zoneAbbreviation === 'AKDT') {
+            if (zoneAbbreviation === 'AKST' || zoneAbbreviation === 'AKDT' || zoneAbbreviation === 'AKT') {
                 timezone = 'America/Anchorage' // test gage 15276000
             }
-            if (zoneAbbreviation === 'HST') {
+            if (zoneAbbreviation === 'HST' || zoneAbbreviation === 'HT' || zoneAbbreviation === 'HDT') {
                 timezone === 'Pacific/Honolulu' // test gage 16759600
             }
-            //console.log(timezone)
+            if (zoneAbbreviation === 'AST' || zoneAbbreviation === 'ADT') {
+                timezone === 'America/Puerto_Rico' // test gage 50044810
+            }
+            }
+            if (zoneAbbreviation === undefined) {
+                zoneAbbreviation = ''
             }
 
             var self = this
@@ -2181,7 +2184,7 @@ module StreamStats.Controllers {
                     min: min,
                     max: max,
                     title: {
-                        text: 'Date'
+                        text: 'Date '
                     },
                     custom: {
                         allowNegativeLog: true
@@ -2465,7 +2468,7 @@ module StreamStats.Controllers {
                                 let month = this.x.getMonth();
                                     month += 1; // adding a month to the UTC months (which are zero-indexed)
                                 let formattedDailyDate = month + '/' + UTCday + '/' + year;
-                                return '<br>Date: <b>'  + formattedDailyDate + ' (' + hours + ':' + minutes + ')</b><br>Value: <b>' + this.y + ' ft³/s'
+                                return '<br>Date: <b>'  + formattedDailyDate + ' (' + hours + ':' + minutes +  ' ' + zoneAbbreviation + ')</b><br>Value: <b>' + this.y + ' ft³/s'
                             }
                         }
                     },
@@ -2804,7 +2807,7 @@ module StreamStats.Controllers {
                                 let month = this.x.getUTCMonth();
                                     month += 1; // adding a month to the UTC months (which are zero-indexed)
                                 let formattedUTCDailyDate = month + '/' + UTCday + '/' + year;
-                                return '<br>Date: <b>'  + formattedUTCDailyDate + ' (' + hours + ':' + minutes + ')</b><br>Value: <b>' + this.y + ' ft³/s'
+                                return '<br>Date: <b>'  + formattedUTCDailyDate + ' (' + hours + ':' + minutes + ' ' + zoneAbbreviation + ')</b><br>Value: <b>' + this.y + ' ft³/s'
                             }
                         }
                     },
