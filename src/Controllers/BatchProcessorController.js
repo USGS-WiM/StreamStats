@@ -40,7 +40,6 @@ var StreamStats;
                 _this.toaster = toaster;
                 _this.selectedFlowStatsList = [];
                 _this.selectedParamList = [];
-                _this.availableParamList = [];
                 _this.flowStatsAllChecked = true;
                 _this.parametersAllChecked = true;
                 _this.showBasinCharacteristics = false;
@@ -264,7 +263,7 @@ var StreamStats;
                 });
             };
             BatchProcessorController.prototype.validateZipFile = function ($files) {
-                if ($files[0].type != "application/x-zip-compressed") {
+                if ($files[0].type != "application/x-zip-compressed" && $files[0].type != "application/zip") {
                     this.toaster.pop('warning', "Please upload a .zip file.", "", 5000);
                     this.submitBatchData.attachment = null;
                 }

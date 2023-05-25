@@ -102,7 +102,6 @@ module StreamStats.Controllers {
             this.toaster = toaster;
             this.selectedFlowStatsList = [];
             this.selectedParamList = [];
-            this.availableParamList = [];
             this.flowStatsAllChecked = true;
             this.parametersAllChecked = true;
             this.showBasinCharacteristics = false;
