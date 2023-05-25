@@ -26,10 +26,34 @@
     <div style="padding-top: 10px;">
         <!-- Start submit batch -->
         <div id="submitBatch" ng-if="vm.selectedBatchProcessorTabName==='submitBatch'">
-           
+            <!-- Start instructions -->
+            <div> The StreamStats Batch Processor allows users to run StreamStats for numerous points via an automated process.
+                <br>
+                <br>
+                <b>How to Submit a Batch</b>
+                <br>
+                <ol>
+                    <li>Create a point shapefile:</li>
+                    <ul style="list-style-type: disc; padding: 0px">
+                        <li>Ensure points are coincident with the stream grid used by StreamStats for delineation.</li>
+                        <li>Shapefile must have an ID field that uniquely identifies each point. </li>
+                        <li>Shapefile must be a point shapefile. Polyline, polygon, and multipoint geometries cannot be processed.
+                        </li>
+                        <li>Only the first 250 points will be processed.</li>
+                        <li>Only points contained within the requested State/Region will be processed.</li>
+                    </ul>
+                    <li>Complete the form below. Highlighted fields are required.</li>
+                    <li>Click the "Submit Batch" button and confirm that the batch was submitted successfully.</li>
+                    <li>Check your email or the "Batch Status" tab to see the batch status and retrieve file geodatabase results.
+                    </li>
+                </ol>
+            </div>
+            <!-- End instructions -->
+
             <!-- Start select region -->
-            <div id="selectRegionID" style="padding-top: 15px;">
-                <label> State / Region: </label>
+            <div id="selectRegionID" style="padding-top: 10px;">
+                State / Region:
+
                 <select class="bp-select" ng-model="vm.selectedRegion"
                     ng-options="region.Code as region.Name for region in vm.regionList track by region.Code"
                     ng-change="vm.getFlowStatsAndParams(vm.selectedRegion)" required>
@@ -113,16 +137,15 @@
                             <th class="col-xs-3"></th>
                         </tr>
                     </thead>
-                <tbody ng-repeat="flowStat in vm.flowStatsList">
-                    <tr>
-                        <td>
-                            <checkbox large ng-model="flowStat.checked" ng-change="vm.setRegionStats(flowStat)">
-                            </checkbox>
-                        </td>
-                        <td><span>&nbsp;&nbsp;{{flowStat.statisticGroupName}}</span></td>
-                    </tr>
-                </tbody>
-
+                    <tbody ng-repeat="flowStat in vm.flowStatsList">
+                        <tr>
+                            <td>
+                                <checkbox large ng-model="flowStat.checked" ng-change="vm.setRegionStats(flowStat)">
+                                </checkbox>
+                            </td>
+                            <td><span>&nbsp;&nbsp;{{flowStat.statisticGroupName}}</span></td>
+                        </tr>
+                    </tbody>
                 </table>
             </div><!-- End select flow statistics -->
 
@@ -163,6 +186,20 @@
 
         <!-- Start batch status -->
         <div id="batchStatus" ng-if="vm.selectedBatchProcessorTabName==='batchStatus'">
+            <!-- Start instructions -->
+            <div>
+                Batches may take several hours or days to complete. Use this tab to check the status and results of your batches.
+                <br>
+                <br>
+                <b>How to Check Batch Status</b>
+                <ol>
+                    <li>Enter your email address.</li>
+                    <li>Batch status will appear in the <i>Status</i> column.</li>
+                    <li>When results are ready for download, a hyperlink will appear in the <i>Results</i> column.</li>
+                    <li>If you would like to remove a batch from the queue, click on the trash can icon.</li>
+                </ol>
+            </div>
+            <!-- End instructions -->
             <p>This is the batch status tab</p>
         </div> <!-- End batch status -->
        
