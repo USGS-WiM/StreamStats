@@ -30,7 +30,7 @@
             <!-- Start select region -->
             <div id="selectRegionID" style="padding-top: 15px;">
                 <label> State / Region: </label>
-                <div ng-hide="vm.regionList"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+                <div ng-hide="!vm.regionListSpinner"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
                 <div ng-hide="!vm.regionList">
                     <select class="bp-select" ng-model="vm.selectedRegion"
                         ng-options="region.Code as region.Name for region in vm.regionList track by region.Code"
@@ -108,7 +108,7 @@
                     <span ng-if="!vm.flowStatsAllChecked">Unselect All Flow Statistics</span>
                 </button>
                 <!-- create list of flow stats checkboxes -->
-                <div ng-hide="vm.flowStatsList"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+                <div ng-hide="!vm.flowStatsListSpinner"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
                 <div ng-hide="!vm.flowStatsList">
                     <table class="table table-condensed">
                         <thead class="param-table">
@@ -142,7 +142,7 @@
                 </button>
 
                 <!-- create table of parameters checkboxes -->
-                <div ng-hide="vm.availableParamList"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+                <div ng-hide="!vm.parametersListSpinner"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
                 <div ng-hide="!vm.availableParamList">
                     <table class="table table-condensed">
                         <thead class="param-table">

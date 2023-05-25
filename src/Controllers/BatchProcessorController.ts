@@ -88,6 +88,10 @@ module StreamStats.Controllers {
         public showSuccessAlert: boolean;
         public submitBatchData: SubmitBatchData;
 
+        // spinners
+        public regionListSpinner: boolean;
+        public flowStatsListSpinner: boolean;
+        public parametersListSpinner: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -108,6 +112,9 @@ module StreamStats.Controllers {
             this.submittingBatch = false; 
             this.showSuccessAlert = false;
             this.submitBatchData = new SubmitBatchData();
+            this.regionListSpinner = true;
+            this.flowStatsListSpinner = true;
+            this.parametersListSpinner = true;
             this.init();
         }
 
@@ -119,7 +126,7 @@ module StreamStats.Controllers {
             this.modalInstance.dismiss('cancel')
         }
 
-        // used for switching between tabs
+        // used for switching between tabs in batch processor modal
         public selectBatchProcessorTab(tabname: string): void {
             this.selectedBatchProcessorTabName = tabname;
         }
@@ -133,6 +140,7 @@ module StreamStats.Controllers {
             this.Execute(request).then(
                 (response: any) => {
                     this.regionList = response.data;
+                    this.regionListSpinner = false;
                 });
 
         }
@@ -140,14 +148,38 @@ module StreamStats.Controllers {
         // send selected region code and retrieve flows stats list
         public getFlowStatsAndParams(rcode: string): void {
 
+            // activate spinners during state/region changes
+            if (this.flowStatsListSpinner == false || this.parametersListSpinner == false) {
+                this.flowStatsListSpinner = true;
+                this.parametersListSpinner = true;
+            }
+            console.log("before: ", this.flowStatsList)
+            // clear flowStatsList during state/region changes
+            if (this.flowStatsList && this.flowStatsList.length > 0) {
+                this.flowStatsList.length = 0;
+            }
+            console.log("after: ", this.flowStatsList)
+            // clear availableParamList during state/region changes
+            if (this.availableParamList && this.availableParamList.length > 0) {
+                this.availableParamList.length = 0;
+            }
+            
+
             this.nssService.getFlowStatsList(rcode).then(
                 // set flowStatsList to values of promised response
-                response => { this.flowStatsList = response; }
-
+                response => {
+                    this.flowStatsList = response;
+                    // turn off spinner
+                    this.flowStatsListSpinner = false;
+                }
             )
 
             this.loadParametersByRegionBP(rcode).then(
-                response => { this.availableParamList = response; }
+                response => {
+                    this.availableParamList = response;
+                    // turn off spinner
+                    this.parametersListSpinner = false;
+                }
             );
 
         }

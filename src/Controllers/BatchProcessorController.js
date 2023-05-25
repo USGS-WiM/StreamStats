@@ -46,6 +46,9 @@ var StreamStats;
                 _this.submittingBatch = false;
                 _this.showSuccessAlert = false;
                 _this.submitBatchData = new SubmitBatchData();
+                _this.regionListSpinner = true;
+                _this.flowStatsListSpinner = true;
+                _this.parametersListSpinner = true;
                 _this.init();
                 return _this;
             }
@@ -62,12 +65,31 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     _this.regionList = response.data;
+                    _this.regionListSpinner = false;
                 });
             };
             BatchProcessorController.prototype.getFlowStatsAndParams = function (rcode) {
                 var _this = this;
-                this.nssService.getFlowStatsList(rcode).then(function (response) { _this.flowStatsList = response; });
-                this.loadParametersByRegionBP(rcode).then(function (response) { _this.availableParamList = response; });
+                if (this.flowStatsListSpinner == false || this.parametersListSpinner == false) {
+                    this.flowStatsListSpinner = true;
+                    this.parametersListSpinner = true;
+                }
+                console.log("before: ", this.flowStatsList);
+                if (this.flowStatsList && this.flowStatsList.length > 0) {
+                    this.flowStatsList.length = 0;
+                }
+                console.log("after: ", this.flowStatsList);
+                if (this.availableParamList && this.availableParamList.length > 0) {
+                    this.availableParamList.length = 0;
+                }
+                this.nssService.getFlowStatsList(rcode).then(function (response) {
+                    _this.flowStatsList = response;
+                    _this.flowStatsListSpinner = false;
+                });
+                this.loadParametersByRegionBP(rcode).then(function (response) {
+                    _this.availableParamList = response;
+                    _this.parametersListSpinner = false;
+                });
             };
             BatchProcessorController.prototype.setRegionStats = function (statisticsGroup, allFlowStatsSelectedToggle) {
                 if (allFlowStatsSelectedToggle === void 0) { allFlowStatsSelectedToggle = null; }
