@@ -143,7 +143,7 @@ var StreamStats;
                     }];
                 _this.greaterThanZero = /^\+?(\d*[1-9]\d*\.?|\d*\.\d*[1-9]\d*)$/;
                 _this.gTZInvalidMessage = "Value must be greater than 0";
-                _this.greaterThanOrEqualToZero = /0+|^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
+                _this.greaterThanOrEqualToZero = /^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/;
                 _this.gTOETZInvalidMessage = "Value must be greater than or equal to 0";
                 _this.betweenZeroOneHundred = /^(\d{0,2}(\.\d{1,2})?|100(\.00?)?)$/;
                 _this.prfTypes = [
@@ -289,8 +289,8 @@ var StreamStats;
                                 label: "Base Width",
                                 type: "number",
                                 value: null,
-                                pattern: "greaterThanZero",
-                                invalidMessage: _this.gTZInvalidMessage
+                                pattern: "greaterThanOrEqualToZero",
+                                invalidMessage: _this.gTOETZInvalidMessage
                             },
                             {
                                 id: "frontSlope",
@@ -1293,7 +1293,7 @@ var StreamStats;
                                     if (key == "S" && !_this.watershedRetention)
                                         _this.watershedRetention = response.data.S.toUSGSvalue();
                                     if (key == "curve_number" && !_this.standardCurveNumber)
-                                        _this.standardCurveNumber = response.data.curve_number.toUSGSvalue();
+                                        _this.standardCurveNumber = Math.round(response.data.curve_number);
                                     if (key == "peak_rate_factor" && !_this.peakRateFactor)
                                         _this.peakRateFactor = response.data.peak_rate_factor.toUSGSvalue();
                                     if (key == "rainfall_distribution_curve_letter" && !_this._selectedRainfallDistribution) {

@@ -254,7 +254,7 @@ module StreamStats.Controllers {
 
         private greaterThanZero = /^\+?(\d*[1-9]\d*\.?|\d*\.\d*[1-9]\d*)$/;
         private gTZInvalidMessage = "Value must be greater than 0"
-        private greaterThanOrEqualToZero = /0+|^([0-9]*[1-9][0-9]*(\.[0-9]+)?|[0]+\.[0-9]*[1-9][0-9]*)$/;
+        private greaterThanOrEqualToZero = /^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/;
         private gTOETZInvalidMessage = "Value must be greater than or equal to 0"
         private betweenZeroOneHundred = /^(\d{0,2}(\.\d{1,2})?|100(\.00?)?)$/;
 
@@ -405,8 +405,8 @@ module StreamStats.Controllers {
                         label: "Base Width",
                         type: "number",
                         value: null,
-                        pattern: "greaterThanZero",
-                        invalidMessage: this.gTZInvalidMessage
+                        pattern: "greaterThanOrEqualToZero",
+                        invalidMessage: this.gTOETZInvalidMessage
                     },
                     {
                         id: "frontSlope",
@@ -1528,7 +1528,7 @@ module StreamStats.Controllers {
                                 for(let key of keys) {
                                     if(key == "Ia" && !this.initialAbstraction) this.initialAbstraction = response.data.Ia.toUSGSvalue()
                                     if(key == "S" && !this.watershedRetention) this.watershedRetention = response.data.S.toUSGSvalue()
-                                    if(key == "curve_number" && !this.standardCurveNumber) this.standardCurveNumber = response.data.curve_number.toUSGSvalue()
+                                    if(key == "curve_number" && !this.standardCurveNumber) this.standardCurveNumber = Math.round(response.data.curve_number)
                                     if(key == "peak_rate_factor" && !this.peakRateFactor) this.peakRateFactor = response.data.peak_rate_factor.toUSGSvalue()
                                     if(key == "rainfall_distribution_curve_letter" && !this._selectedRainfallDistribution) {
                                         for(let option of this.RainfallDistributionOptions) {
