@@ -105,6 +105,8 @@ var StreamStats;
                 _this_1.peakDates = undefined;
                 _this_1.estPeakDates = undefined;
                 _this_1.dailyFlow = undefined;
+                _this_1.instFlow = undefined;
+                _this_1.gageTimeZone = undefined;
                 _this_1.NWSforecast = undefined;
                 _this_1.meanPercentileStats = undefined;
                 _this_1.meanPercent = undefined;
@@ -133,6 +135,7 @@ var StreamStats;
                 _this_1.formattedEstPeakDatesOnYear = [];
                 _this_1.formattedEstPeakDates = [];
                 _this_1.formattedDailyFlow = [];
+                _this_1.formattedInstFlow = [];
                 _this_1.dailyDatesOnly = [];
                 _this_1.startAndEnd = [];
                 _this_1.formattedDailyHeat = [];
@@ -583,7 +586,14 @@ var StreamStats;
             };
             GagePageController.prototype.getDailyFlow = function () {
                 var _this_1 = this;
-                var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01';
+                var date = new Date();
+                var timeInMillisec = date.getTime();
+                timeInMillisec -= 15 * 24 * 60 * 60 * 1000;
+                date.setTime(timeInMillisec);
+                var twoWeeksAgo = new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
+                    .toISOString()
+                    .split("T")[0];
+                var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01&endDT=' + twoWeeksAgo;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var data = response.data.value.timeSeries;
@@ -600,7 +610,39 @@ var StreamStats;
                         });
                         _this_1.dailyFlow = filteredDaily;
                     }
+                    _this_1.getInstantaneousFlow();
+                });
+            };
+            GagePageController.prototype.getInstantaneousFlow = function () {
+                var _this_1 = this;
+                var date = new Date();
+                var timeInMillisec = date.getTime();
+                timeInMillisec -= 15 * 24 * 60 * 60 * 1000;
+                date.setTime(timeInMillisec);
+                var twoWeeksAgo = new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
+                    .toISOString()
+                    .split("T")[0];
+                var url = 'https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&startDT=' + twoWeeksAgo;
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.Execute(request).then(function (response) {
+                    var data = response.data.value.timeSeries;
+                    if (data.length !== 0) {
+                        var instValues = data[0].values[0].value;
+                        var timeZoneInfo = data[0].sourceInfo.timeZoneInfo;
+                        _this_1.gageTimeZone = timeZoneInfo;
+                    }
+                    else {
+                        instValues = 0;
+                    }
+                    ;
+                    if (instValues !== 0) {
+                        var filteredInst = instValues.filter(function (item) {
+                            return (parseFloat(item.value) !== -999999);
+                        });
+                        _this_1.instFlow = filteredInst;
+                    }
                     _this_1.getNWSForecast();
+                    console.log(_this_1.gageTimeZone);
                 });
             };
             GagePageController.prototype.getNWSForecast = function () {
@@ -618,10 +660,14 @@ var StreamStats;
                             if (forecastData[0] !== undefined) {
                                 var smallerData_1 = forecastData[0].childNodes;
                                 var forecastArray_1 = [];
+                                var timeZoneOffset = self.gageTimeZone.defaultTimeZone.zoneOffset;
+                                var numberOffset_1 = parseFloat(timeZoneOffset);
                                 smallerData_1.forEach(function (datum) {
                                     if (datum.childNodes[0] !== undefined) {
+                                        var date = new Date(datum.childNodes[0].textContent);
+                                        date.setUTCHours(date.getUTCHours() + numberOffset_1);
                                         var forecastObj = {
-                                            x: new Date(datum.childNodes[0].textContent),
+                                            x: date,
                                             y: parseFloat(datum.childNodes[2].textContent)
                                         };
                                         if ((smallerData_1[2].childNodes[2].getAttribute("units")) === 'kcfs') {
@@ -767,7 +813,9 @@ var StreamStats;
                 if (this.dailyFlow) {
                     this.dailyFlow.forEach(function (dailyObj) {
                         if (parseFloat(dailyObj.value) !== -999999) {
-                            _this_1.formattedDailyFlow.push({ x: new Date(dailyObj.dateTime), y: parseFloat(dailyObj.value) });
+                            var date = new Date(dailyObj.dateTime);
+                            date.setHours(12, 0, 0);
+                            _this_1.formattedDailyFlow.push({ x: date, y: parseFloat(dailyObj.value) });
                             _this_1.dailyDatesOnly.push(new Date(dailyObj.dateTime));
                         }
                         var now = new Date(dailyObj.dateTime);
@@ -786,7 +834,6 @@ var StreamStats;
                         }
                         ;
                         if (parseInt(dailyObj.value) !== -999999) {
-                            _this_1.formattedDailyFlow.push({ x: new Date(dailyObj.dateTime), y: parseInt(dailyObj.value) });
                             _this_1.dailyValuesOnly.push(parseInt(dailyObj.value));
                             if (isLeapYear(year) == false && doy > 59) {
                                 doy += 1;
@@ -808,6 +855,19 @@ var StreamStats;
                                 _this_1.formattedDailyHeat.push({ x: 60, y: year, value: null, length: 1 });
                             }
                             ;
+                        }
+                    });
+                }
+                if (this.instFlow) {
+                    this.instFlow.forEach(function (instObj) {
+                        if (parseFloat(instObj.value) !== -999999) {
+                            var index = _this_1.formattedDailyFlow.length - 1;
+                            var finalDate = _this_1.formattedDailyFlow[index].x;
+                            var stringDate = instObj.dateTime.split('.')[0];
+                            var instDate = new Date(stringDate);
+                            if (instDate > finalDate) {
+                                _this_1.formattedInstFlow.push({ x: instDate, y: parseFloat(instObj.value) });
+                            }
                         }
                     });
                 }
@@ -1663,6 +1723,35 @@ var StreamStats;
             };
             GagePageController.prototype.createAnnualFlowPlot = function () {
                 var _this_1 = this;
+                var timezone;
+                var zoneAbbreviation;
+                if (this.formattedInstFlow.length > 0) {
+                    zoneAbbreviation = this.gageTimeZone.defaultTimeZone.zoneAbbreviation;
+                    if (zoneAbbreviation === 'EST' || zoneAbbreviation === 'EDT' || zoneAbbreviation === 'ET') {
+                        timezone = 'America/New_York';
+                    }
+                    if (zoneAbbreviation === 'CST' || zoneAbbreviation === 'CDT' || zoneAbbreviation === 'CT') {
+                        timezone = 'America/Chicago';
+                    }
+                    if (zoneAbbreviation === 'MST' || zoneAbbreviation === 'MDT' || zoneAbbreviation === 'MT') {
+                        timezone = 'America/Denver';
+                    }
+                    if (zoneAbbreviation === 'PST' || zoneAbbreviation === 'PDT' || zoneAbbreviation === 'PT') {
+                        timezone = 'America/Los_Angeles';
+                    }
+                    if (zoneAbbreviation === 'AKST' || zoneAbbreviation === 'AKDT' || zoneAbbreviation === 'AKT') {
+                        timezone = 'America/Anchorage';
+                    }
+                    if (zoneAbbreviation === 'HST' || zoneAbbreviation === 'HT' || zoneAbbreviation === 'HDT') {
+                        timezone === 'Pacific/Honolulu';
+                    }
+                    if (zoneAbbreviation === 'AST' || zoneAbbreviation === 'ADT') {
+                        timezone === 'America/Puerto_Rico';
+                    }
+                }
+                if (zoneAbbreviation === undefined) {
+                    zoneAbbreviation = '';
+                }
                 var self = this;
                 var min;
                 if (this.formattedPeakDatesOnYear.length > 0) {
@@ -1690,6 +1779,10 @@ var StreamStats;
                     title: {
                         text: 'Annual Peak Streamflow',
                         align: 'center'
+                    },
+                    time: {
+                        useUTC: false,
+                        timezone: 'America/New_York'
                     },
                     legend: {
                         useHTML: true,
@@ -1728,7 +1821,7 @@ var StreamStats;
                         min: min,
                         max: max,
                         title: {
-                            text: 'Date'
+                            text: 'Date '
                         },
                         custom: {
                             allowNegativeLog: true
@@ -1963,10 +2056,10 @@ var StreamStats;
                             },
                             showInLegend: false
                         }, {
-                            name: 'Daily Streamflow',
+                            name: 'Daily Mean Streamflow',
                             showInNavigator: true,
                             tooltip: {
-                                headerFormat: '<b>Daily Streamflow</b>',
+                                headerFormat: '<b>Daily Mean Streamflow</b>',
                                 pointFormatter: function () {
                                     if (this.formattedDailyFlow !== null) {
                                         var UTCday = this.x.getUTCDate();
@@ -2000,20 +2093,20 @@ var StreamStats;
                                 headerFormat: '<b>NWS Forecast</b>',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
-                                        var hours = this.x.getUTCHours();
+                                        var hours = this.x.getHours();
                                         if (hours < 10) {
                                             hours = '0' + hours;
                                         }
-                                        var minutes = this.x.getUTCMinutes();
+                                        var minutes = this.x.getMinutes();
                                         if (minutes < 10) {
                                             minutes = '0' + minutes;
                                         }
-                                        var UTCday = this.x.getUTCDate();
-                                        var year = this.x.getUTCFullYear();
-                                        var month = this.x.getUTCMonth();
+                                        var UTCday = this.x.getDate();
+                                        var year = this.x.getFullYear();
+                                        var month = this.x.getMonth();
                                         month += 1;
-                                        var formattedUTCDailyDate = month + '/' + UTCday + '/' + year;
-                                        return '<br>Date: <b>' + formattedUTCDailyDate + ' (' + hours + ':' + minutes + ')</b><br>Value: <b>' + this.y + ' ft³/s';
+                                        var formattedDailyDate = month + '/' + UTCday + '/' + year;
+                                        return '<br>Date: <b>' + formattedDailyDate + ' (' + hours + ':' + minutes + ' ' + zoneAbbreviation + ')</b><br>Value: <b>' + this.y + ' ft³/s';
                                     }
                                 }
                             },
@@ -2331,6 +2424,45 @@ var StreamStats;
                                 radius: 0.1
                             },
                             showInLegend: false
+                        }, {
+                            name: 'Instantaneous Streamflow',
+                            showInNavigator: true,
+                            tooltip: {
+                                headerFormat: '<b>Instantaneous Streamflow</b>',
+                                pointFormatter: function () {
+                                    if (this.formattedInstFlow !== null) {
+                                        var hours = this.x.getHours();
+                                        if (hours < 10) {
+                                            hours = '0' + hours;
+                                        }
+                                        var minutes = this.x.getMinutes();
+                                        if (minutes < 10) {
+                                            minutes = '0' + minutes;
+                                        }
+                                        var UTCday = this.x.getUTCDate();
+                                        var year = this.x.getUTCFullYear();
+                                        var month = this.x.getUTCMonth();
+                                        month += 1;
+                                        var formattedUTCDailyDate = month + '/' + UTCday + '/' + year;
+                                        return '<br>Date: <b>' + formattedUTCDailyDate + ' (' + hours + ':' + minutes + ' ' + zoneAbbreviation + ')</b><br>Value: <b>' + this.y + ' ft³/s';
+                                    }
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: 'line',
+                            color: '#008000',
+                            fillOpacity: null,
+                            lineWidth: 1.5,
+                            data: this.formattedInstFlow,
+                            linkedTo: null,
+                            visible: true,
+                            id: null,
+                            zIndex: 4,
+                            marker: {
+                                symbol: 'circle',
+                                radius: 3
+                            },
+                            showInLegend: this.formattedInstFlow.length > 0
                         }
                     ]
                 };
