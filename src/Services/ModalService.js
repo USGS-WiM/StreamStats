@@ -134,6 +134,15 @@ var StreamStats;
                                 backdrop: 'static',
                                 windowClass: 'windowZ',
                             };
+                        case SSModalType.e_envelopecurve:
+                            return {
+                                templateUrl: 'Views/envelopecurve.html',
+                                controller: 'StreamStats.Controllers.EnvelopeCurveController',
+                                size: 'sm',
+                                backdropClass: 'backdropZ',
+                                backdrop: 'static',
+                                windowClass: 'windowZ',
+                            };
                         default:
                             return null;
                     }
@@ -159,6 +168,7 @@ var StreamStats;
             SSModalType[SSModalType["e_nearestgages"] = 11] = "e_nearestgages";
             SSModalType[SSModalType["e_scstormrunnoff"] = 12] = "e_scstormrunnoff";
             SSModalType[SSModalType["e_flowanywhere"] = 13] = "e_flowanywhere";
+            SSModalType[SSModalType["e_envelopecurve"] = 14] = "e_envelopecurve";
         })(SSModalType = Services.SSModalType || (Services.SSModalType = {}));
         factory.$inject = ['$modal'];
         function factory($modal) {

@@ -121,6 +121,7 @@
     <TypeScriptCompile Include="src\Controllers\SidebarController.ts" />
     <TypeScriptCompile Include="src\Controllers\StormRunoffController.ts" />
     <TypeScriptCompile Include="src\Controllers\ProsperController.ts" />
+    <TypeScriptCompile Include="src\Controllers\EnvelopeCurveController.ts" />
     <TypeScriptCompile Include="src\Controllers\WateruseController.ts" />
     <TypeScriptCompile Include="src\Models\CoordinatedReach.ts" />
     <TypeScriptCompile Include="src\Models\NetworkNavModels.ts" />

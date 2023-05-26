@@ -193,7 +193,16 @@ module StreamStats.Services {
                             backdrop: 'static',
                             windowClass: 'windowZ',
                         };
-     
+                    case SSModalType.e_envelopecurve:
+                        return {
+                            templateUrl: 'Views/envelopecurve.html',
+                            controller: 'StreamStats.Controllers.EnvelopeCurveController',
+                            size: 'sm',
+                            backdropClass: 'backdropZ',
+                            backdrop: 'static',
+                            windowClass: 'windowZ',
+                        };
+    
                     default:
                         return null;
                 }//end switch          
@@ -218,7 +227,8 @@ export enum SSModalType {
         e_gagepage = 10,
         e_nearestgages = 11,
         e_scstormrunnoff = 12,
-        e_flowanywhere = 13
+        e_flowanywhere = 13,
+        e_envelopecurve = 14
     }
 
     factory.$inject = ['$modal'];

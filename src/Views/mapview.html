@@ -43,6 +43,8 @@
                 <div>Other</div>
                 <button ng-disabled="vm.explorationService.explorationMethodBusy || vm.studyArea.doDelineateFlag || ( vm.selectedExplorationTool && vm.selectedExplorationTool !=  navigationResource.code)" ng-class="vm.ProsperIsActive ? 'btn-orange fullwidth':'btn-exploration-tools btn-blue fullwidth'" ng-click="vm.ToggleProsper()"><span><i class="fa fa-project-diagram fa-rotate-180"></i>&nbsp;&nbsp;PROSPER Tool</span></button>
                 <a id="prosper-atag" ng-show="vm.ProsperIsActive" href ng-click="vm.ConfigureProsper()">Configure</a>
+                <button ng-disabled="vm.explorationService.explorationMethodBusy || vm.studyArea.doDelineateFlag || ( vm.selectedExplorationTool && vm.selectedExplorationTool !=  navigationResource.code)" ng-class="vm.ProsperIsActive ? 'btn-orange fullwidth':'btn-exploration-tools btn-blue fullwidth'" ng-click="vm.EnvelopeCurve()"><span><i class="fa fa-project-diagram fa-rotate-180"></i>&nbsp;&nbsp;Envelope Curve Plot</span></button>
+                <a id="prosper-atag" ng-show="vm.ProsperIsActive" href ng-click="vm.ConfigureEnvelopeCurve()">Configure</a>
             </div>
         </div>
     </div>
