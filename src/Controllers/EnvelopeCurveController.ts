@@ -18,6 +18,8 @@
 
                 // Plot properties
                 public stationCodes = [];
+                public peakData = [];
+                public estPeakData = [];
                 public sce: any;
                 private _results: Services.IProsperPredictionResults;
                 public get Location() {
@@ -66,40 +68,67 @@
                 (response: any) => {
                 let data = response;
                 const stations = [];
-                console.log(data.data.features)
                 data.data.features.forEach(row => {
                     let site = row.properties.Code
                     stations.push(site);
                 })
-                console.log(stations)
                 this.stationCodes = stations;
                 }, (error) => {
                 }).finally(() => {
-                    this.getStationStats;
+                    this.getStationStats();
                 });
         } 
 
         public getStationStats() {
+            let peakData = [];
+            let estPeakData = [];
             this.stationCodes.forEach(station => {
                 const url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + station
+                console.log(url)
+                const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.Execute(request).then(
+                    (response: any) => {
 
+                        const data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") });
+                        data.shift().split('\t');
+                        //remove extra random line
+                        data.shift();
+                        do {
+                            let dataRow = data.shift().split('\t');
+                            const peakObj = {
+                                agency_cd: dataRow[0], 
+                                site_no: dataRow[1],
+                                peak_dt: dataRow[2],
+                                peak_va: parseInt(dataRow[4]),
+                                peak_stage: parseFloat(dataRow[6])
+                            };
+                            peakData.push(peakObj)
+                        //making a new array of invalid dates (dates with month or day of '00') that will be 'estimated' (changed to '01')
+                        const estPeakObj = {
+                            agency_cd: dataRow[0], 
+                            site_no: dataRow[1],
+                            peak_dt: dataRow[2].replaceAll('-00','-01'),
+                            peak_va: parseInt(dataRow[4]),
+                            peak_stage: parseFloat(dataRow[6])
+                        };
+                        if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00' || peakObj.peak_dt[5] + peakObj.peak_dt[6] === '00') {
+                            estPeakData.push(estPeakObj) //pushing invalid dates to a new array
+                        };
+                        } while (data.length > 0);
+
+                    }
+                )
             })
-            // const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-            // this.Execute(request).then(
-            //     (response: any) => {
-            //     let data = response;
-            //     const stations = [];
-            //     console.log(data.data.features)
-            //     data.data.features.forEach(row => {
-            //         let site = row.properties.Code
-            //         stations.push(site);
-            //     })
-            //     console.log(stations)
-            //     this.stationCodes = stations;
-            //     }, (error) => {
-            //     }).finally(() => {
-            //         this.getStationStats;
-            //     });
+            console.log('xxx', peakData)
+            console.log((peakData[0].peak_dt[8] + peakData[0].peak_dt[9] !== '00' || peakData[0].peak_dt[8] + peakData[0].peak_dt[9] !== '00'))
+            // const filteredArray = peakData.filter(item => {
+            //     return (item.peak_dt[8] + item.peak_dt[9] !== '00' || item.peak_dt[8] + item.peak_dt[9] !== '00') //filtering out invalid dates from main array
+            // });
+            // console.log('filtered', filteredArray)
+            this.peakData = peakData;
+            this.estPeakData = estPeakData;
+            console.log('peaks', this.peakData)
+            console.log('est peaks', this.estPeakData)
         } 
 
         private init(): void {   

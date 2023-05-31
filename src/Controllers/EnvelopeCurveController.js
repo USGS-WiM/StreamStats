@@ -23,6 +23,8 @@ var StreamStats;
             function EnvelopeCurveController($scope, $http, modal, $sce, pservices) {
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
                 _this.stationCodes = [];
+                _this.peakData = [];
+                _this.estPeakData = [];
                 $scope.vm = _this;
                 _this.sce = $sce;
                 _this.modalInstance = modal;
@@ -77,22 +79,58 @@ var StreamStats;
                 this.Execute(request).then(function (response) {
                     var data = response;
                     var stations = [];
-                    console.log(data.data.features);
                     data.data.features.forEach(function (row) {
                         var site = row.properties.Code;
                         stations.push(site);
                     });
-                    console.log(stations);
                     _this.stationCodes = stations;
                 }, function (error) {
                 }).finally(function () {
-                    _this.getStationStats;
+                    _this.getStationStats();
                 });
             };
             EnvelopeCurveController.prototype.getStationStats = function () {
+                var _this = this;
+                var peakData = [];
+                var estPeakData = [];
                 this.stationCodes.forEach(function (station) {
                     var url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + station;
+                    console.log(url);
+                    var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                    _this.Execute(request).then(function (response) {
+                        var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
+                        data.shift().split('\t');
+                        data.shift();
+                        do {
+                            var dataRow = data.shift().split('\t');
+                            var peakObj = {
+                                agency_cd: dataRow[0],
+                                site_no: dataRow[1],
+                                peak_dt: dataRow[2],
+                                peak_va: parseInt(dataRow[4]),
+                                peak_stage: parseFloat(dataRow[6])
+                            };
+                            peakData.push(peakObj);
+                            var estPeakObj = {
+                                agency_cd: dataRow[0],
+                                site_no: dataRow[1],
+                                peak_dt: dataRow[2].replaceAll('-00', '-01'),
+                                peak_va: parseInt(dataRow[4]),
+                                peak_stage: parseFloat(dataRow[6])
+                            };
+                            if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00' || peakObj.peak_dt[5] + peakObj.peak_dt[6] === '00') {
+                                estPeakData.push(estPeakObj);
+                            }
+                            ;
+                        } while (data.length > 0);
+                    });
                 });
+                console.log('xxx', peakData);
+                console.log((peakData[0].peak_dt[8] + peakData[0].peak_dt[9] !== '00' || peakData[0].peak_dt[8] + peakData[0].peak_dt[9] !== '00'));
+                this.peakData = peakData;
+                this.estPeakData = estPeakData;
+                console.log('peaks', this.peakData);
+                console.log('est peaks', this.estPeakData);
             };
             EnvelopeCurveController.prototype.init = function () {
                 this.getStationIDs();
