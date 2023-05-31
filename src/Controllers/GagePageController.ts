@@ -703,7 +703,7 @@ module StreamStats.Controllers {
         //This will be used to plot x-percent AEP flood values as horizontal plotLines
         public getFloodFreq() {
             var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.gage.code;
-            //console.log('GetFloodFreqURL', url)
+            console.log('GetFloodFreqURL', url)
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {

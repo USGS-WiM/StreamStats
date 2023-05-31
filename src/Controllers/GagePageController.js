@@ -493,6 +493,7 @@ var StreamStats;
             GagePageController.prototype.getFloodFreq = function () {
                 var _this_1 = this;
                 var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.gage.code;
+                console.log('GetFloodFreqURL', url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var data = response.data;

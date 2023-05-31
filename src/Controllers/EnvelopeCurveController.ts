@@ -20,6 +20,7 @@
                 public stationCodes = [];
                 public peakData = [];
                 public estPeakData = [];
+                public drainageData = [];
                 public sce: any;
                 private _results: Services.IProsperPredictionResults;
                 public get Location() {
@@ -63,7 +64,7 @@
         public getStationIDs() {
             const url = 'https://streamstats.usgs.gov/gagestatsservices/stations/Bounds?xmin=-81.21485781740073&ymin=33.97528059290039&xmax=-81.03042363540376&ymax=34.10508178764378&geojson=true&includeStats=false'
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-            console.log('here', url)
+            //console.log('here', url)
             this.Execute(request).then(
                 (response: any) => {
                 let data = response;
@@ -84,7 +85,7 @@
             let estPeakData = [];
             this.stationCodes.forEach(station => {
                 const url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + station
-                console.log(url)
+                //console.log(url)
                 const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(
                     (response: any) => {
@@ -115,21 +116,43 @@
                             estPeakData.push(estPeakObj) //pushing invalid dates to a new array
                         };
                         } while (data.length > 0);
-
                     }
                 )
             })
-            console.log('xxx', peakData)
-            console.log((peakData[0].peak_dt[8] + peakData[0].peak_dt[9] !== '00' || peakData[0].peak_dt[8] + peakData[0].peak_dt[9] !== '00'))
             // const filteredArray = peakData.filter(item => {
             //     return (item.peak_dt[8] + item.peak_dt[9] !== '00' || item.peak_dt[8] + item.peak_dt[9] !== '00') //filtering out invalid dates from main array
             // });
             // console.log('filtered', filteredArray)
             this.peakData = peakData;
             this.estPeakData = estPeakData;
-            console.log('peaks', this.peakData)
-            console.log('est peaks', this.estPeakData)
+            this.getDrainageArea();
         } 
+
+        public getDrainageArea() {
+            let drainageData = [];
+            this.stationCodes.forEach(station => {
+            var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + station;
+            ///console.log( url)
+                const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.Execute(request).then(
+                    (response: any) => {
+                        let characteristics = response.data.characteristics;
+                        characteristics.forEach(index => {
+                        //some of these are marked "null" and should be excluded (index.comments === "null")
+                            if (index.variableTypeID === 1) {
+                                const drainageObj = {
+                                    drainageArea: index.value,
+                                    stationCode: response.data.code
+                                };
+                                drainageData.push(drainageObj);
+                                //console.log(drainageObj)
+                            }
+                        })
+                });
+            });
+            this.drainageData = drainageData;
+            console.log('drainage Data', this.drainageData)
+        }
 
         private init(): void {   
             this.getStationIDs();

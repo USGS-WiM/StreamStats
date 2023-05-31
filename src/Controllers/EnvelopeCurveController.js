@@ -25,6 +25,7 @@ var StreamStats;
                 _this.stationCodes = [];
                 _this.peakData = [];
                 _this.estPeakData = [];
+                _this.drainageData = [];
                 $scope.vm = _this;
                 _this.sce = $sce;
                 _this.modalInstance = modal;
@@ -75,7 +76,6 @@ var StreamStats;
                 var _this = this;
                 var url = 'https://streamstats.usgs.gov/gagestatsservices/stations/Bounds?xmin=-81.21485781740073&ymin=33.97528059290039&xmax=-81.03042363540376&ymax=34.10508178764378&geojson=true&includeStats=false';
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-                console.log('here', url);
                 this.Execute(request).then(function (response) {
                     var data = response;
                     var stations = [];
@@ -95,7 +95,6 @@ var StreamStats;
                 var estPeakData = [];
                 this.stationCodes.forEach(function (station) {
                     var url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + station;
-                    console.log(url);
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                     _this.Execute(request).then(function (response) {
                         var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
@@ -125,12 +124,31 @@ var StreamStats;
                         } while (data.length > 0);
                     });
                 });
-                console.log('xxx', peakData);
-                console.log((peakData[0].peak_dt[8] + peakData[0].peak_dt[9] !== '00' || peakData[0].peak_dt[8] + peakData[0].peak_dt[9] !== '00'));
                 this.peakData = peakData;
                 this.estPeakData = estPeakData;
-                console.log('peaks', this.peakData);
-                console.log('est peaks', this.estPeakData);
+                this.getDrainageArea();
+            };
+            EnvelopeCurveController.prototype.getDrainageArea = function () {
+                var _this = this;
+                var drainageData = [];
+                this.stationCodes.forEach(function (station) {
+                    var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + station;
+                    var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                    _this.Execute(request).then(function (response) {
+                        var characteristics = response.data.characteristics;
+                        characteristics.forEach(function (index) {
+                            if (index.variableTypeID === 1) {
+                                var drainageObj = {
+                                    drainageArea: index.value,
+                                    stationCode: response.data.code
+                                };
+                                drainageData.push(drainageObj);
+                            }
+                        });
+                    });
+                });
+                this.drainageData = drainageData;
+                console.log('drainage Data', this.drainageData);
             };
             EnvelopeCurveController.prototype.init = function () {
                 this.getStationIDs();
