@@ -22,6 +22,7 @@ var StreamStats;
             __extends(EnvelopeCurveController, _super);
             function EnvelopeCurveController($scope, $http, modal, $sce, pservices) {
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
+                _this.stationCodes = [];
                 $scope.vm = _this;
                 _this.sce = $sce;
                 _this.modalInstance = modal;
@@ -68,18 +69,33 @@ var StreamStats;
                 enumerable: false,
                 configurable: true
             });
-            EnvelopeCurveController.prototype.getGageStats = function () {
-                var url = 'https://streamstats.usgs.gov/gagestatsservices/stations/Bounds?xmin=-81.21485781740073&ymin=33.97528059290039&xmax=-81.03042363540376&ymax=34.10508178764378&geojson=true&includeStats=true';
+            EnvelopeCurveController.prototype.getStationIDs = function () {
+                var _this = this;
+                var url = 'https://streamstats.usgs.gov/gagestatsservices/stations/Bounds?xmin=-81.21485781740073&ymin=33.97528059290039&xmax=-81.03042363540376&ymax=34.10508178764378&geojson=true&includeStats=false';
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 console.log('here', url);
                 this.Execute(request).then(function (response) {
-                    console.log(response);
+                    var data = response;
+                    var stations = [];
+                    console.log(data.data.features);
+                    data.data.features.forEach(function (row) {
+                        var site = row.properties.Code;
+                        stations.push(site);
+                    });
+                    console.log(stations);
+                    _this.stationCodes = stations;
                 }, function (error) {
                 }).finally(function () {
+                    _this.getStationStats;
+                });
+            };
+            EnvelopeCurveController.prototype.getStationStats = function () {
+                this.stationCodes.forEach(function (station) {
+                    var url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + station;
                 });
             };
             EnvelopeCurveController.prototype.init = function () {
-                this.getGageStats();
+                this.getStationIDs();
             };
             EnvelopeCurveController.prototype.Close = function () {
                 this.modalInstance.dismiss('cancel');
