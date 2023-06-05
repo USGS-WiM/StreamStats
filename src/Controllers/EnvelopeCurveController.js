@@ -122,33 +122,42 @@ var StreamStats;
                             }
                             ;
                         } while (data.length > 0);
+                        _this.peakData = peakData;
+                        console.log('peaks', _this.peakData);
+                        _this.estPeakData = estPeakData;
+                        _this.getDrainageArea();
                     });
                 });
-                this.peakData = peakData;
-                this.estPeakData = estPeakData;
-                this.getDrainageArea();
             };
             EnvelopeCurveController.prototype.getDrainageArea = function () {
                 var _this = this;
-                var drainageData = [];
+                var formattedPlotData = [];
+                var completedStationCodes = [];
                 this.stationCodes.forEach(function (station) {
                     var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + station;
+                    console.log(url);
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                     _this.Execute(request).then(function (response) {
                         var characteristics = response.data.characteristics;
                         characteristics.forEach(function (index) {
                             if (index.variableTypeID === 1) {
-                                var drainageObj = {
-                                    drainageArea: index.value,
-                                    stationCode: response.data.code
-                                };
-                                drainageData.push(drainageObj);
+                                _this.peakData.forEach(function (peakElement) {
+                                    if (peakElement.site_no === response.data.code && completedStationCodes.indexOf(response.data.code) == -1) {
+                                        var formattedPeaksAndDrainage = {
+                                            x: index.value,
+                                            y: peakElement.peak_va,
+                                            stationCode: peakElement.site_no,
+                                            Date: peakElement.peak_dt
+                                        };
+                                        formattedPlotData.push(formattedPeaksAndDrainage);
+                                    }
+                                });
+                                completedStationCodes.push(response.data.code);
                             }
                         });
                     });
                 });
-                this.drainageData = drainageData;
-                console.log('drainage Data', this.drainageData);
+                console.log('plot data', formattedPlotData);
             };
             EnvelopeCurveController.prototype.init = function () {
                 this.getStationIDs();
