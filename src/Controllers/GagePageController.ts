@@ -703,142 +703,145 @@ module StreamStats.Controllers {
                     this.getRatingCurve();
                 }); 
             }
+           
+            // //to be used for flood stage part of graph
+            // public getNWSForecast() {
+            //     var self = this;
+            //     var nwisCode = this.gage.code;
+                
             
-            //to be used for flood stage part of graph
-            public getNWSForecast() {
-                var self = this;
-                var nwisCode = this.gage.code;
-            
-                this.$http.get('./data/gageNumberCrossWalk.json').then(function(response) {
-                    self.crossWalk = response.data;
-                    var NWScode = self.crossWalk[nwisCode];
-            
-                    if (NWScode !== undefined) {
-                        var url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + NWScode;
-                        const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
-            
-                        self.Execute(request).then(function(response) {
-                            const xmlDocument = new DOMParser().parseFromString(response as string, "text/xml");
-            
-                            const sigStages = xmlDocument.querySelector("sigstages");
-                            
-                            // parse out tag values from sigStages. These will be Y values
-                            const action = parseFloat(sigStages.querySelector("action").textContent);
-                            const flood = parseFloat(sigStages.querySelector("flood").textContent);
-                            const moderate = parseFloat(sigStages.querySelector("moderate").textContent);
-                            const major = parseFloat(sigStages.querySelector("major").textContent);
-                            const record = parseFloat(sigStages.querySelector("record").textContent);
-            
-                            console.log("Action: ", action);
-                            console.log("Flood: ", flood);
+            //     this.$http.get('./data/gageNumberCrossWalk.json').then(function(response) {
+            //         self.crossWalk = response.data;
+            //         var NWScode = self.crossWalk[nwisCode];
+        
+            //         if (NWScode !== undefined) {
+            //             var url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + NWScode;
+            //             console.log('NWS forecast url', url)
+                        
+            //             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
 
-                            const forecastData = xmlDocument.querySelectorAll("forecast");
+            //             self.Execute(request).then(function(response) {
+            //                 const xmlDocument = new DOMParser().parseFromString(response as string, "text/xml");
             
-                            if (forecastData[0] !== undefined) {
-                                const smallerData = forecastData[0].childNodes;
-                                let forecastArray = [];
+            //                 const sigStages = xmlDocument.querySelector("sigstages");
+                            
+            //                 // parse out tag values from sigStages. These will be the Y values
+            //                 const action = parseFloat(sigStages.querySelector("action").textContent);
+            //                 const flood = parseFloat(sigStages.querySelector("flood").textContent);
+            //                 const moderate = parseFloat(sigStages.querySelector("moderate").textContent);
+            //                 const major = parseFloat(sigStages.querySelector("major").textContent);
+            //                 const record = parseFloat(sigStages.querySelector("record").textContent);
             
-                                smallerData.forEach(datum => {
-                                    if (datum.childNodes[0] !== undefined) {
-                                        const forecastObj = {
-                                            x: new Date(datum.childNodes[0].textContent),
-                                            y: parseFloat(datum.childNodes[2].textContent)
-                                        };
+            //                 console.log("Action: ", action);
+            //                 console.log("Flood: ", flood);
+
+            //                 const forecastData = xmlDocument.querySelectorAll("forecast");
             
-                                        if ((smallerData[2].childNodes[2].getAttribute("units")) === 'kcfs') {
-                                            forecastObj.y *= 1000;
-                                        }
+            //                 if (forecastData[0] !== undefined) {
+            //                     const smallerData = forecastData[0].childNodes;
+            //                     let forecastArray = [];
             
-                                        forecastArray.push(forecastObj);
-                                        self.NWSforecast = forecastArray;
-                                    }
-                                });
-                            }
+            //                     smallerData.forEach(datum => {
+            //                         if (datum.childNodes[0] !== undefined) {
+            //                             const forecastObj = {
+            //                                 x: new Date(datum.childNodes[0].textContent),
+            //                                 y: parseFloat(datum.childNodes[2].textContent)
+            //                             };
             
-                            // Get the rating curve data
-                            let ratingCurve = self.getRatingCurve();
+            //                             if ((smallerData[2].childNodes[2].getAttribute("units")) === 'kcfs') {
+            //                                 forecastObj.y *= 1000;
+            //                             }
             
-                            //  call curveLookup function for each flood stage
-                            let actionX = self.curveLookup('stage', action, ratingCurve);
-                            let floodX = self.curveLookup('stage', flood, ratingCurve);
-                            let moderateX = self.curveLookup('stage', moderate, ratingCurve);
-                            let majorX = self.curveLookup('stage', major, ratingCurve);
-                            let recordX = self.curveLookup('stage', record, ratingCurve);
+            //                             forecastArray.push(forecastObj);
+            //                             self.NWSforecast = forecastArray;
+            //                         }
+            //                     });
+            //                 }
             
-                            console.log("action:", action);
-                            console.log("floodX:", floodX);
+            //                 // Get the rating curve data
+            //                 let ratingCurve = self.getRatingCurve();
             
-                            // Prepare data for chart update
-                            let stages = [
-                                {name: 'action', x: actionX, y: action},
-                                {name: 'flood', x: floodX, y: flood},
-                                {name: 'moderate', x: moderateX, y: moderate},
-                                {name: 'major', x: majorX, y: major},
-                                {name: 'record', x: recordX, y: record}
-                            ];
+            //                 //  call curveLookup function for each flood stage
+            //                 let actionX = self.curveLookup('stage', action, ratingCurve);
+            //                 let floodX = self.curveLookup('stage', flood, ratingCurve);
+            //                 let moderateX = self.curveLookup('stage', moderate, ratingCurve);
+            //                 let majorX = self.curveLookup('stage', major, ratingCurve);
+            //                 let recordX = self.curveLookup('stage', record, ratingCurve);
             
-                            // Update chart
-                            self.updateChart(stages);
-                        });
-                    } else {
-                        self.getRatingCurve();
-                    }
-                });
-            }
+            //                 console.log("action:", actionX);
+            //                 console.log("floodX:", floodX);
             
-            public curveLookup(type: string, value: number, curve: any) {
-                let lookupValue;
-                let highx, highy, lowx, lowy;
+            //                 // Prepare data for chart update
+            //                 let stages = [
+            //                     {name: 'action', x: actionX, y: action},
+            //                     {name: 'flood', x: floodX, y: flood},
+            //                     {name: 'moderate', x: moderateX, y: moderate},
+            //                     {name: 'major', x: majorX, y: major},
+            //                     {name: 'record', x: recordX, y: record}
+            //                 ];
             
-                if (type === 'stage') {
-                    $.each(curve, function (key, val) {
-                        if (typeof (val) === 'undefined') return true;
-                        if (value === val.y) {
-                            lookupValue = val.x;
-                            return false;
-                        }
-                        if (value < val.y) {
-                            highx = val.x;
-                            highy = val.y;
-                            lowx = curve[key - 1].x;
-                            lowy = curve[key - 1].y;
-                            lookupValue = parseInt((((value - lowy) / (highy - lowy)) * (highx - lowx) + lowx).toFixed(0));
-                            return false;
-                        }
-                    });
-                }
+            //                 // Update chart
+            //                 self.updateChart(stages);
+            //             });
+            //         } else {
+            //             self.getRatingCurve();
+            //         }
+            //     });
+            // }
             
-                return lookupValue;
-            }
+            // public curveLookup(type: string, value: number, curve: any) {
+            //     let lookupValue;
+            //     let highx, highy, lowx, lowy;
             
-            public updateChart(stages) {
-                let chart = Highcharts.chart('container', {
-                    // chart options
-                });
+            //     if (type === 'stage') {
+            //         $.each(curve, function (key, val) {
+            //             if (typeof (val) === 'undefined') return true;
+            //             if (value === val.y) {
+            //                 lookupValue = val.x;
+            //                 return false;
+            //             }
+            //             if (value < val.y) {
+            //                 highx = val.x;
+            //                 highy = val.y;
+            //                 lowx = curve[key - 1].x;
+            //                 lowy = curve[key - 1].y;
+            //                 lookupValue = parseInt((((value - lowy) / (highy - lowy)) * (highx - lowx) + lowx).toFixed(0));
+            //                 return false;
+            //             }
+            //         });
+            //     }
             
-                this.drawFloodStageLines(chart, stages);
-            }
+            //     return lookupValue;
+            // }
             
-            public drawFloodStageLines(chart: any, stages: any[]) {
-                // iterate over each stage
-                stages.forEach(stage => {
-                    // add horizontal line (y-axis)
-                    chart.yAxis[2].addPlotLine({
-                        value: stage.y, // the stage value on y-axis
-                        color: 'red', // or any color you want
-                        width: 2, // the line width
-                        id: stage.name // a unique id for later removal if necessary
-                    });
+            // public updateChart(stages) {
+            //     let chart = Highcharts.chart('container', {
+            //         // chart options
+            //     });
             
-                    // add vertical line (x-axis)
-                    chart.xAxis[2].addPlotLine({
-                        value: stage.x, // the stage value on x-axis
-                        color: 'blue', // or any color you want
-                        width: 2, // the line width
-                        id: stage.name // a unique id for later removal if necessary
-                    });
-                });
-            }
+            //     this.drawFloodStageLines(chart, stages);
+            // }
+            
+            // public drawFloodStageLines(chart: any, stages: any[]) {
+            //     // iterate over each stage
+            //     stages.forEach(stage => {
+            //         // add horizontal line (y-axis)
+            //         chart.yAxis[2].addPlotLine({
+            //             value: stage.y, // the stage value on y-axis
+            //             color: 'red', // or any color you want
+            //             width: 2, // the line width
+            //             id: stage.name // a unique id for later removal if necessary
+            //         });
+            
+            //         // add vertical line (x-axis)
+            //         chart.xAxis[2].addPlotLine({
+            //             value: stage.x, // the stage value on x-axis
+            //             color: 'blue', // or any color you want
+            //             width: 2, // the line width
+            //             id: stage.name // a unique id for later removal if necessary
+            //         });
+            //     });
+            // }
             
             
             
