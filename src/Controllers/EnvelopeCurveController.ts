@@ -21,20 +21,11 @@ module StreamStats.Controllers {
         public peakData = [];
         public estPeakData = [];
         public drainageData = [];
+        public formattedPlotData = [];
         public sce: any;
-        private _results: Services.IProsperPredictionResults;
-        public get Location() {
-            return this._results.point;
-        }
-        public get Date() {
-            return this._results.date;
-        }
         private _table: any
-        public get Table(): any {
-            return this._table
-        }
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
-        //private _prosperServices: Services.IProsperService;
+        private modalService: Services.IModalService;
         private _resultsAvailable: boolean;
         public get ResultsAvailable(): boolean {
             return this._resultsAvailable;
@@ -48,12 +39,20 @@ module StreamStats.Controllers {
         }
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$http', '$modalInstance', '$sce', 'StreamStats.Services.ProsperService'];
-        constructor($scope: IEnvelopeCurveScope, $http: ng.IHttpService, modal: ng.ui.bootstrap.IModalServiceInstance, $sce: any, pservices: StreamStats.Services.IProsperService) {
+        static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
+        envelopeChartConfig: {  chart: {height: number, width: number, zooming: {type: string}},
+                        title: { text: string, align: string},
+                        subtitle: { text: string, align: string}, 
+                        xAxis: { title: {text: string}},
+                        yAxis: { title: {text: string}},
+                        series: { name: string, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
+                                data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; } };
+        constructor($scope: IEnvelopeCurveScope, $http: ng.IHttpService, modalService: Services.IModalService, modal: ng.ui.bootstrap.IModalServiceInstance, $sce: any) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
             this.sce = $sce;
             this.modalInstance = modal;
+            this.modalService = modalService;
             this.init();
         }
 
@@ -144,10 +143,10 @@ module StreamStats.Controllers {
                                 this.peakData.forEach(peakElement => {
                                     if (peakElement.site_no === response.data.code && completedStationCodes.indexOf(response.data.code) == -1) {
                                         let formattedPeaksAndDrainage = {
-                                            x: index.value,
-                                            y: peakElement.peak_va,
-                                            stationCode: peakElement.site_no,
-                                            Date: peakElement.peak_dt
+                                            x: parseFloat(index.value),
+                                            y: parseFloat(peakElement.peak_va)
+                                            // stationCode: peakElement.site_no,
+                                            // Date: peakElement.peak_dt
                                         }
                                         formattedPlotData.push(formattedPeaksAndDrainage);
                                     }
@@ -158,6 +157,51 @@ module StreamStats.Controllers {
                     })
             });
             console.log('plot data', formattedPlotData);
+            this.formattedPlotData = formattedPlotData;
+            this.createEnvelopeCurvePlot();
+        }
+        
+        public createEnvelopeCurvePlot(): void {
+            console.log('inside plot function', this.formattedPlotData);
+            this.envelopeChartConfig = {  
+                chart: {
+                    height: 550, 
+                    width: 800, 
+                    zooming: {type: 'xy'}
+                },
+                title: { 
+                    text: 'Envelope Curve', 
+                    align: 'center'
+                },
+                subtitle: { 
+                    text: 'example', 
+                    align: 'center'
+                }, 
+                xAxis: {
+                    title: {text: 'Drainage Area'}
+                },
+                yAxis: { 
+                    title: {text: 'Peak Value'}
+                },
+                series: { 
+                    name: 'Data', 
+                    tooltip: { 
+                        headerFormat: 'header', 
+                        pointFormatter: function() {
+                            if (this.formattedPlotData.length > 0){
+                                return '</b><br>Value: <b>' + this.y + ' ft³/s<br>'
+                            }
+                        }
+                    }, 
+                    turboThreshold: 0,
+                    type: 'scatter', 
+                    color: 'blue', 
+                    data: this.formattedPlotData,
+                    //[[5, 2], [6, 3], [8, 2]],
+                    marker: {symbol: 'circle', radius: 3}, 
+                    showInLegend: true
+                }
+            }
         }
 
         private init(): void {

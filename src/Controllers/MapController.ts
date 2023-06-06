@@ -451,17 +451,7 @@ module StreamStats.Controllers {
             //this.bounds = this.leafletBoundsHelperService.createBoundsFromArray(this._prosperServices.projectExtent);
         }
         public EnvelopeCurve(): void {
-            if (this._prosperIsActive) {
-                this._prosperIsActive = false;
-                this._prosperServices.CanQuery = false;
-                this.removeOverlayLayers("prosper",true)
-            }
-            else {
-                this._prosperIsActive = true;
-                //add prosper maplayers
-                this.AddProsperLayer(this._prosperServices.DisplayedPrediction.id);
-                this.ConfigureEnvelopeCurve();
-            }//end if
+            this.ConfigureEnvelopeCurve();
         }
         public ConfigureEnvelopeCurve(): void {
             this.modal.openModal(Services.SSModalType.e_envelopecurve);

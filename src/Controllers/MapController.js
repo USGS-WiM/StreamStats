@@ -275,16 +275,7 @@ var StreamStats;
                 this.modal.openModal(StreamStats.Services.SSModalType.e_prosper);
             };
             MapController.prototype.EnvelopeCurve = function () {
-                if (this._prosperIsActive) {
-                    this._prosperIsActive = false;
-                    this._prosperServices.CanQuery = false;
-                    this.removeOverlayLayers("prosper", true);
-                }
-                else {
-                    this._prosperIsActive = true;
-                    this.AddProsperLayer(this._prosperServices.DisplayedPrediction.id);
-                    this.ConfigureEnvelopeCurve();
-                }
+                this.ConfigureEnvelopeCurve();
             };
             MapController.prototype.ConfigureEnvelopeCurve = function () {
                 this.modal.openModal(StreamStats.Services.SSModalType.e_envelopecurve);

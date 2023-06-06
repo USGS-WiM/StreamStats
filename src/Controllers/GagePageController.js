@@ -643,7 +643,6 @@ var StreamStats;
                         _this_1.instFlow = filteredInst;
                     }
                     _this_1.getNWSForecast();
-                    console.log(_this_1.gageTimeZone);
                 });
             };
             GagePageController.prototype.getNWSForecast = function () {

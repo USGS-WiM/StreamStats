@@ -4,11 +4,13 @@
         <div class="visible-print identifier">
             <img src="images/usgs-logo-black.png" alt="USGS Identifier" title="USGS Science for a Changing World" />
         </div>
-        <button type="button" class="close hidden-print" ng-click="vm.Close()"><span aria-hidden="true">&times;</span></button>
+            <button type="button" class="close hidden-print" ng-click="vm.Close()"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title">Envelope Curve</h4>
     </div>   
     <div id="printArea" class="modal-body">
-        
+        <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.envelopeChartConfig">
+            <highchart id="chart1" config="vm.envelopeChartConfig">chart</highchart>
+        </div>
     </div>
     <div class="modal-footer hidden-print">
         <div class="btn-group">

@@ -266,7 +266,7 @@ module StreamStats.Controllers {
                         navigator: { enabled: boolean}, 
                         xAxis: {  type: string, events: { afterSetExtremes: Function}, gridLineWidth: number, min: number, max: number, title: {text: string}, custom: { allowNegativeLog: Boolean }},
                         yAxis: { title: {text: string}, gridLineWidth: number, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
-                        series: { name: string; showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
+                        series: { name: string, showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
                                 fillOpacity: number, lineWidth: number, data: number[], linkedTo: string, visible: boolean, id: string, zIndex: number, marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
         dischargeChartConfig: {  
                         chart: { height: number, width: number, zooming: {type: string} },
@@ -857,10 +857,7 @@ module StreamStats.Controllers {
                     });
                     this.instFlow = filteredInst;
                     }
-                    //console.log('inst', this.instFlow)
                     this.getNWSForecast();
-                                        console.log(this.gageTimeZone)
-
                 });
         }
 

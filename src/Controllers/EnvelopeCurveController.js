@@ -20,39 +20,20 @@ var StreamStats;
         'use strict';
         var EnvelopeCurveController = (function (_super) {
             __extends(EnvelopeCurveController, _super);
-            function EnvelopeCurveController($scope, $http, modal, $sce, pservices) {
+            function EnvelopeCurveController($scope, $http, modalService, modal, $sce) {
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
                 _this.stationCodes = [];
                 _this.peakData = [];
                 _this.estPeakData = [];
                 _this.drainageData = [];
+                _this.formattedPlotData = [];
                 $scope.vm = _this;
                 _this.sce = $sce;
                 _this.modalInstance = modal;
+                _this.modalService = modalService;
                 _this.init();
                 return _this;
             }
-            Object.defineProperty(EnvelopeCurveController.prototype, "Location", {
-                get: function () {
-                    return this._results.point;
-                },
-                enumerable: false,
-                configurable: true
-            });
-            Object.defineProperty(EnvelopeCurveController.prototype, "Date", {
-                get: function () {
-                    return this._results.date;
-                },
-                enumerable: false,
-                configurable: true
-            });
-            Object.defineProperty(EnvelopeCurveController.prototype, "Table", {
-                get: function () {
-                    return this._table;
-                },
-                enumerable: false,
-                configurable: true
-            });
             Object.defineProperty(EnvelopeCurveController.prototype, "ResultsAvailable", {
                 get: function () {
                     return this._resultsAvailable;
@@ -144,10 +125,8 @@ var StreamStats;
                                 _this.peakData.forEach(function (peakElement) {
                                     if (peakElement.site_no === response.data.code && completedStationCodes.indexOf(response.data.code) == -1) {
                                         var formattedPeaksAndDrainage = {
-                                            x: index.value,
-                                            y: peakElement.peak_va,
-                                            stationCode: peakElement.site_no,
-                                            Date: peakElement.peak_dt
+                                            x: parseFloat(index.value),
+                                            y: parseFloat(peakElement.peak_va)
                                         };
                                         formattedPlotData.push(formattedPeaksAndDrainage);
                                     }
@@ -158,6 +137,49 @@ var StreamStats;
                     });
                 });
                 console.log('plot data', formattedPlotData);
+                this.formattedPlotData = formattedPlotData;
+                this.createEnvelopeCurvePlot();
+            };
+            EnvelopeCurveController.prototype.createEnvelopeCurvePlot = function () {
+                console.log('inside plot function', this.formattedPlotData);
+                this.envelopeChartConfig = {
+                    chart: {
+                        height: 550,
+                        width: 800,
+                        zooming: { type: 'xy' }
+                    },
+                    title: {
+                        text: 'Envelope Curve',
+                        align: 'center'
+                    },
+                    subtitle: {
+                        text: 'example',
+                        align: 'center'
+                    },
+                    xAxis: {
+                        title: { text: 'Drainage Area' }
+                    },
+                    yAxis: {
+                        title: { text: 'Peak Value' }
+                    },
+                    series: {
+                        name: 'Data',
+                        tooltip: {
+                            headerFormat: 'header',
+                            pointFormatter: function () {
+                                if (this.formattedPlotData.length > 0) {
+                                    return '</b><br>Value: <b>' + this.y + ' ft³/s<br>';
+                                }
+                            }
+                        },
+                        turboThreshold: 0,
+                        type: 'scatter',
+                        color: 'blue',
+                        data: this.formattedPlotData,
+                        marker: { symbol: 'circle', radius: 3 },
+                        showInLegend: true
+                    }
+                };
             };
             EnvelopeCurveController.prototype.init = function () {
                 this.getStationIDs();
@@ -165,7 +187,7 @@ var StreamStats;
             EnvelopeCurveController.prototype.Close = function () {
                 this.modalInstance.dismiss('cancel');
             };
-            EnvelopeCurveController.$inject = ['$scope', '$http', '$modalInstance', '$sce', 'StreamStats.Services.ProsperService'];
+            EnvelopeCurveController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
             return EnvelopeCurveController;
         }(WiM.Services.HTTPServiceBase));
         angular.module('StreamStats.Controllers')
