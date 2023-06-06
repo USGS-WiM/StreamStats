@@ -126,7 +126,9 @@ var StreamStats;
                                     if (peakElement.site_no === response.data.code && completedStationCodes.indexOf(response.data.code) == -1) {
                                         var formattedPeaksAndDrainage = {
                                             x: parseFloat(index.value),
-                                            y: parseFloat(peakElement.peak_va)
+                                            y: parseFloat(peakElement.peak_va),
+                                            stationCode: peakElement.site_no,
+                                            Date: peakElement.peak_dt
                                         };
                                         formattedPlotData.push(formattedPeaksAndDrainage);
                                     }
@@ -157,28 +159,28 @@ var StreamStats;
                         align: 'center'
                     },
                     xAxis: {
-                        title: { text: 'Drainage Area' }
+                        title: { text: 'Drainage Area, in mi²' }
                     },
                     yAxis: {
-                        title: { text: 'Peak Value' }
+                        title: { text: 'Peak Flow, in ft³/s' }
                     },
-                    series: {
-                        name: 'Data',
-                        tooltip: {
-                            headerFormat: 'header',
-                            pointFormatter: function () {
-                                if (this.formattedPlotData.length > 0) {
-                                    return '</b><br>Value: <b>' + this.y + ' ft³/s<br>';
+                    series: [{
+                            name: 'Peak Flow',
+                            tooltip: {
+                                headerFormat: '',
+                                pointFormatter: function () {
+                                    if (this.formattedPlotData !== null) {
+                                        return '</b><br>Value: <b>' + this.x + 'ft³/s</b><br>Site Number: <b>' + this.stationCode + '<br>';
+                                    }
                                 }
-                            }
-                        },
-                        turboThreshold: 0,
-                        type: 'scatter',
-                        color: 'blue',
-                        data: this.formattedPlotData,
-                        marker: { symbol: 'circle', radius: 3 },
-                        showInLegend: true
-                    }
+                            },
+                            turboThreshold: 0,
+                            type: 'scatter',
+                            color: 'blue',
+                            data: this.formattedPlotData,
+                            marker: { symbol: 'circle', radius: 3 },
+                            showInLegend: true
+                        }]
                 };
             };
             EnvelopeCurveController.prototype.init = function () {

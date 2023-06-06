@@ -8,7 +8,10 @@
         <h4 class="modal-title">Envelope Curve</h4>
     </div>   
     <div id="printArea" class="modal-body">
-        <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.envelopeChartConfig">
+        <div ng-if="vm.formattedPlotData.length === 0" class="panel panel-default reportSpinner">
+            &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
+        </div>
+        <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.formattedPlotData.length > 0">
             <highchart id="chart1" config="vm.envelopeChartConfig">chart</highchart>
         </div>
     </div>

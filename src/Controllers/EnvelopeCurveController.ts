@@ -45,8 +45,8 @@ module StreamStats.Controllers {
                         subtitle: { text: string, align: string}, 
                         xAxis: { title: {text: string}},
                         yAxis: { title: {text: string}},
-                        series: { name: string, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
-                                data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; } };
+                        series: { name: string; tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
+                                data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
         constructor($scope: IEnvelopeCurveScope, $http: ng.IHttpService, modalService: Services.IModalService, modal: ng.ui.bootstrap.IModalServiceInstance, $sce: any) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
@@ -144,9 +144,9 @@ module StreamStats.Controllers {
                                     if (peakElement.site_no === response.data.code && completedStationCodes.indexOf(response.data.code) == -1) {
                                         let formattedPeaksAndDrainage = {
                                             x: parseFloat(index.value),
-                                            y: parseFloat(peakElement.peak_va)
-                                            // stationCode: peakElement.site_no,
-                                            // Date: peakElement.peak_dt
+                                            y: parseFloat(peakElement.peak_va),
+                                            stationCode: peakElement.site_no,
+                                            Date: peakElement.peak_dt
                                         }
                                         formattedPlotData.push(formattedPeaksAndDrainage);
                                     }
@@ -178,18 +178,18 @@ module StreamStats.Controllers {
                     align: 'center'
                 }, 
                 xAxis: {
-                    title: {text: 'Drainage Area'}
+                    title: {text: 'Drainage Area, in mi²'}
                 },
                 yAxis: { 
-                    title: {text: 'Peak Value'}
+                    title: {text: 'Peak Flow, in ft³/s'}
                 },
-                series: { 
-                    name: 'Data', 
+                series: [{ 
+                    name: 'Peak Flow', 
                     tooltip: { 
-                        headerFormat: 'header', 
+                        headerFormat: '', 
                         pointFormatter: function() {
-                            if (this.formattedPlotData.length > 0){
-                                return '</b><br>Value: <b>' + this.y + ' ft³/s<br>'
+                            if (this.formattedPlotData !== null){
+                            return '</b><br>Value: <b>' + this.x + 'ft³/s</b><br>Site Number: <b>' + this.stationCode + '<br>'
                             }
                         }
                     }, 
@@ -197,10 +197,9 @@ module StreamStats.Controllers {
                     type: 'scatter', 
                     color: 'blue', 
                     data: this.formattedPlotData,
-                    //[[5, 2], [6, 3], [8, 2]],
                     marker: {symbol: 'circle', radius: 3}, 
                     showInLegend: true
-                }
+                }]
             }
         }
 
