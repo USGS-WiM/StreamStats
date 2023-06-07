@@ -157,7 +157,6 @@ module StreamStats.Controllers {
             if (this.flowStatsList && this.flowStatsList.length > 0) {
                 this.flowStatsList.length = 0;
             }
-            console.log("after: ", this.flowStatsList)
             // clear availableParamList during state/region changes
             if (this.availableParamList && this.availableParamList.length > 0) {
                 this.availableParamList.length = 0;
