@@ -74,11 +74,9 @@ var StreamStats;
                     this.flowStatsListSpinner = true;
                     this.parametersListSpinner = true;
                 }
-                console.log("before: ", this.flowStatsList);
                 if (this.flowStatsList && this.flowStatsList.length > 0) {
                     this.flowStatsList.length = 0;
                 }
-                console.log("after: ", this.flowStatsList);
                 if (this.availableParamList && this.availableParamList.length > 0) {
                     this.availableParamList.length = 0;
                 }
