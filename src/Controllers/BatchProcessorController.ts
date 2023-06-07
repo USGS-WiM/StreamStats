@@ -153,7 +153,6 @@ module StreamStats.Controllers {
                 this.flowStatsListSpinner = true;
                 this.parametersListSpinner = true;
             }
-            console.log("before: ", this.flowStatsList)
             // clear flowStatsList during state/region changes
             if (this.flowStatsList && this.flowStatsList.length > 0) {
                 this.flowStatsList.length = 0;
