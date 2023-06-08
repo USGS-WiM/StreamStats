@@ -58,8 +58,9 @@ var StreamStats;
                 var url = 'https://streamstats.usgs.gov/gagestatsservices/stations/Bounds?xmin=-81.21485781740073&ymin=33.97528059290039&xmax=-81.03042363540376&ymax=34.10508178764378&geojson=true&includeStats=false';
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
-                    var data = response;
+                    console.log(response);
                     var stations = [];
+                    var data = response;
                     data.data.features.forEach(function (row) {
                         var site = row.properties.Code;
                         stations.push(site);

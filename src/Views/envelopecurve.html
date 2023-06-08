@@ -8,6 +8,9 @@
         <h4 class="modal-title">Envelope Curve</h4>
     </div>   
     <div id="printArea" class="modal-body">
+        <div class="well well-sm" style="background-color:#EBF0F5;">
+            Select Region to Query Stations: <select id="regionSelect" style="width:31%; text-align-last:center; margin-top: 5px;" name="regionSelect" ng-model="vm.selectedFloodFreqStats" ng-options="floodFreqStat.name for floodFreqStat in vm.allFloodFreqStats" ng-change="vm.chooseFloodStats()" ng-disabled="vm.showFloodStats == false"></select><br>              
+        </div>
         <div ng-if="vm.formattedPlotData.length === 0" class="panel panel-default reportSpinner">
             &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
         </div>

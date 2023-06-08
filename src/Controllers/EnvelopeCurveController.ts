@@ -61,23 +61,37 @@ module StreamStats.Controllers {
 
         //Query Gages With Bounding Box
         public getStationIDs() {
+            //URL for stations by REGION
+            //const url = 'https://streamstats.usgs.gov/gagestatsservices/stations?regions=MN&pageCount=3000'
+            //URL for stations by BOUNDS
             const url = 'https://streamstats.usgs.gov/gagestatsservices/stations/Bounds?xmin=-81.21485781740073&ymin=33.97528059290039&xmax=-81.03042363540376&ymax=34.10508178764378&geojson=true&includeStats=false'
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             //console.log('here', url)
             this.Execute(request).then(
                 (response: any) => {
-                    let data = response;
+                    console.log(response)
                     const stations = [];
+
+                    //DATA from REGION
+                    // let data = response.data;
+                    // data.forEach(station => {
+                    //     let site = station.code;
+                    //     stations.push(site);
+                    // })
+
+                    //DATA from BOUNDS
+                    let data = response;
                     data.data.features.forEach(row => {
                         let site = row.properties.Code
                         stations.push(site);
                     })
                     this.stationCodes = stations;
+
                 }, (error) => {
                 }).finally(() => {
                     this.getStationStats();
                 });
-        }
+        }        
 
         public getStationStats() {
             let peakData = [];
