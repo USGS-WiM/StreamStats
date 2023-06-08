@@ -22,6 +22,7 @@ var StreamStats;
             __extends(EnvelopeCurveController, _super);
             function EnvelopeCurveController($scope, $http, modalService, modal, $sce) {
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
+                _this.regionCodesList = [];
                 _this.stationCodes = [];
                 _this.peakData = [];
                 _this.estPeakData = [];
@@ -29,6 +30,7 @@ var StreamStats;
                 _this.formattedPlotData = [];
                 $scope.vm = _this;
                 _this.sce = $sce;
+                _this.selectedRegion = [];
                 _this.modalInstance = modal;
                 _this.modalService = modalService;
                 _this.init();
@@ -53,12 +55,25 @@ var StreamStats;
                 enumerable: false,
                 configurable: true
             });
+            EnvelopeCurveController.prototype.chooseRegionalCode = function () {
+                var _this = this;
+                var url = 'https://streamstats.usgs.gov/gagestatsservices/regions';
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.Execute(request).then(function (response) {
+                    _this.regionCodesList = response.data;
+                });
+                if (this.selectedRegion.name === this.selectedRegion.name && this.selectedRegion.name !== undefined) {
+                    this.getStationIDs();
+                }
+            };
             EnvelopeCurveController.prototype.getStationIDs = function () {
                 var _this = this;
+                console.log(this.selectedRegion.code);
+                var regionalUrl = 'https://streamstats.usgs.gov/gagestatsservices/stations?regions=' + this.selectedRegion.code + '&pageCount=3000';
+                console.log(regionalUrl);
                 var url = 'https://streamstats.usgs.gov/gagestatsservices/stations/Bounds?xmin=-81.21485781740073&ymin=33.97528059290039&xmax=-81.03042363540376&ymax=34.10508178764378&geojson=true&includeStats=false';
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
-                    console.log(response);
                     var stations = [];
                     var data = response;
                     data.data.features.forEach(function (row) {
@@ -105,7 +120,6 @@ var StreamStats;
                             ;
                         } while (data.length > 0);
                         _this.peakData = peakData;
-                        console.log('peaks', _this.peakData);
                         _this.estPeakData = estPeakData;
                         _this.getDrainageArea();
                     });
@@ -117,7 +131,6 @@ var StreamStats;
                 var completedStationCodes = [];
                 this.stationCodes.forEach(function (station) {
                     var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + station;
-                    console.log(url);
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                     _this.Execute(request).then(function (response) {
                         var characteristics = response.data.characteristics;
@@ -139,12 +152,10 @@ var StreamStats;
                         });
                     });
                 });
-                console.log('plot data', formattedPlotData);
                 this.formattedPlotData = formattedPlotData;
                 this.createEnvelopeCurvePlot();
             };
             EnvelopeCurveController.prototype.createEnvelopeCurvePlot = function () {
-                console.log('inside plot function', this.formattedPlotData);
                 this.envelopeChartConfig = {
                     chart: {
                         height: 550,
@@ -185,7 +196,7 @@ var StreamStats;
                 };
             };
             EnvelopeCurveController.prototype.init = function () {
-                this.getStationIDs();
+                this.chooseRegionalCode();
             };
             EnvelopeCurveController.prototype.Close = function () {
                 this.modalInstance.dismiss('cancel');

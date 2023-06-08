@@ -17,11 +17,13 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
 
         // Plot properties
+        public regionCodesList = [];
         public stationCodes = [];
         public peakData = [];
         public estPeakData = [];
         public drainageData = [];
         public formattedPlotData = [];
+        public selectedRegion;
         public sce: any;
         private _table: any
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
@@ -51,6 +53,7 @@ module StreamStats.Controllers {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
             this.sce = $sce;
+            this.selectedRegion = [];
             this.modalInstance = modal;
             this.modalService = modalService;
             this.init();
@@ -59,17 +62,41 @@ module StreamStats.Controllers {
         //Methods  
         //-+-+-+-+-+-+-+-+-+-+-+-
 
+        //Pull in Regional Codes for dropdown
+        public chooseRegionalCode () {
+            const url = 'https://streamstats.usgs.gov/gagestatsservices/regions'
+            const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+            this.Execute(request).then(
+                (response: any) => {
+                    this.regionCodesList = response.data;
+                    //let regions = response.data
+                    //let  regionCodeList = [];
+                    // regions.forEach(region => {
+                    //     let regionCodes = region.code;
+                    //     regionCodeList.push(regionCodes);
+                    // })
+                    //this.regionCodesList = regionCodeList;
+                    //console.log('codes', this.regionCodesList);
+                })
+                if (this.selectedRegion.name === this.selectedRegion.name && this.selectedRegion.name !== undefined) {
+                    this.getStationIDs();
+                }
+        }
+
         //Query Gages With Bounding Box
         public getStationIDs() {
+            console.log(this.selectedRegion.code)
+
             //URL for stations by REGION
-            //const url = 'https://streamstats.usgs.gov/gagestatsservices/stations?regions=MN&pageCount=3000'
+            const regionalUrl = 'https://streamstats.usgs.gov/gagestatsservices/stations?regions=' + this.selectedRegion.code + '&pageCount=3000';
+            console.log(regionalUrl)
             //URL for stations by BOUNDS
             const url = 'https://streamstats.usgs.gov/gagestatsservices/stations/Bounds?xmin=-81.21485781740073&ymin=33.97528059290039&xmax=-81.03042363540376&ymax=34.10508178764378&geojson=true&includeStats=false'
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             //console.log('here', url)
             this.Execute(request).then(
                 (response: any) => {
-                    console.log(response)
+                    //console.log(response)
                     const stations = [];
 
                     //DATA from REGION
@@ -130,7 +157,7 @@ module StreamStats.Controllers {
                             };
                         } while (data.length > 0);
                         this.peakData = peakData;
-                        console.log('peaks', this.peakData)
+                        //console.log('peaks', this.peakData)
                         this.estPeakData = estPeakData;
                         this.getDrainageArea();
 
@@ -144,7 +171,7 @@ module StreamStats.Controllers {
             let completedStationCodes = [];
             this.stationCodes.forEach(station => {
                 var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + station;
-                console.log(url)
+                //console.log(url)
                 const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(
                     (response: any) => {
@@ -170,13 +197,13 @@ module StreamStats.Controllers {
                         });
                     })
             });
-            console.log('plot data', formattedPlotData);
+            //console.log('plot data', formattedPlotData);
             this.formattedPlotData = formattedPlotData;
             this.createEnvelopeCurvePlot();
         }
         
         public createEnvelopeCurvePlot(): void {
-            console.log('inside plot function', this.formattedPlotData);
+            //console.log('inside plot function', this.formattedPlotData);
             this.envelopeChartConfig = {  
                 chart: {
                     height: 550, 
@@ -218,7 +245,7 @@ module StreamStats.Controllers {
         }
 
         private init(): void {
-            this.getStationIDs();
+            this.chooseRegionalCode();
         }
         //Methods  
         //-+-+-+-+-+-+-+-+-+-+-+-
