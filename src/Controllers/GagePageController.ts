@@ -874,8 +874,7 @@ module StreamStats.Controllers {
                 });
         }
 
- // this works and is the almost original
-        // Pull in NWS Forecasted flow values
+        // rating curve
         public getRatingCurve() {
             const url = 'https://waterdata.usgs.gov/nwisweb/get_ratings?site_no=' + this.gage.code + '&file_type=exsa'
             // console.log('getDischargeInfo', url)
@@ -939,8 +938,6 @@ module StreamStats.Controllers {
             return lookupValue;
         }
 
-
- // this works and is the almost original
         // Pull in NWS Forecasted flow values
         public getNWSForecast() {
 
@@ -998,12 +995,13 @@ module StreamStats.Controllers {
                             console.log("recordX", recordX)
 
                             self.stages = [
-                                {name: 'action', x: actionX, y: action},
-                                {name: 'flood', x: floodX, y: flood},
-                                {name: 'moderate', x: moderateX, y: moderate},
-                                {name: 'major', x: majorX, y: major},
-                                {name: 'record', x: recordX, y: record}
+                                {name: 'action', x: actionX, y: action, color: 'rgba(255,255,0,0.7)'},
+                                {name: 'flood', x: floodX, y: flood, color: 'rgba(255,153,0,0.7)'},
+                                {name: 'moderate', x: moderateX, y: moderate, color: 'rgba(255,0,0,0.7)'},
+                                {name: 'major', x: majorX, y: major, color: 'rgba(204,51,255,0.7)'},
+                                {name: 'record', x: recordX, y: record, color: 'rgba(102,178,255,0.7)'}
                             ];
+                            
 
                             
 
@@ -1178,35 +1176,44 @@ module StreamStats.Controllers {
 
                 // horizontal and vert lines
                 for(let stage of this.stages) {
-                    // Add horizontal line
-
-                    console.log("chart", chart)
-
-                    chart.yAxis[0].addPlotLine({
-                        value: stage.y,
-                        color: 'red',
-                        width: 2,
-                        id: `${stage.name}-horizontal`,
-                        label: {
-                            text: `${stage.name.toUpperCase()} Stage`,
-                            align: 'left'
-                        }
-                    });
-
-                    // Add vertical line
+                    // Capitalize first letter
+                    let stageNameCapitalized = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
+                    
                     chart.xAxis[0].addPlotLine({
                         value: stage.x,
-                        color: 'red',
+                        color: stage.color,
                         width: 2,
                         id: `${stage.name}-vertical`,
                         label: {
-                            text: `${stage.name.toUpperCase()} Stage`,
-                            align: 'right'
+                            text: `${stageNameCapitalized}: ${Math.round(stage.x)}`, // Round off the x value
+                            align: 'right',
+                            verticalAlign: 'bottom', 
+                            y: -10, 
+                            style: {
+                                fontSize: '10px' // Adjust the font size here
+                            },
+                            zIndex: 150
+                        }
+                    });
+                    
+                    // Add horizontal line
+                    chart.yAxis[0].addPlotLine({
+                        value: stage.y,
+                        color: stage.color,
+                        width: 2,
+                        id: `${stage.name}-horizontal`,
+                        label: {
+                            text: `${stageNameCapitalized}: ${stage.y}`,
+                            align: 'left',
+                            style: {
+                                fontSize: '10px' // Adjust the font size here
+                            },
+                            zIndex: 150
                         }
                     });
                 }
-
             }
+        }
 
 
             // for sliders

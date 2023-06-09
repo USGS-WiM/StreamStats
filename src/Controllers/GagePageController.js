@@ -727,11 +727,11 @@ var StreamStats;
                             console.log("majorX", majorX);
                             console.log("recordX", recordX);
                             self.stages = [
-                                { name: 'action', x: actionX, y: action },
-                                { name: 'flood', x: floodX, y: flood },
-                                { name: 'moderate', x: moderateX, y: moderate },
-                                { name: 'major', x: majorX, y: major },
-                                { name: 'record', x: recordX, y: record }
+                                { name: 'action', x: actionX, y: action, color: 'rgba(255,255,0,0.7)' },
+                                { name: 'flood', x: floodX, y: flood, color: 'rgba(255,153,0,0.7)' },
+                                { name: 'moderate', x: moderateX, y: moderate, color: 'rgba(255,0,0,0.7)' },
+                                { name: 'major', x: majorX, y: major, color: 'rgba(204,51,255,0.7)' },
+                                { name: 'record', x: recordX, y: record, color: 'rgba(102,178,255,0.7)' }
                             ];
                             var forecastData = xmlDocument.querySelectorAll("forecast");
                             if (forecastData[0] !== undefined) {
@@ -863,25 +863,35 @@ var StreamStats;
                     this.toggleLegend();
                     for (var _i = 0, _a = this.stages; _i < _a.length; _i++) {
                         var stage = _a[_i];
-                        console.log("chart", chart);
-                        chart.yAxis[0].addPlotLine({
-                            value: stage.y,
-                            color: 'red',
-                            width: 2,
-                            id: "".concat(stage.name, "-horizontal"),
-                            label: {
-                                text: "".concat(stage.name.toUpperCase(), " Stage"),
-                                align: 'left'
-                            }
-                        });
+                        var stageNameCapitalized = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
                         chart.xAxis[0].addPlotLine({
                             value: stage.x,
-                            color: 'red',
+                            color: stage.color,
                             width: 2,
                             id: "".concat(stage.name, "-vertical"),
                             label: {
-                                text: "".concat(stage.name.toUpperCase(), " Stage"),
-                                align: 'right'
+                                text: "".concat(stageNameCapitalized, ": ").concat(Math.round(stage.x)),
+                                align: 'right',
+                                verticalAlign: 'bottom',
+                                y: -10,
+                                style: {
+                                    fontSize: '10px'
+                                },
+                                zIndex: 150
+                            }
+                        });
+                        chart.yAxis[0].addPlotLine({
+                            value: stage.y,
+                            color: stage.color,
+                            width: 2,
+                            id: "".concat(stage.name, "-horizontal"),
+                            label: {
+                                text: "".concat(stageNameCapitalized, ": ").concat(stage.y),
+                                align: 'left',
+                                style: {
+                                    fontSize: '10px'
+                                },
+                                zIndex: 150
                             }
                         });
                     }
