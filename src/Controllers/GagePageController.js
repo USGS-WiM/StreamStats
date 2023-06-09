@@ -641,21 +641,98 @@ var StreamStats;
                         });
                         _this_1.instFlow = filteredInst;
                     }
-                    _this_1.getNWSForecast();
+                    _this_1.getRatingCurve();
                     console.log(_this_1.gageTimeZone);
                 });
+            };
+            GagePageController.prototype.getRatingCurve = function () {
+                var _this_1 = this;
+                var url = 'https://waterdata.usgs.gov/nwisweb/get_ratings?site_no=' + this.gage.code + '&file_type=exsa';
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.dischargeObj = [];
+                this.Execute(request).then(function (response) {
+                    var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
+                    data.shift().split('\t');
+                    data.shift();
+                    data.forEach(function (row) {
+                        var dataRow = row.split('\t');
+                        var object = {
+                            x: parseFloat(dataRow[2]),
+                            y: parseFloat(dataRow[0])
+                        };
+                        _this_1.dischargeObj.push(object);
+                    });
+                }, function (error) {
+                }).finally(function () {
+                    _this_1.getNWSForecast();
+                });
+            };
+            GagePageController.prototype.curveLookup = function (value, getRatingCurve) {
+                var lowx, lowy, highx, highy;
+                var lookupValue;
+                console.log("rating curve", getRatingCurve);
+                for (var i = 0; i < getRatingCurve.length; i++) {
+                    var val = getRatingCurve[i];
+                    if (value === val.y) {
+                        lookupValue = val.x;
+                        break;
+                    }
+                    if (value < val.y) {
+                        highx = val.x;
+                        highy = val.y;
+                        lowx = getRatingCurve[i - 1].x;
+                        lowy = getRatingCurve[i - 1].y;
+                        lookupValue = ((value - lowy) / (highy - lowy)) * (highx - lowx) + lowx;
+                        console.log("lookupvalue: ", lookupValue);
+                        break;
+                    }
+                }
+                return lookupValue;
             };
             GagePageController.prototype.getNWSForecast = function () {
                 var self = this;
                 var nwisCode = this.gage.code;
+                console.log('nwsiCode:', nwisCode);
                 this.$http.get('./data/gageNumberCrossWalk.json').then(function (response) {
                     self.crossWalk = response.data;
+                    console.log('crossWalk:', self.crossWalk);
                     var NWScode = self.crossWalk[nwisCode];
+                    console.log('nwisCode exists in crossWalk:', NWScode);
                     if (NWScode !== undefined) {
                         var url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + NWScode;
+                        console.log('NWS forecast url', url);
                         var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
                         self.Execute(request).then(function (response) {
                             var xmlDocument = new DOMParser().parseFromString(response.data, "text/xml");
+                            var sigStages = xmlDocument.querySelector("sigstages");
+                            var action = parseFloat(sigStages.querySelector("action").textContent);
+                            var flood = parseFloat(sigStages.querySelector("flood").textContent);
+                            var moderate = parseFloat(sigStages.querySelector("moderate").textContent);
+                            var major = parseFloat(sigStages.querySelector("major").textContent);
+                            var record = parseFloat(sigStages.querySelector("record").textContent);
+                            console.log("Action: ", action);
+                            console.log("Flood: ", flood);
+                            console.log("Moderate: ", moderate);
+                            console.log("Major: ", major);
+                            console.log("Record: ", record);
+                            console.log("dischargeObj: ", self.dischargeObj);
+                            var actionX = self.curveLookup(action, self.dischargeObj);
+                            var floodX = self.curveLookup(flood, self.dischargeObj);
+                            var moderateX = self.curveLookup(moderate, self.dischargeObj);
+                            var majorX = self.curveLookup(major, self.dischargeObj);
+                            var recordX = self.curveLookup(record, self.dischargeObj);
+                            console.log("actionX", actionX);
+                            console.log("floodX", floodX);
+                            console.log("moderateX", moderateX);
+                            console.log("majorX", majorX);
+                            console.log("recordX", recordX);
+                            self.stages = [
+                                { name: 'action', x: actionX, y: action },
+                                { name: 'flood', x: floodX, y: flood },
+                                { name: 'moderate', x: moderateX, y: moderate },
+                                { name: 'major', x: majorX, y: major },
+                                { name: 'record', x: recordX, y: record }
+                            ];
                             var forecastData = xmlDocument.querySelectorAll("forecast");
                             if (forecastData[0] !== undefined) {
                                 var smallerData_1 = forecastData[0].childNodes;
@@ -720,28 +797,6 @@ var StreamStats;
                     }
                     _this_1.meanPercent = meanPercentileStats;
                     _this_1.rawShaded = raw;
-                    _this_1.getRatingCurve();
-                });
-            };
-            GagePageController.prototype.getRatingCurve = function () {
-                var _this_1 = this;
-                var url = 'https://waterdata.usgs.gov/nwisweb/get_ratings?site_no=' + this.gage.code + '&file_type=exsa';
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-                this.dischargeObj = [];
-                this.Execute(request).then(function (response) {
-                    var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
-                    data.shift().split('\t');
-                    data.shift();
-                    data.forEach(function (row) {
-                        var dataRow = row.split('\t');
-                        var object = {
-                            x: parseFloat(dataRow[2]),
-                            y: parseFloat(dataRow[0])
-                        };
-                        _this_1.dischargeObj.push(object);
-                    });
-                }, function (error) {
-                }).finally(function () {
                     _this_1.getUSGSMeasured();
                 });
             };
@@ -806,19 +861,33 @@ var StreamStats;
                     });
                     chart.series[2].update({ data: filteredData });
                     this.toggleLegend();
+                    for (var _i = 0, _a = this.stages; _i < _a.length; _i++) {
+                        var stage = _a[_i];
+                        console.log("chart", chart);
+                        chart.yAxis[0].addPlotLine({
+                            value: stage.y,
+                            color: 'red',
+                            width: 2,
+                            id: "".concat(stage.name, "-horizontal"),
+                            label: {
+                                text: "".concat(stage.name.toUpperCase(), " Stage"),
+                                align: 'left'
+                            }
+                        });
+                        chart.xAxis[0].addPlotLine({
+                            value: stage.x,
+                            color: 'red',
+                            width: 2,
+                            id: "".concat(stage.name, "-vertical"),
+                            label: {
+                                text: "".concat(stage.name.toUpperCase(), " Stage"),
+                                align: 'right'
+                            }
+                        });
+                    }
                 }
             };
             GagePageController.prototype.toggleLegend = function () {
-                var ageLegend = document.getElementById('ageLegend');
-                var qualityLegend = document.getElementById('qualityLegend');
-                if (this.ageQualityData === 'age') {
-                    ageLegend.style.display = 'block';
-                    qualityLegend.style.display = 'none';
-                }
-                else {
-                    ageLegend.style.display = 'none';
-                    qualityLegend.style.display = 'block';
-                }
             };
             GagePageController.prototype.formatData = function () {
                 var _this_1 = this;
@@ -2586,6 +2655,32 @@ var StreamStats;
                 return "#FFA200";
             };
             GagePageController.prototype.createDischargePlot = function () {
+                var _this_1 = this;
+                this.startMonth = 1;
+                this.endMonth = 12;
+                this.monthSliderOptions = {
+                    floor: 1,
+                    ceil: 12,
+                    noSwitching: true,
+                    showTicks: false,
+                    draggableRange: true,
+                    onChange: function () {
+                        _this_1.updateChart();
+                    },
+                };
+                var minYear = this.getMinYear();
+                this.startYear = minYear;
+                this.endYear = new Date().getFullYear();
+                this.yearSliderOptions = {
+                    floor: this.startYear,
+                    ceil: this.endYear,
+                    draggableRange: true,
+                    noSwitching: true,
+                    showTicks: false,
+                    onChange: function () {
+                        _this_1.updateChart();
+                    },
+                };
                 this.dischargeChartConfig = {
                     chart: {
                         height: 450,
@@ -2697,6 +2792,27 @@ var StreamStats;
                                 radius: 3
                             },
                             showInLegend: this.error == false
+                        },
+                        {
+                            name: 'Flood Stages',
+                            showInNavigator: false,
+                            tooltip: {
+                                headerFormat: '<b>Flood Stages</b>',
+                                pointFormatter: function () {
+                                    if (this.formattedPeakDates !== null) {
+                                        var UTCday = this.getUTCDate;
+                                    }
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: 'line',
+                            color: 'yellow',
+                            data: [],
+                            marker: {
+                                symbol: 'circle',
+                                radius: 0
+                            },
+                            showInLegend: true
                         }
                     ]
                 };
@@ -2847,14 +2963,6 @@ var StreamStats;
                 };
             };
             ;
-            GagePageController.prototype.containsNegatives = function () {
-                if (this.dailyValuesOnly.some(function (v) { return v <= 0; })) {
-                    return true;
-                }
-                if (this.dailyValuesOnly.some(function (v) { return v > 0; })) {
-                    return false;
-                }
-            };
             GagePageController.prototype.togglePlotLines = function () {
                 var chart = $('#chart1').highcharts();
                 if (this.plotlines) {
