@@ -194,7 +194,7 @@ var StreamStats;
                             },
                             turboThreshold: 0,
                             type: 'scatter',
-                            color: 'blue',
+                            color: '#007df5',
                             data: this.formattedPlotData,
                             marker: { symbol: 'circle', radius: 3 },
                             showInLegend: true
