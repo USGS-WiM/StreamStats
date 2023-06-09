@@ -2674,10 +2674,10 @@ var StreamStats;
                             min: fifthPercentile,
                             max: ninetyfifthPercentile,
                             stops: [
-                                [0, '#FF0000'],
-                                [0.3, '#FFCC33'],
-                                [0.8, '#66CCFF'],
-                                [1, '#3300CC']
+                                [0, '#3060cf'],
+                                [0.5, '#fffbbc'],
+                                [0.9, '#c4463a'],
+                                [1, '#c4463a']
                             ],
                             startOnTick: false,
                             endOnTick: false,
@@ -2693,10 +2693,10 @@ var StreamStats;
                             min: null,
                             max: null,
                             stops: [
-                                [0, '#FF0000'],
-                                [0.3, '#FFCC33'],
-                                [0.8, '#66CCFF'],
-                                [1, '#3300CC']
+                                [0, '#3060cf'],
+                                [0.5, '#fffbbc'],
+                                [0.9, '#c4463a'],
+                                [1, '#c4463a']
                             ],
                             startOnTick: false,
                             endOnTick: false,
