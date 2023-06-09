@@ -62,13 +62,19 @@ var StreamStats;
                 this.Execute(request).then(function (response) {
                     _this.regionCodesList = response.data;
                 });
-                if (this.selectedRegion.name === this.selectedRegion.name && this.selectedRegion.name !== undefined) {
-                    this.getStationIDs();
-                }
+            };
+            EnvelopeCurveController.prototype.drawMapBounds = function (options, enable) {
+                var _this = this;
+                this.leafletData.getMap("mainMap").then(function (map) {
+                    _this.drawControl = new L.Draw.Polyline(map, options);
+                    _this.drawControl.enable();
+                });
+            };
+            EnvelopeCurveController.prototype.loadPlot = function () {
+                this.getStationIDs();
             };
             EnvelopeCurveController.prototype.getStationIDs = function () {
                 var _this = this;
-                console.log(this.selectedRegion.code);
                 var regionalUrl = 'https://streamstats.usgs.gov/gagestatsservices/stations?regions=' + this.selectedRegion.code + '&pageCount=3000';
                 console.log(regionalUrl);
                 var url = 'https://streamstats.usgs.gov/gagestatsservices/stations/Bounds?xmin=-81.21485781740073&ymin=33.97528059290039&xmax=-81.03042363540376&ymax=34.10508178764378&geojson=true&includeStats=false';
@@ -201,7 +207,7 @@ var StreamStats;
             EnvelopeCurveController.prototype.Close = function () {
                 this.modalInstance.dismiss('cancel');
             };
-            EnvelopeCurveController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
+            EnvelopeCurveController.$inject = ['$scope', '$http', 'leafletBoundsHelpers', 'leafletData', 'StreamStats.Services.ModalService', '$modalInstance'];
             return EnvelopeCurveController;
         }(WiM.Services.HTTPServiceBase));
         angular.module('StreamStats.Controllers')

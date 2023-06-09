@@ -9,13 +9,17 @@ module StreamStats.Controllers {
     interface IModal {
         Close(): void
     }
+    interface ILeafletData {
+        getMap(mapID:any): ng.IPromise<any>;
+        getLayers(mapID:any): ng.IPromise<any>;
+    }
 
     interface IEnvelopeCurveController extends IModal {
     }
     class EnvelopeCurveController extends WiM.Services.HTTPServiceBase implements IEnvelopeCurveController {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
-
+        private leafletData: ILeafletData;
         // Plot properties
         public regionCodesList = [];
         public stationCodes = [];
@@ -25,6 +29,7 @@ module StreamStats.Controllers {
         public formattedPlotData = [];
         public selectedRegion;
         public sce: any;
+        public drawControl: any;
         private _table: any
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
         private modalService: Services.IModalService;
@@ -41,7 +46,7 @@ module StreamStats.Controllers {
         }
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
+        static $inject = ['$scope', '$http', 'leafletBoundsHelpers', 'leafletData', 'StreamStats.Services.ModalService', '$modalInstance'];
         envelopeChartConfig: {  chart: {height: number, width: number, zooming: {type: string}},
                         title: { text: string, align: string},
                         subtitle: { text: string, align: string}, 
@@ -69,24 +74,25 @@ module StreamStats.Controllers {
             this.Execute(request).then(
                 (response: any) => {
                     this.regionCodesList = response.data;
-                    //let regions = response.data
-                    //let  regionCodeList = [];
-                    // regions.forEach(region => {
-                    //     let regionCodes = region.code;
-                    //     regionCodeList.push(regionCodes);
-                    // })
-                    //this.regionCodesList = regionCodeList;
-                    //console.log('codes', this.regionCodesList);
                 })
-                if (this.selectedRegion.name === this.selectedRegion.name && this.selectedRegion.name !== undefined) {
-                    this.getStationIDs();
-                }
+                // if (this.selectedRegion.name === this.selectedRegion.name && this.selectedRegion.name !== undefined) {
+                // }
+        }
+
+        public drawMapBounds(options: Object, enable: boolean) {
+            this.leafletData.getMap("mainMap").then((map: any) => {
+                //console.log('enable drawControl');
+                this.drawControl = new (<any>L).Draw.Polyline(map, options);
+                this.drawControl.enable();
+            });
+        }
+
+        public loadPlot() {
+            this.getStationIDs();
         }
 
         //Query Gages With Bounding Box
         public getStationIDs() {
-            console.log(this.selectedRegion.code)
-
             //URL for stations by REGION
             const regionalUrl = 'https://streamstats.usgs.gov/gagestatsservices/stations?regions=' + this.selectedRegion.code + '&pageCount=3000';
             console.log(regionalUrl)
