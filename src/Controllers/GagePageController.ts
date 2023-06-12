@@ -977,9 +977,6 @@ module StreamStats.Controllers {
                             console.log("Moderate: ", moderate);
                             console.log("Major: ", major);
                             console.log("Record: ", record);
-
-
-
                             console.log("dischargeObj: ", self.dischargeObj);
 
                             let actionX = self.curveLookup(action, self.dischargeObj);
@@ -1002,9 +999,6 @@ module StreamStats.Controllers {
                                 {name: 'record', x: recordX, y: record, color: 'rgba(102,178,255,0.7)'}
                             ];
                             
-
-                            
-
                             const forecastData = xmlDocument.querySelectorAll("forecast");
                             if (forecastData[0] !== undefined) {
                             const smallerData = forecastData[0].childNodes;
@@ -1043,8 +1037,6 @@ module StreamStats.Controllers {
                 });
         }
 
-        
-           
         //Pull in Shaded Stats data
         public getShadedDailyStats() {
             var url = 'https://waterservices.usgs.gov/nwis/stat/?format=rdb,1.0&indent=on&sites=' + this.gage.code + '&statReportType=daily&statTypeCd=all&parameterCd=00060';
@@ -1154,66 +1146,341 @@ module StreamStats.Controllers {
           }
       
           // for sliders
-        public updateChart() {
-            let chart = $('#chart3').highcharts();
 
-            // console.log("chart", chart)
+        // option 1 that works with addplotline but goes across the whole page
+        // public updateChart() {
+        //     let chart = $('#chart3').highcharts();
+
+        //     console.log("chart", chart)
             
-            if(chart) {
-                chart.series[2].update({data:[]});
-                const filteredData = structuredClone(this.measuredObj).filter((item) => {
-                    const itemDate = new Date(item.dateTime);
-                    const itemMonth = itemDate.getMonth() + 1;
-                    const itemYear = itemDate.getFullYear();
-                    return itemMonth >= this.startMonth && itemMonth <= this.endMonth &&
-                    itemYear >= this.startYear && itemYear <= this.endYear;
-                });
-                filteredData.forEach(row => {
-                    row.color = (this.ageQualityData == 'age') ? row.ageColor : row.qualityColor;
-                });
-                chart.series[2].update({data:filteredData});
-                this.toggleLegend();
+        //     if(chart) {
+        //         chart.series[2].update({data:[]});
+        //         const filteredData = structuredClone(this.measuredObj).filter((item) => {
+        //             const itemDate = new Date(item.dateTime);
+        //             const itemMonth = itemDate.getMonth() + 1;
+        //             const itemYear = itemDate.getFullYear();
+        //             return itemMonth >= this.startMonth && itemMonth <= this.endMonth &&
+        //             itemYear >= this.startYear && itemYear <= this.endYear;
+        //         });
+        //         filteredData.forEach(row => {
+        //             row.color = (this.ageQualityData == 'age') ? row.ageColor : row.qualityColor;
+        //         });
+        //         chart.series[2].update({data:filteredData});
+        //         this.toggleLegend();
 
-                // horizontal and vert lines
-                for(let stage of this.stages) {
-                    // Capitalize first letter
-                    let stageNameCapitalized = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
+        //         // horizontal and vert lines
+        //         for(let stage of this.stages) {
+        //             // Capitalize first letter
+        //             let stageNameCapitalized = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
                     
-                    chart.xAxis[0].addPlotLine({
-                        value: stage.x,
-                        color: stage.color,
-                        width: 2,
-                        id: `${stage.name}-vertical`,
-                        label: {
-                            text: `${stageNameCapitalized}: ${Math.round(stage.x)}`, // Round off the x value
-                            align: 'right',
-                            verticalAlign: 'bottom', 
-                            y: -10, 
-                            style: {
-                                fontSize: '10px' // Adjust the font size here
-                            },
-                            zIndex: 150
-                        }
-                    });
+        //             chart.xAxis[0].addPlotLine({
+        //                 value: stage.x,
+        //                 color: stage.color,
+        //                 width: 2,
+        //                 id: `${stage.name}-vertical`,
+        //                 label: {
+        //                     text: `${stageNameCapitalized}: ${Math.round(stage.x)}`, // Round off the x value
+        //                     align: 'right',
+        //                     verticalAlign: 'bottom', 
+        //                     y: -10, 
+        //                     style: {
+        //                         fontSize: '10px' // Adjust the font size here
+        //                     },
+        //                     zIndex: 150
+        //                 }
+        //             });
                     
-                    // Add horizontal line
-                    chart.yAxis[0].addPlotLine({
-                        value: stage.y,
-                        color: stage.color,
-                        width: 2,
-                        id: `${stage.name}-horizontal`,
-                        label: {
-                            text: `${stageNameCapitalized}: ${stage.y}`,
-                            align: 'left',
-                            style: {
-                                fontSize: '10px' // Adjust the font size here
-                            },
-                            zIndex: 150
-                        }
-                    });
+        //             // Add horizontal line
+        //             chart.yAxis[0].addPlotLine({
+        //                 value: stage.y,
+        //                 color: stage.color,
+        //                 width: 2,
+        //                 id: `${stage.name}-horizontal`,
+        //                 label: {
+        //                     text: `${stageNameCapitalized}: ${stage.y}`,
+        //                     align: 'left',
+                            // style: {
+                            //     fontSize: '10px' // Adjust the font size here
+                            // },
+        //                     zIndex: 150
+        //                 }
+        //             });
+        //         }
+        //     }
+        // }
+
+
+        // option 1.5. this should be the original with no addplot line or addseries
+        // public updateChart() {
+        //     let chart = $('#chart3').highcharts();
+
+        //     console.log("chart", chart)
+            
+        //     if(chart) {
+        //         chart.series[2].update({data:[]});
+        //         const filteredData = structuredClone(this.measuredObj).filter((item) => {
+        //             const itemDate = new Date(item.dateTime);
+        //             const itemMonth = itemDate.getMonth() + 1;
+        //             const itemYear = itemDate.getFullYear();
+        //             return itemMonth >= this.startMonth && itemMonth <= this.endMonth &&
+        //             itemYear >= this.startYear && itemYear <= this.endYear;
+        //         });
+        //         filteredData.forEach(row => {
+        //             row.color = (this.ageQualityData == 'age') ? row.ageColor : row.qualityColor;
+        //         });
+        //         chart.series[2].update({data:filteredData});
+        //         this.toggleLegend();
+        //     }
+        // }
+
+        // option 2 that works with just addseries
+        // public updateChart() {
+        //     let chart = $('#chart3').highcharts();
+            
+        // // console.log("chart", chart)
+            
+        //     if(chart) {
+        //         chart.series[2].update({data:[]});
+        //         const filteredData = structuredClone(this.measuredObj).filter((item) => {
+        //             const itemDate = new Date(item.dateTime);
+        //             const itemMonth = itemDate.getMonth() + 1;
+        //             const itemYear = itemDate.getFullYear();
+        //             return itemMonth >= this.startMonth && itemMonth <= this.endMonth &&
+        //             itemYear >= this.startYear && itemYear <= this.endYear;
+        //         });
+        //         filteredData.forEach(row => {
+        //             row.color = (this.ageQualityData == 'age') ? row.ageColor : row.qualityColor;
+        //         });
+        //         chart.series[2].update({data:filteredData});
+        //         this.toggleLegend();
+        
+        //         // horizontal and vert lines
+        //         for(let stage of this.stages) {
+        //             // Capitalize first letter
+        //             let stageNameCapitalized = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
+                    
+        //             // Add vertical line as a separate series
+        //             chart.addSeries({
+        //                 id: `${stage.name}-vertical`,
+        //                 data: [[0, stage.y], [stage.x, stage.y]],
+        //                 color: stage.color,
+        //                 lineWidth: 2,
+        //                 marker: { enabled: false },
+        //                 name: `${stageNameCapitalized}: ${Math.round(stage.x)}`, // Round off the x value
+        //                 zIndex: 150,
+        //                 showInLegend: false // Don't show in legend
+        //             });
+        
+        //             // Add horizontal line as a separate series
+        //             chart.addSeries({
+        //                 id: `${stage.name}-horizontal`,
+        //                 data: [[stage.x, 0], [stage.x, stage.y]],
+        //                 color: stage.color,
+        //                 lineWidth: 2,
+        //                 marker: { enabled: false },
+        //                 name: `${stageNameCapitalized}: ${stage.y}`,
+        //                 zIndex: 150,
+        //                 showInLegend: false // Don't show in legend
+        //             });
+        //         }
+        //     }
+        //     // crosshairs
+            // chart.xAxis[0].update({
+            //     crosshair: {
+            //         color: 'red',
+            //         dashStyle: 'Solid'
+            //     }
+            // });
+            // chart.yAxis[0].update({
+            //     crosshair: {
+            //         color: 'red',
+            //         dashStyle: 'Solid'
+            //     }
+        //     });
+        // }
+        
+
+        // option 3 mimicking the one from nws
+        // public updateChart() {
+        //     let chart = $('#chart3').highcharts();
+        
+        //     console.log("chart", chart)
+            
+        //     if(chart) {
+        //         chart.series[2].update({data:[]});
+        //         const filteredData = structuredClone(this.measuredObj).filter((item) => {
+        //             const itemDate = new Date(item.dateTime);
+        //             const itemMonth = itemDate.getMonth() + 1;
+        //             const itemYear = itemDate.getFullYear();
+        //             return itemMonth >= this.startMonth && itemMonth <= this.endMonth &&
+        //             itemYear >= this.startYear && itemYear <= this.endYear;
+        //         });
+        //         filteredData.forEach(row => {
+        //             row.color = (this.ageQualityData == 'age') ? row.ageColor : row.qualityColor;
+        //         });
+        //         chart.series[2].update({data:filteredData});
+        //         this.toggleLegend();
+        
+        //         var show = true;
+        //         var link = null;
+        
+        //         // horizontal and vertical lines
+        //         for(let stage of this.stages) {
+        //             // Capitalize first letter
+        //             let stageNameCapitalized = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
+        
+        //             var stageSeries = {
+        //                 data: [[0, stage.y], [stage.x, stage.y], [stage.x, 0]],
+        //                 marker: {
+        //                     enabled: false
+        //                 },
+        //                 lineWidth: 2,
+        //                 linkedTo: link,
+        //                 showInLegend: show,
+        //                 name: `${stageNameCapitalized} Stages`,
+        //                 id: `${stage.name}StageLine`,
+        //                 color: stage.color
+        //             };
+        //             chart.addSeries(stageSeries);
+        //             show = false;
+        //             link = ":previous";
+        
+        //             chart.yAxis[0].addPlotLine({
+        //                 value: stage.y,
+        //                 color: stage.color,
+        //                 width: 2,
+        //                 id: `${stage.name}-horizontal`,
+        //                 label: {
+        //                     text: `${stageNameCapitalized}: ${stage.y}`,
+        //                     align: 'left',
+        //                     style: {
+        //                         fontSize: '10px' // Adjust the font size here
+        //                     },
+        //                     zIndex: 150
+        //                 }
+        //             });
+        //             chart.xAxis[0].addPlotLine({
+        //                 value: stage.x,
+        //                 color: stage.color,
+        //                 width: 2,
+        //                 id: `${stage.name}-vertical`,
+        //                 label: {
+        //                     text: `${stageNameCapitalized}: ${Math.round(stage.x)}`, // Round off the x value
+        //                     align: 'right',
+        //                     verticalAlign: 'bottom', 
+        //                     y: -10, 
+        //                     style: {
+        //                         fontSize: '10px' // Adjust the font size here
+        //                     },
+        //                     zIndex: 150
+        //                 }
+        //             });
+        //         }
+        //     }
+        // }
+        
+// option 4 testing
+
+public updateChart() {
+    let chart = $('#chart3').highcharts();
+
+    console.log("chart", chart)
+    
+    if(chart) {
+        chart.series[2].update({data:[]});
+        const filteredData = structuredClone(this.measuredObj).filter((item) => {
+            const itemDate = new Date(item.dateTime);
+            const itemMonth = itemDate.getMonth() + 1;
+            const itemYear = itemDate.getFullYear();
+            return itemMonth >= this.startMonth && itemMonth <= this.endMonth &&
+            itemYear >= this.startYear && itemYear <= this.endYear;
+        });
+        filteredData.forEach(row => {
+            row.color = (this.ageQualityData == 'age') ? row.ageColor : row.qualityColor;
+        });
+        chart.series[2].update({data:filteredData});
+        this.toggleLegend();
+
+        var show = true;
+        var link = null;
+
+        // horizontal and vertical lines
+        for(let stage of this.stages) {
+            // Capitalize first letter
+            let stageNameCapitalized = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
+
+            var horizontalStageSeries = {
+                data: [[0, stage.y], [stage.x, stage.y]],
+                marker: {
+                    enabled: false
+                },
+                lineWidth: 2,
+                linkedTo: link,
+                showInLegend: false,
+                name: `${stageNameCapitalized} Stages - Horizontal`,
+                id: `${stage.name}StageLineHorizontal`,
+                color: stage.color,
+                type: 'line'
+            };
+            chart.addSeries(horizontalStageSeries);
+
+            chart.yAxis[0].addPlotLine({
+                value: stage.y,
+                color: stage.color,
+                width: 0,
+                id: `${stage.name}-horizontal`,
+                label: {
+                    text: `${stageNameCapitalized}: ${stage.y}`,
+                    align: 'left',
+                    y: -5,
+                    style: {
+                        fontSize: '10px'
+                    }
                 }
-            }
+            });
+
+            var verticalStageSeries = {
+                data: [[stage.x, 0], [stage.x, stage.y]],
+                marker: {
+                    enabled: false
+                },
+                lineWidth: 2,
+                linkedTo: link,
+                showInLegend: false,
+                name: `${stageNameCapitalized} Stages - Vertical`,
+                id: `${stage.name}StageLineVertical`,
+                color: stage.color,
+                type: 'line'
+            };
+            chart.addSeries(verticalStageSeries);
+
+            chart.xAxis[0].addPlotLine({
+                value: stage.x,
+                color: stage.color,
+                width: 0,
+                id: `${stage.name}-vertical`,
+                label: {
+                    text: `${stageNameCapitalized}: ${Math.round(stage.x)}`, // Round off the x value
+                    align: 'right',
+                    verticalAlign: 'bottom',
+                    x: 5,
+                    style: {
+                        fontSize: '10px'
+                    }
+                }
+            });
+
+            show = false;
+            link = ":previous";
         }
+    }
+}
+
+
+
+
+
+        
 
 
             // for sliders

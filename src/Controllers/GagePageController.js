@@ -847,6 +847,7 @@ var StreamStats;
             GagePageController.prototype.updateChart = function () {
                 var _this_1 = this;
                 var chart = $('#chart3').highcharts();
+                console.log("chart", chart);
                 if (chart) {
                     chart.series[2].update({ data: [] });
                     var filteredData = structuredClone(this.measuredObj).filter(function (item) {
@@ -861,39 +862,70 @@ var StreamStats;
                     });
                     chart.series[2].update({ data: filteredData });
                     this.toggleLegend();
+                    var show = true;
+                    var link = null;
                     for (var _i = 0, _a = this.stages; _i < _a.length; _i++) {
                         var stage = _a[_i];
                         var stageNameCapitalized = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
+                        var horizontalStageSeries = {
+                            data: [[0, stage.y], [stage.x, stage.y]],
+                            marker: {
+                                enabled: false
+                            },
+                            lineWidth: 2,
+                            linkedTo: link,
+                            showInLegend: false,
+                            name: "".concat(stageNameCapitalized, " Stages - Horizontal"),
+                            id: "".concat(stage.name, "StageLineHorizontal"),
+                            color: stage.color,
+                            type: 'line'
+                        };
+                        chart.addSeries(horizontalStageSeries);
+                        chart.yAxis[0].addPlotLine({
+                            value: stage.y,
+                            color: stage.color,
+                            width: 0,
+                            id: "".concat(stage.name, "-horizontal"),
+                            label: {
+                                text: "".concat(stageNameCapitalized, ": ").concat(stage.y),
+                                align: 'left',
+                                y: -5,
+                                style: {
+                                    fontSize: '10px'
+                                }
+                            }
+                        });
+                        var verticalStageSeries = {
+                            data: [[stage.x, 0], [stage.x, stage.y]],
+                            marker: {
+                                enabled: false
+                            },
+                            lineWidth: 2,
+                            linkedTo: link,
+                            showInLegend: false,
+                            name: "".concat(stageNameCapitalized, " Stages - Vertical"),
+                            id: "".concat(stage.name, "StageLineVertical"),
+                            color: stage.color,
+                            type: 'line'
+                        };
+                        chart.addSeries(verticalStageSeries);
                         chart.xAxis[0].addPlotLine({
                             value: stage.x,
                             color: stage.color,
-                            width: 2,
+                            width: 0,
                             id: "".concat(stage.name, "-vertical"),
                             label: {
                                 text: "".concat(stageNameCapitalized, ": ").concat(Math.round(stage.x)),
                                 align: 'right',
                                 verticalAlign: 'bottom',
-                                y: -10,
+                                x: 5,
                                 style: {
                                     fontSize: '10px'
-                                },
-                                zIndex: 150
+                                }
                             }
                         });
-                        chart.yAxis[0].addPlotLine({
-                            value: stage.y,
-                            color: stage.color,
-                            width: 2,
-                            id: "".concat(stage.name, "-horizontal"),
-                            label: {
-                                text: "".concat(stageNameCapitalized, ": ").concat(stage.y),
-                                align: 'left',
-                                style: {
-                                    fontSize: '10px'
-                                },
-                                zIndex: 150
-                            }
-                        });
+                        show = false;
+                        link = ":previous";
                     }
                 }
             };
