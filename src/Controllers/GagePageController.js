@@ -834,7 +834,6 @@ var StreamStats;
                     _this_1.formatData();
                     _this_1.updateChart();
                     _this_1.getMinYear();
-                    _this_1.toggleLegend();
                 });
             };
             GagePageController.prototype.getMinYear = function () {
@@ -861,14 +860,17 @@ var StreamStats;
                         row.color = (_this_1.ageQualityData == 'age') ? row.ageColor : row.qualityColor;
                     });
                     chart.series[2].update({ data: filteredData });
-                    this.toggleLegend();
                     var show = true;
                     var link = null;
                     for (var _i = 0, _a = this.stages; _i < _a.length; _i++) {
                         var stage = _a[_i];
+                        if (stage.x === undefined || stage.y === undefined) {
+                            continue;
+                        }
                         var stageNameCapitalized = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
                         var horizontalStageSeries = {
                             data: [[0, stage.y], [stage.x, stage.y]],
+                            enableMouseTracking: false,
                             marker: {
                                 enabled: false
                             },
@@ -887,16 +889,18 @@ var StreamStats;
                             width: 0,
                             id: "".concat(stage.name, "-horizontal"),
                             label: {
-                                text: "".concat(stageNameCapitalized, ": ").concat(stage.y),
+                                text: "".concat(stageNameCapitalized, ": ").concat(stage.y, " ft"),
                                 align: 'left',
                                 y: -5,
                                 style: {
-                                    fontSize: '10px'
-                                }
+                                    font: '9px Arial, sans-serif'
+                                },
+                                zIndex: 999
                             }
                         });
                         var verticalStageSeries = {
                             data: [[stage.x, 0], [stage.x, stage.y]],
+                            enableMouseTracking: false,
                             marker: {
                                 enabled: false
                             },
@@ -915,21 +919,33 @@ var StreamStats;
                             width: 0,
                             id: "".concat(stage.name, "-vertical"),
                             label: {
-                                text: "".concat(stageNameCapitalized, ": ").concat(Math.round(stage.x)),
+                                text: "".concat(stageNameCapitalized, ": ").concat(Math.round(stage.x), " cfs"),
                                 align: 'right',
                                 verticalAlign: 'bottom',
                                 x: 5,
+                                y: -10,
                                 style: {
-                                    fontSize: '10px'
-                                }
+                                    font: '9px Arial, sans-serif'
+                                },
+                                zIndex: 999
+                            }
+                        });
+                        chart.xAxis[0].update({
+                            crosshair: {
+                                color: 'red',
+                                dashStyle: 'Solid'
+                            }
+                        });
+                        chart.yAxis[0].update({
+                            crosshair: {
+                                color: 'red',
+                                dashStyle: 'Solid'
                             }
                         });
                         show = false;
                         link = ":previous";
                     }
                 }
-            };
-            GagePageController.prototype.toggleLegend = function () {
             };
             GagePageController.prototype.formatData = function () {
                 var _this_1 = this;
