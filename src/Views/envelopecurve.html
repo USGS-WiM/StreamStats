@@ -1,7 +1,7 @@
 <!-- Envelope Curve Modal -->
 <div id="print-content"> 
     <!-- Modal -->
-    <div class="modal-header  hidden-print">
+    <div class="modal-header">
         <button class="close"
                 ng-click="vm.close()">
             &times;
@@ -16,14 +16,13 @@
                 <div class="panel-body">
                     <center>
                     Select Region to Query Stations: <select id="regionSelect" style="width:15%; text-align-last:center; margin-top: 5px;" name="regionSelect" 
-                    ng-model="vm.selectedRegion" ng-options="regionCode.name for regionCode in vm.regionCodesList" ng-change="vm.chooseRegionalCode()"></select><br>
+                    ng-model="vm.selectedRegion" ng-options="regionCode.name for regionCode in vm.regionCodesList track by regionCode.name" ng-change="vm.chooseRegionalCode()">
+                    </select><br>
                     Draw Bounding Box to Query Stations: <button ng-click="vm.drawMapBounds()" >Go to Map</button><br><br>
                     <button ng-click="vm.loadPlot()" class="btn-blue" >Load Envelope Curve Plot</button><br>  
                     </center>
                 </div>
         </div>
-        <!-- <div ng-if="vm.formattedPlotData.length === 0" class="panel panel-default reportSpinner"> -->
-            <!-- &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i> -->
                 <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.peakData.length > 0"><br><i class="fa fa-spinner fa-3x fa-spin loadingSpinner" ng-if="vm.formattedPlotData.length === 0"></i>
                         <div class="panel-body">
                             <center>
@@ -31,35 +30,10 @@
                             </center>
                         </div>
                 </div>
-        <!-- </div> -->
     </div>
-    <div class="modal-footer  hidden-print">
+    <div class="modal-footer hidden-print">
         <div class="btn-group">
-            <button class="btn-wim-default" ng-click="vm.close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
-            <button class="btn-wim-default" ng-hide="vm.explorationService.selectedMethod.navigationInfo.configuration" ng-click="vm.print()"><i class="fa fa-print"></i>&nbsp;&nbsp;Print</button>
+            <button class="btn-wim-default" ng-click="vm.Close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Close</button>
         </div>
     </div>
 </div>
-    
-
-
-        <!-- <div class="well well-sm" style="background-color:#EBF0F5;"> -->
-            
-                    <!-- <div class="panel-heading">
-                        <h3 class="panel-title">Envelope Curve Plot<small>Use one of the methods below to query stations and render your plot</small></h3>
-                    </div>
-                <center>
-                    Select Region to Query Stations: <select id="regionSelect" style="width:15%; text-align-last:center; margin-top: 5px;" name="regionSelect" 
-                    ng-model="vm.selectedRegion" ng-options="regionCode.name for regionCode in vm.regionCodesList" ng-change="vm.chooseRegionalCode()"></select><br>
-                    Draw Bounding Box to Query Stations: <button ng-click="vm.drawMapBounds()" >Go to Map</button><br><br>
-                    <button ng-click="vm.loadPlot()" class="btn-blue" >Load Envelope Curve Plot</button><br>              
-            </div> -->
-        
-                    <!-- <div ng-if="vm.formattedPlotData.length === 0" class="panel panel-default reportSpinner">
-                        &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
-                    </div> -->
-                    <!-- <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.formattedPlotData.length > 0">
-                        <highchart id="chart1" config="vm.envelopeChartConfig"></highchart>
-                    </div>
-                    </center>
-    </div>

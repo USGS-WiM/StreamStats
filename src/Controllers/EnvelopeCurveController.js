@@ -20,7 +20,7 @@ var StreamStats;
         'use strict';
         var EnvelopeCurveController = (function (_super) {
             __extends(EnvelopeCurveController, _super);
-            function EnvelopeCurveController($scope, $http, modalService, modal, $sce) {
+            function EnvelopeCurveController($scope, $http, modalService, modal) {
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
                 _this.regionCodesList = [];
                 _this.stationCodes = [];
@@ -29,7 +29,6 @@ var StreamStats;
                 _this.drainageData = [];
                 _this.formattedPlotData = [];
                 $scope.vm = _this;
-                _this.sce = $sce;
                 _this.selectedRegion = [];
                 _this.modalInstance = modal;
                 _this.modalService = modalService;
@@ -43,18 +42,9 @@ var StreamStats;
                 enumerable: false,
                 configurable: true
             });
-            EnvelopeCurveController.prototype.convertUnsafe = function (x) {
-                return this.sce.trustAsHtml(x);
+            EnvelopeCurveController.prototype.Close = function () {
+                this.modalInstance.dismiss('cancel');
             };
-            ;
-            Object.defineProperty(EnvelopeCurveController.prototype, "Description", {
-                get: function () {
-                    var desc = "Envelope Curve Plot";
-                    return this.sce.trustAsHtml(desc);
-                },
-                enumerable: false,
-                configurable: true
-            });
             EnvelopeCurveController.prototype.chooseRegionalCode = function () {
                 var _this = this;
                 var url = 'https://streamstats.usgs.gov/gagestatsservices/regions';
@@ -75,60 +65,46 @@ var StreamStats;
             };
             EnvelopeCurveController.prototype.getStationIDs = function () {
                 var _this = this;
-                var regionalUrl = 'https://streamstats.usgs.gov/gagestatsservices/stations?regions=' + this.selectedRegion.code + '&pageCount=3000';
-                console.log(regionalUrl);
-                var url = 'https://streamstats.usgs.gov/gagestatsservices/stations/Bounds?xmin=-81.21485781740073&ymin=33.97528059290039&xmax=-81.03042363540376&ymax=34.10508178764378&geojson=true&includeStats=false';
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-                this.Execute(request).then(function (response) {
-                    var stations = [];
-                    var data = response;
-                    data.data.features.forEach(function (row) {
-                        var site = row.properties.Code;
-                        stations.push(site);
+                if (this.selectedRegion.length !== 0) {
+                    var regionalUrl = 'https://streamstats.usgs.gov/gagestatsservices/stations?regions=' + this.selectedRegion.code + '&pageCount=1000&includeStats=false&geojson=true';
+                    var regionalRequest = new WiM.Services.Helpers.RequestInfo(regionalUrl, true, WiM.Services.Helpers.methodType.GET, 'json');
+                    this.Execute(regionalRequest).then(function (response) {
+                        var stations = [];
+                        console.log('region request firing');
+                        var data = response.data.features;
+                        console.log('data', data);
+                        data.forEach(function (station) {
+                            var site = station.properties.Code;
+                            stations.push(site);
+                        });
+                        _this.stationCodes = stations;
+                        console.log('stationCodes', _this.stationCodes);
                     });
-                    _this.stationCodes = stations;
-                }, function (error) {
-                }).finally(function () {
-                    _this.getStationStats();
-                });
+                }
+                else {
+                    var boundsUrl = 'https://streamstats.usgs.gov/gagestatsservices/stations/Bounds?xmin=-81.21485781740073&ymin=33.97528059290039&xmax=-81.03042363540376&ymax=34.10508178764378&geojson=true&includeStats=false';
+                    var boundsRequest = new WiM.Services.Helpers.RequestInfo(boundsUrl, true, WiM.Services.Helpers.methodType.GET, 'json');
+                    this.Execute(boundsRequest).then(function (response) {
+                        var stations = [];
+                        console.log('bounds request firing');
+                        var data = response;
+                        data.data.features.forEach(function (row) {
+                            var site = row.properties.Code;
+                            stations.push(site);
+                        });
+                        _this.stationCodes = stations;
+                    });
+                }
             };
             EnvelopeCurveController.prototype.getStationStats = function () {
-                var _this = this;
+                console.log('hello?');
                 var peakData = [];
                 var estPeakData = [];
+                console.log('stations', this.stationCodes);
                 this.stationCodes.forEach(function (station) {
-                    var url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + station;
+                    var url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=json&site_no=' + station;
+                    console.log(url);
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-                    _this.Execute(request).then(function (response) {
-                        var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
-                        data.shift().split('\t');
-                        data.shift();
-                        do {
-                            var dataRow = data.shift().split('\t');
-                            var peakObj = {
-                                agency_cd: dataRow[0],
-                                site_no: dataRow[1],
-                                peak_dt: dataRow[2],
-                                peak_va: parseInt(dataRow[4]),
-                                peak_stage: parseFloat(dataRow[6])
-                            };
-                            peakData.push(peakObj);
-                            var estPeakObj = {
-                                agency_cd: dataRow[0],
-                                site_no: dataRow[1],
-                                peak_dt: dataRow[2].replaceAll('-00', '-01'),
-                                peak_va: parseInt(dataRow[4]),
-                                peak_stage: parseFloat(dataRow[6])
-                            };
-                            if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00' || peakObj.peak_dt[5] + peakObj.peak_dt[6] === '00') {
-                                estPeakData.push(estPeakObj);
-                            }
-                            ;
-                        } while (data.length > 0);
-                        _this.peakData = peakData;
-                        _this.estPeakData = estPeakData;
-                        _this.getDrainageArea();
-                    });
                 });
             };
             EnvelopeCurveController.prototype.getDrainageArea = function () {
@@ -203,9 +179,6 @@ var StreamStats;
             };
             EnvelopeCurveController.prototype.init = function () {
                 this.chooseRegionalCode();
-            };
-            EnvelopeCurveController.prototype.Close = function () {
-                this.modalInstance.dismiss('cancel');
             };
             EnvelopeCurveController.$inject = ['$scope', '$http', 'leafletBoundsHelpers', 'leafletData', 'StreamStats.Services.ModalService', '$modalInstance'];
             return EnvelopeCurveController;

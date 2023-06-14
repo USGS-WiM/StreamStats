@@ -19,6 +19,8 @@ module StreamStats.Controllers {
     class EnvelopeCurveController extends WiM.Services.HTTPServiceBase implements IEnvelopeCurveController {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
+        private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
+        private modalService: Services.IModalService;
         private leafletData: ILeafletData;
         // Plot properties
         public regionCodesList = [];
@@ -28,22 +30,19 @@ module StreamStats.Controllers {
         public drainageData = [];
         public formattedPlotData = [];
         public selectedRegion;
-        public sce: any;
         public drawControl: any;
-        private _table: any
-        private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
-        private modalService: Services.IModalService;
         private _resultsAvailable: boolean;
         public get ResultsAvailable(): boolean {
             return this._resultsAvailable;
         }
-        public convertUnsafe(x: string) {
-            return this.sce.trustAsHtml(x);
-        };
-        public get Description(): string {
-            var desc = "Envelope Curve Plot";
-            return this.sce.trustAsHtml(desc);
-        }
+        // public convertUnsafe(x: string) {
+        //     return this.sce.trustAsHtml(x);
+        // };
+        // public get Description(): string {
+        //     var desc = "Envelope Curve Plot";
+        //     return this.sce.trustAsHtml(desc);
+        // }
+
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'leafletBoundsHelpers', 'leafletData', 'StreamStats.Services.ModalService', '$modalInstance'];
@@ -54,10 +53,9 @@ module StreamStats.Controllers {
                         yAxis: { title: {text: string}},
                         series: { name: string; tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
                                 data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
-        constructor($scope: IEnvelopeCurveScope, $http: ng.IHttpService, modalService: Services.IModalService, modal: ng.ui.bootstrap.IModalServiceInstance, $sce: any) {
+        constructor($scope: IEnvelopeCurveScope, $http: ng.IHttpService, modalService: Services.IModalService, modal: ng.ui.bootstrap.IModalServiceInstance) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
-            this.sce = $sce;
             this.selectedRegion = [];
             this.modalInstance = modal;
             this.modalService = modalService;
@@ -67,6 +65,10 @@ module StreamStats.Controllers {
         //Methods  
         //-+-+-+-+-+-+-+-+-+-+-+-
 
+        public Close(): void {
+            this.modalInstance.dismiss('cancel')
+        }
+
         //Pull in Regional Codes for dropdown
         public chooseRegionalCode () {
             const url = 'https://streamstats.usgs.gov/gagestatsservices/regions'
@@ -75,8 +77,6 @@ module StreamStats.Controllers {
                 (response: any) => {
                     this.regionCodesList = response.data;
                 })
-                // if (this.selectedRegion.name === this.selectedRegion.name && this.selectedRegion.name !== undefined) {
-                // }
         }
 
         public drawMapBounds(options: Object, enable: boolean) {
@@ -93,82 +93,87 @@ module StreamStats.Controllers {
 
         //Query Gages With Bounding Box
         public getStationIDs() {
-            //URL for stations by REGION
-            const regionalUrl = 'https://streamstats.usgs.gov/gagestatsservices/stations?regions=' + this.selectedRegion.code + '&pageCount=3000';
-            console.log(regionalUrl)
-            //URL for stations by BOUNDS
-            const url = 'https://streamstats.usgs.gov/gagestatsservices/stations/Bounds?xmin=-81.21485781740073&ymin=33.97528059290039&xmax=-81.03042363540376&ymax=34.10508178764378&geojson=true&includeStats=false'
-            const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-            //console.log('here', url)
-            this.Execute(request).then(
-                (response: any) => {
-                    //console.log(response)
-                    const stations = [];
-
-                    //DATA from REGION
-                    // let data = response.data;
-                    // data.forEach(station => {
-                    //     let site = station.code;
-                    //     stations.push(site);
-                    // })
-
-                    //DATA from BOUNDS
-                    let data = response;
-                    data.data.features.forEach(row => {
-                        let site = row.properties.Code
-                        stations.push(site);
+            if (this.selectedRegion.length !== 0) {
+                //URL for stations by REGION
+                const regionalUrl = 'https://streamstats.usgs.gov/gagestatsservices/stations?regions=' + this.selectedRegion.code + '&pageCount=1000&includeStats=false&geojson=true';
+                const regionalRequest: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(regionalUrl, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.Execute(regionalRequest).then(
+                    (response: any) => {
+                        const stations = [];
+                        console.log('region request firing')
+                        //DATA from REGION
+                        let data = response.data.features;
+                        console.log('data', data)
+                        data.forEach(station => {
+                            let site = station.properties.Code;
+                            stations.push(site);
+                        })
+                        this.stationCodes = stations;
+                        console.log('stationCodes', this.stationCodes)
+                    });
+            } else {
+                //URL for stations by BOUNDS
+                const boundsUrl = 'https://streamstats.usgs.gov/gagestatsservices/stations/Bounds?xmin=-81.21485781740073&ymin=33.97528059290039&xmax=-81.03042363540376&ymax=34.10508178764378&geojson=true&includeStats=false'
+                const boundsRequest: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(boundsUrl, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.Execute(boundsRequest).then(
+                    (response: any) => {
+                        const stations = [];
+                        console.log('bounds request firing')
+                        //DATA from BOUNDS
+                        let data = response;
+                        data.data.features.forEach(row => {
+                            let site = row.properties.Code
+                            stations.push(site);
+                        })
+                        this.stationCodes = stations;
                     })
-                    this.stationCodes = stations;
-
-                }, (error) => {
-                }).finally(() => {
-                    this.getStationStats();
-                });
-        }        
+            }
+            //this.getStationStats();
+        }       
 
         public getStationStats() {
+            console.log('hello?')
             let peakData = [];
             let estPeakData = [];
+            console.log('stations', this.stationCodes)
             this.stationCodes.forEach(station => {
-                const url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + station
-                //console.log(url)
+                const url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=json&site_no=' + station
+                console.log(url)
                 const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-                this.Execute(request).then(
-                    (response: any) => {
+                // this.Execute(request).then(
+                //     (response: any) => {
 
-                        const data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") });
-                        data.shift().split('\t');
-                        //remove extra random line
-                        data.shift();
-                        do {
-                            let dataRow = data.shift().split('\t');
-                            const peakObj = {
-                                agency_cd: dataRow[0],
-                                site_no: dataRow[1],
-                                peak_dt: dataRow[2],
-                                peak_va: parseInt(dataRow[4]),
-                                peak_stage: parseFloat(dataRow[6])
-                            };
-                            peakData.push(peakObj)
-                            //making a new array of invalid dates (dates with month or day of '00') that will be 'estimated' (changed to '01')
-                            const estPeakObj = {
-                                agency_cd: dataRow[0],
-                                site_no: dataRow[1],
-                                peak_dt: dataRow[2].replaceAll('-00', '-01'),
-                                peak_va: parseInt(dataRow[4]),
-                                peak_stage: parseFloat(dataRow[6])
-                            };
-                            if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00' || peakObj.peak_dt[5] + peakObj.peak_dt[6] === '00') {
-                                estPeakData.push(estPeakObj) //pushing invalid dates to a new array
-                            };
-                        } while (data.length > 0);
-                        this.peakData = peakData;
-                        //console.log('peaks', this.peakData)
-                        this.estPeakData = estPeakData;
-                        this.getDrainageArea();
+                //         const data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") });
+                //         data.shift().split('\t');
+                //         //remove extra random line
+                //         data.shift();
+                //         do {
+                //             let dataRow = data.shift().split('\t');
+                //             const peakObj = {
+                //                 site_no: dataRow[1],
+                //                 peak_dt: dataRow[2],
+                //                 peak_va: parseInt(dataRow[4]),
+                //             };
+                //             peakData.push(peakObj)
+                //             //making a new array of invalid dates (dates with month or day of '00') that will be 'estimated' (changed to '01')
+                //             const estPeakObj = {
+                //                 agency_cd: dataRow[0],
+                //                 site_no: dataRow[1],
+                //                 peak_dt: dataRow[2].replaceAll('-00', '-01'),
+                //                 peak_va: parseInt(dataRow[4]),
+                //                 peak_stage: parseFloat(dataRow[6])
+                //             };
+                //             if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00' || peakObj.peak_dt[5] + peakObj.peak_dt[6] === '00') {
+                //                 estPeakData.push(estPeakObj) //pushing invalid dates to a new array
+                //             };
+                //         } while (data.length > 0);
+                //         this.peakData = peakData;
+                //         console.log('peaks', this.peakData)
+                //         this.estPeakData = estPeakData;
+                //         this.getDrainageArea();
 
-                    }
-                )
+                //     }
+                //)
             })
         }
 
@@ -253,12 +258,7 @@ module StreamStats.Controllers {
         private init(): void {
             this.chooseRegionalCode();
         }
-        //Methods  
-        //-+-+-+-+-+-+-+-+-+-+-+-
 
-        public Close(): void {
-            this.modalInstance.dismiss('cancel')
-        }
     }
 
     angular.module('StreamStats.Controllers')
