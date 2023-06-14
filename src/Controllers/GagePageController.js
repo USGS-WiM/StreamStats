@@ -862,88 +862,20 @@ var StreamStats;
                     chart.series[2].update({ data: filteredData });
                     var show = true;
                     var link = null;
-                    for (var _i = 0, _a = this.stages; _i < _a.length; _i++) {
-                        var stage = _a[_i];
-                        if (stage.x === undefined || stage.y === undefined) {
-                            continue;
+                    this.floodStagesData = filteredData;
+                }
+            };
+            GagePageController.prototype.toggleFloodStages = function () {
+                var chart = $('#chart3').highcharts();
+                if (chart) {
+                    var floodStagesSeries = chart.series.find(function (series) { return series.name === 'Flood Stages'; });
+                    if (floodStagesSeries) {
+                        if (floodStagesSeries.data.length > 0) {
+                            floodStagesSeries.setData([]);
                         }
-                        var stageNameCapitalized = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
-                        var horizontalStageSeries = {
-                            data: [[0, stage.y], [stage.x, stage.y]],
-                            enableMouseTracking: false,
-                            marker: {
-                                enabled: false
-                            },
-                            lineWidth: 2,
-                            linkedTo: link,
-                            showInLegend: false,
-                            name: "".concat(stageNameCapitalized, " Stages - Horizontal"),
-                            id: "".concat(stage.name, "StageLineHorizontal"),
-                            color: stage.color,
-                            type: 'line'
-                        };
-                        chart.addSeries(horizontalStageSeries);
-                        chart.yAxis[0].addPlotLine({
-                            value: stage.y,
-                            color: stage.color,
-                            width: 0,
-                            id: "".concat(stage.name, "-horizontal"),
-                            label: {
-                                text: "".concat(stageNameCapitalized, ": ").concat(stage.y, " ft"),
-                                align: 'left',
-                                y: -5,
-                                style: {
-                                    font: '9px Arial, sans-serif'
-                                },
-                                zIndex: 999
-                            }
-                        });
-                        var verticalStageSeries = {
-                            data: [[stage.x, 0], [stage.x, stage.y]],
-                            enableMouseTracking: false,
-                            marker: {
-                                enabled: false
-                            },
-                            lineWidth: 2,
-                            linkedTo: link,
-                            showInLegend: false,
-                            name: "".concat(stageNameCapitalized, " Stages - Vertical"),
-                            id: "".concat(stage.name, "StageLineVertical"),
-                            color: stage.color,
-                            type: 'line'
-                        };
-                        chart.addSeries(verticalStageSeries);
-                        chart.xAxis[0].addPlotLine({
-                            value: stage.x,
-                            color: stage.color,
-                            width: 0,
-                            id: "".concat(stage.name, "-vertical"),
-                            label: {
-                                text: "".concat(stageNameCapitalized, ": ").concat(Math.round(stage.x), " cfs"),
-                                align: 'right',
-                                verticalAlign: 'bottom',
-                                x: 5,
-                                y: -10,
-                                style: {
-                                    font: '9px Arial, sans-serif'
-                                },
-                                zIndex: 999
-                            }
-                        });
-                        chart.xAxis[0].update({
-                            crosshair: {
-                                color: 'red',
-                                dashStyle: 'Solid'
-                            }
-                        });
-                        chart.yAxis[0].update({
-                            crosshair: {
-                                color: 'red',
-                                dashStyle: 'Solid'
-                            }
-                        });
-                        show = false;
-                        link = ":previous";
+                        else {
+                            floodStagesSeries.setData(this.floodStagesData);
+                        }
                     }
                 }
             };
@@ -2874,6 +2806,92 @@ var StreamStats;
                         }
                     ]
                 };
+                var chart = $('#chart3').highcharts();
+                var show = true;
+                var link = null;
+                for (var _i = 0, _a = this.stages; _i < _a.length; _i++) {
+                    var stage = _a[_i];
+                    if (stage.x === undefined || stage.y === undefined) {
+                        continue;
+                    }
+                    var stageNameCapitalized = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
+                    var horizontalStageSeries = {
+                        data: [[0, stage.y], [stage.x, stage.y]],
+                        enableMouseTracking: false,
+                        marker: {
+                            enabled: false
+                        },
+                        lineWidth: 2,
+                        linkedTo: link,
+                        showInLegend: false,
+                        name: "".concat(stageNameCapitalized, " Stages - Horizontal"),
+                        id: "".concat(stage.name, "StageLineHorizontal"),
+                        color: stage.color,
+                        type: 'line'
+                    };
+                    chart.addSeries(horizontalStageSeries);
+                    chart.yAxis[0].addPlotLine({
+                        value: stage.y,
+                        color: stage.color,
+                        width: 0,
+                        id: "".concat(stage.name, "-horizontal"),
+                        label: {
+                            text: "".concat(stageNameCapitalized, ": ").concat(stage.y, " ft"),
+                            align: 'left',
+                            y: -5,
+                            style: {
+                                font: '9px Arial, sans-serif'
+                            },
+                        },
+                        zIndex: 999
+                    });
+                    var verticalStageSeries = {
+                        data: [[stage.x, 0], [stage.x, stage.y]],
+                        enableMouseTracking: false,
+                        marker: {
+                            enabled: false
+                        },
+                        lineWidth: 2,
+                        linkedTo: link,
+                        showInLegend: false,
+                        name: "".concat(stageNameCapitalized, " Stages - Vertical"),
+                        id: "".concat(stage.name, "StageLineVertical"),
+                        color: stage.color,
+                        type: 'line'
+                    };
+                    chart.addSeries(verticalStageSeries);
+                    chart.xAxis[0].addPlotLine({
+                        value: stage.x,
+                        color: stage.color,
+                        width: 0,
+                        id: "".concat(stage.name, "-vertical"),
+                        label: {
+                            text: "".concat(stageNameCapitalized, ": ").concat(Math.round(stage.x), " cfs"),
+                            align: 'right',
+                            verticalAlign: 'bottom',
+                            x: 5,
+                            y: -10,
+                            style: {
+                                font: '9px Arial, sans-serif'
+                            },
+                        },
+                        zIndex: 999
+                    });
+                    chart.xAxis[0].update({
+                        crosshair: {
+                            color: 'red',
+                            dashStyle: 'Solid'
+                        }
+                    });
+                    chart.yAxis[0].update({
+                        crosshair: {
+                            color: 'red',
+                            dashStyle: 'Solid'
+                        }
+                    });
+                    show = false;
+                    link = ":previous";
+                }
             };
             GagePageController.prototype.createDailyRasterPlot = function () {
                 if (this.dailyValuesOnly.length > 0) {

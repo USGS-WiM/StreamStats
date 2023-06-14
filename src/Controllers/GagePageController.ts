@@ -258,6 +258,7 @@ module StreamStats.Controllers {
         public yearSliderOptions: any;
         public showQuality: any;
         public stages: any;
+        public floodStagesData: any;
 
         // public NWSforecast = undefined; to be used for flood stage part
 
@@ -938,6 +939,10 @@ module StreamStats.Controllers {
             return lookupValue;
         }
 
+
+        // public stagesData = [];
+
+
         // Pull in NWS Forecasted flow values
         public getNWSForecast() {
 
@@ -999,6 +1004,8 @@ module StreamStats.Controllers {
                                 {name: 'record', x: recordX, y: record, color: 'rgba(102,178,255,0.7)'}
                             ];
                             
+                            // this.stagesData = self.stages;
+
                             const forecastData = xmlDocument.querySelectorAll("forecast");
                             if (forecastData[0] !== undefined) {
                             const smallerData = forecastData[0].childNodes;
@@ -1169,108 +1176,122 @@ module StreamStats.Controllers {
                 var show = true;
                 var link = null;
 
-                // horizontal and vertical lines
-                for(let stage of this.stages) {
+                this.floodStagesData = filteredData;
 
-                    // Check if x or y value is undefined
-                    if(stage.x === undefined || stage.y === undefined) {
-                        continue; // Skip current iteration and move to next stage
-                    }
+                // // horizontal and vertical lines
+                // for(let stage of this.stages) {
 
-                    let stageNameCapitalized = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
+                //     if(stage.x === undefined || stage.y === undefined) {
+                //         continue; 
+                //     }
 
-                    var horizontalStageSeries = {
-                        data: [[0, stage.y], [stage.x, stage.y]],
-                        enableMouseTracking: false,
-                        marker: {
-                            enabled: false
-                        },
-                        lineWidth: 2,
-                        linkedTo: link,
-                        showInLegend: false,
-                        name: `${stageNameCapitalized} Stages - Horizontal`,
-                        id: `${stage.name}StageLineHorizontal`,
-                        color: stage.color,
-                        type: 'line'
-                    };
-                    chart.addSeries(horizontalStageSeries);
+                //     let stageNameCapitalized = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
 
-                    chart.yAxis[0].addPlotLine({
-                        value: stage.y,
-                        color: stage.color,
-                        width: 0,
-                        id: `${stage.name}-horizontal`,
-                        label: {
-                            text: `${stageNameCapitalized}: ${stage.y} ft`,
-                            align: 'left',
-                            y: -5,
-                            style: {
-                                // fontWeight: 'bold',
-                                // fontSize: '9px',
-                                font: '9px Arial, sans-serif'
-                            },
-                            zIndex: 999
-                        }
-                    });
+                //     var horizontalStageSeries = {
+                //         data: [[0, stage.y], [stage.x, stage.y]],
+                //         enableMouseTracking: false,
+                //         marker: {
+                //             enabled: false
+                //         },
+                //         lineWidth: 2,
+                //         linkedTo: link,
+                //         showInLegend: false,
+                //         name: `${stageNameCapitalized} Stages - Horizontal`,
+                //         id: `${stage.name}StageLineHorizontal`,
+                //         color: stage.color,
+                //         type: 'line'
+                //     };
+                //     chart.addSeries(horizontalStageSeries);
 
-                    var verticalStageSeries = {
-                        data: [[stage.x, 0], [stage.x, stage.y]],
-                        enableMouseTracking: false,
-                        marker: {
-                            enabled: false
-                        },
-                        lineWidth: 2,
-                        linkedTo: link,
-                        showInLegend: false,
-                        name: `${stageNameCapitalized} Stages - Vertical`,
-                        id: `${stage.name}StageLineVertical`,
-                        color: stage.color,
-                        type: 'line'
-                    };
-                    chart.addSeries(verticalStageSeries);
+                //     chart.yAxis[0].addPlotLine({
+                //         value: stage.y,
+                //         color: stage.color,
+                //         width: 0,
+                //         id: `${stage.name}-horizontal`,
+                //         label: {
+                //             text: `${stageNameCapitalized}: ${stage.y} ft`,
+                //             align: 'left',
+                //             y: -5,
+                //             style: {
+                //                 // fontWeight: 'bold',
+                //                 // fontSize: '9px',
+                //                 font: '9px Arial, sans-serif'
+                //             },
+                //             },
+                //         zIndex: 999
+                //     });
 
-                    chart.xAxis[0].addPlotLine({
-                        value: stage.x,
-                        color: stage.color,
-                        width: 0,
-                        id: `${stage.name}-vertical`,
-                        label: {
-                            text: `${stageNameCapitalized}: ${Math.round(stage.x)} cfs`, 
-                            align: 'right',
-                            verticalAlign: 'bottom',
-                            x: 5,
-                            y: -10,
-                            style: {
-                                // fontWeight: 'normal',
-                                // fontSize: '9px',
-                                font: '9px Arial, sans-serif'
-                            },
-                            zIndex: 999
-                        }
-                    });
-                    // crosshairs
-                    chart.xAxis[0].update({
-                        crosshair: {
-                            color: 'red',
-                            dashStyle: 'Solid'
-                        }
-                    });
-                    chart.yAxis[0].update({
-                        crosshair: {
-                            color: 'red',
-                            dashStyle: 'Solid'
-                        }
-                    });
+                //     var verticalStageSeries = {
+                //         data: [[stage.x, 0], [stage.x, stage.y]],
+                //         enableMouseTracking: false,
+                //         marker: {
+                //             enabled: false
+                //         },
+                //         lineWidth: 2,
+                //         linkedTo: link,
+                //         showInLegend: false,
+                //         name: `${stageNameCapitalized} Stages - Vertical`,
+                //         id: `${stage.name}StageLineVertical`,
+                //         color: stage.color,
+                //         type: 'line'
+                //     };
+                //     chart.addSeries(verticalStageSeries);
 
-                    show = false;
-                    link = ":previous";
-                }
+                //     chart.xAxis[0].addPlotLine({
+                //         value: stage.x,
+                //         color: stage.color,
+                //         width: 0,
+                //         id: `${stage.name}-vertical`,
+                //         label: {
+                //             text: `${stageNameCapitalized}: ${Math.round(stage.x)} cfs`, 
+                //             align: 'right',
+                //             verticalAlign: 'bottom',
+                //             x: 5,
+                //             y: -10,
+                //             style: {
+                //                 // fontWeight: 'normal',
+                //                 // fontSize: '9px',
+                //                 font: '9px Arial, sans-serif'
+                //             },
+                //         },
+                //         zIndex: 999
+                //     });
+                //     // crosshairs
+                //     chart.xAxis[0].update({
+                //         crosshair: {
+                //             color: 'red',
+                //             dashStyle: 'Solid'
+                //         }
+                //     });
+                //     chart.yAxis[0].update({
+                //         crosshair: {
+                //             color: 'red',
+                //             dashStyle: 'Solid'
+                //         }
+                //     });
+
+                //     show = false;
+                //     link = ":previous";
+                // }
             }
         }
 
+        public toggleFloodStages() {
+            let chart = $('#chart3').highcharts();
+            if (chart) {
+                const floodStagesSeries = chart.series.find(series => series.name === 'Flood Stages');
+                if (floodStagesSeries) {
+                    if (floodStagesSeries.data.length > 0) {
+                        // If flood stages data is currently being displayed, remove it
+                        floodStagesSeries.setData([]);
+                    } else {
+                        // If flood stages data is not currently being displayed, add it
+                        floodStagesSeries.setData(this.floodStagesData);
+                    }
+                }
+            }
+        }
         
-        
-
             // // for sliders
             // public toggleLegend() {
             //     // const ageLegend = document.getElementById('ageLegend');
@@ -3264,7 +3285,7 @@ public createDischargePlot(): void {
             turboThreshold: 0, 
             type    : 'line',
             color   : 'yellow',
-            data    : [],
+            data    : [], // this.stagesData,
             marker: {
                 symbol: 'circle',
                 radius: 0
@@ -3272,7 +3293,109 @@ public createDischargePlot(): void {
             showInLegend: true
         }] 
     } 
+    let chart = $('#chart3').highcharts();
+
+    var show = true;
+    var link = null;
+
+                // horizontal and vertical lines
+                for(let stage of this.stages) {
+
+                    if(stage.x === undefined || stage.y === undefined) {
+                        continue; 
+                    }
+
+                    let stageNameCapitalized = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
+
+                    var horizontalStageSeries = {
+                        data: [[0, stage.y], [stage.x, stage.y]],
+                        enableMouseTracking: false,
+                        marker: {
+                            enabled: false
+                        },
+                        lineWidth: 2,
+                        linkedTo: link,
+                        showInLegend: false,
+                        name: `${stageNameCapitalized} Stages - Horizontal`,
+                        id: `${stage.name}StageLineHorizontal`,
+                        color: stage.color,
+                        type: 'line'
+                    };
+                    chart.addSeries(horizontalStageSeries);
+
+                    chart.yAxis[0].addPlotLine({
+                        value: stage.y,
+                        color: stage.color,
+                        width: 0,
+                        id: `${stage.name}-horizontal`,
+                        label: {
+                            text: `${stageNameCapitalized}: ${stage.y} ft`,
+                            align: 'left',
+                            y: -5,
+                            style: {
+                                // fontWeight: 'bold',
+                                // fontSize: '9px',
+                                font: '9px Arial, sans-serif'
+                            },
+                            },
+                        zIndex: 999
+                    });
+
+                    var verticalStageSeries = {
+                        data: [[stage.x, 0], [stage.x, stage.y]],
+                        enableMouseTracking: false,
+                        marker: {
+                            enabled: false
+                        },
+                        lineWidth: 2,
+                        linkedTo: link,
+                        showInLegend: false,
+                        name: `${stageNameCapitalized} Stages - Vertical`,
+                        id: `${stage.name}StageLineVertical`,
+                        color: stage.color,
+                        type: 'line'
+                    };
+                    chart.addSeries(verticalStageSeries);
+
+                    chart.xAxis[0].addPlotLine({
+                        value: stage.x,
+                        color: stage.color,
+                        width: 0,
+                        id: `${stage.name}-vertical`,
+                        label: {
+                            text: `${stageNameCapitalized}: ${Math.round(stage.x)} cfs`, 
+                            align: 'right',
+                            verticalAlign: 'bottom',
+                            x: 5,
+                            y: -10,
+                            style: {
+                                // fontWeight: 'normal',
+                                // fontSize: '9px',
+                                font: '9px Arial, sans-serif'
+                            },
+                        },
+                        zIndex: 999
+                    });
+                    // crosshairs
+                    chart.xAxis[0].update({
+                        crosshair: {
+                            color: 'red',
+                            dashStyle: 'Solid'
+                        }
+                    });
+                    chart.yAxis[0].update({
+                        crosshair: {
+                            color: 'red',
+                            dashStyle: 'Solid'
+                        }
+                    });
+
+                    show = false;
+                    link = ":previous";
+                }
 }
+
+
 public createDailyRasterPlot(): void {
     if (this.dailyValuesOnly.length > 0) {
         // sort array ascending
@@ -3665,6 +3788,18 @@ public createDailyRasterPlot(): void {
         }
             
         //checkbox to linear to log scale for discharge plot
+
+        // put code for dynamic legend here
+        //     note = $("input[name='markerHighlights']:checked").val();
+
+        // var xLoc = 580;
+        // var yLoc = 280;
+
+        // if(chart.yAxis[0].options.type == "logarithmic"){
+        //     xLoc = 85;
+        //     yLoc = 250;
+        // }
+
         public logScaleDischarge = false; // starts with it uncehcked
             public toggleLogLinearDischarge() {
                 // console.log('toggleLogLinearDischarge() called');
