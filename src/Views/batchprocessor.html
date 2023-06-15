@@ -51,14 +51,17 @@
             <!-- End instructions -->
 
             <!-- Start select region -->
-            <div id="selectRegionID" style="padding-top: 10px;">
-                State / Region:
+            <div id="selectRegionID" style="padding-top: 15px;">
+                <label> State / Region: </label>
+                <div ng-hide="!vm.regionListSpinner"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+                <div ng-hide="!vm.regionList">
+                    <select class="bp-select" ng-model="vm.selectedRegion"
+                        ng-options="region.Code as region.Name for region in vm.regionList track by region.Code"
+                        ng-change="vm.getFlowStatsAndParams(vm.selectedRegion)" required>
+                        <option value="">Select a State / Region</option>
+                    </select>
+                </div>
 
-                <select class="bp-select" ng-model="vm.selectedRegion"
-                    ng-options="region.Code as region.Name for region in vm.regionList track by region.Code"
-                    ng-change="vm.getFlowStatsAndParams(vm.selectedRegion)" required>
-                    <option value="">Select a State / Region</option>
-                </select>
             </div><!-- End select region -->
             
             <!-- start user information-->
@@ -129,24 +132,27 @@
                     <span ng-if="!vm.flowStatsAllChecked">Unselect All Flow Statistics</span>
                 </button>
                 <!-- create list of flow stats checkboxes -->
-                <table class="table table-condensed">
-                    <thead class="param-table">
-                        <tr>
-                            <th >Select</th>
-                            <th class="col-xs-7">Statistic Group</th>
-                            <th class="col-xs-3"></th>
-                        </tr>
-                    </thead>
-                    <tbody ng-repeat="flowStat in vm.flowStatsList">
-                        <tr>
-                            <td>
-                                <checkbox large ng-model="flowStat.checked" ng-change="vm.setRegionStats(flowStat)">
-                                </checkbox>
-                            </td>
-                            <td><span>&nbsp;&nbsp;{{flowStat.statisticGroupName}}</span></td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div ng-hide="!vm.flowStatsListSpinner" style="padding-top: 15px;"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+                <div ng-hide="!vm.flowStatsList">
+                    <table class="table table-condensed">
+                        <thead class="param-table">
+                            <tr>
+                                <th >Select</th>
+                                <th class="col-xs-7">Statistic Group</th>
+                                <th class="col-xs-3"></th>
+                            </tr>
+                        </thead>
+                        <tbody ng-repeat="flowStat in vm.flowStatsList">
+                            <tr>
+                                <td>
+                                    <checkbox large ng-model="flowStat.checked" ng-change="vm.setRegionStats(flowStat)">
+                                    </checkbox>
+                                </td>
+                                <td><span>&nbsp;&nbsp;{{flowStat.statisticGroupName}}</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div><!-- End select flow statistics -->
 
             <!-- Start select parameters -->
@@ -158,27 +164,31 @@
                     <span ng-if="vm.parametersAllChecked">Select All Basin Characteristics</span>
                     <span ng-if="!vm.parametersAllChecked">Unselect All Basin Characteristics</span>
                 </button>
+
                 <!-- create table of parameters checkboxes -->
-                <table class="table table-condensed">
-                    <thead class="param-table">
-                        <tr>
-                            <th class="col-xs-2">Select</th>
-                            <th class="col-xs-3">Parameter</th>
-                            <th class="col-xs-7">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody ng-repeat="parameter in vm.availableParamList">
-                        <tr>
-                            <td>
-                                <checkbox large ng-model="parameter.checked"
-                                    ng-change="vm.updateSelectedParamList(parameter)" ng-disabled="!parameter.toggleable">
-                                </checkbox>
-                            </td>
-                            <td><span>&nbsp;&nbsp;{{parameter.code}}</span></td>
-                            <td><span>&nbsp;&nbsp;{{parameter.description}}</span></td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div ng-hide="!vm.parametersListSpinner" style="padding-top: 15px;"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+                <div ng-hide="!vm.availableParamList">
+                    <table class="table table-condensed">
+                        <thead class="param-table">
+                            <tr>
+                                <th class="col-xs-2">Select</th>
+                                <th class="col-xs-3">Parameter</th>
+                                <th class="col-xs-7">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody ng-repeat="parameter in vm.availableParamList">
+                            <tr>
+                                <td>
+                                    <checkbox large ng-model="parameter.checked"
+                                        ng-change="vm.updateSelectedParamList(parameter)" ng-disabled="!parameter.toggleable">
+                                    </checkbox>
+                                </td>
+                                <td><span>&nbsp;&nbsp;{{parameter.code}}</span></td>
+                                <td><span>&nbsp;&nbsp;{{parameter.description}}</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div><!-- End parameter selection -->
 
         </div><!-- End submit batch -->
