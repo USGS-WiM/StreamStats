@@ -63,10 +63,10 @@ module StreamStats.Controllers {
     interface IBatchStatus {
         batchID: string,
         status: string,
-        timeSubmitted: string,
-        timeStarted: string,
-        timeCompleted: string,
-        resultsURL: string,
+        timeSubmitted: Date,
+        timeStarted: Date,
+        timeCompleted: Date,
+        resultsURL: URL,
         region: string,
         pointsRequested: number,
         pointsSuccessful: number
@@ -75,10 +75,10 @@ module StreamStats.Controllers {
     class BatchStatus implements IBatchStatus {
         public batchID: string;
         public status: string;
-        public timeSubmitted: string;
-        public timeStarted: string;
-        public timeCompleted: string;
-        public resultsURL: string;
+        public timeSubmitted: Date;
+        public timeStarted: Date;
+        public timeCompleted: Date;
+        public resultsURL: URL;
         public region: string;
         public pointsRequested: number;
         public pointsSuccessful: number;

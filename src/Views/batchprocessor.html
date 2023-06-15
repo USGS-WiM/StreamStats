@@ -223,7 +223,43 @@
                     <i class="fa fa-share"></i>
                     <span>&nbsp;&nbsp;Check Status</span>
                 </button>
-                <!-- End query status by email -->
+            </div>
+            <!-- End query status by email -->
+            <!-- Start batch status table -->
+            <div>
+                <div> <!-- ng-hide="TODO" -->
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th><small>Batch ID</small></th>
+                                <th><small>Status</small></th>
+                                <th><small>Time Submitted</small></th>
+                                <th><small>Time Started</small></th>
+                                <th><small>Time Completed</small></th>
+                                <th><small>Results</small></th>
+                                <th><small>State/ Region</small></th>
+                                <th><small>Number Points Requested</small></th>
+                                <th><small>Number Points Successful</small></th>
+                                <th><small>Delete?</small></th>
+                            </tr>
+                        </thead>
+                        <tbody ng-repeat="batch in vm.batchStatusList">
+                            <tr>
+                                <td><span>{{batch.batchID}}</span></td>
+                                <td><span>{{batch.status}}</span></td>
+                                <td><span ng-if="batch.timeSubmitted != null">{{batch.timeSubmitted | date:'M/d/yy h:mm a'}}</span></td>
+                                <td><span ng-if="batch.timeStarted != null">{{batch.timeStarted | date:'M/d/yy h:mm a'}}</span></td>
+                                <td><span ng-if="batch.timeCompleted != null">{{batch.timeCompleted | date:'M/d/yy h:mm a'}}</span></td>
+                                <td><span><a ng-if="batch.resultsURL != null" ng-href="{{batch.resultsURL}}">Link</a></span></td>
+                                <td><span>{{batch.region}}</span></td>
+                                <td><span>{{batch.pointsRequested}}</span></td>
+                                <td><span ng-if="batch.pointsSuccessful != null">{{batch.pointsSuccessful}}</span></td>
+                                <td><i class="fa fa-trash"></i></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div> <!-- End batch status -->
        
 </div> <!-- End of modal body -->
