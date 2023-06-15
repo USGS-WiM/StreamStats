@@ -23,6 +23,11 @@ var StreamStats;
             }
             return Parameter;
         }());
+        var BatchStatus = (function () {
+            function BatchStatus() {
+            }
+            return BatchStatus;
+        }());
         var SubmitBatchData = (function () {
             function SubmitBatchData() {
             }
@@ -49,6 +54,7 @@ var StreamStats;
                 _this.regionListSpinner = true;
                 _this.flowStatsListSpinner = true;
                 _this.parametersListSpinner = true;
+                _this.batchStatusList = [];
                 _this.init();
                 return _this;
             }
@@ -302,8 +308,35 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers, angular.identity);
                 this.submittingBatch = true;
             };
+            BatchProcessorController.prototype.retrieveBatchStatus = function () {
+                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorStatus'];
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                return this.Execute(request).then(function (response) {
+                    var batchStatuses = [];
+                    response.data.forEach(function (item) {
+                        try {
+                            var status_1 = {
+                                id: item.ID,
+                                message: item.Message
+                            };
+                            batchStatuses.push(status_1);
+                        }
+                        catch (e) {
+                            alert(e);
+                        }
+                    });
+                    return batchStatuses;
+                }, function (error) {
+                }).finally(function () {
+                });
+            };
             BatchProcessorController.prototype.init = function () {
+                var _this = this;
                 this.getRegions();
+                this.retrieveBatchStatus().then(function (response) {
+                    _this.batchStatusList = response;
+                    console.log(_this.batchStatusList);
+                });
             };
             BatchProcessorController.prototype.checkArrayForObj = function (arr, obj) {
                 for (var i = 0; i < arr.length; i++) {

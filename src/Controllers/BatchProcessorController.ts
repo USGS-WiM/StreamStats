@@ -50,6 +50,16 @@ module StreamStats.Controllers {
         public toggleable: boolean;
     }
 
+    interface IBatchStatus {
+        id: string,
+        message: string
+    }
+
+    class BatchStatus implements IBatchStatus {
+        public id: string;
+        public message: string;
+    }
+
     class SubmitBatchData {
         public email: string;
         public idField: string;
@@ -93,6 +103,9 @@ module StreamStats.Controllers {
         public flowStatsListSpinner: boolean;
         public parametersListSpinner: boolean;
 
+        // batch status
+        public batchStatusList: Array<BatchStatus>;
+
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', '$modalInstance', 'toaster'];
@@ -115,6 +128,7 @@ module StreamStats.Controllers {
             this.regionListSpinner = true;
             this.flowStatsListSpinner = true;
             this.parametersListSpinner = true;
+            this.batchStatusList = [];
             this.init();
         }
 
@@ -452,13 +466,9 @@ module StreamStats.Controllers {
                             }
 
                             catch (e) {
-                                alert(e)
-
-                            }
-                        });
-
+                                alert(e)                           
+                        }});
                     }
-
                     else {
                     }
                     return paramRaw;
@@ -516,10 +526,50 @@ module StreamStats.Controllers {
             //     });
         }
 
+        // get array of batch status messages
+        public retrieveBatchStatus(): ng.IPromise<any> {
+
+            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorStatus'];
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+
+        
+            return this.Execute(request).then(
+                (response: any) => {
+
+                    var batchStatuses = [];
+
+                    response.data.forEach((item) => {
+
+                        try {
+                            let status: BatchStatus = {
+                                id: item.ID,
+                                message: item.Message
+                            }
+
+                            batchStatuses.push(status);
+                        }
+
+                        catch (e) {
+                            alert(e)
+                        }
+                    });
+                    
+                    return batchStatuses;
+                }, (error) => {
+                }).finally(() => {
+                });
+        }
+        
         // Helper Methods
         // -+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
             this.getRegions();
+            this.retrieveBatchStatus().then(
+                response => {
+                    this.batchStatusList = response;
+                    console.log(this.batchStatusList);
+                }
+            );
         }
 
         private checkArrayForObj(arr, obj): number {
