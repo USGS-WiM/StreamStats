@@ -61,6 +61,7 @@ var StreamStats;
                 _this.parametersListSpinner = true;
                 _this.batchStatusMessageList = [];
                 _this.batchStatusList = [];
+                _this.retrievingBatchStatus = true;
                 _this.init();
                 return _this;
             }
@@ -268,7 +269,7 @@ var StreamStats;
                 var _this = this;
                 this.getBatchStatusByEmail(email).then(function (response) {
                     _this.batchStatusList = response;
-                    console.log("batchStatusList", _this.batchStatusList);
+                    _this.retrievingBatchStatus = false;
                 });
             };
             BatchProcessorController.prototype.loadParametersByRegionBP = function (rcode) {

@@ -130,6 +130,7 @@ module StreamStats.Controllers {
         // batch status
         public batchStatusMessageList: Array<BatchStatusMessage>;
         public batchStatusList: Array<BatchStatus>;
+        public retrievingBatchStatus: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -155,6 +156,7 @@ module StreamStats.Controllers {
             this.parametersListSpinner = true;
             this.batchStatusMessageList = [];
             this.batchStatusList = [];
+            this.retrievingBatchStatus = true;
             this.init();
         }
 
@@ -465,12 +467,14 @@ module StreamStats.Controllers {
         // create list of batch statuses
         public getBatchStatusList(email: string): void {
 
-            this.getBatchStatusByEmail(email).then(
+           this.getBatchStatusByEmail(email).then(
                 response => {
                     this.batchStatusList = response;
-                    console.log("batchStatusList", this.batchStatusList);
+                    this.retrievingBatchStatus = false;
                 }
             );
+
+            
         }
 
         // Service methods
