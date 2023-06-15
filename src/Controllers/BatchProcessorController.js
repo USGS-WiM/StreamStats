@@ -23,6 +23,11 @@ var StreamStats;
             }
             return Parameter;
         }());
+        var BatchStatusMessage = (function () {
+            function BatchStatusMessage() {
+            }
+            return BatchStatusMessage;
+        }());
         var BatchStatus = (function () {
             function BatchStatus() {
             }
@@ -54,6 +59,7 @@ var StreamStats;
                 _this.regionListSpinner = true;
                 _this.flowStatsListSpinner = true;
                 _this.parametersListSpinner = true;
+                _this.batchStatusMessageList = [];
                 _this.batchStatusList = [];
                 _this.init();
                 return _this;
@@ -258,6 +264,13 @@ var StreamStats;
                 });
                 this.parametersAllChecked = !this.parametersAllChecked;
             };
+            BatchProcessorController.prototype.getBatchStatusList = function (email) {
+                var _this = this;
+                this.getBatchStatusByEmail(email).then(function (response) {
+                    _this.batchStatusList = response;
+                    console.log("batchStatusList", _this.batchStatusList);
+                });
+            };
             BatchProcessorController.prototype.loadParametersByRegionBP = function (rcode) {
                 if (!rcode)
                     return;
@@ -308,24 +321,54 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers, angular.identity);
                 this.submittingBatch = true;
             };
-            BatchProcessorController.prototype.retrieveBatchStatus = function () {
+            BatchProcessorController.prototype.retrieveBatchStatusMessages = function () {
                 var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorStatus'];
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 return this.Execute(request).then(function (response) {
-                    var batchStatuses = [];
+                    var batchStatusMessages = [];
                     response.data.forEach(function (item) {
                         try {
                             var status_1 = {
                                 id: item.ID,
                                 message: item.Message
                             };
-                            batchStatuses.push(status_1);
+                            batchStatusMessages.push(status_1);
                         }
                         catch (e) {
                             alert(e);
                         }
                     });
-                    return batchStatuses;
+                    return batchStatusMessages;
+                }, function (error) {
+                }).finally(function () {
+                });
+            };
+            BatchProcessorController.prototype.getBatchStatusByEmail = function (email) {
+                var _this = this;
+                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatch'].format(email);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                return this.Execute(request).then(function (response) {
+                    var batchStatusMessages = [];
+                    response.data.forEach(function (batch) {
+                        try {
+                            var status_2 = {
+                                batchID: batch.ID,
+                                status: _this.batchStatusMessageList.filter(function (item) { return item.id == batch.StatusID; })[0].message,
+                                timeSubmitted: batch.TimeSubmitted,
+                                timeStarted: batch.TimeStarted,
+                                timeCompleted: batch.TimeCompleted,
+                                resultsURL: batch.ResultsURL,
+                                region: batch.Region,
+                                pointsRequested: batch.NumberPoints,
+                                pointsSuccessful: batch.NumberPointsSuccessful
+                            };
+                            batchStatusMessages.push(status_2);
+                        }
+                        catch (e) {
+                            alert(e);
+                        }
+                    });
+                    return batchStatusMessages;
                 }, function (error) {
                 }).finally(function () {
                 });
@@ -333,9 +376,8 @@ var StreamStats;
             BatchProcessorController.prototype.init = function () {
                 var _this = this;
                 this.getRegions();
-                this.retrieveBatchStatus().then(function (response) {
-                    _this.batchStatusList = response;
-                    console.log(_this.batchStatusList);
+                this.retrieveBatchStatusMessages().then(function (response) {
+                    _this.batchStatusMessageList = response;
                 });
             };
             BatchProcessorController.prototype.checkArrayForObj = function (arr, obj) {

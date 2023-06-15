@@ -215,15 +215,14 @@
                 <!-- Start email field -->
                 <div>
                     <span> Email Address:
-                        <input class="bp-input" type="email" id="emailFieldStatus" ng-model="vm.batchStatus.email" required></span>
+                        <input class="bp-input" type="email" id="emailFieldStatus" ng-model="batchStatusEmail" required></span>
                 </div><br />
                 <!-- End email field -->
-                <!-- Button to submit batch -->
-                <button type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.checkBatchStatus()" ng-disabled="vm.batchStatus.email">
+                <!-- Button to fetch batch status -->
+                <button type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.getBatchStatusList(batchStatusEmail)">
                     <i class="fa fa-share"></i>
                     <span>&nbsp;&nbsp;Check Status</span>
                 </button>
-                <!-- End submit batch button -->
                 <!-- End query status by email -->
         </div> <!-- End batch status -->
        

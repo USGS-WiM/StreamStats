@@ -50,14 +50,38 @@ module StreamStats.Controllers {
         public toggleable: boolean;
     }
 
-    interface IBatchStatus {
+    interface IBatchStatusMessage {
         id: string,
         message: string
     }
 
-    class BatchStatus implements IBatchStatus {
+    class BatchStatusMessage implements IBatchStatusMessage {
         public id: string;
         public message: string;
+    }
+
+    interface IBatchStatus {
+        batchID: string,
+        status: string,
+        timeSubmitted: string,
+        timeStarted: string,
+        timeCompleted: string,
+        resultsURL: string,
+        region: string,
+        pointsRequested: number,
+        pointsSuccessful: number
+    }
+
+    class BatchStatus implements IBatchStatus {
+        public batchID: string;
+        public status: string;
+        public timeSubmitted: string;
+        public timeStarted: string;
+        public timeCompleted: string;
+        public resultsURL: string;
+        public region: string;
+        public pointsRequested: number;
+        public pointsSuccessful: number;
     }
 
     class SubmitBatchData {
@@ -104,6 +128,7 @@ module StreamStats.Controllers {
         public parametersListSpinner: boolean;
 
         // batch status
+        public batchStatusMessageList: Array<BatchStatusMessage>;
         public batchStatusList: Array<BatchStatus>;
 
         //Constructor
@@ -128,6 +153,7 @@ module StreamStats.Controllers {
             this.regionListSpinner = true;
             this.flowStatsListSpinner = true;
             this.parametersListSpinner = true;
+            this.batchStatusMessageList = [];
             this.batchStatusList = [];
             this.init();
         }
@@ -436,6 +462,17 @@ module StreamStats.Controllers {
             this.parametersAllChecked = !this.parametersAllChecked;
         }
 
+        // create list of batch statuses
+        public getBatchStatusList(email: string): void {
+
+            this.getBatchStatusByEmail(email).then(
+                response => {
+                    this.batchStatusList = response;
+                    console.log("batchStatusList", this.batchStatusList);
+                }
+            );
+        }
+
         // Service methods
         // get basin characteristics list for region and nation
         public loadParametersByRegionBP(rcode: string): ng.IPromise<any> {
@@ -527,7 +564,7 @@ module StreamStats.Controllers {
         }
 
         // get array of batch status messages
-        public retrieveBatchStatus(): ng.IPromise<any> {
+        public retrieveBatchStatusMessages(): ng.IPromise<any> {
 
             var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorStatus'];
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
@@ -536,17 +573,17 @@ module StreamStats.Controllers {
             return this.Execute(request).then(
                 (response: any) => {
 
-                    var batchStatuses = [];
+                    var batchStatusMessages = [];
 
                     response.data.forEach((item) => {
 
                         try {
-                            let status: BatchStatus = {
+                            let status: BatchStatusMessage = {
                                 id: item.ID,
                                 message: item.Message
                             }
 
-                            batchStatuses.push(status);
+                            batchStatusMessages.push(status);
                         }
 
                         catch (e) {
@@ -554,20 +591,59 @@ module StreamStats.Controllers {
                         }
                     });
                     
-                    return batchStatuses;
+                    return batchStatusMessages;
                 }, (error) => {
                 }).finally(() => {
                 });
         }
-        
+
+        // get batchs status for email
+        public getBatchStatusByEmail(email: string): ng.IPromise<any> {
+
+            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatch'].format(email);
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+
+            return this.Execute(request).then(
+                (response: any) => {
+
+                    var batchStatusMessages = [];
+
+                    response.data.forEach((batch) => {
+
+                        try {
+                            let status: BatchStatus = {
+                                batchID: batch.ID,
+                                status: this.batchStatusMessageList.filter((item) => { return item.id == batch.StatusID })[0].message,
+                                timeSubmitted: batch.TimeSubmitted,
+                                timeStarted: batch.TimeStarted,
+                                timeCompleted: batch.TimeCompleted,
+                                resultsURL: batch.ResultsURL,
+                                region: batch.Region,
+                                pointsRequested: batch.NumberPoints,
+                                pointsSuccessful: batch.NumberPointsSuccessful
+                            }
+
+                            batchStatusMessages.push(status);
+                        }
+
+                        catch (e) {
+                            alert(e)
+                        }
+                    });
+
+                    return batchStatusMessages;
+                }, (error) => {
+                }).finally(() => {
+                });
+        }
+
         // Helper Methods
         // -+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
             this.getRegions();
-            this.retrieveBatchStatus().then(
+            this.retrieveBatchStatusMessages().then(
                 response => {
-                    this.batchStatusList = response;
-                    console.log(this.batchStatusList);
+                    this.batchStatusMessageList = response;
                 }
             );
         }
@@ -594,14 +670,10 @@ module StreamStats.Controllers {
                         break;
                     }//endif
                 }//next i
-
             } catch (e) {
                 return false;
             }
-
-
         }
-
     }//end  class
 
     angular.module('StreamStats.Controllers')
