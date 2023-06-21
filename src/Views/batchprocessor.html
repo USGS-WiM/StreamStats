@@ -211,25 +211,29 @@
             </div>
             <!-- End instructions -->
             <!-- start query status by email-->
-            <div style="padding-top: 15px">
+            <div style="padding-top: 15px;">
                 <!-- Start email field -->
-                <div>
-                    <span> Email Address:
-                        <input class="bp-input" type="email" id="emailFieldStatus" ng-model="batchStatusEmail" required></span>
+                <span>Email Address:</span>
+                <div style="display: flex;">
+                    <div style="position: relative;">
+                        <span><input class="bp-input" type="email" id="emailFieldStatus" ng-model="batchStatusEmail" required></span>
+                    </div>
+                    <!-- End email field -->
+                    <!-- Button to fetch batch status -->
+                    <div style="position: relative;">
+                        <button type="submit" ng-click="vm.getBatchStatusList(batchStatusEmail); vm.retrievingBatchStatus = true">
+                            <i class="fa fa-share"></i>
+                            <span>&nbsp;&nbsp;Check Status</span>
+                        </button>
+                    </div>
                 </div>
-                <!-- End email field -->
-                <!-- Button to fetch batch status -->
-                <button type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.getBatchStatusList(batchStatusEmail); vm.retrievingBatchStatus = true">
-                    <i class="fa fa-share"></i>
-                    <span>&nbsp;&nbsp;Check Status</span>
-                </button>
             </div>
             <!-- End query status by email -->
             <!-- Start batch status table -->
             <div >
                 <div ng-if="vm.retrievingBatchStatus" style="padding-top: 15px;"><i
                         class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
-                <div ng-if="!vm.retrievingBatchStatus" style="overflow-x: scroll;"> <!--  -->
+                <div ng-if="vm.batchStatusList.length > 0" style="overflow-x: scroll;"> <!--  -->
                     <table class="table table-condensed">
                         <thead>
                             <tr>
