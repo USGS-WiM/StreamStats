@@ -156,7 +156,6 @@ module StreamStats.Controllers {
             this.parametersListSpinner = true;
             this.batchStatusMessageList = [];
             this.batchStatusList = [];
-            this.retrievingBatchStatus = true;
             this.init();
         }
 

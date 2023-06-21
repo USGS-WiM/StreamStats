@@ -61,7 +61,6 @@ var StreamStats;
                 _this.parametersListSpinner = true;
                 _this.batchStatusMessageList = [];
                 _this.batchStatusList = [];
-                _this.retrievingBatchStatus = true;
                 _this.init();
                 return _this;
             }
