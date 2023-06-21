@@ -232,8 +232,9 @@
             <!-- Start batch status table -->
             <div >
                 <div ng-if="vm.retrievingBatchStatus" style="padding-top: 15px;"><i
-                        class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
-                <div ng-if="vm.batchStatusList.length > 0" style="overflow-x: scroll;"> <!--  -->
+                        class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
+                </div>
+                <div ng-if="vm.batchStatusList.length > 0" style="overflow-x: scroll;">
                     <table class="table table-condensed">
                         <thead>
                             <tr>
@@ -264,7 +265,9 @@
                             </tr>
                         </tbody>
                     </table>
-                </div>
+                </div><br>
+                <div ng-if="vm.batchStatusList.length == 0 && vm.retrievingBatchStatus == false">
+                    <strong>No batches found for this email address.</strong>
             </div>
         </div> <!-- End batch status -->
        
