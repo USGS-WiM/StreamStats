@@ -211,21 +211,21 @@
             </div>
             <!-- End instructions -->
             <!-- start query status by email-->
-            <div style="padding-top: 15px;">
+            <div style="padding-top: 15px;" class="bp-status-email">
                 <!-- Start email field -->
-                <span>Email Address:</span>
-                <div style="display: flex;">
-                    <div style="position: relative;">
-                        <span><input class="bp-input" type="email" id="emailFieldStatus" ng-model="batchStatusEmail" required></span>
-                    </div>
-                    <!-- End email field -->
-                    <!-- Button to fetch batch status -->
-                    <div style="position: relative;">
-                        <button type="submit" ng-click="vm.getBatchStatusList(batchStatusEmail); vm.retrievingBatchStatus = true">
-                            <i class="fa fa-share"></i>
-                            <span>&nbsp;&nbsp;Check Status</span>
-                        </button>
-                    </div>
+                <div>
+                    <span>Email Address:</span>
+                </div>    
+                <div>
+                    <span><input class="bp-input" type="email" id="emailFieldStatus" ng-model="batchStatusEmail" required></span>
+                </div>
+                <!-- End email field -->
+                <!-- Button to fetch batch status -->
+                <div>
+                    <button type="submit" ng-click="vm.getBatchStatusList(batchStatusEmail); vm.retrievingBatchStatus = true">
+                        <i class="fa fa-share"></i>
+                        <span>&nbsp;&nbsp;Check Status</span>
+                    </button>
                 </div>
             </div>
             <!-- End query status by email -->

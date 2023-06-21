@@ -1407,6 +1407,15 @@ Batch processor modal
     filter: brightness(75%);
 }
 
+.bp-status-email {
+    display: flex;
+}
+
+.bp-status-email>div {
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+}
 /*
     Report
     Report
