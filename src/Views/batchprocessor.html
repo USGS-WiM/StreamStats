@@ -210,7 +210,65 @@
                 </ol>
             </div>
             <!-- End instructions -->
-            <p>This is the batch status tab</p>
+            <!-- start query status by email-->
+            <div style="padding-top: 15px;" class="bp-status-email">
+                <!-- Start email field -->
+                <div>
+                    <span>Email Address:</span>
+                </div>    
+                <div>
+                    <span><input class="bp-input" type="email" id="emailFieldStatus" ng-model="batchStatusEmail" required></span>
+                </div>
+                <!-- End email field -->
+                <!-- Button to fetch batch status -->
+                <div>
+                    <button type="submit" ng-click="vm.getBatchStatusList(batchStatusEmail); vm.retrievingBatchStatus = true">
+                        <i class="fa fa-share"></i>
+                        <span>&nbsp;&nbsp;Check Status</span>
+                    </button>
+                </div>
+            </div>
+            <!-- End query status by email -->
+            <!-- Start batch status table -->
+            <div >
+                <div ng-if="vm.retrievingBatchStatus" style="padding-top: 15px;"><i
+                        class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
+                </div>
+                <div ng-if="vm.batchStatusList.length > 0" style="overflow-x: scroll;">
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center;"><small>Batch ID</small></th>
+                                <th style="text-align: center;"><small>Status</small></th>
+                                <th style="text-align: center;"><small>Time Submitted</small></th>
+                                <th style="text-align: center;"><small>Time Started</small></th>
+                                <th style="text-align: center;"><small>Time Completed</small></th>
+                                <th style="text-align: center;"><small>Results</small></th>
+                                <th style="text-align: center;"><small>State/ Region</small></th>
+                                <th style="text-align: center;"><small>Number Points Requested</small></th>
+                                <th style="text-align: center;"><small>Number Points Successful</small></th>
+                                <th style="text-align: center;"><small>Delete?</small></th>
+                            </tr>
+                        </thead>
+                        <tbody ng-repeat="batch in vm.batchStatusList">
+                            <tr>
+                                <td style="text-align: center;"><span>{{batch.batchID}}</span></td>
+                                <td style="text-align: center;"><span>{{batch.status}}</span></td>
+                                <td style="text-align: center;"><span ng-if="batch.timeSubmitted != null">{{batch.timeSubmitted | date:'M/d/yy h:mm a'}}</span></td>
+                                <td style="text-align: center;"><span ng-if="batch.timeStarted != null">{{batch.timeStarted | date:'M/d/yy h:mm a'}}</span></td>
+                                <td style="text-align: center;"><span ng-if="batch.timeCompleted != null">{{batch.timeCompleted | date:'M/d/yy h:mm a'}}</span></td>
+                                <td style="text-align: center;"><span><a ng-if="batch.resultsURL != null" ng-href="{{batch.resultsURL}}">Link</a></span></td>
+                                <td style="text-align: center;"><span>{{batch.region}}</span></td>
+                                <td style="text-align: center;"><span>{{batch.pointsRequested}}</span></td>
+                                <td style="text-align: center;"><span ng-if="batch.pointsSuccessful != null">{{batch.pointsSuccessful}}</span></td>
+                                <td style="text-align: center;"><i class="fa fa-trash"></i></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div><br>
+                <div ng-if="vm.batchStatusList.length == 0 && vm.retrievingBatchStatus == false">
+                    <strong>No batches found for this email address.</strong>
+            </div>
         </div> <!-- End batch status -->
        
 </div> <!-- End of modal body -->

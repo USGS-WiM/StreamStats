@@ -50,6 +50,40 @@ module StreamStats.Controllers {
         public toggleable: boolean;
     }
 
+    interface IBatchStatusMessage {
+        id: string,
+        message: string
+    }
+
+    class BatchStatusMessage implements IBatchStatusMessage {
+        public id: string;
+        public message: string;
+    }
+
+    interface IBatchStatus {
+        batchID: string,
+        status: string,
+        timeSubmitted: Date,
+        timeStarted: Date,
+        timeCompleted: Date,
+        resultsURL: URL,
+        region: string,
+        pointsRequested: number,
+        pointsSuccessful: number
+    }
+
+    class BatchStatus implements IBatchStatus {
+        public batchID: string;
+        public status: string;
+        public timeSubmitted: Date;
+        public timeStarted: Date;
+        public timeCompleted: Date;
+        public resultsURL: URL;
+        public region: string;
+        public pointsRequested: number;
+        public pointsSuccessful: number;
+    }
+
     class SubmitBatchData {
         public email: string;
         public idField: string;
@@ -93,6 +127,11 @@ module StreamStats.Controllers {
         public flowStatsListSpinner: boolean;
         public parametersListSpinner: boolean;
 
+        // batch status
+        public batchStatusMessageList: Array<BatchStatusMessage>;
+        public batchStatusList: Array<BatchStatus>;
+        public retrievingBatchStatus: boolean;
+
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', '$modalInstance', 'toaster'];
@@ -115,6 +154,8 @@ module StreamStats.Controllers {
             this.regionListSpinner = true;
             this.flowStatsListSpinner = true;
             this.parametersListSpinner = true;
+            this.batchStatusMessageList = [];
+            this.batchStatusList = [];
             this.init();
         }
 
@@ -422,6 +463,19 @@ module StreamStats.Controllers {
             this.parametersAllChecked = !this.parametersAllChecked;
         }
 
+        // create list of batch statuses
+        public getBatchStatusList(email: string): void {
+
+           this.getBatchStatusByEmail(email).then(
+                response => {
+                    this.batchStatusList = response;
+                    this.retrievingBatchStatus = false;
+                }
+            );
+
+            
+        }
+
         // Service methods
         // get basin characteristics list for region and nation
         public loadParametersByRegionBP(rcode: string): ng.IPromise<any> {
@@ -452,13 +506,9 @@ module StreamStats.Controllers {
                             }
 
                             catch (e) {
-                                alert(e)
-
-                            }
-                        });
-
+                                alert(e)                           
+                        }});
                     }
-
                     else {
                     }
                     return paramRaw;
@@ -516,10 +566,89 @@ module StreamStats.Controllers {
             //     });
         }
 
+        // get array of batch status messages
+        public retrieveBatchStatusMessages(): ng.IPromise<any> {
+
+            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorStatus'];
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+
+        
+            return this.Execute(request).then(
+                (response: any) => {
+
+                    var batchStatusMessages = [];
+
+                    response.data.forEach((item) => {
+
+                        try {
+                            let status: BatchStatusMessage = {
+                                id: item.ID,
+                                message: item.Message
+                            }
+
+                            batchStatusMessages.push(status);
+                        }
+
+                        catch (e) {
+                            alert(e)
+                        }
+                    });
+                    
+                    return batchStatusMessages;
+                }, (error) => {
+                }).finally(() => {
+                });
+        }
+
+        // get batchs status for email
+        public getBatchStatusByEmail(email: string): ng.IPromise<any> {
+
+            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatch'].format(email);
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+
+            return this.Execute(request).then(
+                (response: any) => {
+
+                    var batchStatusMessages = [];
+
+                    response.data.forEach((batch) => {
+
+                        try {
+                            let status: BatchStatus = {
+                                batchID: batch.ID,
+                                status: this.batchStatusMessageList.filter((item) => { return item.id == batch.StatusID })[0].message,
+                                timeSubmitted: batch.TimeSubmitted,
+                                timeStarted: batch.TimeStarted,
+                                timeCompleted: batch.TimeCompleted,
+                                resultsURL: batch.ResultsURL,
+                                region: batch.Region,
+                                pointsRequested: batch.NumberPoints,
+                                pointsSuccessful: batch.NumberPointsSuccessful
+                            }
+
+                            batchStatusMessages.push(status);
+                        }
+
+                        catch (e) {
+                            alert(e)
+                        }
+                    });
+
+                    return batchStatusMessages;
+                }, (error) => {
+                }).finally(() => {
+                });
+        }
+
         // Helper Methods
         // -+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
             this.getRegions();
+            this.retrieveBatchStatusMessages().then(
+                response => {
+                    this.batchStatusMessageList = response;
+                }
+            );
         }
 
         private checkArrayForObj(arr, obj): number {
@@ -544,14 +673,10 @@ module StreamStats.Controllers {
                         break;
                     }//endif
                 }//next i
-
             } catch (e) {
                 return false;
             }
-
-
         }
-
     }//end  class
 
     angular.module('StreamStats.Controllers')
