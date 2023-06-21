@@ -61,6 +61,7 @@ var StreamStats;
                 _this.parametersListSpinner = true;
                 _this.batchStatusMessageList = [];
                 _this.batchStatusList = [];
+                _this.flowStatIDs = [];
                 _this.init();
                 return _this;
             }
@@ -309,20 +310,30 @@ var StreamStats;
                 return;
             };
             BatchProcessorController.prototype.submitBatch = function () {
-                var url = null;
+                var _this = this;
+                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatch'];
+                this.addStatIDtoList();
                 var formdata = new FormData();
+                formdata.append('submit_batch[region]', this.selectedRegion);
+                formdata.append('submit_batch[basinCharacteristics]', this.selectedParamList.toString());
+                formdata.append('submit_batch[flowStatistics]', this.flowStatIDs.toString());
                 formdata.append('submit_batch[email]', this.submitBatchData.email);
-                formdata.append('submit_batch[subject]', this.submitBatchData.idField);
+                formdata.append('submit_batch[IDField]', this.submitBatchData.idField);
                 formdata.append('submit_batch[attachments][][resource]', this.submitBatchData.attachment, this.submitBatchData.attachment.name);
                 this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
                 var headers = {
-                    "tdb": "tbd"
+                    "Content-Type": undefined
                 };
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers, angular.identity);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers);
                 this.submittingBatch = true;
+                this.Execute(request).then(function (response) {
+                }, function (error) {
+                }).finally(function () {
+                    _this.submittingBatch = false;
+                });
             };
             BatchProcessorController.prototype.retrieveBatchStatusMessages = function () {
-                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorStatus'];
+                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorStatusMessages'];
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 return this.Execute(request).then(function (response) {
                     var batchStatusMessages = [];
@@ -345,7 +356,7 @@ var StreamStats;
             };
             BatchProcessorController.prototype.getBatchStatusByEmail = function (email) {
                 var _this = this;
-                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatch'].format(email);
+                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatchStatus'].format(email);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 return this.Execute(request).then(function (response) {
                     var batchStatusMessages = [];
@@ -404,6 +415,13 @@ var StreamStats;
                 catch (e) {
                     return false;
                 }
+            };
+            BatchProcessorController.prototype.addStatIDtoList = function () {
+                var _this = this;
+                this.selectedFlowStatsList.forEach(function (item) {
+                    _this.flowStatIDs.push(item['statisticGroupID']);
+                });
+                console.log(this.flowStatIDs);
             };
             BatchProcessorController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', '$modalInstance', 'toaster'];
             return BatchProcessorController;

@@ -110,6 +110,7 @@ module StreamStats.Controllers {
         public flowStatsAllChecked: boolean;
         public selectedFlowStatsList: Array<Object>;
         public flowStatisticsAllChecked: boolean;
+        public flowStatIDs: Array<string>;
 
         // Parameters/basin characteristics
         public availableParamList: Array<Parameter>;
@@ -156,6 +157,7 @@ module StreamStats.Controllers {
             this.parametersListSpinner = true;
             this.batchStatusMessageList = [];
             this.batchStatusList = [];
+            this.flowStatIDs = [];
             this.init();
         }
 
@@ -282,7 +284,6 @@ module StreamStats.Controllers {
                 }
                 this.onSelectedStatisticsGroupChanged(false);
             }
-
             // handle impacts of flowStat.checked
             this.checkStats();
         }
@@ -529,47 +530,54 @@ module StreamStats.Controllers {
         
         public submitBatch(): void {
 
-            var url = null;
+            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatch']
 
+            // create flowStatIDs list
+            this.addStatIDtoList();
+
+            // create formdata object
             var formdata = new FormData();
 
+            formdata.append('submit_batch[region]', this.selectedRegion);
+            formdata.append('submit_batch[basinCharacteristics]', this.selectedParamList.toString());
+            formdata.append('submit_batch[flowStatistics]', this.flowStatIDs.toString());
             formdata.append('submit_batch[email]', this.submitBatchData.email);
-            formdata.append('submit_batch[subject]', this.submitBatchData.idField);
+            formdata.append('submit_batch[IDField]', this.submitBatchData.idField);
             formdata.append('submit_batch[attachments][][resource]', this.submitBatchData.attachment, this.submitBatchData.attachment.name);
             
             // successful toaster pop message
             this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
 
             var headers = {
-                "tdb": "tbd"
+                "Content-Type": undefined
             };
 
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers, angular.identity);
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers);
 
             this.submittingBatch = true;
 
             // will be uncommented when ready to submit to server
-            // this.Execute(request).then(
-            //     (response: any) => {
-            //         //console.log('Successfully submitted help ticket: ', response);
+            this.Execute(request).then(
+                (response: any) => {
+                    //console.log('Successfully submitted help ticket: ', response);
 
-            //         //clear out fields
-            //         this.submitBatchData = new SubmitBatchData();
+                    //clear out fields
+                    // this.submitBatchData = new SubmitBatchData();
 
-            //         //show user feedback
-            //         this.showSuccessAlert = true;
+                    //show user feedback
+                    // this.showSuccessAlert = true;
 
-            //     }, (error) => {
-            //         //sm when error
-            //     }).finally(() => {
-            //         this.submittingBatch = false;
-            //     });
+                }, (error) => {
+                    //sm when error
+                }).finally(() => {
+                    this.submittingBatch = false;
+                });
         }
 
         // get array of batch status messages
         public retrieveBatchStatusMessages(): ng.IPromise<any> {
 
-            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorStatus'];
+            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorStatusMessages'];
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
         
@@ -603,7 +611,7 @@ module StreamStats.Controllers {
         // get batchs status for email
         public getBatchStatusByEmail(email: string): ng.IPromise<any> {
 
-            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatch'].format(email);
+            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatchStatus'].format(email);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
             return this.Execute(request).then(
@@ -676,6 +684,15 @@ module StreamStats.Controllers {
             } catch (e) {
                 return false;
             }
+        }
+
+        private addStatIDtoList(): void {
+
+            this.selectedFlowStatsList.forEach((item) => {
+                this.flowStatIDs.push(item['statisticGroupID']);
+            });
+
+            console.log(this.flowStatIDs);
         }
     }//end  class
 
