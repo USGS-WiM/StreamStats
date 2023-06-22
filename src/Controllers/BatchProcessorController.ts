@@ -538,12 +538,12 @@ module StreamStats.Controllers {
             // create formdata object
             var formdata = new FormData();
 
-            formdata.append('submit_batch[region]', this.selectedRegion);
-            formdata.append('submit_batch[basinCharacteristics]', this.selectedParamList.toString());
-            formdata.append('submit_batch[flowStatistics]', this.flowStatIDs.toString());
-            formdata.append('submit_batch[email]', this.submitBatchData.email);
-            formdata.append('submit_batch[IDField]', this.submitBatchData.idField);
-            formdata.append('submit_batch[attachments][][resource]', this.submitBatchData.attachment, this.submitBatchData.attachment.name);
+            formdata.append('region', this.selectedRegion.toString());
+            formdata.append('basinCharacteristics', this.selectedParamList.toString());
+            formdata.append('flowStatistics', this.flowStatIDs.toString());
+            formdata.append('email', this.submitBatchData.email.toString());
+            formdata.append('IDField', this.submitBatchData.idField.toString());
+            formdata.append('geometryFile', this.submitBatchData.attachment); //, this.submitBatchData.attachment.name
             
             // successful toaster pop message
             this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
@@ -552,20 +552,20 @@ module StreamStats.Controllers {
                 "Content-Type": undefined
             };
 
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers);
-
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers, angular.identity);
+            console.log('POST request: ', request.url);
             this.submittingBatch = true;
 
             // will be uncommented when ready to submit to server
             this.Execute(request).then(
                 (response: any) => {
-                    //console.log('Successfully submitted help ticket: ', response);
+                    console.log('POST response: ', response);
 
                     //clear out fields
                     // this.submitBatchData = new SubmitBatchData();
 
                     //show user feedback
-                    // this.showSuccessAlert = true;
+                    this.showSuccessAlert = true;
 
                 }, (error) => {
                     //sm when error
@@ -691,8 +691,6 @@ module StreamStats.Controllers {
             this.selectedFlowStatsList.forEach((item) => {
                 this.flowStatIDs.push(item['statisticGroupID']);
             });
-
-            console.log(this.flowStatIDs);
         }
     }//end  class
 

@@ -314,19 +314,22 @@ var StreamStats;
                 var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatch'];
                 this.addStatIDtoList();
                 var formdata = new FormData();
-                formdata.append('submit_batch[region]', this.selectedRegion);
-                formdata.append('submit_batch[basinCharacteristics]', this.selectedParamList.toString());
-                formdata.append('submit_batch[flowStatistics]', this.flowStatIDs.toString());
-                formdata.append('submit_batch[email]', this.submitBatchData.email);
-                formdata.append('submit_batch[IDField]', this.submitBatchData.idField);
-                formdata.append('submit_batch[attachments][][resource]', this.submitBatchData.attachment, this.submitBatchData.attachment.name);
+                formdata.append('region', this.selectedRegion.toString());
+                formdata.append('basinCharacteristics', this.selectedParamList.toString());
+                formdata.append('flowStatistics', this.flowStatIDs.toString());
+                formdata.append('email', this.submitBatchData.email.toString());
+                formdata.append('IDField', this.submitBatchData.idField.toString());
+                formdata.append('geometryFile', this.submitBatchData.attachment);
                 this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
                 var headers = {
                     "Content-Type": undefined
                 };
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers, angular.identity);
+                console.log('POST request: ', request.url);
                 this.submittingBatch = true;
                 this.Execute(request).then(function (response) {
+                    console.log('POST response: ', response);
+                    _this.showSuccessAlert = true;
                 }, function (error) {
                 }).finally(function () {
                     _this.submittingBatch = false;
@@ -421,7 +424,6 @@ var StreamStats;
                 this.selectedFlowStatsList.forEach(function (item) {
                     _this.flowStatIDs.push(item['statisticGroupID']);
                 });
-                console.log(this.flowStatIDs);
             };
             BatchProcessorController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', '$modalInstance', 'toaster'];
             return BatchProcessorController;
