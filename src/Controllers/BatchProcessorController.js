@@ -54,7 +54,8 @@ var StreamStats;
                 _this.parametersAllChecked = true;
                 _this.showBasinCharacteristics = false;
                 _this.submittingBatch = false;
-                _this.showSuccessAlert = false;
+                _this.submitBatchSuccessAlert = false;
+                _this.submitBatchFailedAlert = false;
                 _this.submitBatchData = new SubmitBatchData();
                 _this.regionListSpinner = true;
                 _this.flowStatsListSpinner = true;
@@ -66,7 +67,7 @@ var StreamStats;
                 return _this;
             }
             BatchProcessorController.prototype.Close = function () {
-                this.showSuccessAlert = false;
+                this.submitBatchSuccessAlert = false;
                 this.modalInstance.dismiss('cancel');
             };
             BatchProcessorController.prototype.selectBatchProcessorTab = function (tabname) {
@@ -319,18 +320,27 @@ var StreamStats;
                 formdata.append('flowStatistics', this.flowStatIDs.toString());
                 formdata.append('email', this.submitBatchData.email.toString());
                 formdata.append('IDField', this.submitBatchData.idField.toString());
-                formdata.append('geometryFile', this.submitBatchData.attachment);
-                this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
+                formdata.append('geometryFile', this.submitBatchData.attachment, this.submitBatchData.attachment.name);
                 var headers = {
                     "Content-Type": undefined
                 };
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers, angular.identity);
-                console.log('POST request: ', request.url);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers);
                 this.submittingBatch = true;
                 this.Execute(request).then(function (response) {
-                    console.log('POST response: ', response);
-                    _this.showSuccessAlert = true;
+                    console.log("Submit data response:", response);
+                    if (response && response.status === 200) {
+                        _this.submitBatchSuccessAlert = true;
+                        _this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
+                    }
+                    else {
+                        _this.submitBatchFailedAlert = true;
+                        var detail = response.data.detail;
+                        _this.toaster.pop('info', "The submission failed for the following reason:" + detail, "", 5000);
+                    }
                 }, function (error) {
+                    var detail = error.data.detail;
+                    _this.toaster.pop('error', "There was an error submitting the batch:" + detail, "", 5000);
+                    console.log("Submit data error:", error);
                 }).finally(function () {
                     _this.submittingBatch = false;
                 });

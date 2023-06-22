@@ -120,7 +120,8 @@ module StreamStats.Controllers {
 
         // POST methods
         public submittingBatch: boolean;
-        public showSuccessAlert: boolean;
+        public submitBatchSuccessAlert: boolean;
+        public submitBatchFailedAlert: boolean;
         public submitBatchData: SubmitBatchData;
 
         // spinners
@@ -150,7 +151,8 @@ module StreamStats.Controllers {
             this.parametersAllChecked = true;
             this.showBasinCharacteristics = false;
             this.submittingBatch = false; 
-            this.showSuccessAlert = false;
+            this.submitBatchSuccessAlert = false;
+            this.submitBatchFailedAlert = false;
             this.submitBatchData = new SubmitBatchData();
             this.regionListSpinner = true;
             this.flowStatsListSpinner = true;
@@ -165,7 +167,7 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
 
         public Close(): void {
-            this.showSuccessAlert = false;
+            this.submitBatchSuccessAlert = false;
             this.modalInstance.dismiss('cancel')
         }
 
@@ -535,7 +537,7 @@ module StreamStats.Controllers {
             // create flowStatIDs list
             this.addStatIDtoList();
 
-            // create formdata object
+            // create formdata object and apend
             var formdata = new FormData();
 
             formdata.append('region', this.selectedRegion.toString());
@@ -543,31 +545,37 @@ module StreamStats.Controllers {
             formdata.append('flowStatistics', this.flowStatIDs.toString());
             formdata.append('email', this.submitBatchData.email.toString());
             formdata.append('IDField', this.submitBatchData.idField.toString());
-            formdata.append('geometryFile', this.submitBatchData.attachment); //, this.submitBatchData.attachment.name
+            formdata.append('geometryFile', this.submitBatchData.attachment, this.submitBatchData.attachment.name);
             
-            // successful toaster pop message
-            this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
-
             var headers = {
                 "Content-Type": undefined
             };
 
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers, angular.identity);
-            console.log('POST request: ', request.url);
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers);
+
             this.submittingBatch = true;
 
-            // will be uncommented when ready to submit to server
             this.Execute(request).then(
                 (response: any) => {
-                    console.log('POST response: ', response);
+                    console.log("Submit data response:", response)
+                    if (response && response.status === 200) {
+                        this.submitBatchSuccessAlert = true;
+                        // successful toaster pop message
+                        this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
 
-                    //clear out fields
-                    // this.submitBatchData = new SubmitBatchData();
+                    } else {
+                        this.submitBatchFailedAlert = true;
+                        // failed toaster pop message
+                        var detail = response.data.detail
+                        this.toaster.pop('info', "The submission failed for the following reason:" + detail, "", 5000);
 
-                    //show user feedback
-                    this.showSuccessAlert = true;
+                    }
 
                 }, (error) => {
+                    // craft error message
+                    var detail = error.data.detail
+                    this.toaster.pop('error', "There was an error submitting the batch:" + detail, "", 5000);
+                    console.log("Submit data error:", error)
                     //sm when error
                 }).finally(() => {
                     this.submittingBatch = false;
