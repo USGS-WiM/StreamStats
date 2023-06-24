@@ -360,7 +360,8 @@ var StreamStats;
                                 resultsURL: batch.ResultsURL,
                                 region: batch.Region,
                                 pointsRequested: batch.NumberPoints,
-                                pointsSuccessful: batch.NumberPointsSuccessful
+                                pointsSuccessful: batch.NumberPointsSuccessful,
+                                deleteCode: batch.DeleteCode
                             };
                             batchStatusMessages.push(status_2);
                         }
@@ -372,6 +373,24 @@ var StreamStats;
                 }, function (error) {
                 }).finally(function () {
                 });
+            };
+            BatchProcessorController.prototype.deleteBatch = function (batchID, deleteCode, batchStatusEmail) {
+                var _this = this;
+                var text = "Are you sure you want to delete Batch ID " + batchID + "?";
+                if (confirm(text) == true) {
+                    var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorDeleteBatch'].format(deleteCode);
+                    var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.DELETE);
+                    return this.Execute(request).then(function (response) {
+                        text = "Batch ID " + batchID + " was deleted.";
+                        alert(text);
+                        _this.getBatchStatusList(batchStatusEmail);
+                        _this.retrievingBatchStatus = true;
+                    }, function (error) {
+                        text = "Error deleting batch ID " + batchID + ". Please try again later or click the Help menu button to submit a Support Request.";
+                        alert(text);
+                    }).finally(function () {
+                    });
+                }
             };
             BatchProcessorController.prototype.init = function () {
                 var _this = this;
