@@ -555,33 +555,73 @@ module StreamStats.Controllers {
 
             this.submittingBatch = true;
 
+            // this.postBatchFormData(formdata, headers).then(
+            //     response => {
+            //         var r = response;
+            //         console.log("Submit data response in submitBatch:", response)
+            //     }
+            // );
             this.Execute(request).then(
                 (response: any) => {
                     console.log("Submit data response:", response)
                     if (response && response.status === 200) {
                         this.submitBatchSuccessAlert = true;
                         // successful toaster pop message
-                        this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
+                        // this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
 
                     } else {
                         this.submitBatchFailedAlert = true;
                         // failed toaster pop message
                         var detail = response.data.detail
-                        this.toaster.pop('info', "The submission failed for the following reason:" + detail, "", 5000);
+                        // this.toaster.pop('info', "The submission failed for the following reason:" + detail, "", 5000);
 
                     }
 
                 }, (error) => {
                     // craft error message
                     var detail = error.data.detail
-                    this.toaster.pop('error', "There was an error submitting the batch:" + detail, "", 5000);
-                    console.log("Submit data error:", error)
+                    // this.toaster.pop('error', "There was an error submitting the batch:" + detail, "", 5000);
+                    console.log("Submit data error:", detail)
                     //sm when error
                 }).finally(() => {
                     this.submittingBatch = false;
                 });
         }
 
+        public postBatchFormData(formdata: FormData, headers: any): ng.IPromise<any> {
+                
+                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatch']
+    
+                var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers);
+    
+                return this.Execute(request).then(
+                    (response: any) => {
+                        console.log("Submit data response in postBatchFormData:", response)
+                        // if (response && response.status === 200) {
+                        //     this.submitBatchSuccessAlert = true;
+                        //     // successful toaster pop message
+                        //     this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
+    
+                        // } else {
+                        //     this.submitBatchFailedAlert = true;
+                        //     // failed toaster pop message
+                        //     var detail = response.data.detail
+                        //     this.toaster.pop('info', "The submission failed for the following reason:" + detail, "", 5000);
+    
+                        // }
+                        return response;
+                    }, (error) => {
+                        // craft error message
+                        // var detail = error.data.detail
+                        // this.toaster.pop('error', "There was an error submitting the batch:" + detail, "", 5000);
+                        console.log("Submit data error in postBatchFormData:", error)
+                        return error;
+                        //sm when error
+                    }).finally(() => {
+                        // this.submittingBatch = false;
+                        console.log("Submit data finally in postBatchFormData")
+                    });
+        }
         // get array of batch status messages
         public retrieveBatchStatusMessages(): ng.IPromise<any> {
 

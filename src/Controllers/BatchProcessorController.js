@@ -330,19 +330,29 @@ var StreamStats;
                     console.log("Submit data response:", response);
                     if (response && response.status === 200) {
                         _this.submitBatchSuccessAlert = true;
-                        _this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
                     }
                     else {
                         _this.submitBatchFailedAlert = true;
                         var detail = response.data.detail;
-                        _this.toaster.pop('info', "The submission failed for the following reason:" + detail, "", 5000);
                     }
                 }, function (error) {
                     var detail = error.data.detail;
-                    _this.toaster.pop('error', "There was an error submitting the batch:" + detail, "", 5000);
-                    console.log("Submit data error:", error);
+                    console.log("Submit data error:", detail);
                 }).finally(function () {
                     _this.submittingBatch = false;
+                });
+            };
+            BatchProcessorController.prototype.postBatchFormData = function (formdata, headers) {
+                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatch'];
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers);
+                return this.Execute(request).then(function (response) {
+                    console.log("Submit data response in postBatchFormData:", response);
+                    return response;
+                }, function (error) {
+                    console.log("Submit data error in postBatchFormData:", error);
+                    return error;
+                }).finally(function () {
+                    console.log("Submit data finally in postBatchFormData");
                 });
             };
             BatchProcessorController.prototype.retrieveBatchStatusMessages = function () {
