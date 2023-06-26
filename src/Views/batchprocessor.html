@@ -277,11 +277,18 @@
 <div class="modal-footer">
     <div class="row" style="justify-content: center;">
         <!-- Button to submit batch -->
-        <button ng-if="vm.selectedBatchProcessorTabName==='submitBatch' && vm.submitBatchOver250Alert == false" type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.submitBatch()"
+        <button ng-if="vm.selectedBatchProcessorTabName==='submitBatch' && vm.submitBatchOver250 == false" type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.submitBatch()"
             ng-disabled="vm.submittingBatch || !vm.selectedRegion || !vm.submitBatchData.idField || !vm.submitBatchData.email || !vm.submitBatchData.attachment"><i
 
                 class="fa fa-share"></i><span>&nbsp;&nbsp;Submit Batch</span></button>
         <!-- End submit batch button -->
+
+        <!-- Button to submit GTE 250 batch -->
+        <button ng-if="vm.selectedBatchProcessorTabName==='submitBatch' && vm.submitBatchOver250 == true" type="submit"
+            class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.submitBatch(true)"
+            ng-disabled="vm.submittingBatch || !vm.selectedRegion || !vm.submitBatchData.idField || !vm.submitBatchData.email || !vm.submitBatchData.attachment"><i
+                class="fa fa-share"></i><span>&nbsp;&nbsp;Submit Batch Over 250 Points</span></button>
+        <!-- End submit batch GTE 250 button -->
 
         <!-- Button to close modal -->
         <button ng-click="vm.Close()" class="btn-black"><i

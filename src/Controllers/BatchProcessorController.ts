@@ -123,7 +123,7 @@ module StreamStats.Controllers {
         public submitBatchSuccessAlert: boolean;
         public submitBatchFailedAlert: boolean;
         public submitBatchData: SubmitBatchData;
-        public submitBatchOver250Alert: boolean;
+        public submitBatchOver250: boolean;
 
         // spinners
         public regionListSpinner: boolean;
@@ -161,7 +161,7 @@ module StreamStats.Controllers {
             this.batchStatusMessageList = [];
             this.batchStatusList = [];
             this.flowStatIDs = [];
-            this.submitBatchOver250Alert = false
+            this.submitBatchOver250 = false
             this.init();
         }
 
@@ -532,6 +532,7 @@ module StreamStats.Controllers {
             return;
         }
         
+        // submit batch job
         public submitBatch(submit250:boolean=false): void {
 
             // create flowStatIDs list
@@ -547,25 +548,37 @@ module StreamStats.Controllers {
             formdata.append('IDField', this.submitBatchData.idField.toString());
             formdata.append('geometryFile', this.submitBatchData.attachment, this.submitBatchData.attachment.name);
             
+            // create headers
             var headers = {
                 "Content-Type": undefined
             };
 
+            // set submittingBatch to true, which disables submit button to prevent multiple submissions
             this.submittingBatch = true;
             
             // handles submitting more than 250 points
             if (submit250 == true) {
+
+                // appends moreThan250Points to formdata
                 formdata.append('moreThan250Points', submit250.toString());
 
+                // submits batch to API
                 this.postBatchFormData(formdata, headers).then(
                     response => {
                         var r = response;
-                        console.log("Submit data status from postBatchFormData:", r.status);
-                        console.log("Submit data response from postBatchFormData:", r.data);
-                    }
-                ).finally(() => {
+                        if (r.status == 200) {
+                            this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 20000);
+                        }
+
+                        // handle if status is not 200, let user know error
+                        else {
+                            var detail = r.data.detail
+                            this.toaster.pop('error', "The submission failed for the following reason:" + detail, "", 5000);
+                        }
+                    }).finally(() => {
+                    
                     this.submittingBatch = false;
-                    this.submitBatchOver250Alert = false;
+                    this.submitBatchOver250 = false;
                 });
             }
 
@@ -574,19 +587,22 @@ module StreamStats.Controllers {
                 // submits batch to API
                 this.postBatchFormData(formdata, headers).then(
                     response => {
+                        // assign response to variable
                         var r = response;
 
-                        // first, handle if status is 500 and detail contains more "250"
+                        // first, handle if status is 500 and detail contains more "250", which means use tried to submit more than 250 points
                         if (r.status == 500 && r.data.detail.indexOf("250") > -1) {
                             let message = "Batch contains more than 250 points. Only the first 250 points will be processed. Please resubmit the batch if you would like only the first 250 points to be processed."
-                            this.submitBatchOver250Alert = true;
+                            this.submitBatchOver250 = true;
                             this.toaster.pop('warning', message, "", 5000);
                         }
                         
+                        // handle if status is 200, which means the batch was submitted successfully
                         else if (r.status == 200) {
-                            this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
+                            this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 20000);
                         }
-                            
+                        
+                        // handle if status is not 200 or to do with 250 points and let submitter know error
                         else {
                             var detail = r.data.detail
                             this.toaster.pop('error', "The submission failed for the following reason:" + detail, "", 5000);
@@ -594,39 +610,10 @@ module StreamStats.Controllers {
 
                     }).finally(() => { this.submittingBatch = false; });
             }
-        
-            // var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatch']
-            // var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers);
-            // this.Execute(request).then(
-            //     (response: any) => {
-            //         console.log("Submit data response:", response)
-            //         if (response && response.status === 200) {
-            //             this.submitBatchSuccessAlert = true;
-            //             return response.status
-            //             // successful toaster pop message
-            //             // this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
-
-            //         } else {
-            //             this.submitBatchFailedAlert = true;
-            //             // failed toaster pop message
-            //             var detail = response.data.detail
-            //             // this.toaster.pop('info', "The submission failed for the following reason:" + detail, "", 5000);
-            //             return detail
-
-            //         }
-
-            //     }, (error) => {
-            //         // craft error message
-            //         var detail = error.data.detail
-            //         // this.toaster.pop('error', "There was an error submitting the batch:" + detail, "", 5000);
-            //         // console.log("Submit data error:", detail)
-            //         return detail
-            //         //sm when error
-            //     }).finally(() => {
-            //         this.submittingBatch = false;
-            //     });
         }
 
+        // handle ng.Ipromise for POST request to BatchProcessorServices
+        // return either response or error, as logic for either is handled in the calling function
         public postBatchFormData(formdata: FormData, headers: any): ng.IPromise<any> {
                 
                 var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatch']
@@ -640,8 +627,8 @@ module StreamStats.Controllers {
                         return error;
                     }).finally(() => {});
         }
-        // get array of batch status messa
-        ges
+
+        // get array of batch status messages
         public retrieveBatchStatusMessages(): ng.IPromise<any> {
 
             var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorStatusMessages'];
@@ -719,11 +706,11 @@ module StreamStats.Controllers {
         // -+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
             this.getRegions();
-            // this.retrieveBatchStatusMessages().then(
-            //     response => {
-            //         this.batchStatusMessageList = response;
-            //     }
-            // );
+            this.retrieveBatchStatusMessages().then(
+                response => {
+                    this.batchStatusMessageList = response;
+                }
+            );
         }
 
         private checkArrayForObj(arr, obj): number {

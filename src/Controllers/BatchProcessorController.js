@@ -63,7 +63,7 @@ var StreamStats;
                 _this.batchStatusMessageList = [];
                 _this.batchStatusList = [];
                 _this.flowStatIDs = [];
-                _this.submitBatchOver250Alert = false;
+                _this.submitBatchOver250 = false;
                 _this.init();
                 return _this;
             }
@@ -330,11 +330,16 @@ var StreamStats;
                     formdata.append('moreThan250Points', submit250.toString());
                     this.postBatchFormData(formdata, headers).then(function (response) {
                         var r = response;
-                        console.log("Submit data status from postBatchFormData:", r.status);
-                        console.log("Submit data response from postBatchFormData:", r.data);
+                        if (r.status == 200) {
+                            _this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 20000);
+                        }
+                        else {
+                            var detail = r.data.detail;
+                            _this.toaster.pop('error', "The submission failed for the following reason:" + detail, "", 5000);
+                        }
                     }).finally(function () {
                         _this.submittingBatch = false;
-                        _this.submitBatchOver250Alert = false;
+                        _this.submitBatchOver250 = false;
                     });
                 }
                 else {
@@ -342,11 +347,11 @@ var StreamStats;
                         var r = response;
                         if (r.status == 500 && r.data.detail.indexOf("250") > -1) {
                             var message = "Batch contains more than 250 points. Only the first 250 points will be processed. Please resubmit the batch if you would like only the first 250 points to be processed.";
-                            _this.submitBatchOver250Alert = true;
+                            _this.submitBatchOver250 = true;
                             _this.toaster.pop('warning', message, "", 5000);
                         }
                         else if (r.status == 200) {
-                            _this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
+                            _this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 20000);
                         }
                         else {
                             var detail = r.data.detail;
@@ -417,7 +422,11 @@ var StreamStats;
                 });
             };
             BatchProcessorController.prototype.init = function () {
+                var _this = this;
                 this.getRegions();
+                this.retrieveBatchStatusMessages().then(function (response) {
+                    _this.batchStatusMessageList = response;
+                });
             };
             BatchProcessorController.prototype.checkArrayForObj = function (arr, obj) {
                 for (var i = 0; i < arr.length; i++) {
