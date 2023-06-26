@@ -63,6 +63,7 @@ var StreamStats;
                 _this.batchStatusMessageList = [];
                 _this.batchStatusList = [];
                 _this.flowStatIDs = [];
+                _this.submitBatchOver250Alert = false;
                 _this.init();
                 return _this;
             }
@@ -310,9 +311,9 @@ var StreamStats;
                 }
                 return;
             };
-            BatchProcessorController.prototype.submitBatch = function () {
+            BatchProcessorController.prototype.submitBatch = function (submit250) {
                 var _this = this;
-                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatch'];
+                if (submit250 === void 0) { submit250 = false; }
                 this.addStatIDtoList();
                 var formdata = new FormData();
                 formdata.append('region', this.selectedRegion.toString());
@@ -324,36 +325,44 @@ var StreamStats;
                 var headers = {
                     "Content-Type": undefined
                 };
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers);
                 this.submittingBatch = true;
-                this.Execute(request).then(function (response) {
-                    console.log("Submit data response:", response);
-                    if (response && response.status === 200) {
-                        _this.submitBatchSuccessAlert = true;
-                    }
-                    else {
-                        _this.submitBatchFailedAlert = true;
-                        var detail = response.data.detail;
-                    }
-                }, function (error) {
-                    var detail = error.data.detail;
-                    console.log("Submit data error:", detail);
-                }).finally(function () {
-                    _this.submittingBatch = false;
-                });
+                if (submit250 == true) {
+                    formdata.append('moreThan250Points', submit250.toString());
+                    this.postBatchFormData(formdata, headers).then(function (response) {
+                        var r = response;
+                        console.log("Submit data status from postBatchFormData:", r.status);
+                        console.log("Submit data response from postBatchFormData:", r.data);
+                    }).finally(function () {
+                        _this.submittingBatch = false;
+                        _this.submitBatchOver250Alert = false;
+                    });
+                }
+                else {
+                    this.postBatchFormData(formdata, headers).then(function (response) {
+                        var r = response;
+                        if (r.status == 500 && r.data.detail.indexOf("250") > -1) {
+                            var message = "Batch contains more than 250 points. Only the first 250 points will be processed. Please resubmit the batch if you would like only the first 250 points to be processed.";
+                            _this.submitBatchOver250Alert = true;
+                            _this.toaster.pop('warning', message, "", 5000);
+                        }
+                        else if (r.status == 200) {
+                            _this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
+                        }
+                        else {
+                            var detail = r.data.detail;
+                            _this.toaster.pop('error', "The submission failed for the following reason:" + detail, "", 5000);
+                        }
+                    }).finally(function () { _this.submittingBatch = false; });
+                }
             };
             BatchProcessorController.prototype.postBatchFormData = function (formdata, headers) {
                 var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatch'];
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers);
                 return this.Execute(request).then(function (response) {
-                    console.log("Submit data response in postBatchFormData:", response);
                     return response;
                 }, function (error) {
-                    console.log("Submit data error in postBatchFormData:", error);
                     return error;
-                }).finally(function () {
-                    console.log("Submit data finally in postBatchFormData");
-                });
+                }).finally(function () { });
             };
             BatchProcessorController.prototype.retrieveBatchStatusMessages = function () {
                 var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorStatusMessages'];
@@ -408,11 +417,7 @@ var StreamStats;
                 });
             };
             BatchProcessorController.prototype.init = function () {
-                var _this = this;
                 this.getRegions();
-                this.retrieveBatchStatusMessages().then(function (response) {
-                    _this.batchStatusMessageList = response;
-                });
             };
             BatchProcessorController.prototype.checkArrayForObj = function (arr, obj) {
                 for (var i = 0; i < arr.length; i++) {
