@@ -480,57 +480,6 @@ module StreamStats.Controllers {
 
             
         }
-
-        // Service methods
-        // get basin characteristics list for region and nation
-        public loadParametersByRegionBP(rcode: string): ng.IPromise<any> {
-
-            if (!rcode) return;
-            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSAvailableParams'].format(rcode);
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
-
-            return this.Execute(request).then(
-                (response: any) => {
-
-                    if (response.data.parameters && response.data.parameters.length > 0) {
-
-                        // create array to return
-                        var paramRaw = [];
-
-                        response.data.parameters.forEach((parameter) => {
-
-
-                            try {
-                                let param: Parameter = {
-                                    code: parameter.code,
-                                    description: parameter.description,
-                                    checked: false,
-                                    toggleable: true
-                                }
-                                paramRaw.push(param);
-                            }
-
-                            catch (e) {
-                                alert(e)                           
-                        }});
-                    }
-                    else {
-                    }
-                    return paramRaw;
-                }, (error) => {
-                }).finally(() => {
-                });
-        }
-
-        public validateZipFile($files): void {
-            // validate that the file is a .zip
-            if ($files[0].type != "application/x-zip-compressed"  && $files[0].type != "application/zip") {
-
-                this.toaster.pop('warning', "Please upload a .zip file.", "", 5000);
-                this.submitBatchData.attachment = null;
-            }
-            return;
-        }
         
         // submit batch job
         public submitBatch(submit250:boolean=false): void {
@@ -611,6 +560,47 @@ module StreamStats.Controllers {
                     }).finally(() => { this.submittingBatch = false; });
             }
         }
+
+        // Service methods
+        // get basin characteristics list for region and nation
+        public loadParametersByRegionBP(rcode: string): ng.IPromise<any> {
+
+            if (!rcode) return;
+            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSAvailableParams'].format(rcode);
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+
+            return this.Execute(request).then(
+                (response: any) => {
+
+                    if (response.data.parameters && response.data.parameters.length > 0) {
+
+                        // create array to return
+                        var paramRaw = [];
+
+                        response.data.parameters.forEach((parameter) => {
+
+
+                            try {
+                                let param: Parameter = {
+                                    code: parameter.code,
+                                    description: parameter.description,
+                                    checked: false,
+                                    toggleable: true
+                                }
+                                paramRaw.push(param);
+                            }
+
+                            catch (e) {
+                                alert(e)                           
+                        }});
+                    }
+                    else {
+                    }
+                    return paramRaw;
+                }, (error) => {
+                }).finally(() => { 
+                });
+        }        
 
         // handle ng.Ipromise for POST request to BatchProcessorServices
         // return either response or error, as logic for either is handled in the calling function
@@ -722,6 +712,16 @@ module StreamStats.Controllers {
             return -1;
         }
 
+        public validateZipFile($files): void {
+            // validate that the file is a .zip
+            if ($files[0].type != "application/x-zip-compressed" && $files[0].type != "application/zip") {
+
+                this.toaster.pop('warning', "Please upload a .zip file.", "", 5000);
+                this.submitBatchData.attachment = null;
+            }
+            return;
+        }
+
         // add parameter to selectedParamList
         private addParameterToSelectedParamList(paramCode): boolean {
             try {
@@ -740,6 +740,7 @@ module StreamStats.Controllers {
             }
         }
 
+        // add statisticGroupID to list for batch submission
         private addStatIDtoList(): void {
 
             this.selectedFlowStatsList.forEach((item) => {
