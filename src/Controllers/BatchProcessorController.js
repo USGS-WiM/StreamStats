@@ -335,7 +335,7 @@ var StreamStats;
                         }
                         else {
                             var detail = r.data.detail;
-                            _this.toaster.pop('error', "The submission failed for the following reason:" + detail, "", 5000);
+                            _this.toaster.pop('error', "The submission failed for the following reason: " + detail, "", 5000);
                         }
                     }).finally(function () {
                         _this.submittingBatch = false;
