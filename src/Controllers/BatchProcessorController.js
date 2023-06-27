@@ -271,6 +271,12 @@ var StreamStats;
                     _this.retrievingBatchStatus = false;
                 });
             };
+            BatchProcessorController.prototype.trashBatch = function (batchID, deleteCode, batchStatusEmail) {
+                var text = "Are you sure you want to delete Batch ID " + batchID + "?";
+                if (confirm(text) == true) {
+                    this.deleteBatch(batchID, deleteCode, batchStatusEmail);
+                }
+            };
             BatchProcessorController.prototype.loadParametersByRegionBP = function (rcode) {
                 if (!rcode)
                     return;
@@ -376,21 +382,18 @@ var StreamStats;
             };
             BatchProcessorController.prototype.deleteBatch = function (batchID, deleteCode, batchStatusEmail) {
                 var _this = this;
-                var text = "Are you sure you want to delete Batch ID " + batchID + "?";
-                if (confirm(text) == true) {
-                    var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorDeleteBatch'].format(deleteCode);
-                    var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.DELETE);
-                    return this.Execute(request).then(function (response) {
-                        text = "Batch ID " + batchID + " was deleted.";
-                        alert(text);
-                        _this.getBatchStatusList(batchStatusEmail);
-                        _this.retrievingBatchStatus = true;
-                    }, function (error) {
-                        text = "Error deleting batch ID " + batchID + ". Please try again later or click the Help menu button to submit a Support Request.";
-                        alert(text);
-                    }).finally(function () {
-                    });
-                }
+                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorDeleteBatch'].format(deleteCode);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.DELETE);
+                return this.Execute(request).then(function (response) {
+                    var text = "Batch ID " + batchID + " was deleted.";
+                    alert(text);
+                    _this.getBatchStatusList(batchStatusEmail);
+                    _this.retrievingBatchStatus = true;
+                }, function (error) {
+                    var text = "Error deleting batch ID " + batchID + ". Please try again later or click the Help menu button to submit a Support Request.";
+                    alert(text);
+                }).finally(function () {
+                });
             };
             BatchProcessorController.prototype.init = function () {
                 var _this = this;

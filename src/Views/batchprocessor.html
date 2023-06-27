@@ -261,7 +261,7 @@
                                 <td style="text-align: center;"><span>{{batch.region}}</span></td>
                                 <td style="text-align: center;"><span>{{batch.pointsRequested}}</span></td>
                                 <td style="text-align: center;"><span ng-if="batch.pointsSuccessful != null">{{batch.pointsSuccessful}}</span></td>
-                                <td style="text-align: center;"><i ng-click="vm.deleteBatch(batch.batchID, batch.deleteCode, batchStatusEmail)" class="fa fa-trash" style="cursor: pointer"></i></td>
+                                <td style="text-align: center;"><i ng-click="vm.trashBatch(batch.batchID, batch.deleteCode, batchStatusEmail)" class="fa fa-trash" style="cursor: pointer"></i></td>
                             </tr>
                         </tbody>
                     </table>

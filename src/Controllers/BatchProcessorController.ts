@@ -468,14 +468,19 @@ module StreamStats.Controllers {
         // create list of batch statuses
         public getBatchStatusList(email: string): void {
 
-           this.getBatchStatusByEmail(email).then(
+            this.getBatchStatusByEmail(email).then(
                 response => {
                     this.batchStatusList = response;
                     this.retrievingBatchStatus = false;
                 }
             );
+        }
 
-            
+        public trashBatch(batchID: number, deleteCode: string, batchStatusEmail: string) {
+            let text = "Are you sure you want to delete Batch ID " + batchID + "?"
+            if (confirm(text) == true) {
+                this.deleteBatch(batchID, deleteCode, batchStatusEmail);                
+            }
         }
 
         // Service methods
@@ -643,26 +648,25 @@ module StreamStats.Controllers {
                 });
         }
 
-        public deleteBatch(batchID: number, deleteCode: string, batchStatusEmail: string) {
-            let text = "Are you sure you want to delete Batch ID " + batchID + "?"
-            if (confirm(text) == true) {
+        // soft delete a batch
+        public deleteBatch(batchID: number, deleteCode: string, batchStatusEmail: string): ng.IPromise<any> {
+
                 var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorDeleteBatch'].format(deleteCode);
                 var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.DELETE);
 
                 return this.Execute(request).then(
                     (response: any) => {
-                        text = "Batch ID " + batchID + " was deleted.";
+                        let text = "Batch ID " + batchID + " was deleted.";
                         alert(text);
                         // Refresh the list of batches
                         this.getBatchStatusList(batchStatusEmail); 
                         this.retrievingBatchStatus = true;
                     }, (error) => {
-                        text = "Error deleting batch ID " + batchID + ". Please try again later or click the Help menu button to submit a Support Request.";
+                        let text = "Error deleting batch ID " + batchID + ". Please try again later or click the Help menu button to submit a Support Request.";
                         alert(text);
                     }).finally(() => {
                         
                     });
-            }
         }
 
         // Helper Methods
