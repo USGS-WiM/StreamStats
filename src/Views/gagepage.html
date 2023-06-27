@@ -284,7 +284,7 @@
                             <!-- End Sliders -->
 
                             <!-- Start Legend -->
-                            <div ng-show="vm.ageQualityData === 'age'" class="ageQualityLegend">
+                            <div ng-show="vm.ageQualityData === 'age'" class="ageQualityLegend" ng-style="{'left': vm.logScaleDischarge ? '250px' : '680px', 'bottom': vm.logScaleDischarge ? '290px' : '220px'}">
                                 <div class="ageQualityLegend-item">
                                   <span style="color: red;">Most Recent Measurement</span>
                             </div>
@@ -296,7 +296,7 @@
                                 </div>
                             </div>
                               
-                            <div ng-show="vm.ageQualityData === 'quality'" class="ageQualityLegend">
+                            <div ng-show="vm.ageQualityData === 'quality'" class="ageQualityLegend" ng-style="{'left': vm.logScaleDischarge ? '250px' : '680px', 'bottom': vm.logScaleDischarge ? '290px' : '220px'}">
                                 <div class="ageQualityLegend-item">
                                   <span style="color:#2ED017;">Excellent - Good</span>
                             </div>

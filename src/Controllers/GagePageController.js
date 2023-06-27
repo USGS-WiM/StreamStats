@@ -865,20 +865,6 @@ var StreamStats;
                     this.floodStagesData = filteredData;
                 }
             };
-            GagePageController.prototype.toggleFloodStages = function () {
-                var chart = $('#chart3').highcharts();
-                if (chart) {
-                    var floodStagesSeries = chart.series.find(function (series) { return series.name === 'Flood Stages'; });
-                    if (floodStagesSeries) {
-                        if (floodStagesSeries.data.length > 0) {
-                            floodStagesSeries.setData([]);
-                        }
-                        else {
-                            floodStagesSeries.setData(this.floodStagesData);
-                        }
-                    }
-                }
-            };
             GagePageController.prototype.formatData = function () {
                 var _this_1 = this;
                 if (this.peakDates) {
@@ -2671,6 +2657,8 @@ var StreamStats;
                         _this_1.updateChart();
                     },
                 };
+                var measuredDataMax = Math.max.apply(Math, this.measuredObj.map(function (obj) { return obj.y; }));
+                var measuredDataMin = Math.min.apply(Math, this.measuredObj.map(function (obj) { return obj.y; }));
                 this.dischargeChartConfig = {
                     chart: {
                         height: 450,
@@ -2703,7 +2691,7 @@ var StreamStats;
                         custom: {
                             allowNegativeLog: true
                         },
-                        plotLines: [{ value: null, color: null, width: null, zIndex: null, label: { text: null }, id: 'plotlines' }]
+                        plotLines: [{ value: null, color: null, width: null, zIndex: null, label: { text: null }, id: 'plotlines' }],
                     },
                     series: [
                         {
@@ -2755,7 +2743,17 @@ var StreamStats;
                                 symbol: 'circle',
                                 radius: 3
                             },
-                            showInLegend: this.formattedDischargePeakDates.length > 0
+                            showInLegend: this.formattedDischargePeakDates.length > 0,
+                            dataLabels: {
+                                enabled: true,
+                                formatter: function () {
+                                    return this.point.options.date.substring(0, 4);
+                                },
+                                y: -3,
+                                style: {
+                                    fontSize: "9px",
+                                },
+                            },
                         },
                         {
                             name: 'USGS Measured',
@@ -2782,116 +2780,74 @@ var StreamStats;
                                 radius: 3
                             },
                             showInLegend: this.error == false
-                        },
-                        {
-                            name: 'Flood Stages',
-                            showInNavigator: false,
-                            tooltip: {
-                                headerFormat: '<b>Flood Stages</b>',
-                                pointFormatter: function () {
-                                    if (this.formattedPeakDates !== null) {
-                                        var UTCday = this.getUTCDate;
-                                    }
-                                }
-                            },
-                            turboThreshold: 0,
-                            type: 'line',
-                            color: 'yellow',
-                            data: [],
-                            marker: {
-                                symbol: 'circle',
-                                radius: 0
-                            },
-                            showInLegend: true
                         }
                     ]
-                };
-                var chart = $('#chart3').highcharts();
-                var show = true;
-                var link = null;
-                for (var _i = 0, _a = this.stages; _i < _a.length; _i++) {
-                    var stage = _a[_i];
-                    if (stage.x === undefined || stage.y === undefined) {
-                        continue;
+                },
+                    this.formattedStages = [];
+                this.stages.forEach(function (stage, index) {
+                    if (stage.x != undefined || stage.y != undefined) {
+                        var stageNameCapitalized_1 = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
+                        _this_1.formattedStages.push({
+                            data: [[0, stage.y], [stage.x, stage.y], [stage.x, 0]],
+                            marker: {
+                                enabled: false
+                            },
+                            lineWidth: 2,
+                            linkedTo: index == 0 ? null : ":previous",
+                            showInLegend: index == 0 ? true : false,
+                            name: 'Flood Stages',
+                            events: {
+                                hide: function () {
+                                    this.chart.yAxis[0].removePlotLine('plotLine');
+                                    this.chart.xAxis[0].removePlotLine('plotLine');
+                                },
+                                show: function () {
+                                    this.chart.yAxis[0].addPlotLine({
+                                        color: 'black',
+                                        width: 0,
+                                        zIndex: 6,
+                                        id: 'plotLine',
+                                        value: stage.y,
+                                        label: {
+                                            text: stageNameCapitalized_1 + ": " + stage.y + " ft",
+                                            textAlign: 'left',
+                                            fontWeight: 'bold',
+                                            x: 12,
+                                            y: -4,
+                                            style: {
+                                                fontSize: '10px',
+                                            },
+                                            zIndex: 9999999
+                                        }
+                                    });
+                                    this.chart.xAxis[0].addPlotLine({
+                                        color: 'black',
+                                        width: 0,
+                                        zIndex: 6,
+                                        value: stage.x,
+                                        id: 'plotLine',
+                                        label: {
+                                            text: "        " + stageNameCapitalized_1 + ": " + parseInt(stage.x) + " cfs",
+                                            verticalAlign: "bottom",
+                                            y: -110,
+                                            x: 2,
+                                            fontWeight: 'bold',
+                                            style: {
+                                                fontSize: '10px',
+                                            },
+                                            zIndex: 9999999
+                                        }
+                                    });
+                                },
+                            },
+                            id: 'floodStageLine_' + stage.name,
+                            color: stage.color
+                        });
                     }
-                    var stageNameCapitalized = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
-                    var horizontalStageSeries = {
-                        data: [[0, stage.y], [stage.x, stage.y]],
-                        enableMouseTracking: false,
-                        marker: {
-                            enabled: false
-                        },
-                        lineWidth: 2,
-                        linkedTo: link,
-                        showInLegend: false,
-                        name: "".concat(stageNameCapitalized, " Stages - Horizontal"),
-                        id: "".concat(stage.name, "StageLineHorizontal"),
-                        color: stage.color,
-                        type: 'line'
-                    };
-                    chart.addSeries(horizontalStageSeries);
-                    chart.yAxis[0].addPlotLine({
-                        value: stage.y,
-                        color: stage.color,
-                        width: 0,
-                        id: "".concat(stage.name, "-horizontal"),
-                        label: {
-                            text: "".concat(stageNameCapitalized, ": ").concat(stage.y, " ft"),
-                            align: 'left',
-                            y: -5,
-                            style: {
-                                font: '9px Arial, sans-serif'
-                            },
-                        },
-                        zIndex: 999
-                    });
-                    var verticalStageSeries = {
-                        data: [[stage.x, 0], [stage.x, stage.y]],
-                        enableMouseTracking: false,
-                        marker: {
-                            enabled: false
-                        },
-                        lineWidth: 2,
-                        linkedTo: link,
-                        showInLegend: false,
-                        name: "".concat(stageNameCapitalized, " Stages - Vertical"),
-                        id: "".concat(stage.name, "StageLineVertical"),
-                        color: stage.color,
-                        type: 'line'
-                    };
-                    chart.addSeries(verticalStageSeries);
-                    chart.xAxis[0].addPlotLine({
-                        value: stage.x,
-                        color: stage.color,
-                        width: 0,
-                        id: "".concat(stage.name, "-vertical"),
-                        label: {
-                            text: "".concat(stageNameCapitalized, ": ").concat(Math.round(stage.x), " cfs"),
-                            align: 'right',
-                            verticalAlign: 'bottom',
-                            x: 5,
-                            y: -10,
-                            style: {
-                                font: '9px Arial, sans-serif'
-                            },
-                        },
-                        zIndex: 999
-                    });
-                    chart.xAxis[0].update({
-                        crosshair: {
-                            color: 'red',
-                            dashStyle: 'Solid'
-                        }
-                    });
-                    chart.yAxis[0].update({
-                        crosshair: {
-                            color: 'red',
-                            dashStyle: 'Solid'
-                        }
-                    });
-                    show = false;
-                    link = ":previous";
-                }
+                });
+                this.formattedStages.forEach(function (formattedStage) {
+                    _this_1.dischargeChartConfig.series.push(formattedStage);
+                });
             };
             GagePageController.prototype.createDailyRasterPlot = function () {
                 if (this.dailyValuesOnly.length > 0) {
@@ -3048,7 +3004,7 @@ var StreamStats;
                 }
             };
             GagePageController.prototype.toggleFloodStats = function () {
-                var chart = $('#chart1').highcharts();
+                var chart = $('#chart3').highcharts();
                 var floodSeries = chart.series[this.selectedFloodFreqStats.seriesIndex];
                 if (this.showFloodStats) {
                     floodSeries.show();
@@ -3290,7 +3246,6 @@ var StreamStats;
                     chart.yAxis[0].update({ type: 'linear' });
                 }
             };
-            ;
             GagePageController.prototype.toggleDischargeData = function (dataType) {
                 var chart = $('#chart3').highcharts();
                 var currentUSGSMeasuredData = chart.series[2].data;

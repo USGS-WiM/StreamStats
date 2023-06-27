@@ -257,6 +257,7 @@ module StreamStats.Controllers {
         public endYear: number;
         public yearSliderOptions: any;
         public showQuality: any;
+        public formattedStages: any;
         public stages: any;
         public floodStagesData: any;
 
@@ -287,7 +288,7 @@ module StreamStats.Controllers {
                         navigator: { enabled: boolean},  
                         xAxis: {  type: string, min: number, max: number, title: {text: string}, custom: { allowNegativeLog: Boolean }},
                         yAxis: { title: {text: string}, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
-                        series: { name: string; showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
+                        series: { name: string; showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string,
                         data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
         heatChartConfig: { chart: { height: number, width: number, zooming: {type: string} },
                         title: { text: string, align: string},
@@ -1273,22 +1274,6 @@ module StreamStats.Controllers {
                 //     show = false;
                 //     link = ":previous";
                 // }
-            }
-        }
-
-        public toggleFloodStages() {
-            let chart = $('#chart3').highcharts();
-            if (chart) {
-                const floodStagesSeries = chart.series.find(series => series.name === 'Flood Stages');
-                if (floodStagesSeries) {
-                    if (floodStagesSeries.data.length > 0) {
-                        // If flood stages data is currently being displayed, remove it
-                        floodStagesSeries.setData([]);
-                    } else {
-                        // If flood stages data is not currently being displayed, add it
-                        floodStagesSeries.setData(this.floodStagesData);
-                    }
-                }
             }
         }
         
@@ -3086,44 +3071,42 @@ module StreamStats.Controllers {
             });
         }
 
-        //dropdown for choosing flood statistics
-        public chooseFloodStats() {
-            let chart = $('#chart1').highcharts();
-            let floodSeries = chart.series[this.selectedFloodFreqStats.seriesIndex]
-            //figure out how to have this option loaded when the plot is instantiated
-            if (this.selectedFloodFreqStats.name === this.selectedFloodFreqStats.name) {
-                this.allFloodFreqStats.forEach((stat) => {
-                    let index = stat.seriesIndex
-                    chart.series[index].hide();
-                })
-                floodSeries.show();
-            }
+//dropdown for choosing flood statistics
+public chooseFloodStats() {
+    let chart = $('#chart1').highcharts();
+    let floodSeries = chart.series[this.selectedFloodFreqStats.seriesIndex]
+    //figure out how to have this option loaded when the plot is instantiated
+    if (this.selectedFloodFreqStats.name === this.selectedFloodFreqStats.name) {
+        this.allFloodFreqStats.forEach((stat) => {
+            let index = stat.seriesIndex
+            chart.series[index].hide();
+        })
+        floodSeries.show();
+    }
+}
+
+public stageDischargeAgeColor(date): string {
+    let days = (new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24)
+        if (days <= 31) {
+            // console.log("first month", days)
+            return 'red'; // orange
+        } else if (days <= 365) {
+            return 'orange'; // orange    
+        } else if (days <= 730) {
+            return "#0000cdcc"; // blue
+        } else {
+            return "#0000cd4d"; // light blue
         }
+}
 
-        public stageDischargeAgeColor(date): string {
-            let days = (new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24)
-                if (days <= 31) {
-                    // console.log("first month", days)
-                    return 'red'; // orange
-                } else if (days <= 365) {
-                    return 'orange'; // orange    
-                } else if (days <= 730) {
-                    return "#0000cdcc"; // blue
-                } else {
-                    return "#0000cd4d"; // light blue
-                }
-        }
-
-        public stageDischargeQualityColor(quality) {
-            if (quality === "Good") {
-            return "#2ED017";
-            } else if (quality === "Fair") {
-            return "#E7F317";
-            } else { (quality === "Poor") }
-            return "#FFA200";
-            } 
-
-
+public stageDischargeQualityColor(quality) {
+    if (quality === "Good") {
+    return "#2ED017";
+    } else if (quality === "Fair") {
+    return "#E7F317";
+    } else { (quality === "Poor") }
+    return "#FFA200";
+} 
 
 //Create discharge and rating curve chart
 public createDischargePlot(): void {
@@ -3148,18 +3131,20 @@ public createDischargePlot(): void {
     this.startYear = minYear;
     this.endYear = new Date().getFullYear();
     this.yearSliderOptions = {
-    floor: this.startYear,
-    ceil: this.endYear,
-    draggableRange: true,
-    noSwitching: true,
-    showTicks: false,
-    onChange: () => {
-        this.updateChart();
-    },
+        floor: this.startYear,
+        ceil: this.endYear,
+        draggableRange: true,
+        noSwitching: true,
+        showTicks: false,
+        onChange: () => {
+            this.updateChart();
+        },
     };
 
-
+    let measuredDataMax = Math.max.apply(Math, this.measuredObj.map(function(obj) { return obj.y; }));
+    let measuredDataMin = Math.min.apply(Math, this.measuredObj.map(function(obj) { return obj.y; }));
     this.dischargeChartConfig = {
+
         chart: {
             height: 450,
             width: 800,
@@ -3191,7 +3176,17 @@ public createDischargePlot(): void {
             custom: {
                 allowNegativeLog: true
             },
-            plotLines: [{value: null, color: null, width: null, zIndex: null, label: {text: null}, id: 'plotlines'}]
+            plotLines: [{value: null, color: null, width: null, zIndex: null, label: {text: null}, id: 'plotlines'}],
+            // tickPositioner: function () {
+            //     var positions = [];
+            //     var tick = Math.floor(measuredDataMin) > 0 ? Math.floor(measuredDataMin) - 1 : 0;
+            //     var max = measuredDataMax + 2;
+            //     var increment = (max - tick) > 18? 2 : 1;
+            //     for (tick; tick <= max; tick += increment) {
+            //         positions.push(tick);
+            //     }
+            //     return positions;
+            // }
         },
         series  : [
         {
@@ -3243,7 +3238,17 @@ public createDischargePlot(): void {
                 symbol: 'circle',
                 radius: 3
             },
-            showInLegend: this.formattedDischargePeakDates.length > 0
+            showInLegend: this.formattedDischargePeakDates.length > 0,
+            dataLabels: {
+                    enabled: true,
+                    formatter: function() {
+                        return this.point.options.date.substring(0, 4);
+                    },
+                    y: -3,
+                    style:{
+                        fontSize: "9px",
+                    },
+            },
         },
         {
             name    : 'USGS Measured',
@@ -3270,131 +3275,81 @@ public createDischargePlot(): void {
                 radius: 3
             },
             showInLegend: this.error == false //!this.measuredObj.every(item => isNaN(item.y)) 
-        },
-        {
-            name    : 'Flood Stages',
-            showInNavigator: false,
-            tooltip: {
-                headerFormat:'<b>Flood Stages</b>',
-                pointFormatter: function(){
-                    if (this.formattedPeakDates !== null){
-                        let UTCday = this.getUTCDate;
-                    }
-                }
-            },
-            turboThreshold: 0, 
-            type    : 'line',
-            color   : 'yellow',
-            data    : [], // this.stagesData,
-            marker: {
-                symbol: 'circle',
-                radius: 0
-            },
-            showInLegend: true
-        }] 
-    } 
-    let chart = $('#chart3').highcharts();
+        }
+    ]},
 
-    var show = true;
-    var link = null;
 
-                // horizontal and vertical lines
-                for(let stage of this.stages) {
+    
+    // Format flood stages as data series
+    this.formattedStages = []
+    this.stages.forEach((stage, index) => {
+        if (stage.x != undefined || stage.y != undefined) {
+            let stageNameCapitalized = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
+            this.formattedStages.push({
+                data: [[0,stage.y],[stage.x,stage.y],[stage.x,0]],
+                marker: {
+                    enabled: false
+                },
+                lineWidth: 2,
+                linkedTo: index == 0 ? null : ":previous",
+                showInLegend: index == 0 ? true : false,
+                name: 'Flood Stages',
+                events:{
+                    hide: function () {
+                        this.chart.yAxis[0].removePlotLine('plotLine');
+                        this.chart.xAxis[0].removePlotLine('plotLine');
+                    },
+                    show: function(){
+                        this.chart.yAxis[0].addPlotLine({
+                            color: 'black',
+                            width: 0,
+                            zIndex: 6,
+                            id:'plotLine',
+                            value: stage.y,
+                            label: {
+                                text: stageNameCapitalized + ": " + stage.y + " ft", // not showing up
+                                textAlign: 'left',
+                                fontWeight: 'bold',
+                                x: 12,
+                                y: -4,
+                                style: {
+                                    fontSize: '10px',  // smaller font
+                                },
+                                zIndex: 9999999 
+                            }
+                        });
+                        this.chart.xAxis[0].addPlotLine({
+                            color: 'black',
+                            width: 0,
+                            zIndex: 6,
+                            value: stage.x,
+                            id:'plotLine',
+                            label: {
+                                text: "        " + stageNameCapitalized + ": " + parseInt(stage.x) + " cfs", // not showing up
+                                verticalAlign: "bottom",
+                                y: -110,
+                                x: 2,
+                                fontWeight: 'bold',
+                                style: {
+                                    fontSize: '10px',  // smaller font
+                                },
+                                zIndex: 9999999 
+                            }
+                        })
+                    },
+                },
+                id: 'floodStageLine_'+stage.name,
+                color: stage.color
+            })
+        }
+    });
 
-                    if(stage.x === undefined || stage.y === undefined) {
-                        continue; 
-                    }
+    // Add flood stages (horizontal and vertical lines) to the chart
+    this.formattedStages.forEach((formattedStage) => {
+        this.dischargeChartConfig.series.push(formattedStage)
+    });
 
-                    let stageNameCapitalized = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
-
-                    var horizontalStageSeries = {
-                        data: [[0, stage.y], [stage.x, stage.y]],
-                        enableMouseTracking: false,
-                        marker: {
-                            enabled: false
-                        },
-                        lineWidth: 2,
-                        linkedTo: link,
-                        showInLegend: false,
-                        name: `${stageNameCapitalized} Stages - Horizontal`,
-                        id: `${stage.name}StageLineHorizontal`,
-                        color: stage.color,
-                        type: 'line'
-                    };
-                    chart.addSeries(horizontalStageSeries);
-
-                    chart.yAxis[0].addPlotLine({
-                        value: stage.y,
-                        color: stage.color,
-                        width: 0,
-                        id: `${stage.name}-horizontal`,
-                        label: {
-                            text: `${stageNameCapitalized}: ${stage.y} ft`,
-                            align: 'left',
-                            y: -5,
-                            style: {
-                                // fontWeight: 'bold',
-                                // fontSize: '9px',
-                                font: '9px Arial, sans-serif'
-                            },
-                            },
-                        zIndex: 999
-                    });
-
-                    var verticalStageSeries = {
-                        data: [[stage.x, 0], [stage.x, stage.y]],
-                        enableMouseTracking: false,
-                        marker: {
-                            enabled: false
-                        },
-                        lineWidth: 2,
-                        linkedTo: link,
-                        showInLegend: false,
-                        name: `${stageNameCapitalized} Stages - Vertical`,
-                        id: `${stage.name}StageLineVertical`,
-                        color: stage.color,
-                        type: 'line'
-                    };
-                    chart.addSeries(verticalStageSeries);
-
-                    chart.xAxis[0].addPlotLine({
-                        value: stage.x,
-                        color: stage.color,
-                        width: 0,
-                        id: `${stage.name}-vertical`,
-                        label: {
-                            text: `${stageNameCapitalized}: ${Math.round(stage.x)} cfs`, 
-                            align: 'right',
-                            verticalAlign: 'bottom',
-                            x: 5,
-                            y: -10,
-                            style: {
-                                // fontWeight: 'normal',
-                                // fontSize: '9px',
-                                font: '9px Arial, sans-serif'
-                            },
-                        },
-                        zIndex: 999
-                    });
-                    // crosshairs
-                    chart.xAxis[0].update({
-                        crosshair: {
-                            color: 'red',
-                            dashStyle: 'Solid'
-                        }
-                    });
-                    chart.yAxis[0].update({
-                        crosshair: {
-                            color: 'red',
-                            dashStyle: 'Solid'
-                        }
-                    });
-
-                    show = false;
-                    link = ":previous";
-                }
 }
-
 
 public createDailyRasterPlot(): void {
     if (this.dailyValuesOnly.length > 0) {
@@ -3548,7 +3503,7 @@ public createDailyRasterPlot(): void {
         //checkbox for turning on and off AEP lines
         public showFloodStats = true;
         public toggleFloodStats () {
-            let chart = $('#chart1').highcharts();
+            let chart = $('#chart3').highcharts();
             let floodSeries = chart.series[this.selectedFloodFreqStats.seriesIndex]
             if (this.showFloodStats) {
                 floodSeries.show();
@@ -3556,7 +3511,7 @@ public createDailyRasterPlot(): void {
                 floodSeries.hide();
             }
         }
-
+        
         //checkbox for change linear to log scale
         public logScale = false; 
         public toggleLogLinear () {
@@ -3567,6 +3522,8 @@ public createDailyRasterPlot(): void {
                 chart.yAxis[0].update({ type: 'linear' });
             }
         };
+
+
         //checkbox to plot peaks on one year (2022 for now)
         public peaksOnYear = true;
         public togglePeakYear () {
@@ -3787,32 +3744,21 @@ public createDailyRasterPlot(): void {
             }
         }
             
-        //checkbox to linear to log scale for discharge plot
+        // try to dynamic legend of discharge plot
+        public logScaleDischarge = false; // starts with it unchecked
+        public toggleLogLinearDischarge() {
+            // console.log('toggleLogLinearDischarge() called');
+            let chart = $('#chart3').highcharts();
+            // console.log('logScaleDischarge', this.logScaleDischarge);
+            if (this.logScaleDischarge) {
+                chart.xAxis[0].update({ type: 'logarithmic' });
+                chart.yAxis[0].update({ type: 'logarithmic' });
+            } else {
+                chart.xAxis[0].update({ type: 'linear' });
+                chart.yAxis[0].update({ type: 'linear' });
+            }
+        }
 
-        // put code for dynamic legend here
-        //     note = $("input[name='markerHighlights']:checked").val();
-
-        // var xLoc = 580;
-        // var yLoc = 280;
-
-        // if(chart.yAxis[0].options.type == "logarithmic"){
-        //     xLoc = 85;
-        //     yLoc = 250;
-        // }
-
-        public logScaleDischarge = false; // starts with it uncehcked
-            public toggleLogLinearDischarge() {
-                // console.log('toggleLogLinearDischarge() called');
-                let chart = $('#chart3').highcharts();
-                // console.log('logScaleDischarge', this.logScaleDischarge);
-                if (this.logScaleDischarge) {
-                    chart.xAxis[0].update({ type: 'logarithmic' });
-                    chart.yAxis[0].update({ type: 'logarithmic' });
-                } else {
-                    chart.xAxis[0].update({ type: 'linear' });
-                    chart.yAxis[0].update({ type: 'linear' });
-                }
-            };
 
         public toggleDischargeData (dataType) {
             let chart = $('#chart3').highcharts();
