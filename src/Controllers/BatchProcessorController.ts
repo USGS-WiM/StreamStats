@@ -784,8 +784,12 @@ module StreamStats.Controllers {
             delete this.submitBatchData.attachment
 
             // reset objects to default values that orginate in controller
-            this.selectedParamList = []
-            this.flowStatIDs = []
+            this.selectedParamList.length = 0
+            this.flowStatIDs.length = 0
+            this.flowStatsList.length = 0;
+            this.availableParamList.length = 0;
+            this.selectedFlowStatsList.length = 0;
+            this.checkStats()
         }
     }//end  class
 
