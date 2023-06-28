@@ -3141,11 +3141,14 @@ public createDischargePlot(): void {
         },
     };
 
-    // let measuredDataMax = Math.max.apply(Math, this.measuredObj.map(function(obj) { return obj.y; }));
-    // let measuredDataMin = Math.min.apply(Math, this.measuredObj.map(function(obj) { return obj.y; }));
-
-    let measuredDataMax = Math.max.apply(Math, this.measuredObj.map(function(obj) { return obj.y; }));
-    let measuredDataMin = Math.min.apply(Math, this.measuredObj.map(function(obj) { return obj.y; }));
+    let measuredDataMax = Math.max.apply(Math, this.measuredObj
+        .filter(obj => typeof obj.y === 'number' && !isNaN(obj.y))
+        .map(obj => obj.y)
+    );
+    let measuredDataMin = Math.min.apply(Math, this.measuredObj
+        .filter(obj => typeof obj.y === 'number' && !isNaN(obj.y))
+        .map(obj => obj.y)
+    );
 
     console.log("max3147", measuredDataMax)
     console.log("min3147", measuredDataMin)
@@ -3184,22 +3187,22 @@ public createDischargePlot(): void {
                 allowNegativeLog: true
             },
             plotLines: [{value: null, color: null, width: null, zIndex: null, label: {text: null}, id: 'plotlines'}],
-            tickPositioner: function () {
-                var positions = [];
-                console.log("max", measuredDataMax)
-                console.log("min", measuredDataMin)
-                var tick = Math.floor(measuredDataMin) > 0 ? Math.floor(measuredDataMin) - 1 : 0;
-                var max = measuredDataMax + 2;
-                var increment = (max - tick) > 18? 2 : 1;
-                console.log(increment)
-                console.log("tick", tick)
-                console.log("max", max)
-                for (tick; tick - increment <= max; tick += increment) {
-                    positions.push(tick);
-                }
-                console.log(positions)
-                return positions;
-            }
+            // tickPositioner: function () {
+            //     var positions = [];
+            //     console.log("max", measuredDataMax)
+            //     console.log("min", measuredDataMin)
+            //     var tick = Math.floor(measuredDataMin) > 0 ? Math.floor(measuredDataMin) - 1 : 0;
+            //     var max = measuredDataMax + 2;
+            //     var increment = (max - tick) > 18? 2 : 1;
+            //     console.log(increment)
+            //     console.log("tick", tick)
+            //     console.log("max", max)
+            //     for (tick; tick - increment <= max; tick += increment) {
+            //         positions.push(tick);
+            //     }
+            //     console.log(positions)
+            //     return positions;
+            // }
         },
         series  : [
         {
