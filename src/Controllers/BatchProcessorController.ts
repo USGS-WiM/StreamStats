@@ -124,6 +124,7 @@ module StreamStats.Controllers {
         public submitBatchFailedAlert: boolean;
         public submitBatchData: SubmitBatchData;
         public submitBatchOver250: boolean;
+        public submitBatchOver250Message: string;
 
         // spinners
         public regionListSpinner: boolean;
@@ -522,7 +523,8 @@ module StreamStats.Controllers {
                         // handle if status is not 200, let user know error
                         else {
                             var detail = r.data.detail
-                            this.toaster.pop('error', "The submission failed for the following reason:" + detail, "", 5000);
+                            this.toaster.pop('error', "The submission failed for the following reason:" + detail, "", 20000);
+
                         }
                     }).finally(() => {
                     
@@ -541,9 +543,9 @@ module StreamStats.Controllers {
 
                         // first, handle if status is 500 and detail contains more "250", which means use tried to submit more than 250 points
                         if (r.status == 500 && r.data.detail.indexOf("250") > -1) {
-                            let message = "Batch contains more than 250 points. Only the first 250 points will be processed. Please resubmit the batch if you would like only the first 250 points to be processed."
+                            this.submitBatchOver250Message = "Batch contains more than 250 points. Only the first 250 points will be processed. Please select the 'Submit Batch Over 250 Points' button if you would like only the first 250 points to be processed."
                             this.submitBatchOver250 = true;
-                            this.toaster.pop('warning', message, "", 5000);
+                            this.toaster.pop("warning", this.submitBatchOver250Message, "", 20000);
                         }
                         
                         // handle if status is 200, which means the batch was submitted successfully

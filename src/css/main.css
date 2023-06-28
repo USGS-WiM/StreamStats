@@ -1416,6 +1416,15 @@ Batch processor modal
     align-items: center;
     margin-right: 15px;
 }
+
+.bp-status-250 {
+    background-color: #ff9200;
+    border-radius: 10px;
+    margin: auto;
+    padding: 10px;
+    border: 1px solid #888;
+    width: 80%;                             
+}
 /*
     Report
     Report

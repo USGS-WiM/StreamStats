@@ -275,7 +275,10 @@
 
 <!-- Start modal footer -->
 <div class="modal-footer">
-    <div class="row" style="justify-content: center;">
+    <div ng-if="vm.submitBatchOver250" class="bp-status-250" >
+        {{vm.submitBatchOver250Message}}
+    </div>
+    <div class="row" style="justify-content: center; padding-top: 15px;">
         <!-- Button to submit batch -->
         <button ng-if="vm.selectedBatchProcessorTabName==='submitBatch' && vm.submitBatchOver250 == false" type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.submitBatch()"
             ng-disabled="vm.submittingBatch || !vm.selectedRegion || !vm.submitBatchData.idField || !vm.submitBatchData.email || !vm.submitBatchData.attachment"><i
