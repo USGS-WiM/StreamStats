@@ -69,7 +69,8 @@ module StreamStats.Controllers {
         resultsURL: URL,
         region: string,
         pointsRequested: number,
-        pointsSuccessful: number
+        pointsSuccessful: number,
+        deleteCode: string
     }
 
     class BatchStatus implements IBatchStatus {
@@ -82,6 +83,7 @@ module StreamStats.Controllers {
         public region: string;
         public pointsRequested: number;
         public pointsSuccessful: number;
+        public deleteCode: string;
     }
 
     class SubmitBatchData {
@@ -482,8 +484,13 @@ module StreamStats.Controllers {
                     this.retrievingBatchStatus = false;
                 }
             );
+        }
 
-            
+        public trashBatch(batchID: number, deleteCode: string, batchStatusEmail: string) {
+            let text = "Are you sure you want to delete Batch ID " + batchID + "?"
+            if (confirm(text) == true) {
+                this.deleteBatch(batchID, deleteCode, batchStatusEmail);                
+            }
         }
         
         // submit batch job
@@ -702,7 +709,8 @@ module StreamStats.Controllers {
                                 resultsURL: batch.ResultsURL,
                                 region: batch.Region,
                                 pointsRequested: batch.NumberPoints,
-                                pointsSuccessful: batch.NumberPointsSuccessful
+                                pointsSuccessful: batch.NumberPointsSuccessful,
+                                deleteCode: batch.DeleteCode
                             }
 
                             batchStatusMessages.push(status);
@@ -717,6 +725,27 @@ module StreamStats.Controllers {
                 }, (error) => {
                 }).finally(() => {
                 });
+        }
+
+        // soft delete a batch
+        public deleteBatch(batchID: number, deleteCode: string, batchStatusEmail: string): ng.IPromise<any> {
+
+                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorDeleteBatch'].format(deleteCode);
+                var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.DELETE);
+
+                return this.Execute(request).then(
+                    (response: any) => {
+                        let text = "Batch ID " + batchID + " was deleted.";
+                        alert(text);
+                        // Refresh the list of batches
+                        this.getBatchStatusList(batchStatusEmail); 
+                        this.retrievingBatchStatus = true;
+                    }, (error) => {
+                        let text = "Error deleting batch ID " + batchID + ". Please try again later or click the Help menu button to submit a Support Request.";
+                        alert(text);
+                    }).finally(() => {
+                        
+                    });
         }
 
         // Helper Methods
