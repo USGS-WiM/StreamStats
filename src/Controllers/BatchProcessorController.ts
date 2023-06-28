@@ -530,6 +530,7 @@ module StreamStats.Controllers {
                     
                     this.submittingBatch = false;
                     this.submitBatchOver250 = false;
+                    this.submitBatchSuccessAlert = true
                 });
             }
 
@@ -550,6 +551,7 @@ module StreamStats.Controllers {
                         
                         // handle if status is 200, which means the batch was submitted successfully
                         else if (r.status == 200) {
+                            this.submitBatchSuccessAlert = true;
                             this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 20000);
                         }
                         

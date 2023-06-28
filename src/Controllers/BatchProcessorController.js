@@ -303,6 +303,7 @@ var StreamStats;
                     }).finally(function () {
                         _this.submittingBatch = false;
                         _this.submitBatchOver250 = false;
+                        _this.submitBatchSuccessAlert = true;
                     });
                 }
                 else {
@@ -314,6 +315,7 @@ var StreamStats;
                             _this.toaster.pop("warning", _this.submitBatchOver250Message, "", 20000);
                         }
                         else if (r.status == 200) {
+                            _this.submitBatchSuccessAlert = true;
                             _this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 20000);
                         }
                         else {
