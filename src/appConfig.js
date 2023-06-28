@@ -52,6 +52,7 @@ configuration.queryparams =
         'SSNationalLayers': '/arcgis/rest/services/StreamStats/nationalLayers/MapServer',
         'SSBatchProcessorStatus': '/status/',
         'SSBatchProcessorBatch': '/batch/?emailAddress={0}',
+        'SSBatchProcessorDeleteBatch': '/batch/{0}',
         'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
         'NLCDQueryService': '/LandCover/USGS_EROS_LandCover_NLCD/MapServer/4',
         'regulationService': '/arcgis/rest/services/regulations/{0}/MapServer/exts/RegulationRESTSOE/Regulation',
