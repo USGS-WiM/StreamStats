@@ -278,6 +278,9 @@ var StreamStats;
             BatchProcessorController.prototype.submitBatch = function (submit250) {
                 var _this = this;
                 if (submit250 === void 0) { submit250 = false; }
+                if (this.batchStatusEmail == undefined || this.batchStatusEmail == null) {
+                    this.batchStatusEmail = this.submitBatchData.email.toString();
+                }
                 this.addStatIDtoList();
                 var formdata = new FormData();
                 formdata.append('region', this.selectedRegion.toString());
@@ -298,6 +301,7 @@ var StreamStats;
                             _this.submitBatchSuccessAlert = true;
                             _this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 20000);
                             _this.clearBatchForm();
+                            _this.getBatchStatusList(_this.batchStatusEmail);
                         }
                         else {
                             var detail = r.data.detail;
@@ -321,6 +325,7 @@ var StreamStats;
                             _this.submitBatchSuccessAlert = true;
                             _this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 20000);
                             _this.clearBatchForm();
+                            _this.getBatchStatusList(_this.batchStatusEmail);
                         }
                         else {
                             var detail = r.data.detail;
@@ -467,11 +472,11 @@ var StreamStats;
             };
             BatchProcessorController.prototype.clearBatchForm = function () {
                 delete this.selectedRegion;
-                delete this.selectedParamList;
-                delete this.flowStatIDs;
                 delete this.submitBatchData.email;
                 delete this.submitBatchData.idField;
                 delete this.submitBatchData.attachment;
+                this.selectedParamList = [];
+                this.flowStatIDs = [];
             };
             BatchProcessorController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', '$modalInstance', 'toaster'];
             return BatchProcessorController;

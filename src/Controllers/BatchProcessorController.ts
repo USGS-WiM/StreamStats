@@ -132,6 +132,7 @@ module StreamStats.Controllers {
         public parametersListSpinner: boolean;
 
         // batch status
+        public batchStatusEmail: string;
         public batchStatusMessageList: Array<BatchStatusMessage>;
         public batchStatusList: Array<BatchStatus>;
         public retrievingBatchStatus: boolean;
@@ -475,7 +476,7 @@ module StreamStats.Controllers {
         // create list of batch statuses
         public getBatchStatusList(email: string): void {
 
-           this.getBatchStatusByEmail(email).then(
+            this.getBatchStatusByEmail(email).then(
                 response => {
                     this.batchStatusList = response;
                     this.retrievingBatchStatus = false;
@@ -488,6 +489,11 @@ module StreamStats.Controllers {
         // submit batch job
         public submitBatch(submit250:boolean=false): void {
 
+            // autopopulate batch status tab upon batch submission
+            if (this.batchStatusEmail == undefined || this.batchStatusEmail == null) {
+
+                this.batchStatusEmail = this.submitBatchData.email.toString()
+            }
             // create flowStatIDs list
             this.addStatIDtoList();
             
@@ -525,6 +531,10 @@ module StreamStats.Controllers {
                             
                             // give blank form for next submission
                             this.clearBatchForm();
+
+                            // check if email entered on batch status tab and reset list of batches
+                            this.getBatchStatusList(this.batchStatusEmail)
+                            
                         }
 
                         // handle if status is not 200, let user know error
@@ -563,6 +573,9 @@ module StreamStats.Controllers {
 
                             // give blank form for next submission
                             this.clearBatchForm();
+
+                            // check if email entered on batch status tab and reset list of batches
+                            this.getBatchStatusList(this.batchStatusEmail)
                         }
                         
                         // handle if status is not 200 or to do with 250 points and let submitter know error
@@ -764,12 +777,15 @@ module StreamStats.Controllers {
 
         // clear fields after submision
         private clearBatchForm(): void {
+            // delete objects with values originating from ng-model in html
             delete this.selectedRegion
-            delete this.selectedParamList
-            delete this.flowStatIDs
             delete this.submitBatchData.email
             delete this.submitBatchData.idField
             delete this.submitBatchData.attachment
+
+            // reset objects to default values that orginate in controller
+            this.selectedParamList = []
+            this.flowStatIDs = []
         }
     }//end  class
 

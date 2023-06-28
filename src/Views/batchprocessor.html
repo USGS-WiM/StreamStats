@@ -217,12 +217,12 @@
                     <span>Email Address:</span>
                 </div>    
                 <div>
-                    <span><input class="bp-input" type="email" id="emailFieldStatus" ng-model="batchStatusEmail" required></span>
+                    <span><input class="bp-input" type="email" id="emailFieldStatus" ng-model="vm.batchStatusEmail" required></span>
                 </div>
                 <!-- End email field -->
                 <!-- Button to fetch batch status -->
                 <div>
-                    <button type="submit" ng-click="vm.getBatchStatusList(batchStatusEmail); vm.retrievingBatchStatus = true">
+                    <button type="submit" ng-click="vm.getBatchStatusList(vm.batchStatusEmail); vm.retrievingBatchStatus = true">
                         <i class="fa fa-share"></i>
                         <span>&nbsp;&nbsp;Check Status</span>
                     </button>
@@ -275,7 +275,7 @@
 
 <!-- Start modal footer -->
 <div class="modal-footer">
-    <div ng-if="vm.selectedBatchProcessorTabName == 'submitBatch' &&  && vm.submitBatchOver250" class="bp-status-250" >
+    <div ng-if="vm.selectedBatchProcessorTabName == 'submitBatch' && vm.submitBatchOver250" class="bp-status-250" >
         {{vm.submitBatchOver250Message}}
     </div>
     <div class="row" style="justify-content: center; padding-top: 15px;">
