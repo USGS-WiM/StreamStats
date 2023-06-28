@@ -534,7 +534,7 @@ module StreamStats.Controllers {
                         var r = response;
                         if (r.status == 200) {
                             this.submitBatchSuccessAlert = true;
-                            this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 20000);
+                            this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
                             
                             // give blank form for next submission
                             this.clearBatchForm();
@@ -547,7 +547,7 @@ module StreamStats.Controllers {
                         // handle if status is not 200, let user know error
                         else {
                             var detail = r.data.detail
-                            this.toaster.pop('error', "The submission failed for the following reason:" + detail, "", 20000);
+                            this.toaster.pop('error', "The submission failed for the following reason:" + detail, "", 15000);
 
                         }
                     }).finally(() => {
@@ -570,13 +570,13 @@ module StreamStats.Controllers {
                         if (r.status == 500 && r.data.detail.indexOf("250") > -1) {
                             this.submitBatchOver250Message = "Batch contains more than 250 points. Only the first 250 points will be processed. Please select the 'Submit Batch Over 250 Points' button if you would like only the first 250 points to be processed."
                             this.submitBatchOver250 = true;
-                            this.toaster.pop("warning", this.submitBatchOver250Message, "", 20000);
+                            this.toaster.pop("warning", this.submitBatchOver250Message, "", 5000);
                         }
                         
                         // handle if status is 200, which means the batch was submitted successfully
                         else if (r.status == 200) {
                             this.submitBatchSuccessAlert = true;
-                            this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 20000);
+                            this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
 
                             // give blank form for next submission
                             this.clearBatchForm();
@@ -588,7 +588,7 @@ module StreamStats.Controllers {
                         // handle if status is not 200 or to do with 250 points and let submitter know error
                         else {
                             let detail = r.data.detail
-                            this.toaster.pop('error', "The submission failed for the following reason:" + detail, "", 5000);
+                            this.toaster.pop('error', "The submission failed for the following reason:" + detail, "", 15000);
                         }
 
                     }).finally(() => { this.submittingBatch = false; });

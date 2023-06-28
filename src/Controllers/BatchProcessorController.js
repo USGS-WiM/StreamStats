@@ -305,13 +305,13 @@ var StreamStats;
                         var r = response;
                         if (r.status == 200) {
                             _this.submitBatchSuccessAlert = true;
-                            _this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 20000);
+                            _this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
                             _this.clearBatchForm();
                             _this.getBatchStatusList(_this.batchStatusEmail);
                         }
                         else {
                             var detail = r.data.detail;
-                            _this.toaster.pop('error', "The submission failed for the following reason:" + detail, "", 20000);
+                            _this.toaster.pop('error', "The submission failed for the following reason:" + detail, "", 15000);
                         }
                     }).finally(function () {
                         _this.submittingBatch = false;
@@ -325,17 +325,17 @@ var StreamStats;
                         if (r.status == 500 && r.data.detail.indexOf("250") > -1) {
                             _this.submitBatchOver250Message = "Batch contains more than 250 points. Only the first 250 points will be processed. Please select the 'Submit Batch Over 250 Points' button if you would like only the first 250 points to be processed.";
                             _this.submitBatchOver250 = true;
-                            _this.toaster.pop("warning", _this.submitBatchOver250Message, "", 20000);
+                            _this.toaster.pop("warning", _this.submitBatchOver250Message, "", 5000);
                         }
                         else if (r.status == 200) {
                             _this.submitBatchSuccessAlert = true;
-                            _this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 20000);
+                            _this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
                             _this.clearBatchForm();
                             _this.getBatchStatusList(_this.batchStatusEmail);
                         }
                         else {
                             var detail = r.data.detail;
-                            _this.toaster.pop('error', "The submission failed for the following reason:" + detail, "", 5000);
+                            _this.toaster.pop('error', "The submission failed for the following reason:" + detail, "", 15000);
                         }
                     }).finally(function () { _this.submittingBatch = false; });
                 }
