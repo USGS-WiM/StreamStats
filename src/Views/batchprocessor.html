@@ -275,7 +275,7 @@
 
 <!-- Start modal footer -->
 <div class="modal-footer">
-    <div ng-if="vm.submitBatchOver250" class="bp-status-250" >
+    <div ng-if="vm.selectedBatchProcessorTabName == 'submitBatch' &&  && vm.submitBatchOver250" class="bp-status-250" >
         {{vm.submitBatchOver250Message}}
     </div>
     <div class="row" style="justify-content: center; padding-top: 15px;">
@@ -300,8 +300,8 @@
         <!-- End close modal button -->
     </div>
 
-    <div class="bp-submit-success" ng-show="vm.submitBatchSuccessAlert">The batch was submitted successfully. You will be
+    <div class="bp-submit-success" ng-show="vm.selectedBatchProcessorTabName == 'submitBatch' && vm.submitBatchSuccessAlert">The batch was submitted successfully. You will be
         notified by email when results are available.
     </div>
-    <div class="bp-submit-success" ng-show="vm.submitBatchFailedAlert">The batch failed to submit.</div>
+    <div class="bp-submit-success" ng-show="vm.selectedBatchProcessorTabName == 'submitBatch' && vm.submitBatchFailedAlert">The batch failed to submit.</div>
 </div><!-- End modal footer -->
