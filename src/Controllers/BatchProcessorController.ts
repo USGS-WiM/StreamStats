@@ -198,7 +198,7 @@ module StreamStats.Controllers {
 
             // clear out success message when starting new batch submission
             this.submitBatchSuccessAlert = false;
-            
+
             // activate spinners during state/region changes
             if (this.flowStatsListSpinner == false || this.parametersListSpinner == false) {
                 this.flowStatsListSpinner = true;
@@ -520,7 +520,11 @@ module StreamStats.Controllers {
                     response => {
                         var r = response;
                         if (r.status == 200) {
+                            this.submitBatchSuccessAlert = true;
                             this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 20000);
+                            
+                            // give blank form for next submission
+                            this.clearBatchForm();
                         }
 
                         // handle if status is not 200, let user know error
@@ -556,11 +560,14 @@ module StreamStats.Controllers {
                         else if (r.status == 200) {
                             this.submitBatchSuccessAlert = true;
                             this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 20000);
+
+                            // give blank form for next submission
+                            this.clearBatchForm();
                         }
                         
                         // handle if status is not 200 or to do with 250 points and let submitter know error
                         else {
-                            var detail = r.data.detail
+                            let detail = r.data.detail
                             this.toaster.pop('error', "The submission failed for the following reason:" + detail, "", 5000);
                         }
 
@@ -753,6 +760,16 @@ module StreamStats.Controllers {
             this.selectedFlowStatsList.forEach((item) => {
                 this.flowStatIDs.push(item['statisticGroupID']);
             });
+        }
+
+        // clear fields after submision
+        private clearBatchForm(): void {
+            delete this.selectedRegion
+            delete this.selectedParamList
+            delete this.flowStatIDs
+            delete this.submitBatchData.email
+            delete this.submitBatchData.idField
+            delete this.submitBatchData.attachment
         }
     }//end  class
 

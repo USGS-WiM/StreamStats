@@ -295,7 +295,9 @@ var StreamStats;
                     this.postBatchFormData(formdata, headers).then(function (response) {
                         var r = response;
                         if (r.status == 200) {
+                            _this.submitBatchSuccessAlert = true;
                             _this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 20000);
+                            _this.clearBatchForm();
                         }
                         else {
                             var detail = r.data.detail;
@@ -318,6 +320,7 @@ var StreamStats;
                         else if (r.status == 200) {
                             _this.submitBatchSuccessAlert = true;
                             _this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 20000);
+                            _this.clearBatchForm();
                         }
                         else {
                             var detail = r.data.detail;
@@ -461,6 +464,14 @@ var StreamStats;
                 this.selectedFlowStatsList.forEach(function (item) {
                     _this.flowStatIDs.push(item['statisticGroupID']);
                 });
+            };
+            BatchProcessorController.prototype.clearBatchForm = function () {
+                delete this.selectedRegion;
+                delete this.selectedParamList;
+                delete this.flowStatIDs;
+                delete this.submitBatchData.email;
+                delete this.submitBatchData.idField;
+                delete this.submitBatchData.attachment;
             };
             BatchProcessorController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', '$modalInstance', 'toaster'];
             return BatchProcessorController;
