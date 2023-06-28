@@ -196,6 +196,9 @@ module StreamStats.Controllers {
         // send selected region code and retrieve flows stats list
         public getFlowStatsAndParams(rcode: string): void {
 
+            // clear out success message when starting new batch submission
+            this.submitBatchSuccessAlert = false;
+            
             // activate spinners during state/region changes
             if (this.flowStatsListSpinner == false || this.parametersListSpinner == false) {
                 this.flowStatsListSpinner = true;

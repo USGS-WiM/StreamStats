@@ -85,6 +85,7 @@ var StreamStats;
             };
             BatchProcessorController.prototype.getFlowStatsAndParams = function (rcode) {
                 var _this = this;
+                this.submitBatchSuccessAlert = false;
                 if (this.flowStatsListSpinner == false || this.parametersListSpinner == false) {
                     this.flowStatsListSpinner = true;
                     this.parametersListSpinner = true;

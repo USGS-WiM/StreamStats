@@ -1418,12 +1418,19 @@ Batch processor modal
 }
 
 .bp-status-250 {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px 18px;
+    margin: 10px 0;
+    font-size: 10pt;
+    letter-spacing: 0.8px;
+    border: 1px solid #d3d3d3;
+    color: #FFFFFF;
+    border-radius: 3px;
+    font-weight: 400;
     background-color: #ff9200;
-    border-radius: 10px;
-    margin: auto;
-    padding: 10px;
-    border: 1px solid #888;
-    width: 80%;                             
+    text-align: center;                                 
 }
 /*
     Report
