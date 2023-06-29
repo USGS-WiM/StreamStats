@@ -217,12 +217,12 @@
                     <span>Email Address:</span>
                 </div>    
                 <div>
-                    <span><input class="bp-input" type="email" id="emailFieldStatus" ng-model="batchStatusEmail" required></span>
+                    <span><input class="bp-input" type="email" id="emailFieldStatus" ng-model="vm.batchStatusEmail" required></span>
                 </div>
                 <!-- End email field -->
                 <!-- Button to fetch batch status -->
                 <div>
-                    <button type="submit" ng-click="vm.getBatchStatusList(batchStatusEmail); vm.retrievingBatchStatus = true">
+                    <button type="submit" ng-click="vm.getBatchStatusList(vm.batchStatusEmail); vm.retrievingBatchStatus = true">
                         <i class="fa fa-share"></i>
                         <span>&nbsp;&nbsp;Check Status</span>
                     </button>
@@ -275,13 +275,30 @@
 
 <!-- Start modal footer -->
 <div class="modal-footer">
-    <div class="row" style="justify-content: center;">
+    <div ng-if="vm.selectedBatchProcessorTabName == 'submitBatch' && vm.submitBatchOver250" class="bp-status-250" >
+        {{vm.submitBatchOver250Message}}
+    </div>
+    <div class="row" style="justify-content: center; padding-top: 15px;">
         <!-- Button to submit batch -->
-        <button ng-if="vm.selectedBatchProcessorTabName==='submitBatch'" type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.submitBatch()"
-            ng-disabled="vm.submittingBatch || !vm.selectedRegion || !vm.submitBatchData.idField || !vm.submitBatchData.email || !vm.submitBatchData.attachment"><i
+        <button ng-if="vm.selectedBatchProcessorTabName==='submitBatch' && vm.submitBatchOver250 == false" type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.submitBatch()"
+            ng-disabled="vm.submittingBatch || !vm.selectedRegion || !vm.submitBatchData.idField || !vm.submitBatchData.email || !vm.submitBatchData.attachment">
+            <i ng-if="vm.submittingBatch == false" class="fa fa-share"></i>
+            <i ng-if="vm.submittingBatch == true" class="fa fa-refresh fa-spin"></i>
 
-                class="fa fa-share"></i><span>&nbsp;&nbsp;Submit Batch</span></button>
+            <span>&nbsp;&nbsp;Submit Batch</span>
+        </button>
         <!-- End submit batch button -->
+
+        <!-- Button to submit GTE 250 batch -->
+        <button ng-if="vm.selectedBatchProcessorTabName==='submitBatch' && vm.submitBatchOver250 == true" type="submit"
+            class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.submitBatch(true)"
+            ng-disabled="vm.submittingBatch || !vm.selectedRegion || !vm.submitBatchData.idField || !vm.submitBatchData.email || !vm.submitBatchData.attachment">
+            <i ng-if="vm.submittingBatch == false" class="fa fa-share"></i>
+            <i ng-if="vm.submittingBatch == true" class="fa fa-refresh fa-spin"></i>
+
+            <span>&nbsp;&nbsp;Submit Batch Over 250 Points</span>
+        </button>
+        <!-- End submit batch GTE 250 button -->
 
         <!-- Button to close modal -->
         <button ng-click="vm.Close()" class="btn-black"><i
@@ -290,7 +307,8 @@
         <!-- End close modal button -->
     </div>
 
-    <div class="bp-submit-success" ng-show="vm.submittingBatch">The batch was submitted successfully. You will be
+    <div class="bp-submit-success" ng-show="vm.selectedBatchProcessorTabName == 'submitBatch' && vm.submitBatchSuccessAlert">The batch was submitted successfully. You will be
         notified by email when results are available.
     </div>
+    <div class="bp-submit-success" ng-show="vm.selectedBatchProcessorTabName == 'submitBatch' && vm.submitBatchFailedAlert">The batch failed to submit.</div>
 </div><!-- End modal footer -->

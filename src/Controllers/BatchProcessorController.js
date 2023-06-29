@@ -54,18 +54,21 @@ var StreamStats;
                 _this.parametersAllChecked = true;
                 _this.showBasinCharacteristics = false;
                 _this.submittingBatch = false;
-                _this.showSuccessAlert = false;
+                _this.submitBatchSuccessAlert = false;
+                _this.submitBatchFailedAlert = false;
                 _this.submitBatchData = new SubmitBatchData();
                 _this.regionListSpinner = true;
                 _this.flowStatsListSpinner = true;
                 _this.parametersListSpinner = true;
                 _this.batchStatusMessageList = [];
                 _this.batchStatusList = [];
+                _this.flowStatIDs = [];
+                _this.submitBatchOver250 = false;
                 _this.init();
                 return _this;
             }
             BatchProcessorController.prototype.Close = function () {
-                this.showSuccessAlert = false;
+                this.submitBatchSuccessAlert = false;
                 this.modalInstance.dismiss('cancel');
             };
             BatchProcessorController.prototype.selectBatchProcessorTab = function (tabname) {
@@ -82,6 +85,7 @@ var StreamStats;
             };
             BatchProcessorController.prototype.getFlowStatsAndParams = function (rcode) {
                 var _this = this;
+                this.submitBatchSuccessAlert = false;
                 if (this.flowStatsListSpinner == false || this.parametersListSpinner == false) {
                     this.flowStatsListSpinner = true;
                     this.parametersListSpinner = true;
@@ -277,6 +281,74 @@ var StreamStats;
                     this.deleteBatch(batchID, deleteCode, batchStatusEmail);
                 }
             };
+            BatchProcessorController.prototype.submitBatch = function (submit250) {
+                var _this = this;
+                if (submit250 === void 0) { submit250 = false; }
+                this.toaster.pop("wait", "Submitting Batch", "Please wait...", 0);
+                if (this.batchStatusEmail == undefined || this.batchStatusEmail == null) {
+                    this.batchStatusEmail = this.submitBatchData.email.toString();
+                }
+                this.addStatIDtoList();
+                var formdata = new FormData();
+                formdata.append('region', this.selectedRegion.toString());
+                formdata.append('basinCharacteristics', this.selectedParamList.toString());
+                formdata.append('flowStatistics', this.flowStatIDs.toString());
+                formdata.append('email', this.submitBatchData.email.toString());
+                formdata.append('IDField', this.submitBatchData.idField.toString());
+                formdata.append('geometryFile', this.submitBatchData.attachment, this.submitBatchData.attachment.name);
+                var headers = {
+                    "Content-Type": undefined
+                };
+                this.submittingBatch = true;
+                if (submit250 == true) {
+                    formdata.append('moreThan250Points', submit250.toString());
+                    this.postBatchFormData(formdata, headers).then(function (response) {
+                        var r = response;
+                        if (r.status == 200) {
+                            _this.submitBatchSuccessAlert = true;
+                            _this.toaster.clear();
+                            _this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
+                            _this.clearBatchForm();
+                            _this.getBatchStatusList(_this.batchStatusEmail);
+                        }
+                        else {
+                            var detail = r.data.detail;
+                            _this.toaster.clear();
+                            _this.toaster.pop('error', "The submission failed for the following reason:", detail, 15000);
+                        }
+                    }).finally(function () {
+                        _this.submittingBatch = false;
+                        _this.submitBatchOver250 = false;
+                        _this.submitBatchSuccessAlert = true;
+                    });
+                }
+                else {
+                    this.toaster.pop("wait", "Submitting Batch", "Please wait...", 0);
+                    this.postBatchFormData(formdata, headers).then(function (response) {
+                        var r = response;
+                        if (r.status == 500 && r.data.detail.indexOf("250") > -1) {
+                            _this.submitBatchOver250Message = "Batch contains more than 250 points. Only the first 250 points will be processed. Please select the 'Submit Batch Over 250 Points' button if you would like only the first 250 points to be processed.";
+                            _this.submitBatchOver250 = true;
+                            _this.toaster.clear();
+                            _this.toaster.pop("warning", _this.submitBatchOver250Message, "", 5000);
+                        }
+                        else if (r.status == 200) {
+                            _this.submitBatchSuccessAlert = true;
+                            _this.toaster.clear();
+                            _this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
+                            _this.clearBatchForm();
+                            _this.getBatchStatusList(_this.batchStatusEmail);
+                        }
+                        else {
+                            var detail = r.data.detail;
+                            _this.toaster.clear();
+                            _this.toaster.pop('error', "The submission failed for the following reason:" + detail, "", 15000);
+                        }
+                    }).finally(function () {
+                        _this.submittingBatch = false;
+                    });
+                }
+            };
             BatchProcessorController.prototype.loadParametersByRegionBP = function (rcode) {
                 if (!rcode)
                     return;
@@ -307,28 +379,17 @@ var StreamStats;
                 }).finally(function () {
                 });
             };
-            BatchProcessorController.prototype.validateZipFile = function ($files) {
-                if ($files[0].type != "application/x-zip-compressed" && $files[0].type != "application/zip") {
-                    this.toaster.pop('warning', "Please upload a .zip file.", "", 5000);
-                    this.submitBatchData.attachment = null;
-                }
-                return;
-            };
-            BatchProcessorController.prototype.submitBatch = function () {
-                var url = null;
-                var formdata = new FormData();
-                formdata.append('submit_batch[email]', this.submitBatchData.email);
-                formdata.append('submit_batch[subject]', this.submitBatchData.idField);
-                formdata.append('submit_batch[attachments][][resource]', this.submitBatchData.attachment, this.submitBatchData.attachment.name);
-                this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
-                var headers = {
-                    "tdb": "tbd"
-                };
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers, angular.identity);
-                this.submittingBatch = true;
+            BatchProcessorController.prototype.postBatchFormData = function (formdata, headers) {
+                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatch'];
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers);
+                return this.Execute(request).then(function (response) {
+                    return response;
+                }, function (error) {
+                    return error;
+                }).finally(function () { });
             };
             BatchProcessorController.prototype.retrieveBatchStatusMessages = function () {
-                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorStatus'];
+                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorStatusMessages'];
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 return this.Execute(request).then(function (response) {
                     var batchStatusMessages = [];
@@ -351,7 +412,7 @@ var StreamStats;
             };
             BatchProcessorController.prototype.getBatchStatusByEmail = function (email) {
                 var _this = this;
-                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatch'].format(email);
+                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatchStatus'].format(email);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 return this.Execute(request).then(function (response) {
                     var batchStatusMessages = [];
@@ -411,6 +472,13 @@ var StreamStats;
                 ;
                 return -1;
             };
+            BatchProcessorController.prototype.validateZipFile = function ($files) {
+                if ($files[0].type != "application/x-zip-compressed" && $files[0].type != "application/zip") {
+                    this.toaster.pop('warning', "Please upload a .zip file.", "", 5000);
+                    this.submitBatchData.attachment = null;
+                }
+                return;
+            };
             BatchProcessorController.prototype.addParameterToSelectedParamList = function (paramCode) {
                 try {
                     for (var i = 0; i < this.availableParamList.length; i++) {
@@ -426,6 +494,24 @@ var StreamStats;
                 catch (e) {
                     return false;
                 }
+            };
+            BatchProcessorController.prototype.addStatIDtoList = function () {
+                var _this = this;
+                this.selectedFlowStatsList.forEach(function (item) {
+                    _this.flowStatIDs.push(item['statisticGroupID']);
+                });
+            };
+            BatchProcessorController.prototype.clearBatchForm = function () {
+                delete this.selectedRegion;
+                delete this.submitBatchData.email;
+                delete this.submitBatchData.idField;
+                delete this.submitBatchData.attachment;
+                this.selectedParamList.length = 0;
+                this.flowStatIDs.length = 0;
+                this.flowStatsList.length = 0;
+                this.availableParamList.length = 0;
+                this.selectedFlowStatsList.length = 0;
+                this.checkStats();
             };
             BatchProcessorController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', '$modalInstance', 'toaster'];
             return BatchProcessorController;

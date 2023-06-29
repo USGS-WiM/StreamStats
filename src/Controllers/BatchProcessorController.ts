@@ -112,6 +112,7 @@ module StreamStats.Controllers {
         public flowStatsAllChecked: boolean;
         public selectedFlowStatsList: Array<Object>;
         public flowStatisticsAllChecked: boolean;
+        public flowStatIDs: Array<string>;
 
         // Parameters/basin characteristics
         public availableParamList: Array<Parameter>;
@@ -121,8 +122,11 @@ module StreamStats.Controllers {
 
         // POST methods
         public submittingBatch: boolean;
-        public showSuccessAlert: boolean;
+        public submitBatchSuccessAlert: boolean;
+        public submitBatchFailedAlert: boolean;
         public submitBatchData: SubmitBatchData;
+        public submitBatchOver250: boolean;
+        public submitBatchOver250Message: string;
 
         // spinners
         public regionListSpinner: boolean;
@@ -130,6 +134,7 @@ module StreamStats.Controllers {
         public parametersListSpinner: boolean;
 
         // batch status
+        public batchStatusEmail: string;
         public batchStatusMessageList: Array<BatchStatusMessage>;
         public batchStatusList: Array<BatchStatus>;
         public retrievingBatchStatus: boolean;
@@ -151,13 +156,16 @@ module StreamStats.Controllers {
             this.parametersAllChecked = true;
             this.showBasinCharacteristics = false;
             this.submittingBatch = false; 
-            this.showSuccessAlert = false;
+            this.submitBatchSuccessAlert = false;
+            this.submitBatchFailedAlert = false;
             this.submitBatchData = new SubmitBatchData();
             this.regionListSpinner = true;
             this.flowStatsListSpinner = true;
             this.parametersListSpinner = true;
             this.batchStatusMessageList = [];
             this.batchStatusList = [];
+            this.flowStatIDs = [];
+            this.submitBatchOver250 = false
             this.init();
         }
 
@@ -165,7 +173,7 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
 
         public Close(): void {
-            this.showSuccessAlert = false;
+            this.submitBatchSuccessAlert = false;
             this.modalInstance.dismiss('cancel')
         }
 
@@ -190,6 +198,9 @@ module StreamStats.Controllers {
 
         // send selected region code and retrieve flows stats list
         public getFlowStatsAndParams(rcode: string): void {
+
+            // clear out success message when starting new batch submission
+            this.submitBatchSuccessAlert = false;
 
             // activate spinners during state/region changes
             if (this.flowStatsListSpinner == false || this.parametersListSpinner == false) {
@@ -284,7 +295,6 @@ module StreamStats.Controllers {
                 }
                 this.onSelectedStatisticsGroupChanged(false);
             }
-
             // handle impacts of flowStat.checked
             this.checkStats();
         }
@@ -482,6 +492,118 @@ module StreamStats.Controllers {
                 this.deleteBatch(batchID, deleteCode, batchStatusEmail);                
             }
         }
+        
+        // submit batch job
+        public submitBatch(submit250:boolean=false): void {
+
+            this.toaster.pop("wait", "Submitting Batch", "Please wait...", 0);
+
+            // autopopulate batch status tab upon batch submission
+            if (this.batchStatusEmail == undefined || this.batchStatusEmail == null) {
+
+                this.batchStatusEmail = this.submitBatchData.email.toString()
+            }
+            // create flowStatIDs list
+            this.addStatIDtoList();
+            
+            // create formdata object and apend
+            var formdata = new FormData();
+            
+            formdata.append('region', this.selectedRegion.toString());
+            formdata.append('basinCharacteristics', this.selectedParamList.toString());
+            formdata.append('flowStatistics', this.flowStatIDs.toString());
+            formdata.append('email', this.submitBatchData.email.toString());
+            formdata.append('IDField', this.submitBatchData.idField.toString());
+            formdata.append('geometryFile', this.submitBatchData.attachment, this.submitBatchData.attachment.name);
+            
+            // create headers
+            var headers = {
+                "Content-Type": undefined
+            };
+
+            // set submittingBatch to true, which disables submit button to prevent multiple submissions
+            this.submittingBatch = true;
+            
+            // handles submitting more than 250 points
+            if (submit250 == true) {
+
+                // appends moreThan250Points to formdata
+                formdata.append('moreThan250Points', submit250.toString());
+
+        
+                // submits batch to API
+                this.postBatchFormData(formdata, headers).then(
+                    response => {
+                        var r = response;
+                        if (r.status == 200) {
+                            this.submitBatchSuccessAlert = true;
+                            this.toaster.clear();
+                            this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
+                            
+                            // give blank form for next submission
+                            this.clearBatchForm();
+
+                            // check if email entered on batch status tab and reset list of batches
+                            this.getBatchStatusList(this.batchStatusEmail)
+                            
+                        }
+
+                        // handle if status is not 200, let user know error
+                        else {
+                            var detail = r.data.detail
+                            this.toaster.clear();
+                            this.toaster.pop('error', "The submission failed for the following reason:", detail, 15000);
+
+                        }
+                    }).finally(() => {
+                    
+                    this.submittingBatch = false;
+                    this.submitBatchOver250 = false;
+                    this.submitBatchSuccessAlert = true
+                });
+            }
+
+            else { 
+                this.toaster.pop("wait", "Submitting Batch", "Please wait...", 0);
+                // submits batch to API
+                this.postBatchFormData(formdata, headers).then(
+                    response => {
+                        // assign response to variable
+                        var r = response;
+
+                        // first, handle if status is 500 and detail contains more "250", which means use tried to submit more than 250 points
+                        if (r.status == 500 && r.data.detail.indexOf("250") > -1) {
+                            this.submitBatchOver250Message = "Batch contains more than 250 points. Only the first 250 points will be processed. Please select the 'Submit Batch Over 250 Points' button if you would like only the first 250 points to be processed."
+                            this.submitBatchOver250 = true;
+                            this.toaster.clear();
+                            this.toaster.pop("warning", this.submitBatchOver250Message, "", 5000);
+                        }
+                        
+                        // handle if status is 200, which means the batch was submitted successfully
+                        else if (r.status == 200) {
+                            this.submitBatchSuccessAlert = true;
+                            this.toaster.clear();
+                            this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
+
+                            // give blank form for next submission
+                            this.clearBatchForm();
+
+                            // check if email entered on batch status tab and reset list of batches
+                            this.getBatchStatusList(this.batchStatusEmail)
+                        }
+                        
+                        // handle if status is not 200 or to do with 250 points and let submitter know error
+                        else {
+                            let detail = r.data.detail
+                            this.toaster.clear();
+                            this.toaster.pop('error', "The submission failed for the following reason:" + detail, "", 15000);
+                        }
+
+                    }).finally(() => {
+                        this.submittingBatch = false;
+                    });
+            }
+        }
 
         // Service methods
         // get basin characteristics list for region and nation
@@ -520,63 +642,30 @@ module StreamStats.Controllers {
                     }
                     return paramRaw;
                 }, (error) => {
-                }).finally(() => {
+                }).finally(() => { 
                 });
-        }
+        }        
 
-        public validateZipFile($files): void {
-            // validate that the file is a .zip
-            if ($files[0].type != "application/x-zip-compressed"  && $files[0].type != "application/zip") {
-
-                this.toaster.pop('warning', "Please upload a .zip file.", "", 5000);
-                this.submitBatchData.attachment = null;
-            }
-            return;
-        }
-        
-        public submitBatch(): void {
-
-            var url = null;
-
-            var formdata = new FormData();
-
-            formdata.append('submit_batch[email]', this.submitBatchData.email);
-            formdata.append('submit_batch[subject]', this.submitBatchData.idField);
-            formdata.append('submit_batch[attachments][][resource]', this.submitBatchData.attachment, this.submitBatchData.attachment.name);
-            
-            // successful toaster pop message
-            this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
-
-            var headers = {
-                "tdb": "tbd"
-            };
-
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers, angular.identity);
-
-            this.submittingBatch = true;
-
-            // will be uncommented when ready to submit to server
-            // this.Execute(request).then(
-            //     (response: any) => {
-            //         //console.log('Successfully submitted help ticket: ', response);
-
-            //         //clear out fields
-            //         this.submitBatchData = new SubmitBatchData();
-
-            //         //show user feedback
-            //         this.showSuccessAlert = true;
-
-            //     }, (error) => {
-            //         //sm when error
-            //     }).finally(() => {
-            //         this.submittingBatch = false;
-            //     });
+        // handle ng.Ipromise for POST request to BatchProcessorServices
+        // return either response or error, as logic for either is handled in the calling function
+        public postBatchFormData(formdata: FormData, headers: any): ng.IPromise<any> {
+                
+                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatch']
+    
+                var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers);
+    
+                return this.Execute(request).then(
+                    (response: any) => {
+                        return response;
+                    }, (error) => {
+                        return error;
+                    }).finally(() => {});
         }
 
         // get array of batch status messages
         public retrieveBatchStatusMessages(): ng.IPromise<any> {
 
-            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorStatus'];
+            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorStatusMessages'];
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
         
@@ -610,7 +699,7 @@ module StreamStats.Controllers {
         // get batchs status for email
         public getBatchStatusByEmail(email: string): ng.IPromise<any> {
 
-            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatch'].format(email);
+            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatchStatus'].format(email);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
             return this.Execute(request).then(
@@ -689,6 +778,16 @@ module StreamStats.Controllers {
             return -1;
         }
 
+        public validateZipFile($files): void {
+            // validate that the file is a .zip
+            if ($files[0].type != "application/x-zip-compressed" && $files[0].type != "application/zip") {
+
+                this.toaster.pop('warning', "Please upload a .zip file.", "", 5000);
+                this.submitBatchData.attachment = null;
+            }
+            return;
+        }
+
         // add parameter to selectedParamList
         private addParameterToSelectedParamList(paramCode): boolean {
             try {
@@ -705,6 +804,31 @@ module StreamStats.Controllers {
             } catch (e) {
                 return false;
             }
+        }
+
+        // add statisticGroupID to list for batch submission
+        private addStatIDtoList(): void {
+
+            this.selectedFlowStatsList.forEach((item) => {
+                this.flowStatIDs.push(item['statisticGroupID']);
+            });
+        }
+
+        // clear fields after submision
+        private clearBatchForm(): void {
+            // delete objects with values originating from ng-model in html
+            delete this.selectedRegion
+            delete this.submitBatchData.email
+            delete this.submitBatchData.idField
+            delete this.submitBatchData.attachment
+
+            // reset objects to default values that orginate in controller
+            this.selectedParamList.length = 0
+            this.flowStatIDs.length = 0
+            this.flowStatsList.length = 0;
+            this.availableParamList.length = 0;
+            this.selectedFlowStatsList.length = 0;
+            this.checkStats()
         }
     }//end  class
 
