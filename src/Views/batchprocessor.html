@@ -176,7 +176,7 @@
                                 <th class="col-xs-7">Description</th>
                             </tr>
                         </thead>
-                        <tbody ng-repeat="parameter in vm.availableParamList">
+                        <tbody ng-repeat="parameter in vm.availableParamList | orderBy:'code'">
                             <tr>
                                 <td>
                                     <checkbox large ng-model="parameter.checked"
