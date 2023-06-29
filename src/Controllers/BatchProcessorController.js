@@ -96,13 +96,24 @@ var StreamStats;
                 if (this.availableParamList && this.availableParamList.length > 0) {
                     this.availableParamList.length = 0;
                 }
-                this.nssService.getFlowStatsList(rcode).then(function (response) {
-                    _this.flowStatsList = response;
-                    _this.flowStatsListSpinner = false;
-                });
                 this.loadParametersByRegionBP(rcode).then(function (response) {
                     _this.availableParamList = response;
-                    _this.parametersListSpinner = false;
+                    var availableParamCodes = _this.availableParamList.map(function (p) { return p.code.toUpperCase(); });
+                    _this.nssService.getFlowStatsList(rcode).then(function (response) {
+                        _this.flowStatsList = response;
+                        _this.flowStatsListSpinner = false;
+                        _this.flowStatsList.forEach(function (flowStat) {
+                            flowStat.regressionRegions.forEach(function (regressionRegion) {
+                                regressionRegion.parameters.forEach(function (parameter) {
+                                    if (availableParamCodes.indexOf(parameter.code) == -1) {
+                                        _this.availableParamList.push(parameter);
+                                        availableParamCodes.push(parameter.code);
+                                    }
+                                });
+                            });
+                        });
+                        _this.parametersListSpinner = false;
+                    });
                 });
             };
             BatchProcessorController.prototype.setRegionStats = function (statisticsGroup, allFlowStatsSelectedToggle) {
@@ -371,8 +382,6 @@ var StreamStats;
                                 alert(e);
                             }
                         });
-                    }
-                    else {
                     }
                     return paramRaw;
                 }, function (error) {
