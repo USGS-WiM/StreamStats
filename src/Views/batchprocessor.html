@@ -283,7 +283,8 @@
         <button ng-if="vm.selectedBatchProcessorTabName==='submitBatch' && vm.submitBatchOver250 == false" type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.submitBatch()"
             ng-disabled="vm.submittingBatch || !vm.selectedRegion || !vm.submitBatchData.idField || !vm.submitBatchData.email || !vm.submitBatchData.attachment">
             <i ng-if="vm.submittingBatch == false" class="fa fa-share"></i>
-            <i ng-if="vm.submittingBatch == true" class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
+            <i ng-if="vm.submittingBatch == true" class="fa fa-refresh fa-spin"></i>
+
             <span>&nbsp;&nbsp;Submit Batch</span>
         </button>
         <!-- End submit batch button -->
