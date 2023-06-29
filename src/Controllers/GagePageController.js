@@ -2671,6 +2671,15 @@ var StreamStats;
                         width: 800,
                         zooming: {
                             type: 'xy'
+                        },
+                        events: {
+                            load: function () {
+                                this.series.forEach(function (series) {
+                                    if (series.options.id && series.options.id.startsWith('floodStageLine_')) {
+                                        series.options.events.show.call(series);
+                                    }
+                                });
+                            }
                         }
                     },
                     title: {
@@ -2688,7 +2697,11 @@ var StreamStats;
                         },
                         custom: {
                             allowNegativeLog: true
-                        }
+                        },
+                        crosshair: {
+                            color: 'red',
+                            dashStyle: 'Solid'
+                        },
                     },
                     yAxis: {
                         title: {
@@ -2697,7 +2710,26 @@ var StreamStats;
                         custom: {
                             allowNegativeLog: true
                         },
-                        plotLines: [{ value: null, color: null, width: null, zIndex: null, label: { text: null }, id: 'plotlines' }],
+                        crosshair: {
+                            color: 'red',
+                            dashStyle: 'Solid'
+                        },
+                        tickPositioner: function () {
+                            var positions = [];
+                            console.log("max", measuredDataMax);
+                            console.log("min", measuredDataMin);
+                            var tick = Math.floor(measuredDataMin) > 0 ? Math.floor(measuredDataMin) - 1 : 0;
+                            var max = measuredDataMax + 2;
+                            var increment = (max - tick) > 18 ? 2 : 1;
+                            console.log(increment);
+                            console.log("tick", tick);
+                            console.log("max", max);
+                            for (tick; tick - increment <= max; tick += increment) {
+                                positions.push(tick);
+                            }
+                            console.log(positions);
+                            return positions;
+                        }
                     },
                     series: [
                         {
@@ -2759,6 +2791,7 @@ var StreamStats;
                                 style: {
                                     fontSize: "9px",
                                 },
+                                allowOverlap: false,
                             },
                         },
                         {
@@ -2791,10 +2824,10 @@ var StreamStats;
                 },
                     this.formattedStages = [];
                 this.stages.forEach(function (stage, index) {
-                    if (stage.x != undefined || stage.y != undefined) {
+                    if (stage.x != undefined && stage.y != undefined) {
                         var stageNameCapitalized_1 = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
                         _this_1.formattedStages.push({
-                            data: [[0, stage.y], [stage.x, stage.y], [stage.x, 0]],
+                            data: [[.1, stage.y], [stage.x, stage.y], [stage.x, 1]],
                             marker: {
                                 enabled: false
                             },
@@ -2804,20 +2837,21 @@ var StreamStats;
                             name: 'Flood Stages',
                             events: {
                                 hide: function () {
-                                    this.chart.yAxis[0].removePlotLine('plotLine');
-                                    this.chart.xAxis[0].removePlotLine('plotLine');
+                                    this.chart.yAxis[0].removePlotLine('floodStageLine_' + stage.name + '_yPlotLine');
+                                    this.chart.xAxis[0].removePlotLine('floodStageLine_' + stage.name + '_xPlotLine');
                                 },
                                 show: function () {
+                                    this.chart.yAxis[0].removePlotLine('floodStageLine_' + stage.name + '_yPlotLine');
+                                    this.chart.xAxis[0].removePlotLine('floodStageLine_' + stage.name + '_xPlotLine');
                                     this.chart.yAxis[0].addPlotLine({
                                         color: 'black',
                                         width: 0,
                                         zIndex: 6,
-                                        id: 'plotLine',
+                                        id: 'floodStageLine_' + stage.name + '_yPlotLine',
                                         value: stage.y,
                                         label: {
                                             text: stageNameCapitalized_1 + ": " + stage.y + " ft",
                                             textAlign: 'left',
-                                            fontWeight: 'bold',
                                             x: 12,
                                             y: -4,
                                             style: {
@@ -2830,14 +2864,13 @@ var StreamStats;
                                         color: 'black',
                                         width: 0,
                                         zIndex: 6,
+                                        id: 'floodStageLine_' + stage.name + '_xPlotLine',
                                         value: stage.x,
-                                        id: 'plotLine',
                                         label: {
-                                            text: "        " + stageNameCapitalized_1 + ": " + parseInt(stage.x) + " cfs",
+                                            text: stageNameCapitalized_1 + ": " + stage.x + " cfs",
                                             verticalAlign: "bottom",
                                             y: -110,
                                             x: 2,
-                                            fontWeight: 'bold',
                                             style: {
                                                 fontSize: '10px',
                                             },
@@ -3010,7 +3043,7 @@ var StreamStats;
                 }
             };
             GagePageController.prototype.toggleFloodStats = function () {
-                var chart = $('#chart3').highcharts();
+                var chart = $('#chart1').highcharts();
                 var floodSeries = chart.series[this.selectedFloodFreqStats.seriesIndex];
                 if (this.showFloodStats) {
                     floodSeries.show();

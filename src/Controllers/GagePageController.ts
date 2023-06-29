@@ -1257,22 +1257,22 @@ module StreamStats.Controllers {
                 //         },
                 //         zIndex: 999
                 //     });
-                //     // crosshairs
-                //     chart.xAxis[0].update({
-                //         crosshair: {
-                //             color: 'red',
-                //             dashStyle: 'Solid'
-                //         }
-                //     });
-                //     chart.yAxis[0].update({
-                //         crosshair: {
-                //             color: 'red',
-                //             dashStyle: 'Solid'
-                //         }
-                //     });
+                    // // crosshairs
+                    // chart.xAxis[0].update({
+                    //     crosshair: {
+                    //         color: 'red',
+                    //         dashStyle: 'Solid'
+                    //     }
+                    // });
+                    // chart.yAxis[0].update({
+                    //     crosshair: {
+                    //         color: 'red',
+                    //         dashStyle: 'Solid'
+                    //     }
+                    // });
 
-                //     show = false;
-                //     link = ":previous";
+                    // show = false;
+                    // link = ":previous";
                 // }
             }
         }
@@ -3160,6 +3160,17 @@ public createDischargePlot(): void {
             width: 800,
             zooming: {
                 type: 'xy'
+            },
+            events: {
+                load: function() {
+                    // existing code
+                    this.series.forEach((series) => {
+                        if (series.options.id && series.options.id.startsWith('floodStageLine_')) {
+                            series.options.events.show.call(series);
+                        }
+                    });
+
+                }
             }
         },
         title: {
@@ -3177,7 +3188,12 @@ public createDischargePlot(): void {
             },
             custom: {
                 allowNegativeLog: true
-            }
+            },
+            crosshair: {
+                color: 'red',
+                dashStyle: 'Solid'
+            },
+            // plotLines: [{value: null, color: null, width: null, zIndex: null, label: {text: null}, id: 'plotlines'}]
         },
         yAxis: {
             title: {
@@ -3186,23 +3202,27 @@ public createDischargePlot(): void {
             custom: {
                 allowNegativeLog: true
             },
-            plotLines: [{value: null, color: null, width: null, zIndex: null, label: {text: null}, id: 'plotlines'}],
-            // tickPositioner: function () {
-            //     var positions = [];
-            //     console.log("max", measuredDataMax)
-            //     console.log("min", measuredDataMin)
-            //     var tick = Math.floor(measuredDataMin) > 0 ? Math.floor(measuredDataMin) - 1 : 0;
-            //     var max = measuredDataMax + 2;
-            //     var increment = (max - tick) > 18? 2 : 1;
-            //     console.log(increment)
-            //     console.log("tick", tick)
-            //     console.log("max", max)
-            //     for (tick; tick - increment <= max; tick += increment) {
-            //         positions.push(tick);
-            //     }
-            //     console.log(positions)
-            //     return positions;
-            // }
+            crosshair: {
+                color: 'red',
+                dashStyle: 'Solid'
+            },
+            // plotLines: [{value: null, color: null, width: null, zIndex: null, label: {text: null}, id: 'plotlines'}]
+            tickPositioner: function () {
+                var positions = [];
+                console.log("max", measuredDataMax)
+                console.log("min", measuredDataMin)
+                var tick = Math.floor(measuredDataMin) > 0 ? Math.floor(measuredDataMin) - 1 : 0;
+                var max = measuredDataMax + 2;
+                var increment = (max - tick) > 18? 2 : 1;
+                console.log(increment)
+                console.log("tick", tick)
+                console.log("max", max)
+                for (tick; tick - increment <= max; tick += increment) {
+                    positions.push(tick);
+                }
+                console.log(positions)
+                return positions;
+            }
         },
         series  : [
         {
@@ -3264,6 +3284,7 @@ public createDischargePlot(): void {
                     style:{
                         fontSize: "9px",
                     },
+                    allowOverlap: false, // add this
             },
         },
         {
@@ -3299,10 +3320,10 @@ public createDischargePlot(): void {
     // Format flood stages as data series
     this.formattedStages = []
     this.stages.forEach((stage, index) => {
-        if (stage.x != undefined || stage.y != undefined) {
+        if (stage.x != undefined && stage.y != undefined) {
             let stageNameCapitalized = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
             this.formattedStages.push({
-                data: [[0,stage.y],[stage.x,stage.y],[stage.x,0]],
+                data: [[.1,stage.y],[stage.x,stage.y],[stage.x,1]],
                 marker: {
                     enabled: false
                 },
@@ -3312,24 +3333,29 @@ public createDischargePlot(): void {
                 name: 'Flood Stages',
                 events:{
                     hide: function () {
-                        this.chart.yAxis[0].removePlotLine('plotLine');
-                        this.chart.xAxis[0].removePlotLine('plotLine');
+                        // Remove the existing plot lines when hiding the series
+                    this.chart.yAxis[0].removePlotLine('floodStageLine_' + stage.name + '_yPlotLine');
+                    this.chart.xAxis[0].removePlotLine('floodStageLine_' + stage.name + '_xPlotLine');
                     },
                     show: function(){
+                        // Remove the existing plot lines before adding new ones
+                        this.chart.yAxis[0].removePlotLine('floodStageLine_' + stage.name + '_yPlotLine');
+                        this.chart.xAxis[0].removePlotLine('floodStageLine_' + stage.name + '_xPlotLine');
+    
+                        // Now add the new plot lines
                         this.chart.yAxis[0].addPlotLine({
                             color: 'black',
                             width: 0,
                             zIndex: 6,
-                            id:'plotLine',
+                            id:'floodStageLine_' + stage.name + '_yPlotLine',
                             value: stage.y,
                             label: {
-                                text: stageNameCapitalized + ": " + stage.y + " ft", // not showing up
+                                text: stageNameCapitalized + ": " + stage.y + " ft",
                                 textAlign: 'left',
-                                fontWeight: 'bold',
                                 x: 12,
                                 y: -4,
                                 style: {
-                                    fontSize: '10px',  // smaller font
+                                    fontSize: '10px',
                                 },
                                 zIndex: 9999999 
                             }
@@ -3338,33 +3364,32 @@ public createDischargePlot(): void {
                             color: 'black',
                             width: 0,
                             zIndex: 6,
+                            id:'floodStageLine_' + stage.name + '_xPlotLine',
                             value: stage.x,
-                            id:'plotLine',
                             label: {
-                                text: "        " + stageNameCapitalized + ": " + parseInt(stage.x) + " cfs", // not showing up
+                                text: stageNameCapitalized + ": " + stage.x + " cfs",
                                 verticalAlign: "bottom",
                                 y: -110,
                                 x: 2,
-                                fontWeight: 'bold',
                                 style: {
-                                    fontSize: '10px',  // smaller font
+                                    fontSize: '10px',
                                 },
                                 zIndex: 9999999 
                             }
                         })
                     },
                 },
-                id: 'floodStageLine_'+stage.name,
+                id: 'floodStageLine_' + stage.name,
                 color: stage.color
             })
         }
     });
-
+    
     // Add flood stages (horizontal and vertical lines) to the chart
     this.formattedStages.forEach((formattedStage) => {
-        this.dischargeChartConfig.series.push(formattedStage)
-    });
+        this.dischargeChartConfig.series.push(formattedStage);
 
+    });
 }
 
 public createDailyRasterPlot(): void {
@@ -3519,7 +3544,7 @@ public createDailyRasterPlot(): void {
         //checkbox for turning on and off AEP lines
         public showFloodStats = true;
         public toggleFloodStats () {
-            let chart = $('#chart3').highcharts();
+            let chart = $('#chart1').highcharts();
             let floodSeries = chart.series[this.selectedFloodFreqStats.seriesIndex]
             if (this.showFloodStats) {
                 floodSeries.show();
