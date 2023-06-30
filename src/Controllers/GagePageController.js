@@ -642,7 +642,6 @@ var StreamStats;
                         _this_1.instFlow = filteredInst;
                     }
                     _this_1.getRatingCurve();
-                    console.log(_this_1.gageTimeZone);
                 });
             };
             GagePageController.prototype.getRatingCurve = function () {
@@ -670,7 +669,6 @@ var StreamStats;
             GagePageController.prototype.curveLookup = function (value, getRatingCurve) {
                 var lowx, lowy, highx, highy;
                 var lookupValue;
-                console.log("rating curve", getRatingCurve);
                 for (var i = 0; i < getRatingCurve.length; i++) {
                     var val = getRatingCurve[i];
                     if (value === val.y) {
@@ -683,7 +681,6 @@ var StreamStats;
                         lowx = getRatingCurve[i - 1].x;
                         lowy = getRatingCurve[i - 1].y;
                         lookupValue = ((value - lowy) / (highy - lowy)) * (highx - lowx) + lowx;
-                        console.log("lookupvalue: ", lookupValue);
                         break;
                     }
                 }
@@ -692,15 +689,11 @@ var StreamStats;
             GagePageController.prototype.getNWSForecast = function () {
                 var self = this;
                 var nwisCode = this.gage.code;
-                console.log('nwsiCode:', nwisCode);
                 this.$http.get('./data/gageNumberCrossWalk.json').then(function (response) {
                     self.crossWalk = response.data;
-                    console.log('crossWalk:', self.crossWalk);
                     var NWScode = self.crossWalk[nwisCode];
-                    console.log('nwisCode exists in crossWalk:', NWScode);
                     if (NWScode !== undefined) {
                         var url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + NWScode;
-                        console.log('NWS forecast url', url);
                         var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
                         self.Execute(request).then(function (response) {
                             var xmlDocument = new DOMParser().parseFromString(response.data, "text/xml");
@@ -710,22 +703,11 @@ var StreamStats;
                             var moderate = parseFloat(sigStages.querySelector("moderate").textContent);
                             var major = parseFloat(sigStages.querySelector("major").textContent);
                             var record = parseFloat(sigStages.querySelector("record").textContent);
-                            console.log("Action: ", action);
-                            console.log("Flood: ", flood);
-                            console.log("Moderate: ", moderate);
-                            console.log("Major: ", major);
-                            console.log("Record: ", record);
-                            console.log("dischargeObj: ", self.dischargeObj);
                             var actionX = self.curveLookup(action, self.dischargeObj);
                             var floodX = self.curveLookup(flood, self.dischargeObj);
                             var moderateX = self.curveLookup(moderate, self.dischargeObj);
                             var majorX = self.curveLookup(major, self.dischargeObj);
                             var recordX = self.curveLookup(record, self.dischargeObj);
-                            console.log("actionX", actionX);
-                            console.log("floodX", floodX);
-                            console.log("moderateX", moderateX);
-                            console.log("majorX", majorX);
-                            console.log("recordX", recordX);
                             self.stages = [
                                 { name: 'action', x: actionX, y: action, color: 'rgba(255,255,0,0.7)' },
                                 { name: 'flood', x: floodX, y: flood, color: 'rgba(255,153,0,0.7)' },
@@ -846,7 +828,6 @@ var StreamStats;
             GagePageController.prototype.updateChart = function () {
                 var _this_1 = this;
                 var chart = $('#chart3').highcharts();
-                console.log("chart", chart);
                 if (chart) {
                     chart.series[2].update({ data: [] });
                     var filteredData = structuredClone(this.measuredObj).filter(function (item) {
@@ -2663,8 +2644,6 @@ var StreamStats;
                 var measuredDataMin = Math.min.apply(Math, this.measuredObj
                     .filter(function (obj) { return typeof obj.y === 'number' && !isNaN(obj.y); })
                     .map(function (obj) { return obj.y; }));
-                console.log("max3147", measuredDataMax);
-                console.log("min3147", measuredDataMin);
                 this.dischargeChartConfig = {
                     chart: {
                         height: 450,
@@ -2716,18 +2695,12 @@ var StreamStats;
                         },
                         tickPositioner: function () {
                             var positions = [];
-                            console.log("max", measuredDataMax);
-                            console.log("min", measuredDataMin);
                             var tick = Math.floor(measuredDataMin) > 0 ? Math.floor(measuredDataMin) - 1 : 0;
                             var max = measuredDataMax + 2;
                             var increment = (max - tick) > 18 ? 2 : 1;
-                            console.log(increment);
-                            console.log("tick", tick);
-                            console.log("max", max);
                             for (tick; tick - increment <= max; tick += increment) {
                                 positions.push(tick);
                             }
-                            console.log(positions);
                             return positions;
                         }
                     },

@@ -871,7 +871,7 @@ module StreamStats.Controllers {
                     }
                     //console.log('inst', this.instFlow)
                     this.getRatingCurve();
-                                        console.log(this.gageTimeZone)
+                                        // console.log(this.gageTimeZone)
 
                 });
         }
@@ -915,7 +915,7 @@ module StreamStats.Controllers {
             let lowx, lowy, highx, highy;
             let lookupValue;
 
-            console.log("rating curve", getRatingCurve)
+            // console.log("rating curve", getRatingCurve)
 
             for(let i = 0; i < getRatingCurve.length; i++) {   // loop through all the points in the curve
                 let val = getRatingCurve[i]; 
@@ -933,38 +933,28 @@ module StreamStats.Controllers {
         
                     // interpolate
                     lookupValue = ((value - lowy) / (highy - lowy)) * (highx - lowx) + lowx;
-                    console.log("lookupvalue: ", lookupValue);
+                    // console.log("lookupvalue: ", lookupValue);
                     break;
                 }
             }
             return lookupValue;
         }
 
-
-        // public stagesData = [];
-
-
         // Pull in NWS Forecasted flow values
         public getNWSForecast() {
-
             var self = this;
             var nwisCode = this.gage.code
-            console.log('nwsiCode:', nwisCode);
-
-            // self.stageDischargeChart = $('#chart3').highcharts();
-
+            // console.log('nwsiCode:', nwisCode);
             // console.log("chart", self.stageDischargeChart)
-
                 //translates the gage code from NWIS to NWS using a crosswalk
                 this.$http.get('./data/gageNumberCrossWalk.json').then(function(response) {
                 self.crossWalk = response.data
-                console.log('crossWalk:', self.crossWalk);
+                // console.log('crossWalk:', self.crossWalk);
                 var NWScode = self.crossWalk[nwisCode];
-                console.log('nwisCode exists in crossWalk:', NWScode);
-                    
+                // console.log('nwisCode exists in crossWalk:', NWScode);
                 if (NWScode !== undefined) {
                     var url =  "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage="+ NWScode;
-                    console.log('NWS forecast url', url)
+                    // console.log('NWS forecast url', url)
                     const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
                     self.Execute(request).then(
                         (response: any) => {
@@ -978,12 +968,12 @@ module StreamStats.Controllers {
                             const major = parseFloat(sigStages.querySelector("major").textContent);
                             const record = parseFloat(sigStages.querySelector("record").textContent);
         
-                            console.log("Action: ", action);
-                            console.log("Flood: ", flood);
-                            console.log("Moderate: ", moderate);
-                            console.log("Major: ", major);
-                            console.log("Record: ", record);
-                            console.log("dischargeObj: ", self.dischargeObj);
+                            // console.log("Action: ", action);
+                            // console.log("Flood: ", flood);
+                            // console.log("Moderate: ", moderate);
+                            // console.log("Major: ", major);
+                            // console.log("Record: ", record);
+                            // console.log("dischargeObj: ", self.dischargeObj);
 
                             let actionX = self.curveLookup(action, self.dischargeObj);
                             let floodX = self.curveLookup(flood, self.dischargeObj);
@@ -991,11 +981,11 @@ module StreamStats.Controllers {
                             let majorX = self.curveLookup(major, self.dischargeObj);
                             let recordX = self.curveLookup(record, self.dischargeObj);
 
-                            console.log("actionX", actionX)
-                            console.log("floodX", floodX)
-                            console.log("moderateX", moderateX)
-                            console.log("majorX", majorX)
-                            console.log("recordX", recordX)
+                            // console.log("actionX", actionX)
+                            // console.log("floodX", floodX)
+                            // console.log("moderateX", moderateX)
+                            // console.log("majorX", majorX)
+                            // console.log("recordX", recordX)
 
                             self.stages = [
                                 {name: 'action', x: actionX, y: action, color: 'rgba(255,255,0,0.7)'},
@@ -1005,8 +995,6 @@ module StreamStats.Controllers {
                                 {name: 'record', x: recordX, y: record, color: 'rgba(102,178,255,0.7)'}
                             ];
                             
-                            // this.stagesData = self.stages;
-
                             const forecastData = xmlDocument.querySelectorAll("forecast");
                             if (forecastData[0] !== undefined) {
                             const smallerData = forecastData[0].childNodes;
@@ -1157,7 +1145,7 @@ module StreamStats.Controllers {
         public updateChart() {
             let chart = $('#chart3').highcharts();
 
-            console.log("chart", chart)
+            // console.log("chart", chart)
             
             if(chart) {
                 chart.series[2].update({data:[]});
@@ -1173,125 +1161,13 @@ module StreamStats.Controllers {
                 });
                 chart.series[2].update({data:filteredData});
                 // this.toggleLegend();
-
                 var show = true;
                 var link = null;
 
                 this.floodStagesData = filteredData;
-
-                // // horizontal and vertical lines
-                // for(let stage of this.stages) {
-
-                //     if(stage.x === undefined || stage.y === undefined) {
-                //         continue; 
-                //     }
-
-                //     let stageNameCapitalized = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
-
-                //     var horizontalStageSeries = {
-                //         data: [[0, stage.y], [stage.x, stage.y]],
-                //         enableMouseTracking: false,
-                //         marker: {
-                //             enabled: false
-                //         },
-                //         lineWidth: 2,
-                //         linkedTo: link,
-                //         showInLegend: false,
-                //         name: `${stageNameCapitalized} Stages - Horizontal`,
-                //         id: `${stage.name}StageLineHorizontal`,
-                //         color: stage.color,
-                //         type: 'line'
-                //     };
-                //     chart.addSeries(horizontalStageSeries);
-
-                //     chart.yAxis[0].addPlotLine({
-                //         value: stage.y,
-                //         color: stage.color,
-                //         width: 0,
-                //         id: `${stage.name}-horizontal`,
-                //         label: {
-                //             text: `${stageNameCapitalized}: ${stage.y} ft`,
-                //             align: 'left',
-                //             y: -5,
-                //             style: {
-                //                 // fontWeight: 'bold',
-                //                 // fontSize: '9px',
-                //                 font: '9px Arial, sans-serif'
-                //             },
-                //             },
-                //         zIndex: 999
-                //     });
-
-                //     var verticalStageSeries = {
-                //         data: [[stage.x, 0], [stage.x, stage.y]],
-                //         enableMouseTracking: false,
-                //         marker: {
-                //             enabled: false
-                //         },
-                //         lineWidth: 2,
-                //         linkedTo: link,
-                //         showInLegend: false,
-                //         name: `${stageNameCapitalized} Stages - Vertical`,
-                //         id: `${stage.name}StageLineVertical`,
-                //         color: stage.color,
-                //         type: 'line'
-                //     };
-                //     chart.addSeries(verticalStageSeries);
-
-                //     chart.xAxis[0].addPlotLine({
-                //         value: stage.x,
-                //         color: stage.color,
-                //         width: 0,
-                //         id: `${stage.name}-vertical`,
-                //         label: {
-                //             text: `${stageNameCapitalized}: ${Math.round(stage.x)} cfs`, 
-                //             align: 'right',
-                //             verticalAlign: 'bottom',
-                //             x: 5,
-                //             y: -10,
-                //             style: {
-                //                 // fontWeight: 'normal',
-                //                 // fontSize: '9px',
-                //                 font: '9px Arial, sans-serif'
-                //             },
-                //         },
-                //         zIndex: 999
-                //     });
-                    // // crosshairs
-                    // chart.xAxis[0].update({
-                    //     crosshair: {
-                    //         color: 'red',
-                    //         dashStyle: 'Solid'
-                    //     }
-                    // });
-                    // chart.yAxis[0].update({
-                    //     crosshair: {
-                    //         color: 'red',
-                    //         dashStyle: 'Solid'
-                    //     }
-                    // });
-
-                    // show = false;
-                    // link = ":previous";
-                // }
             }
         }
         
-            // // for sliders
-            // public toggleLegend() {
-            //     // const ageLegend = document.getElementById('ageLegend');
-            //     // const qualityLegend = document.getElementById('qualityLegend');
-            
-            //     // if (this.ageQualityData === 'age') {
-            //     //     // ageLegend.style.display = 'block';
-            //     //     qualityLegend.style.display = 'none';
-            //     // } else {
-            //     //     // ageLegend.style.display = 'none';
-            //     //     qualityLegend.style.display = 'block';
-            //     // }
-            // }
-
-
         //Get data into format necessary for plotting in Highcharts
         public formatData(): void {
             if (this.peakDates) {
@@ -3150,8 +3026,8 @@ public createDischargePlot(): void {
         .map(obj => obj.y)
     );
 
-    console.log("max3147", measuredDataMax)
-    console.log("min3147", measuredDataMin)
+    // console.log("max3147", measuredDataMax)
+    // console.log("min3147", measuredDataMin)
 
     this.dischargeChartConfig = {
 
@@ -3163,7 +3039,6 @@ public createDischargePlot(): void {
             },
             events: {
                 load: function() {
-                    // existing code
                     this.series.forEach((series) => {
                         if (series.options.id && series.options.id.startsWith('floodStageLine_')) {
                             series.options.events.show.call(series);
@@ -3193,7 +3068,6 @@ public createDischargePlot(): void {
                 color: 'red',
                 dashStyle: 'Solid'
             },
-            // plotLines: [{value: null, color: null, width: null, zIndex: null, label: {text: null}, id: 'plotlines'}]
         },
         yAxis: {
             title: {
@@ -3206,21 +3080,20 @@ public createDischargePlot(): void {
                 color: 'red',
                 dashStyle: 'Solid'
             },
-            // plotLines: [{value: null, color: null, width: null, zIndex: null, label: {text: null}, id: 'plotlines'}]
             tickPositioner: function () {
                 var positions = [];
-                console.log("max", measuredDataMax)
-                console.log("min", measuredDataMin)
+                // console.log("max", measuredDataMax)
+                // console.log("min", measuredDataMin)
                 var tick = Math.floor(measuredDataMin) > 0 ? Math.floor(measuredDataMin) - 1 : 0;
                 var max = measuredDataMax + 2;
                 var increment = (max - tick) > 18? 2 : 1;
-                console.log(increment)
-                console.log("tick", tick)
-                console.log("max", max)
+                // console.log(increment)
+                // console.log("tick", tick)
+                // console.log("max", max)
                 for (tick; tick - increment <= max; tick += increment) {
                     positions.push(tick);
                 }
-                console.log(positions)
+                // console.log(positions)
                 return positions;
             }
         },
@@ -3314,8 +3187,6 @@ public createDischargePlot(): void {
             showInLegend: this.error == false //!this.measuredObj.every(item => isNaN(item.y)) 
         }
     ]},
-
-
     
     // Format flood stages as data series
     this.formattedStages = []
@@ -3333,16 +3204,12 @@ public createDischargePlot(): void {
                 name: 'Flood Stages',
                 events:{
                     hide: function () {
-                        // Remove the existing plot lines when hiding the series
                     this.chart.yAxis[0].removePlotLine('floodStageLine_' + stage.name + '_yPlotLine');
                     this.chart.xAxis[0].removePlotLine('floodStageLine_' + stage.name + '_xPlotLine');
                     },
                     show: function(){
-                        // Remove the existing plot lines before adding new ones
                         this.chart.yAxis[0].removePlotLine('floodStageLine_' + stage.name + '_yPlotLine');
                         this.chart.xAxis[0].removePlotLine('floodStageLine_' + stage.name + '_xPlotLine');
-    
-                        // Now add the new plot lines
                         this.chart.yAxis[0].addPlotLine({
                             color: 'black',
                             width: 0,
@@ -3385,7 +3252,7 @@ public createDischargePlot(): void {
         }
     });
     
-    // Add flood stages (horizontal and vertical lines) to the chart
+    // Add flood stages lines to the chart
     this.formattedStages.forEach((formattedStage) => {
         this.dischargeChartConfig.series.push(formattedStage);
 
