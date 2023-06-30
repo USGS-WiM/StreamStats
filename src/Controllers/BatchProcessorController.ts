@@ -216,23 +216,42 @@ module StreamStats.Controllers {
                 this.availableParamList.length = 0;
             }
             
-
-            this.nssService.getFlowStatsList(rcode).then(
-                // set flowStatsList to values of promised response
-                response => {
-                    this.flowStatsList = response;
-                    // turn off spinner
-                    this.flowStatsListSpinner = false;
-                }
-            )
-
+            // Load Basin Characteristics and Flow Statistics
             this.loadParametersByRegionBP(rcode).then(
                 response => {
                     this.availableParamList = response;
-                    // turn off spinner
-                    this.parametersListSpinner = false;
+                    let availableParamCodes = this.availableParamList.map(p => p.code.toUpperCase());
+
+                    this.nssService.getFlowStatsList(rcode).then(
+                        // set flowStatsList to values of promised response
+                        response => {
+                            this.flowStatsList = response;
+                            // turn off Flow Statistics spinner
+                            this.flowStatsListSpinner = false;
+        
+                            // Add additional parameters that were not returned by loadParametersByRegionBP
+                            this.flowStatsList.forEach(flowStat => {
+                                flowStat.regressionRegions.forEach((regressionRegion) => {
+                                    regressionRegion.parameters.forEach((parameter) => {
+                                        if (availableParamCodes.indexOf(parameter.code) == -1) {
+                                            this.availableParamList.push(parameter);
+                                            availableParamCodes.push(parameter.code);
+                                        } 
+                                    });
+                                });
+                            });
+                            
+                            // turn off Basin Characteristics spinner
+                            this.parametersListSpinner = false;
+                        }
+                    )
                 }
             );
+
+            
+
+
+
 
         }
 
@@ -622,8 +641,6 @@ module StreamStats.Controllers {
                         var paramRaw = [];
 
                         response.data.parameters.forEach((parameter) => {
-
-
                             try {
                                 let param: Parameter = {
                                     code: parameter.code,
@@ -632,13 +649,10 @@ module StreamStats.Controllers {
                                     toggleable: true
                                 }
                                 paramRaw.push(param);
-                            }
-
-                            catch (e) {
+                            } catch (e) {
                                 alert(e)                           
-                        }});
-                    }
-                    else {
+                            }
+                        });
                     }
                     return paramRaw;
                 }, (error) => {

@@ -52,7 +52,7 @@
 
             <!-- Start select region -->
             <div id="selectRegionID" style="padding-top: 15px;">
-                <label> State / Region: </label>
+                <span> State / Region: </span>
                 <div ng-hide="!vm.regionListSpinner"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
                 <div ng-hide="!vm.regionList">
                     <select class="bp-select" ng-model="vm.selectedRegion"
@@ -108,6 +108,8 @@
             
             <!-- Start checkboxes for different sections -->
             <div style="padding-top: 15px;">
+                
+                <span>Select Computations:</span><br />
                 <span>
                     <input id="cbDelineate" , type="checkbox" ng-checked="vm.selectedRegion" display="inline-block"
                         ng-disabled="vm.selectedRegion">
@@ -176,7 +178,7 @@
                                 <th class="col-xs-7">Description</th>
                             </tr>
                         </thead>
-                        <tbody ng-repeat="parameter in vm.availableParamList">
+                        <tbody ng-repeat="parameter in vm.availableParamList | orderBy:'code'">
                             <tr>
                                 <td>
                                     <checkbox large ng-model="parameter.checked"
@@ -240,9 +242,9 @@
                             <tr>
                                 <th style="text-align: center;"><small>Batch ID</small></th>
                                 <th style="text-align: center;"><small>Status</small></th>
-                                <th style="text-align: center;"><small>Time Submitted</small></th>
-                                <th style="text-align: center;"><small>Time Started</small></th>
-                                <th style="text-align: center;"><small>Time Completed</small></th>
+                                <th style="text-align: center;"><small>Time Submitted (UTC)</small></th>
+                                <th style="text-align: center;"><small>Time Started (UTC)</small></th>
+                                <th style="text-align: center;"><small>Time Completed (UTC)</small></th>
                                 <th style="text-align: center;"><small>Results</small></th>
                                 <th style="text-align: center;"><small>State/ Region</small></th>
                                 <th style="text-align: center;"><small>Number Points Requested</small></th>
