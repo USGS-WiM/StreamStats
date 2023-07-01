@@ -48,6 +48,12 @@ var StreamStats;
                 _this.selectedBatchProcessorTabName = "submitBatch";
                 _this.nssService = nssService;
                 _this.toaster = toaster;
+                if (window.location.host === 'staging-apps.usgs.gov' || location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.hostname === "") {
+                    _this.internalHost = true;
+                }
+                else {
+                    _this.internalHost = false;
+                }
                 _this.selectedFlowStatsList = [];
                 _this.selectedParamList = [];
                 _this.flowStatsAllChecked = true;
@@ -57,11 +63,13 @@ var StreamStats;
                 _this.submitBatchSuccessAlert = false;
                 _this.submitBatchFailedAlert = false;
                 _this.submitBatchData = new SubmitBatchData();
+                _this.reorderingQueue = false;
                 _this.regionListSpinner = true;
                 _this.flowStatsListSpinner = true;
                 _this.parametersListSpinner = true;
                 _this.batchStatusMessageList = [];
                 _this.batchStatusList = [];
+                _this.retrievingManageQueue = false;
                 _this.flowStatIDs = [];
                 _this.submitBatchOver250 = false;
                 _this.init();
@@ -286,6 +294,14 @@ var StreamStats;
                     _this.retrievingBatchStatus = false;
                 });
             };
+            BatchProcessorController.prototype.getManageQueueList = function () {
+                var _this = this;
+                this.getBatchStatusByEmail().then(function (response) {
+                    _this.manageQueueList = response;
+                    console.log(_this.manageQueueList);
+                    _this.retrievingManageQueue = false;
+                });
+            };
             BatchProcessorController.prototype.trashBatch = function (batchID, deleteCode, batchStatusEmail) {
                 var text = "Are you sure you want to delete Batch ID " + batchID + "?";
                 if (confirm(text) == true) {
@@ -360,6 +376,27 @@ var StreamStats;
                     });
                 }
             };
+            BatchProcessorController.prototype.reorderQueue = function () {
+                this.reorderingQueue = true;
+                var reorderBatchesPOSTBody = { "batchOrder": [] };
+                this.manageQueueList.forEach(function (batch) {
+                    if (batch.order != null) {
+                        reorderBatchesPOSTBody["batchOrder"].push({
+                            "batchID": batch.batchID,
+                            "order": batch.order
+                        });
+                    }
+                });
+                this.reorderBatches(reorderBatchesPOSTBody);
+            };
+            BatchProcessorController.prototype.submitPauseBatch = function (batchID) {
+                console.log("Pausing batch " + batchID);
+                this.pauseBatch(batchID);
+            };
+            BatchProcessorController.prototype.submitUnpauseBatch = function (batchID) {
+                console.log("Unpausing batch " + batchID);
+                this.unpauseBatch(batchID);
+            };
             BatchProcessorController.prototype.loadParametersByRegionBP = function (rcode) {
                 if (!rcode)
                     return;
@@ -389,7 +426,7 @@ var StreamStats;
                 });
             };
             BatchProcessorController.prototype.postBatchFormData = function (formdata, headers) {
-                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatch'];
+                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorSubmitBatch'];
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers);
                 return this.Execute(request).then(function (response) {
                     return response;
@@ -406,7 +443,8 @@ var StreamStats;
                         try {
                             var status_1 = {
                                 id: item.ID,
-                                message: item.Message
+                                message: item.Message,
+                                description: item.Description
                             };
                             batchStatusMessages.push(status_1);
                         }
@@ -421,7 +459,13 @@ var StreamStats;
             };
             BatchProcessorController.prototype.getBatchStatusByEmail = function (email) {
                 var _this = this;
-                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatchStatus'].format(email);
+                if (email === void 0) { email = null; }
+                if (email) {
+                    var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatchStatus'].format(email);
+                }
+                else {
+                    var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorGetBatch'];
+                }
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 return this.Execute(request).then(function (response) {
                     var batchStatusMessages = [];
@@ -429,7 +473,11 @@ var StreamStats;
                         try {
                             var status_2 = {
                                 batchID: batch.ID,
-                                status: _this.batchStatusMessageList.filter(function (item) { return item.id == batch.StatusID; })[0].message,
+                                order: batch.Order,
+                                emailAddress: batch.EmailAddress,
+                                status: _this.batchStatusMessageList.filter(function (item) { return item.id == batch.StatusID; })[0].id,
+                                statusMessage: _this.batchStatusMessageList.filter(function (item) { return item.id == batch.StatusID; })[0].message,
+                                statusDescription: _this.batchStatusMessageList.filter(function (item) { return item.id == batch.StatusID; })[0].description,
                                 timeSubmitted: batch.TimeSubmitted,
                                 timeStarted: batch.TimeStarted,
                                 timeCompleted: batch.TimeCompleted,
@@ -459,9 +507,57 @@ var StreamStats;
                     alert(text);
                     _this.getBatchStatusList(batchStatusEmail);
                     _this.retrievingBatchStatus = true;
+                    _this.getManageQueueList();
+                    _this.retrievingManageQueue = true;
                 }, function (error) {
                     var text = "Error deleting batch ID " + batchID + ". Please try again later or click the Help menu button to submit a Support Request.";
                     alert(text);
+                }).finally(function () {
+                });
+            };
+            BatchProcessorController.prototype.reorderBatches = function (batchOrder) {
+                var _this = this;
+                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorReorderBatch'];
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(batchOrder));
+                return this.Execute(request).then(function (response) {
+                    _this.getManageQueueList();
+                    _this.retrievingManageQueue = true;
+                    _this.toaster.pop('success', "Queue was successfully reordered", "", 5000);
+                    return response;
+                }, function (error) {
+                    _this.toaster.pop('error', "Queue failed to reorder: ", error, 15000);
+                    return error;
+                }).finally(function () {
+                    _this.reorderingQueue = false;
+                });
+            };
+            BatchProcessorController.prototype.pauseBatch = function (batchID) {
+                var _this = this;
+                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatchPause'].format(batchID);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST);
+                return this.Execute(request).then(function (response) {
+                    _this.getManageQueueList();
+                    _this.retrievingManageQueue = true;
+                    _this.toaster.pop('success', "Batch ID " + batchID + " was paused.", "", 5000);
+                    return response;
+                }, function (error) {
+                    _this.toaster.pop('error', "Batch ID " + batchID + " could not be paused.", error, 15000);
+                    return error;
+                }).finally(function () {
+                });
+            };
+            BatchProcessorController.prototype.unpauseBatch = function (batchID) {
+                var _this = this;
+                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatchUnpause'].format(batchID);
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST);
+                return this.Execute(request).then(function (response) {
+                    _this.getManageQueueList();
+                    _this.retrievingManageQueue = true;
+                    _this.toaster.pop('success', "Batch ID " + batchID + " was unpaused.", "", 5000);
+                    return response;
+                }, function (error) {
+                    _this.toaster.pop('error', "Batch ID " + batchID + " could not be unpaused.", error, 15000);
+                    return error;
                 }).finally(function () {
                 });
             };
