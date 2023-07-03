@@ -224,7 +224,7 @@
                     <div ng-if="!vm.chartConfig" class="panel panel-default reportSpinner">
                         &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
                     </div>
-                    <center>
+                    <!-- <center>
                         <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.chartConfig">
                             <highchart id="chart1" config="vm.chartConfig" ng-init="vm.destroyResetZoom()"></highchart>
                             <div class="plot-filters">
@@ -251,7 +251,7 @@
                         <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.heatChartConfig">
                             <highchart id="chart2" config="vm.heatChartConfig"></highchart>
                         </div>
-                    </center> 
+                    </center>  -->
                     <center>
                         <div ng-if="!vm.dischargeChartConfig" class="panel panel-default reportSpinner">
                             &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
@@ -261,10 +261,10 @@
                             <input type="checkbox" ng-if="vm.formattedDischargePeakDates.length > 0" id="logScaleDischarge" name="logScaleDischarge" ng-model="vm.logScaleDischarge" ng-change="vm.toggleLogLinearDischarge()">
                             <label for="logScaleDischarge" ng-if="vm.formattedDischargePeakDates.length > 0"> Log Scale</label>
 
-                            <input type="radio" ng-if="vm.error == false" id="ageData" name="toggleDischargeData" ng-model="vm.ageQualityData" value="age" ng-change="vm.updateChart()"> 
+                            <input type="radio" ng-if="vm.error == false" id="ageData" name="toggleDischargeData" ng-model="vm.USGSMeasuredAgeQualityData" value="age" ng-change="vm.updateChart()"> 
                             <label for="ageData" ng-if="vm.error == false">  Age</label>
                 
-                            <input type="radio" ng-if="vm.error == false" id="qualityData" name="ageQualityData" ng-model="vm.ageQualityData" value="quality" ng-change="vm.toggleDischargeData('quality')"> 
+                            <input type="radio" ng-if="vm.error == false" id="qualityData" name="USGSMeasuredAgeQualityData" ng-model="vm.USGSMeasuredAgeQualityData" value="quality" ng-change="vm.toggleDischargeData('quality')"> 
                             <label for="qualityData" ng-if="vm.error == false"> Quality</label>
 
                             <!-- Start Sliders -->
@@ -284,7 +284,7 @@
                             <!-- End Sliders -->
 
                             <!-- Start Legend -->
-                            <div ng-show="vm.ageQualityData === 'age'" class="ageQualityLegend" ng-style="{'left': vm.logScaleDischarge ? '250px' : '680px', 'bottom': vm.logScaleDischarge ? '290px' : '220px'}">
+                            <div ng-show="vm.USGSMeasuredAgeQualityData === 'age'" class="ageQualityLegend" ng-style="{'left': vm.logScaleDischarge ? '250px' : '680px', 'bottom': vm.logScaleDischarge ? '290px' : '220px'}">
                                 <div class="ageQualityLegend-item">
                                   <span style="color: red;">Most Recent Measurement</span>
                             </div>
@@ -296,7 +296,7 @@
                                 </div>
                             </div>
                               
-                            <div ng-show="vm.ageQualityData === 'quality'" class="ageQualityLegend" ng-style="{'left': vm.logScaleDischarge ? '250px' : '680px', 'bottom': vm.logScaleDischarge ? '290px' : '220px'}">
+                            <div ng-show="vm.USGSMeasuredAgeQualityData === 'quality'" class="ageQualityLegend" ng-style="{'left': vm.logScaleDischarge ? '250px' : '680px', 'bottom': vm.logScaleDischarge ? '290px' : '220px'}">
                                 <div class="ageQualityLegend-item">
                                   <span style="color:#2ED017;">Excellent - Good</span>
                             </div>

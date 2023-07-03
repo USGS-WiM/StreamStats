@@ -1104,14 +1104,7 @@ html, body, .angular-leaflet-map {
              display: flex;
              align-items: center;
            }
-           
-           .ageQualityLegend-color {
-             display: inline-block;
-             width: 12px;
-             height: 12px;
-             margin-right: 5px;
-           }
-           
+                   
      /*
          Legend list items
      */
@@ -1485,8 +1478,8 @@ html, body, .angular-leaflet-map {
      padding-top: 5px;
  }
  
- #printArea span:not(rzslider span) {
-     padding: 0 0 0 3px;
+ #printArea span {
+     padding: 0 0 0 3px !important;
  }
  .slider-container {
      display: flex;

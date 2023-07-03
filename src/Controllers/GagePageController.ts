@@ -248,7 +248,7 @@ module StreamStats.Controllers {
         public formattedDailyPlusAvg = [];
         public formattedDischargePeakDates = []; // Stage vs. Discharge Plot
         public dailyValuesOnly = [];
-        public ageQualityData = 'age';
+        public USGSMeasuredAgeQualityData = 'age';
         public error: any;     
         public monthSliderOptions: any;
         public startMonth: number;
@@ -1157,7 +1157,7 @@ module StreamStats.Controllers {
                     itemYear >= this.startYear && itemYear <= this.endYear;
                 });
                 filteredData.forEach(row => {
-                    row.color = (this.ageQualityData == 'age') ? row.ageColor : row.qualityColor;
+                    row.color = (this.USGSMeasuredAgeQualityData == 'age') ? row.ageColor : row.qualityColor;
                 });
                 chart.series[2].update({data:filteredData});
                 // this.toggleLegend();
@@ -3190,6 +3190,7 @@ public createDischargePlot(): void {
     
     // Format flood stages as data series
     this.formattedStages = []
+    if (this.stages) {
     this.stages.forEach((stage, index) => {
         if (stage.x != undefined && stage.y != undefined) {
             let stageNameCapitalized = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
@@ -3250,7 +3251,7 @@ public createDischargePlot(): void {
                 color: stage.color
             })
         }
-    });
+    })};
     
     // Add flood stages lines to the chart
     this.formattedStages.forEach((formattedStage) => {

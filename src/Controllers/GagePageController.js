@@ -142,7 +142,7 @@ var StreamStats;
                 _this_1.formattedDailyPlusAvg = [];
                 _this_1.formattedDischargePeakDates = [];
                 _this_1.dailyValuesOnly = [];
-                _this_1.ageQualityData = 'age';
+                _this_1.USGSMeasuredAgeQualityData = 'age';
                 _this_1.plotlines = true;
                 _this_1.showFloodStats = true;
                 _this_1.logScale = false;
@@ -838,7 +838,7 @@ var StreamStats;
                             itemYear >= _this_1.startYear && itemYear <= _this_1.endYear;
                     });
                     filteredData.forEach(function (row) {
-                        row.color = (_this_1.ageQualityData == 'age') ? row.ageColor : row.qualityColor;
+                        row.color = (_this_1.USGSMeasuredAgeQualityData == 'age') ? row.ageColor : row.qualityColor;
                     });
                     chart.series[2].update({ data: filteredData });
                     var show = true;
@@ -2796,67 +2796,70 @@ var StreamStats;
                     ]
                 },
                     this.formattedStages = [];
-                this.stages.forEach(function (stage, index) {
-                    if (stage.x != undefined && stage.y != undefined) {
-                        var stageNameCapitalized_1 = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
-                        _this_1.formattedStages.push({
-                            data: [[.1, stage.y], [stage.x, stage.y], [stage.x, 1]],
-                            marker: {
-                                enabled: false
-                            },
-                            lineWidth: 2,
-                            linkedTo: index == 0 ? null : ":previous",
-                            showInLegend: index == 0 ? true : false,
-                            name: 'Flood Stages',
-                            events: {
-                                hide: function () {
-                                    this.chart.yAxis[0].removePlotLine('floodStageLine_' + stage.name + '_yPlotLine');
-                                    this.chart.xAxis[0].removePlotLine('floodStageLine_' + stage.name + '_xPlotLine');
+                if (this.stages) {
+                    this.stages.forEach(function (stage, index) {
+                        if (stage.x != undefined && stage.y != undefined) {
+                            var stageNameCapitalized_1 = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
+                            _this_1.formattedStages.push({
+                                data: [[.1, stage.y], [stage.x, stage.y], [stage.x, 1]],
+                                marker: {
+                                    enabled: false
                                 },
-                                show: function () {
-                                    this.chart.yAxis[0].removePlotLine('floodStageLine_' + stage.name + '_yPlotLine');
-                                    this.chart.xAxis[0].removePlotLine('floodStageLine_' + stage.name + '_xPlotLine');
-                                    this.chart.yAxis[0].addPlotLine({
-                                        color: 'black',
-                                        width: 0,
-                                        zIndex: 6,
-                                        id: 'floodStageLine_' + stage.name + '_yPlotLine',
-                                        value: stage.y,
-                                        label: {
-                                            text: stageNameCapitalized_1 + ": " + stage.y + " ft",
-                                            textAlign: 'left',
-                                            x: 12,
-                                            y: -4,
-                                            style: {
-                                                fontSize: '10px',
-                                            },
-                                            zIndex: 9999999
-                                        }
-                                    });
-                                    this.chart.xAxis[0].addPlotLine({
-                                        color: 'black',
-                                        width: 0,
-                                        zIndex: 6,
-                                        id: 'floodStageLine_' + stage.name + '_xPlotLine',
-                                        value: stage.x,
-                                        label: {
-                                            text: stageNameCapitalized_1 + ": " + stage.x + " cfs",
-                                            verticalAlign: "bottom",
-                                            y: -110,
-                                            x: 2,
-                                            style: {
-                                                fontSize: '10px',
-                                            },
-                                            zIndex: 9999999
-                                        }
-                                    });
+                                lineWidth: 2,
+                                linkedTo: index == 0 ? null : ":previous",
+                                showInLegend: index == 0 ? true : false,
+                                name: 'Flood Stages',
+                                events: {
+                                    hide: function () {
+                                        this.chart.yAxis[0].removePlotLine('floodStageLine_' + stage.name + '_yPlotLine');
+                                        this.chart.xAxis[0].removePlotLine('floodStageLine_' + stage.name + '_xPlotLine');
+                                    },
+                                    show: function () {
+                                        this.chart.yAxis[0].removePlotLine('floodStageLine_' + stage.name + '_yPlotLine');
+                                        this.chart.xAxis[0].removePlotLine('floodStageLine_' + stage.name + '_xPlotLine');
+                                        this.chart.yAxis[0].addPlotLine({
+                                            color: 'black',
+                                            width: 0,
+                                            zIndex: 6,
+                                            id: 'floodStageLine_' + stage.name + '_yPlotLine',
+                                            value: stage.y,
+                                            label: {
+                                                text: stageNameCapitalized_1 + ": " + stage.y + " ft",
+                                                textAlign: 'left',
+                                                x: 12,
+                                                y: -4,
+                                                style: {
+                                                    fontSize: '10px',
+                                                },
+                                                zIndex: 9999999
+                                            }
+                                        });
+                                        this.chart.xAxis[0].addPlotLine({
+                                            color: 'black',
+                                            width: 0,
+                                            zIndex: 6,
+                                            id: 'floodStageLine_' + stage.name + '_xPlotLine',
+                                            value: stage.x,
+                                            label: {
+                                                text: stageNameCapitalized_1 + ": " + stage.x + " cfs",
+                                                verticalAlign: "bottom",
+                                                y: -110,
+                                                x: 2,
+                                                style: {
+                                                    fontSize: '10px',
+                                                },
+                                                zIndex: 9999999
+                                            }
+                                        });
+                                    },
                                 },
-                            },
-                            id: 'floodStageLine_' + stage.name,
-                            color: stage.color
-                        });
-                    }
-                });
+                                id: 'floodStageLine_' + stage.name,
+                                color: stage.color
+                            });
+                        }
+                    });
+                }
+                ;
                 this.formattedStages.forEach(function (formattedStage) {
                     _this_1.dischargeChartConfig.series.push(formattedStage);
                 });
