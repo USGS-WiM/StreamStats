@@ -59,7 +59,7 @@ var StreamStats;
                 _this.submitBatchData = new SubmitBatchData();
                 _this.regionListSpinner = true;
                 _this.flowStatsListSpinner = false;
-                _this.parametersListSpinner = true;
+                _this.parametersListSpinner = false;
                 _this.batchStatusMessageList = [];
                 _this.batchStatusList = [];
                 _this.flowStatIDs = [];

@@ -161,7 +161,7 @@ module StreamStats.Controllers {
             this.submitBatchData = new SubmitBatchData();
             this.regionListSpinner = true;
             this.flowStatsListSpinner = false;
-            this.parametersListSpinner = true;
+            this.parametersListSpinner = false;
             this.batchStatusMessageList = [];
             this.batchStatusList = [];
             this.flowStatIDs = [];
