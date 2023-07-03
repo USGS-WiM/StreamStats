@@ -58,7 +58,7 @@ var StreamStats;
                 _this.submitBatchFailedAlert = false;
                 _this.submitBatchData = new SubmitBatchData();
                 _this.regionListSpinner = true;
-                _this.flowStatsListSpinner = true;
+                _this.flowStatsListSpinner = false;
                 _this.parametersListSpinner = true;
                 _this.batchStatusMessageList = [];
                 _this.batchStatusList = [];

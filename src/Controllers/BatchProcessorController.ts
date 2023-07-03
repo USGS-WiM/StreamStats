@@ -160,7 +160,7 @@ module StreamStats.Controllers {
             this.submitBatchFailedAlert = false;
             this.submitBatchData = new SubmitBatchData();
             this.regionListSpinner = true;
-            this.flowStatsListSpinner = true;
+            this.flowStatsListSpinner = false;
             this.parametersListSpinner = true;
             this.batchStatusMessageList = [];
             this.batchStatusList = [];
