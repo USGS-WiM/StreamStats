@@ -167,10 +167,10 @@ var StreamStats;
                                         formattedPlotData.push(formattedPeaksAndDrainage);
                                     }
                                 });
-                                completedStationCodes.push(response.data.code);
-                                _this.formattedPlotData = formattedPlotData;
                             }
                         });
+                        completedStationCodes.push(response.data.code);
+                        _this.formattedPlotData = formattedPlotData;
                     }, function (error) {
                     }).finally(function () {
                         _this.createEnvelopeCurvePlot();
@@ -191,7 +191,7 @@ var StreamStats;
                         align: 'center'
                     },
                     subtitle: {
-                        text: 'example',
+                        text: this.selectedRegion.name,
                         align: 'center'
                     },
                     xAxis: {
@@ -212,7 +212,7 @@ var StreamStats;
                             },
                             turboThreshold: 0,
                             type: 'scatter',
-                            color: 'blue',
+                            color: 'rgba(83, 223, 83, .5)',
                             data: this.formattedPlotData,
                             marker: { symbol: 'circle', radius: 3 },
                             showInLegend: true

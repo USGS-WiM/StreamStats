@@ -26,7 +26,7 @@
                 <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.peakData.length > 0"><br><i class="fa fa-spinner fa-3x fa-spin loadingSpinner" ng-if="vm.formattedPlotData.length === 0"></i>
                         <div class="panel-body">
                             <center>
-                            <highchart id="chart1" config="vm.envelopeChartConfig" ng-if="vm.formattedPlotData.length > 0"></highchart>
+                            <highchart id="chart1" config="vm.envelopeChartConfig" ng-if="vm.envelopeChartConfig"></highchart>
                             </center>
                         </div>
                 </div>

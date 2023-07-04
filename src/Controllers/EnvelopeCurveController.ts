@@ -180,9 +180,6 @@ module StreamStats.Controllers {
                     (response: any) => {
                         let characteristics = response.data.characteristics;
                         characteristics.forEach(index => {
-                            //some of these stations have multiple drainage area values -- which one to use?
-                            //(index.comments === "null") on some but so do stations with only a single value
-                            //console.log(index.comments === 'null', index)
                             if (index.variableTypeID === 1) {
                                 this.peakData.forEach(peakElement => {
                                     if (peakElement.site_no === response.data.code && completedStationCodes.indexOf(response.data.code) == -1) {
@@ -195,17 +192,19 @@ module StreamStats.Controllers {
                                         formattedPlotData.push(formattedPeaksAndDrainage);
                                     }
                                 })
-                                completedStationCodes.push(response.data.code)
-                                this.formattedPlotData = formattedPlotData;
                             }
-                        });
-
+                        })
+                        completedStationCodes.push(response.data.code)
+                        this.formattedPlotData = formattedPlotData;
+                
+                
                 }, (error) => {
                 }).finally(() => {
                     this.createEnvelopeCurvePlot();
-                });
             });
+        })
 
+        
         }
         
         public createEnvelopeCurvePlot(): void {
@@ -223,7 +222,7 @@ module StreamStats.Controllers {
                     align: 'center'
                 },
                 subtitle: { 
-                    text: 'example', 
+                    text: this.selectedRegion.name, 
                     align: 'center'
                 }, 
                 xAxis: {
@@ -244,7 +243,8 @@ module StreamStats.Controllers {
                     }, 
                     turboThreshold: 0,
                     type: 'scatter', 
-                    color: 'blue', 
+                    color: 'rgba(83, 223, 83, .5)', 
+                    //opacity: 0.5,
                     data: this.formattedPlotData,
                     marker: {symbol: 'circle', radius: 3}, 
                     showInLegend: true
