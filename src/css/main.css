@@ -1479,7 +1479,7 @@ html, body, .angular-leaflet-map {
  }
  
  #printArea span {
-     padding: 0 0 0 3px !important;
+     padding: 0 0 1 3px !important;
  }
  .slider-container {
      display: flex;

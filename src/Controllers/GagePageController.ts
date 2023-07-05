@@ -3062,7 +3062,7 @@ public createDischargePlot(): void {
                 text: 'River Discharge (cfs)'
             },
             custom: {
-                allowNegativeLog: true
+                allowNegativeLog: false
             },
             crosshair: {
                 color: 'red',
@@ -3074,7 +3074,7 @@ public createDischargePlot(): void {
                 text: 'River Stage (ft)'
             },
             custom: {
-                allowNegativeLog: true
+                allowNegativeLog: false
             },
             crosshair: {
                 color: 'red',
@@ -3082,14 +3082,14 @@ public createDischargePlot(): void {
             },
             tickPositioner: function () {
                 var positions = [];
-                // console.log("max", measuredDataMax)
-                // console.log("min", measuredDataMin)
-                var tick = Math.floor(measuredDataMin) > 0 ? Math.floor(measuredDataMin) - 1 : 0;
+                console.log("datamax", measuredDataMax)
+                console.log("datamin", measuredDataMin)
+                var tick = Math.floor(measuredDataMin) > 0 ? Math.floor(measuredDataMin) - 1 : 1;
                 var max = measuredDataMax + 2;
                 var increment = (max - tick) > 18? 2 : 1;
-                // console.log(increment)
-                // console.log("tick", tick)
-                // console.log("max", max)
+                console.log(increment)
+                console.log("tick", tick)
+                console.log("max", max)
                 for (tick; tick - increment <= max; tick += increment) {
                     positions.push(tick);
                 }
