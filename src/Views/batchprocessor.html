@@ -129,6 +129,9 @@
                 </button>
                 <!-- create list of flow stats checkboxes -->
                 <div ng-if="vm.flowStatsListSpinner" style="padding-top: 15px;"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+                <div ng-if="!vm.flowStatsListSpinner" style="padding-top: 15px;text-align: center;">
+                    <span>Please select a State / Region to select Flow Statistics</span>
+                </div>
                 <div ng-if="vm.flowStatsList.length > 0">
                     <table class="table table-condensed">
                         <thead class="param-table">
