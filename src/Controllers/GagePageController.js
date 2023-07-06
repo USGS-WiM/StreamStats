@@ -2644,6 +2644,7 @@ var StreamStats;
                 var measuredDataMin = Math.min.apply(Math, this.measuredObj
                     .filter(function (obj) { return typeof obj.y === 'number' && !isNaN(obj.y); })
                     .map(function (obj) { return obj.y; }));
+                var self = this;
                 this.dischargeChartConfig = {
                     chart: {
                         height: 450,
@@ -2694,19 +2695,21 @@ var StreamStats;
                             dashStyle: 'Solid'
                         },
                         tickPositioner: function () {
-                            var positions = [];
-                            console.log("datamax", measuredDataMax);
-                            console.log("datamin", measuredDataMin);
-                            var tick = Math.floor(measuredDataMin) > 0 ? Math.floor(measuredDataMin) - 1 : 1;
-                            var max = measuredDataMax + 2;
-                            var increment = (max - tick) > 18 ? 2 : 1;
-                            console.log(increment);
-                            console.log("tick", tick);
-                            console.log("max", max);
-                            for (tick; tick - increment <= max; tick += increment) {
-                                positions.push(tick);
+                            if (!self.logScaleDischarge) {
+                                var positions = [];
+                                console.log("datamax", measuredDataMax);
+                                console.log("datamin", measuredDataMin);
+                                var tick = Math.floor(measuredDataMin) > 0 ? Math.floor(measuredDataMin) - 1 : 1;
+                                var max = measuredDataMax + 2;
+                                var increment = (max - tick) > 18 ? 2 : 1;
+                                console.log(increment);
+                                console.log("tick", tick);
+                                console.log("max", max);
+                                for (tick; tick - increment <= max; tick += increment) {
+                                    positions.push(tick);
+                                }
+                                return positions;
                             }
-                            return positions;
                         }
                     },
                     series: [

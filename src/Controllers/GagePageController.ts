@@ -3029,6 +3029,7 @@ public createDischargePlot(): void {
     // console.log("max3147", measuredDataMax)
     // console.log("min3147", measuredDataMin)
 
+    var self = this
     this.dischargeChartConfig = {
 
         chart: {
@@ -3081,6 +3082,7 @@ public createDischargePlot(): void {
                 dashStyle: 'Solid'
             },
             tickPositioner: function () {
+                if (!self.logScaleDischarge) {
                 var positions = [];
                 console.log("datamax", measuredDataMax)
                 console.log("datamin", measuredDataMin)
@@ -3095,7 +3097,7 @@ public createDischargePlot(): void {
                 }
                 // console.log(positions)
                 return positions;
-            }
+            }}
         },
         series  : [
         {
