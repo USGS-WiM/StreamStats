@@ -180,8 +180,8 @@ module StreamStats.Controllers {
             this.submitBatchData = new SubmitBatchData();
             this.reorderingQueue = false;
             this.regionListSpinner = true;
-            this.flowStatsListSpinner = true;
-            this.parametersListSpinner = true;
+            this.flowStatsListSpinner = false;
+            this.parametersListSpinner = false;
             this.batchStatusMessageList = [];
             this.batchStatusList = [];
             this.retrievingManageQueue = false;

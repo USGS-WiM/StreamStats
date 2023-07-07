@@ -137,14 +137,16 @@
             <div ng-if="cbFlowStats" style="padding-top: 15px;" class="well well-sm">
                 <h3>Select Flow Statistics</h3>
                 <!-- button to check/uncheck all -->
-                <button class="btn-blue fullwidth" ng-class="btn-blue" ng-click="vm.toggleFlowStatisticsAllChecked()">
+                <button ng-if="vm.flowStatsList.length > 0" class="btn-blue fullwidth" ng-class="btn-blue" ng-click="vm.toggleFlowStatisticsAllChecked()">
                     <span ng-if="vm.flowStatsAllChecked">Select All Flow Statistics</span>
                     <span ng-if="!vm.flowStatsAllChecked">Unselect All Flow Statistics</span>
                 </button>
                 <!-- create list of flow stats checkboxes -->
-                <div ng-hide="!vm.flowStatsListSpinner" style="padding-top: 15px;"><i
-                        class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
-                <div ng-hide="!vm.flowStatsList">
+                <div ng-if="vm.flowStatsListSpinner" style="padding-top: 15px;"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+                <div ng-if="!vm.flowStatsListSpinner" style="padding-top: 15px;text-align: center;">
+                    <span>Please select a State / Region to select Flow Statistics</span>
+                </div>
+                <div ng-if="vm.flowStatsList.length > 0">
                     <table class="table table-condensed">
                         <thead class="param-table">
                             <tr>
@@ -170,16 +172,18 @@
             <div ng-show="vm.showBasinCharacteristics || cbBasinChar" style="padding-top: 15px;" class="well well-sm">
                 <h3>Select Basin Characteristics</h3>
                 <!-- button to check/uncheck all -->
-                <button class="btn-blue fullwidth" ng-class="!vm.parametersAllChecked ? 'btn-black': 'btn-blue'"
+                <button ng-if="vm.availableParamList.length > 0" class="btn-blue fullwidth" ng-class="!vm.parametersAllChecked ? 'btn-black': 'btn-blue'"
                     ng-click="vm.toggleParametersAllChecked()">
                     <span ng-if="vm.parametersAllChecked">Select All Basin Characteristics</span>
                     <span ng-if="!vm.parametersAllChecked">Unselect All Basin Characteristics</span>
                 </button>
 
                 <!-- create table of parameters checkboxes -->
-                <div ng-hide="!vm.parametersListSpinner" style="padding-top: 15px;"><i
-                        class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
-                <div ng-hide="!vm.availableParamList">
+                <div ng-if="vm.parametersListSpinner" style="padding-top: 15px;"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+                <div ng-if="!vm.parametersListSpinner" style="padding-top: 15px;text-align: center;">
+                    <span>Please select a State / Region to select Basin Characteristics</span>
+                </div>
+                <div ng-if="vm.availableParamList.length > 0">
                     <table class="table table-condensed">
                         <thead class="param-table">
                             <tr>
