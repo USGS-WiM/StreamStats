@@ -48,7 +48,7 @@ var StreamStats;
                 _this.selectedBatchProcessorTabName = "submitBatch";
                 _this.nssService = nssService;
                 _this.toaster = toaster;
-                if (window.location.host == 'staging-apps.usgs.gov' || window.location.host == 'apps-int.usgs.gov' || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname === "") {
+                if (window.location.hostname == 'staging-apps.usgs.gov' || window.location.hostname == 'apps-int.usgs.gov' || window.location.hostname == "127.0.0.1:8080" || window.location.hostname == "localhost" || window.location.hostname == "127.0.0.1" || window.location.hostname == "") {
                     _this.internalHost = true;
                 }
                 else {

@@ -20,7 +20,7 @@
         <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'batchStatus'}"><a
                 ng-click="vm.selectBatchProcessorTab('batchStatus')"><i class="fa fa-info-circle"></i>&nbsp;Batch
                 Status</a></li>
-        <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'manageQueue' && vm.internalHost}"><a
+        <li ng-if="vm.internalHost" ng-class="{'active':vm.selectedBatchProcessorTabName == 'manageQueue'}"><a
                 ng-click="vm.selectBatchProcessorTab('manageQueue'); vm.getManageQueueList(); vm.retrievingManageQueue = true"><i class="fa fa-list-ol"></i>&nbsp;Manage
                 Queue</a></li>
     </ul><!-- End batch processor tabs -->
