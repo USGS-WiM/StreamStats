@@ -674,7 +674,22 @@ module StreamStats.Controllers {
                 }
             });
 
-            this.reorderBatches(reorderBatchesPOSTBody);
+            this.reorderBatches(reorderBatchesPOSTBody).then(
+                response => {
+                    let r = response;
+                    if (r.status == 200) {
+                        this.getManageQueueList(); 
+                        this.retrievingManageQueue = true;
+                        this.toaster.clear();
+                        this.toaster.pop('success', "Queue was successfully reordered", "", 5000);
+                        return response;
+                    } else {
+                        this.toaster.clear();
+                        this.toaster.pop('error', "Queue failed to reorder: ", r.data.detail, 15000);
+                    }
+                }).finally(() => {
+                    this.reorderingQueue = false;
+                });
 
         }
 
@@ -857,16 +872,10 @@ module StreamStats.Controllers {
 
             return this.Execute(request).then(
                 (response: any) => {
-                    this.getManageQueueList(); 
-                    this.retrievingManageQueue = true;
-                    this.toaster.pop('success', "Queue was successfully reordered", "", 5000);
                     return response;
                 }, (error) => {
-                    this.toaster.pop('error', "Queue failed to reorder: ", error, 15000);
                     return error;
-                }).finally(() => {
-                    this.reorderingQueue = false;
-                });
+                }).finally(() => {});
         }
 
         public pauseBatch(batchID: number): ng.IPromise<any> {
