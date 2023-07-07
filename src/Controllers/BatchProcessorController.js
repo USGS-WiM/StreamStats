@@ -376,6 +376,7 @@ var StreamStats;
                 }
             };
             BatchProcessorController.prototype.reorderQueue = function () {
+                var _this = this;
                 this.reorderingQueue = true;
                 var reorderBatchesPOSTBody = { "batchOrder": [] };
                 this.manageQueueList.forEach(function (batch) {
@@ -386,7 +387,22 @@ var StreamStats;
                         });
                     }
                 });
-                this.reorderBatches(reorderBatchesPOSTBody);
+                this.reorderBatches(reorderBatchesPOSTBody).then(function (response) {
+                    var r = response;
+                    if (r.status == 200) {
+                        _this.getManageQueueList();
+                        _this.retrievingManageQueue = true;
+                        _this.toaster.clear();
+                        _this.toaster.pop('success', "Queue was successfully reordered", "", 5000);
+                        return response;
+                    }
+                    else {
+                        _this.toaster.clear();
+                        _this.toaster.pop('error', "Queue failed to reorder: ", r.data.detail, 15000);
+                    }
+                }).finally(function () {
+                    _this.reorderingQueue = false;
+                });
             };
             BatchProcessorController.prototype.submitPauseBatch = function (batchID) {
                 this.pauseBatch(batchID);
@@ -514,20 +530,13 @@ var StreamStats;
                 });
             };
             BatchProcessorController.prototype.reorderBatches = function (batchOrder) {
-                var _this = this;
                 var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorReorderBatch'];
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(batchOrder));
                 return this.Execute(request).then(function (response) {
-                    _this.getManageQueueList();
-                    _this.retrievingManageQueue = true;
-                    _this.toaster.pop('success', "Queue was successfully reordered", "", 5000);
                     return response;
                 }, function (error) {
-                    _this.toaster.pop('error', "Queue failed to reorder: ", error, 15000);
                     return error;
-                }).finally(function () {
-                    _this.reorderingQueue = false;
-                });
+                }).finally(function () { });
             };
             BatchProcessorController.prototype.pauseBatch = function (batchID) {
                 var _this = this;
