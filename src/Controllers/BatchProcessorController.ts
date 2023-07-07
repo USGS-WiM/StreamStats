@@ -682,7 +682,6 @@ module StreamStats.Controllers {
                         this.retrievingManageQueue = true;
                         this.toaster.clear();
                         this.toaster.pop('success', "Queue was successfully reordered", "", 5000);
-                        return response;
                     } else {
                         this.toaster.clear();
                         this.toaster.pop('error', "Queue failed to reorder: ", r.data.detail, 15000);
@@ -699,13 +698,42 @@ module StreamStats.Controllers {
         // pause a batch
         public submitPauseBatch(batchID: number): void {
             // console.log("Pausing batch " + batchID);
-            this.pauseBatch(batchID);
+
+            this.pauseBatch(batchID).then(
+                response => {
+                    let r = response;
+                    if (r.status == 200) {
+                        this.getManageQueueList(); 
+                        this.retrievingManageQueue = true;
+                        this.toaster.clear();
+                        this.toaster.pop('success', "Batch ID " + batchID + " was paused.", "", 5000);
+                    } else {
+                        this.toaster.clear();
+                        this.toaster.pop('error', "Batch ID " + batchID + " could not be paused.", r.data.detail, 15000);
+                    }
+                }).finally(() => {
+                });
+
+
         }
 
         // unpause a batch
         public submitUnpauseBatch(batchID: number): void {
             // console.log("Unpausing batch " + batchID);
-            this.unpauseBatch(batchID);
+            this.unpauseBatch(batchID).then(
+                response => {
+                    let r = response;
+                    if (r.status == 200) {
+                        this.getManageQueueList(); 
+                        this.retrievingManageQueue = true;
+                        this.toaster.clear();
+                        this.toaster.pop('success', "Batch ID " + batchID + " was unpaused.", "", 5000);
+                    } else {
+                        this.toaster.clear();
+                        this.toaster.pop('error', "Batch ID " + batchID + " could not be unpaused.", r.data.detail, 15000);
+                    }
+                }).finally(() => {
+                });
         }
 
         // Service methods
@@ -888,12 +916,8 @@ module StreamStats.Controllers {
 
             return this.Execute(request).then(
                 (response: any) => {
-                    this.getManageQueueList(); 
-                    this.retrievingManageQueue = true;
-                    this.toaster.pop('success', "Batch ID " + batchID + " was paused.", "", 5000);
                     return response;
                 }, (error) => {
-                    this.toaster.pop('error', "Batch ID " + batchID + " could not be paused.", error, 15000);
                     return error;
                 }).finally(() => {
                 });
@@ -906,12 +930,8 @@ module StreamStats.Controllers {
 
             return this.Execute(request).then(
                 (response: any) => {
-                    this.getManageQueueList(); 
-                    this.retrievingManageQueue = true;
-                    this.toaster.pop('success', "Batch ID " + batchID + " was unpaused.", "", 5000);
                     return response;
                 }, (error) => {
-                    this.toaster.pop('error', "Batch ID " + batchID + " could not be unpaused.", error, 15000);
                     return error;
                 }).finally(() => {
                 });

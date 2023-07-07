@@ -394,7 +394,6 @@ var StreamStats;
                         _this.retrievingManageQueue = true;
                         _this.toaster.clear();
                         _this.toaster.pop('success', "Queue was successfully reordered", "", 5000);
-                        return response;
                     }
                     else {
                         _this.toaster.clear();
@@ -405,10 +404,38 @@ var StreamStats;
                 });
             };
             BatchProcessorController.prototype.submitPauseBatch = function (batchID) {
-                this.pauseBatch(batchID);
+                var _this = this;
+                this.pauseBatch(batchID).then(function (response) {
+                    var r = response;
+                    if (r.status == 200) {
+                        _this.getManageQueueList();
+                        _this.retrievingManageQueue = true;
+                        _this.toaster.clear();
+                        _this.toaster.pop('success', "Batch ID " + batchID + " was paused.", "", 5000);
+                    }
+                    else {
+                        _this.toaster.clear();
+                        _this.toaster.pop('error', "Batch ID " + batchID + " could not be paused.", r.data.detail, 15000);
+                    }
+                }).finally(function () {
+                });
             };
             BatchProcessorController.prototype.submitUnpauseBatch = function (batchID) {
-                this.unpauseBatch(batchID);
+                var _this = this;
+                this.unpauseBatch(batchID).then(function (response) {
+                    var r = response;
+                    if (r.status == 200) {
+                        _this.getManageQueueList();
+                        _this.retrievingManageQueue = true;
+                        _this.toaster.clear();
+                        _this.toaster.pop('success', "Batch ID " + batchID + " was unpaused.", "", 5000);
+                    }
+                    else {
+                        _this.toaster.clear();
+                        _this.toaster.pop('error', "Batch ID " + batchID + " could not be unpaused.", r.data.detail, 15000);
+                    }
+                }).finally(function () {
+                });
             };
             BatchProcessorController.prototype.loadParametersByRegionBP = function (rcode) {
                 if (!rcode)
@@ -539,31 +566,21 @@ var StreamStats;
                 }).finally(function () { });
             };
             BatchProcessorController.prototype.pauseBatch = function (batchID) {
-                var _this = this;
                 var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatchPause'].format(batchID);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST);
                 return this.Execute(request).then(function (response) {
-                    _this.getManageQueueList();
-                    _this.retrievingManageQueue = true;
-                    _this.toaster.pop('success', "Batch ID " + batchID + " was paused.", "", 5000);
                     return response;
                 }, function (error) {
-                    _this.toaster.pop('error', "Batch ID " + batchID + " could not be paused.", error, 15000);
                     return error;
                 }).finally(function () {
                 });
             };
             BatchProcessorController.prototype.unpauseBatch = function (batchID) {
-                var _this = this;
                 var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatchUnpause'].format(batchID);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST);
                 return this.Execute(request).then(function (response) {
-                    _this.getManageQueueList();
-                    _this.retrievingManageQueue = true;
-                    _this.toaster.pop('success', "Batch ID " + batchID + " was unpaused.", "", 5000);
                     return response;
                 }, function (error) {
-                    _this.toaster.pop('error', "Batch ID " + batchID + " could not be unpaused.", error, 15000);
                     return error;
                 }).finally(function () {
                 });
