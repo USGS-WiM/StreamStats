@@ -21,7 +21,7 @@
                 ng-click="vm.selectBatchProcessorTab('batchStatus')"><i class="fa fa-info-circle"></i>&nbsp;Batch
                 Status</a></li>
         <li ng-if="vm.internalHost" ng-class="{'active':vm.selectedBatchProcessorTabName == 'manageQueue'}"><a
-                ng-click="vm.selectBatchProcessorTab('manageQueue'); vm.getManageQueueList(); vm.retrievingManageQueue = true"><i class="fa fa-list-ol"></i>&nbsp;Manage
+                ng-click="vm.selectBatchProcessorTab('manageQueue'); vm.getManageQueueList(); vm.retrievingManageQueue = true;"><i class="fa fa-list-ol"></i>&nbsp;Manage
                 Queue</a></li>
     </ul><!-- End batch processor tabs -->
 
@@ -270,7 +270,7 @@
                                 <th style="text-align: center;"><small>Delete?</small></th>
                             </tr>
                         </thead>
-                        <tbody ng-repeat="batch in vm.batchStatusList">
+                        <tbody ng-repeat="batch in vm.batchStatusList" >
                             <tr>
                                 <td style="text-align: center;"><span>{{batch.batchID}}</span></td>
                                 <td style="text-align: center;"><span>{{batch.statusMessage}}</span></td>
@@ -308,13 +308,12 @@
             <div>
                 <b>How to Edit the Batch Queue</b>
                 <ul>
-                    <li>To change the order of batches, edit the values in the <i>Order</i> column and click the "Update
-                        Queue Order" button. Batches will proceed in the queue in numerical order.</li>
+                    <li>To change the order of batches, edit the values in the <i>Order</i> column and click the "Reorder Order" button. Batches will proceed in the queue in numerical order.</li>
                     <li>To delete a batch, click the trash can icon in the <i>Delete?</i> column.</li>
-                    <li>To pause a batch, click the pause button in the <i>Pause?</i> column. The batch will
+                    <li>To pause a batch, click the pause button in the <i>Pause / Unpause?</i> column. The batch will
                         automatically be unpaused (returned to the queue) when all the batches currently in the queue
                         have completed. The IDs of the batches required to be completed for the batch to be unpaused are listed in the "Pause List" column.</li>
-                    <li>To manually unpause a batch, click the play button in the <i>Pause?</i> column. The batch will
+                    <li>To manually unpause a batch, click the play button in the <i>Pause / Unpause?</i> column. The batch will
                         be added to the bottom of the current queue.</li>
                 </ul>
             </div>
@@ -344,11 +343,11 @@
                                 <th style="text-align: center;"><small>Delete?</small></th>
                             </tr>
                         </thead>
-                        <tbody ng-repeat="batch in vm.manageQueueList">
+                        <tbody ng-repeat="batch in vm.manageQueueList | orderBy:'order'">
                             <tr>
                                 <td style="text-align: center;"><span>{{batch.batchID}}</span></td>
                                 <td style="text-align: center;"><span>
-                                    <input ng-if="batch.status==1" class="bp-input" type="number" ng-model="batch.order" style="text-align: center; width:50px;" required></span>
+                                    <input ng-if="batch.status==1" class="bp-input" type="number" min="1" oninput="validity.valid||(value='');" ng-model="batch.order" style="text-align: center; width:80px;" required></span>
                                 </td>
                                 <td style="text-align: center;"><span>{{batch.emailAddress}}</span></td>
                                 <td style="text-align: center;"><span>{{batch.statusDescription}}</span></td>
