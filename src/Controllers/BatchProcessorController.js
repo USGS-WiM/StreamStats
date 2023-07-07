@@ -298,7 +298,6 @@ var StreamStats;
                 var _this = this;
                 this.getBatchStatusByEmail().then(function (response) {
                     _this.manageQueueList = response;
-                    console.log(_this.manageQueueList);
                     _this.retrievingManageQueue = false;
                 });
             };
@@ -390,11 +389,9 @@ var StreamStats;
                 this.reorderBatches(reorderBatchesPOSTBody);
             };
             BatchProcessorController.prototype.submitPauseBatch = function (batchID) {
-                console.log("Pausing batch " + batchID);
                 this.pauseBatch(batchID);
             };
             BatchProcessorController.prototype.submitUnpauseBatch = function (batchID) {
-                console.log("Unpausing batch " + batchID);
                 this.unpauseBatch(batchID);
             };
             BatchProcessorController.prototype.loadParametersByRegionBP = function (rcode) {
@@ -473,8 +470,10 @@ var StreamStats;
                         try {
                             var status_2 = {
                                 batchID: batch.ID,
-                                order: batch.Order,
+                                deleteCode: batch.DeleteCode,
                                 emailAddress: batch.EmailAddress,
+                                order: batch.Order,
+                                queueList: batch.QueueList == null ? "" : batch.QueueList.join(", "),
                                 status: _this.batchStatusMessageList.filter(function (item) { return item.id == batch.StatusID; })[0].id,
                                 statusMessage: _this.batchStatusMessageList.filter(function (item) { return item.id == batch.StatusID; })[0].message,
                                 statusDescription: _this.batchStatusMessageList.filter(function (item) { return item.id == batch.StatusID; })[0].description,
@@ -484,8 +483,7 @@ var StreamStats;
                                 resultsURL: batch.ResultsURL,
                                 region: batch.Region,
                                 pointsRequested: batch.NumberPoints,
-                                pointsSuccessful: batch.NumberPointsSuccessful,
-                                deleteCode: batch.DeleteCode
+                                pointsSuccessful: batch.NumberPointsSuccessful
                             };
                             batchStatusMessages.push(status_2);
                         }

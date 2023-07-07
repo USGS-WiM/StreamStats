@@ -313,7 +313,7 @@
                     <li>To delete a batch, click the trash can icon in the <i>Delete?</i> column.</li>
                     <li>To pause a batch, click the pause button in the <i>Pause?</i> column. The batch will
                         automatically be unpaused (returned to the queue) when all the batches currently in the queue
-                        have completed.</li>
+                        have completed. The IDs of the batches required to be completed for the batch to be unpaused are listed in the "Pause List" column.</li>
                     <li>To manually unpause a batch, click the play button in the <i>Pause?</i> column. The batch will
                         be added to the bottom of the current queue.</li>
                 </ul>
@@ -332,6 +332,7 @@
                                 <th style="text-align: center;"><small>Order</small></th>
                                 <th style="text-align: center;"><small>Email Address</small></th>
                                 <th style="text-align: center;"><small>Status</small></th>
+                                <th style="text-align: center;"><small>Pause List</small></th>
                                 <th style="text-align: center;"><small>Time Submitted (UTC)</small></th>
                                 <th style="text-align: center;"><small>Time Started (UTC)</small></th>
                                 <th style="text-align: center;"><small>Time Completed (UTC)</small></th>
@@ -339,7 +340,7 @@
                                 <th style="text-align: center;"><small>State/ Region</small></th>
                                 <th style="text-align: center;"><small>Number Points Requested</small></th>
                                 <th style="text-align: center;"><small>Number Points Successful</small></th>
-                                <th style="text-align: center;"><small>Pause?</small></th>
+                                <th style="text-align: center;"><small>Pause / Unpause?</small></th>
                                 <th style="text-align: center;"><small>Delete?</small></th>
                             </tr>
                         </thead>
@@ -351,6 +352,7 @@
                                 </td>
                                 <td style="text-align: center;"><span>{{batch.emailAddress}}</span></td>
                                 <td style="text-align: center;"><span>{{batch.statusDescription}}</span></td>
+                                <td style="text-align: center;"><span>{{batch.queueList}}</span></td>
                                 <td style="text-align: center;"><span
                                         ng-if="batch.timeSubmitted != null">{{batch.timeSubmitted | date:'M/d/yy h:mm
                                         a'}}</span></td>

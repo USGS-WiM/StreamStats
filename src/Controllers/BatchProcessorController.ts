@@ -64,8 +64,10 @@ module StreamStats.Controllers {
 
     interface IBatchStatus {
         batchID: string,
-        order: number,
+        deleteCode: string
         emailAddress: string,
+        order: number,
+        queueList: string;
         status: number,
         statusMessage: string,
         statusDescription: string,
@@ -76,13 +78,14 @@ module StreamStats.Controllers {
         region: string,
         pointsRequested: number,
         pointsSuccessful: number,
-        deleteCode: string
     }
 
     class BatchStatus implements IBatchStatus {
         public batchID: string;
-        public order: number;
+        public deleteCode: string;
         public emailAddress: string;
+        public order: number;
+        public queueList: string;
         public status: number;
         public statusMessage: string;
         public statusDescription: string;
@@ -93,7 +96,6 @@ module StreamStats.Controllers {
         public region: string;
         public pointsRequested: number;
         public pointsSuccessful: number;
-        public deleteCode: string;
     }
 
     class SubmitBatchData {
@@ -532,7 +534,6 @@ module StreamStats.Controllers {
             this.getBatchStatusByEmail().then(
                 response => {
                     this.manageQueueList = response;
-                    console.log(this.manageQueueList);
                     this.retrievingManageQueue = false;
                 }
             );
@@ -679,13 +680,13 @@ module StreamStats.Controllers {
 
         // pause a batch
         public submitPauseBatch(batchID: number): void {
-            console.log("Pausing batch " + batchID);
+            // console.log("Pausing batch " + batchID);
             this.pauseBatch(batchID);
         }
 
         // unpause a batch
         public submitUnpauseBatch(batchID: number): void {
-            console.log("Unpausing batch " + batchID);
+            // console.log("Unpausing batch " + batchID);
             this.unpauseBatch(batchID);
         }
 
@@ -796,8 +797,10 @@ module StreamStats.Controllers {
                         try {
                             let status: BatchStatus = {
                                 batchID: batch.ID,
-                                order: batch.Order,
+                                deleteCode: batch.DeleteCode,
                                 emailAddress: batch.EmailAddress,
+                                order: batch.Order,
+                                queueList: batch.QueueList == null ? "" : batch.QueueList.join(", "),
                                 status: this.batchStatusMessageList.filter((item) => { return item.id == batch.StatusID })[0].id,
                                 statusMessage: this.batchStatusMessageList.filter((item) => { return item.id == batch.StatusID })[0].message,
                                 statusDescription: this.batchStatusMessageList.filter((item) => { return item.id == batch.StatusID })[0].description,
@@ -807,8 +810,7 @@ module StreamStats.Controllers {
                                 resultsURL: batch.ResultsURL,
                                 region: batch.Region,
                                 pointsRequested: batch.NumberPoints,
-                                pointsSuccessful: batch.NumberPointsSuccessful,
-                                deleteCode: batch.DeleteCode
+                                pointsSuccessful: batch.NumberPointsSuccessful
                             }
 
                             batchStatusMessages.push(status);
