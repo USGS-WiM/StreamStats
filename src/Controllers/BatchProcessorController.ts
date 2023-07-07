@@ -686,6 +686,9 @@ module StreamStats.Controllers {
                     } else {
                         this.toaster.clear();
                         this.toaster.pop('error', "Queue failed to reorder: ", r.data.detail, 15000);
+                        // Consideration: Refresh list to what it was before failure
+                        // this.getManageQueueList();
+                        // this.retrievingManageQueue = true
                     }
                 }).finally(() => {
                     this.reorderingQueue = false;
