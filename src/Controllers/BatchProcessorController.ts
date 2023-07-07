@@ -164,7 +164,7 @@ module StreamStats.Controllers {
             this.selectedBatchProcessorTabName = "submitBatch";
             this.nssService = nssService;
             this.toaster = toaster;
-            if (window.location.host === 'staging-apps.usgs.gov' || location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.hostname === "") {
+            if (window.location.host === 'staging-apps.usgs.gov' || 'apps-int.usgs.gov' || location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.hostname === "") {
                 this.internalHost = true;
             } else {
                 this.internalHost = false;
