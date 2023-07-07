@@ -347,7 +347,7 @@
                             <tr>
                                 <td style="text-align: center;"><span>{{batch.batchID}}</span></td>
                                 <td style="text-align: center;"><span>
-                                    <input ng-if="batch.status==1" class="bp-input" type="number" ng-model="batch.order" style="text-align: center; width:50px;" required></span>
+                                    <input ng-if="batch.status==1" class="bp-input" type="number" min="1" oninput="validity.valid||(value='');" ng-model="batch.order" style="text-align: center; width:80px;" required></span>
                                 </td>
                                 <td style="text-align: center;"><span>{{batch.emailAddress}}</span></td>
                                 <td style="text-align: center;"><span>{{batch.statusDescription}}</span></td>
