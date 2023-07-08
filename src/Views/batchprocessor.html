@@ -20,14 +20,18 @@
         <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'batchStatus'}"><a
                 ng-click="vm.selectBatchProcessorTab('batchStatus')"><i class="fa fa-info-circle"></i>&nbsp;Batch
                 Status</a></li>
+        <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'streamGrid'}"><a
+                ng-click="vm.selectBatchProcessorTab('streamGrid'); vm.loadStreamGrids(); vm.retrievingStreamGrids = true;"><i class="fa fa-download"></i>&nbsp;Download Stream
+                Grids</a></li>
     </ul><!-- End batch processor tabs -->
 
-    
+
     <div style="padding-top: 10px;">
         <!-- Start submit batch -->
         <div id="submitBatch" ng-if="vm.selectedBatchProcessorTabName==='submitBatch'">
             <!-- Start instructions -->
-            <div> The StreamStats Batch Processor allows users to run StreamStats for numerous points via an automated process.
+            <div> The StreamStats Batch Processor allows users to run StreamStats for numerous points via an automated
+                process.
                 <br>
                 <br>
                 <b>How to Submit a Batch</b>
@@ -35,16 +39,18 @@
                 <ol>
                     <li>Create a point shapefile:</li>
                     <ul style="list-style-type: disc; padding: 0px">
-                        <li>Ensure points are coincident with the stream grid used by StreamStats for delineation.</li>
+                        <li>Ensure points are coincident with the stream grid used by StreamStats for delineation. Visit the<a ng-click="vm.selectBatchProcessorTab('streamGrid'); vm.loadStreamGrids(); vm.retrievingStreamGrids = true;" href="">Download Stream Grids tab</a>to download the stream grid for each State/Region.</li>
                         <li>Shapefile must have an ID field that uniquely identifies each point. </li>
-                        <li>Shapefile must be a point shapefile. Polyline, polygon, and multipoint geometries cannot be processed.
+                        <li>Shapefile must be a point shapefile. Polyline, polygon, and multipoint geometries cannot be
+                            processed.
                         </li>
                         <li>Only the first 250 points will be processed.</li>
                         <li>Only points contained within the requested State/Region will be processed.</li>
                     </ul>
                     <li>Complete the form below. Highlighted fields are required.</li>
                     <li>Click the "Submit Batch" button and confirm that the batch was submitted successfully.</li>
-                    <li>Check your email or the "Batch Status" tab to see the batch status and retrieve file geodatabase results.
+                    <li>Check your email or the "Batch Status" tab to see the batch status and retrieve file geodatabase
+                        results.
                     </li>
                 </ol>
             </div>
@@ -63,16 +69,16 @@
                 </div>
 
             </div><!-- End select region -->
-            
+
             <!-- start user information-->
             <div style="padding-top: 15px">
                 <!-- Start idfield -->
                 <div> ID Field:
-                    <i ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false" class="fa fa-question-circle"></i>
+                    <i ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false"
+                        class="fa fa-question-circle"></i>
                     <span ng-show="showTooltip" class="report-tooltip">
-                        <span>This is the field heading from the shapefile of points that is unique to each point and allows the
-                            data to be
-                            joined with the batch results.</span>
+                        <span>This is the field heading from the shapefile of points that is unique to each point and
+                            allows the data to be joined with the batch results.</span>
                     </span>
                     <input class="bp-input" type="text" id="idField" ng-model="vm.submitBatchData.idField" required>
                 </div><br /><!-- End idfield -->
@@ -80,29 +86,35 @@
                 <!-- Start email field -->
                 <div>
                     <span> Email Address:
-                        <input class="bp-input" type="email" id="emailField" ng-model="vm.submitBatchData.email" required></span>
+                        <input class="bp-input" type="email" id="emailField" ng-model="vm.submitBatchData.email"
+                            required></span>
 
                 </div><br /><!-- End email field -->
-                
+
                 <!-- Start file upload button-->
                 <div>
                     <span>Upload Shapefile (.zip):</span><br />
-                    <label ng-if="!vm.submitBatchData.attachment || (vm.submitBatchData.attachment.type != 'application/zip' && vm.submitBatchData.attachment.type !='application/x-zip-compressed')" for="shapefile" class="bp-attach-false">Select file</label>
-                    <label ng-if="vm.submitBatchData.attachment && (vm.submitBatchData.attachment.type == 'application/zip' || vm.submitBatchData.attachment.type =='application/x-zip-compressed')" for="shapefile" class="bp-attach-true">Select file</label>
-                    <input type="file" ngf-select="vm.validateZipFile($files)" ng-model="vm.submitBatchData.attachment" id="shapefile" name="shapefile" accept=".zip"
-
-                        ngf-accept="application/zip" required style="display: none;">
+                    <label
+                        ng-if="!vm.submitBatchData.attachment || (vm.submitBatchData.attachment.type != 'application/zip' && vm.submitBatchData.attachment.type !='application/x-zip-compressed')"
+                        for="shapefile" class="bp-attach-false">Select file</label>
+                    <label
+                        ng-if="vm.submitBatchData.attachment && (vm.submitBatchData.attachment.type == 'application/zip' || vm.submitBatchData.attachment.type =='application/x-zip-compressed')"
+                        for="shapefile" class="bp-attach-true">Select file</label>
+                    <input type="file" ngf-select="vm.validateZipFile($files)" ng-model="vm.submitBatchData.attachment"
+                        id="shapefile" name="shapefile" accept=".zip" ngf-accept="application/zip" required
+                        style="display: none;">
                     <span ng-show="vm.submitBatchData.attachment">
 
-                        <i class="fa fa-check" style="color:green"></i>&nbsp;&nbsp;{{vm.submitBatchData.attachment.name}}<button
+                        <i class="fa fa-check"
+                            style="color:green"></i>&nbsp;&nbsp;{{vm.submitBatchData.attachment.name}}<button
                             class="close removeItem" ng-click="vm.submitBatchData.attachment = null">&times;</button>
                     </span>
                 </div><!-- End file upload button-->
             </div><!-- End user information-->
-            
+
             <!-- Start checkboxes for different sections -->
             <div style="padding-top: 15px;">
-                
+
                 <span>Select Computations:</span><br />
                 <span>
                     <input id="cbDelineate" , type="checkbox" ng-checked="vm.selectedRegion" display="inline-block"
@@ -113,8 +125,8 @@
                     <label class="chx" for="cbFlowStats">&nbsp;Compute Flow Statistics&nbsp;&nbsp;&nbsp;&nbsp;</label>
 
                     <input id="cbBasinChar" type="checkbox" display="inline-block" ng-model="cbBasinChar"
-                        ng-click="cbBasinChar = !cbBasinChar"
-                        ng-checked="vm.showBasinCharacteristics || cbBasinChar" ng-disabled="vm.showBasinCharacteristics">
+                        ng-click="cbBasinChar = !cbBasinChar" ng-checked="vm.showBasinCharacteristics || cbBasinChar"
+                        ng-disabled="vm.showBasinCharacteristics">
                     <label class="chx" for="cbBasinChar">&nbsp;Compute Basin Characteristics</label>
                 </span>
             </div><!-- end checkboxes for different sections -->
@@ -123,12 +135,14 @@
             <div ng-if="cbFlowStats" style="padding-top: 15px;" class="well well-sm">
                 <h3>Select Flow Statistics</h3>
                 <!-- button to check/uncheck all -->
-                <button ng-if="vm.flowStatsList.length > 0" class="btn-blue fullwidth" ng-class="btn-blue" ng-click="vm.toggleFlowStatisticsAllChecked()">
+                <button ng-if="vm.flowStatsList.length > 0" class="btn-blue fullwidth" ng-class="btn-blue"
+                    ng-click="vm.toggleFlowStatisticsAllChecked()">
                     <span ng-if="vm.flowStatsAllChecked">Select All Flow Statistics</span>
                     <span ng-if="!vm.flowStatsAllChecked">Unselect All Flow Statistics</span>
                 </button>
                 <!-- create list of flow stats checkboxes -->
-                <div ng-if="vm.flowStatsListSpinner" style="padding-top: 15px;"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+                <div ng-if="vm.flowStatsListSpinner" style="padding-top: 15px;"><i
+                        class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
                 <div ng-if="!vm.flowStatsListSpinner" style="padding-top: 15px;text-align: center;">
                     <span>Please select a State / Region to select Flow Statistics</span>
                 </div>
@@ -136,7 +150,7 @@
                     <table class="table table-condensed">
                         <thead class="param-table">
                             <tr>
-                                <th >Select</th>
+                                <th>Select</th>
                                 <th class="col-xs-7">Statistic Group</th>
                                 <th class="col-xs-3"></th>
                             </tr>
@@ -158,14 +172,16 @@
             <div ng-show="vm.showBasinCharacteristics || cbBasinChar" style="padding-top: 15px;" class="well well-sm">
                 <h3>Select Basin Characteristics</h3>
                 <!-- button to check/uncheck all -->
-                <button ng-if="vm.availableParamList.length > 0" class="btn-blue fullwidth" ng-class="!vm.parametersAllChecked ? 'btn-black': 'btn-blue'"
+                <button ng-if="vm.availableParamList.length > 0" class="btn-blue fullwidth"
+                    ng-class="!vm.parametersAllChecked ? 'btn-black': 'btn-blue'"
                     ng-click="vm.toggleParametersAllChecked()">
                     <span ng-if="vm.parametersAllChecked">Select All Basin Characteristics</span>
                     <span ng-if="!vm.parametersAllChecked">Unselect All Basin Characteristics</span>
                 </button>
 
                 <!-- create table of parameters checkboxes -->
-                <div ng-if="vm.parametersListSpinner" style="padding-top: 15px;"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+                <div ng-if="vm.parametersListSpinner" style="padding-top: 15px;"><i
+                        class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
                 <div ng-if="!vm.parametersListSpinner" style="padding-top: 15px;text-align: center;">
                     <span>Please select a State / Region to select Basin Characteristics</span>
                 </div>
@@ -182,7 +198,8 @@
                             <tr>
                                 <td>
                                     <checkbox large ng-model="parameter.checked"
-                                        ng-change="vm.updateSelectedParamList(parameter)" ng-disabled="!parameter.toggleable">
+                                        ng-change="vm.updateSelectedParamList(parameter)"
+                                        ng-disabled="!parameter.toggleable">
                                     </checkbox>
                                 </td>
                                 <td><span>&nbsp;&nbsp;{{parameter.code}}</span></td>
@@ -194,13 +211,14 @@
             </div><!-- End parameter selection -->
 
         </div><!-- End submit batch -->
-        
+
 
         <!-- Start batch status -->
         <div id="batchStatus" ng-if="vm.selectedBatchProcessorTabName==='batchStatus'">
             <!-- Start instructions -->
             <div>
-                Batches may take several hours or days to complete. Use this tab to check the status and results of your batches.
+                Batches may take several hours or days to complete. Use this tab to check the status and results of your
+                batches.
                 <br>
                 <br>
                 <b>How to Check Batch Status</b>
@@ -217,14 +235,16 @@
                 <!-- Start email field -->
                 <div>
                     <span>Email Address:</span>
-                </div>    
+                </div>
                 <div>
-                    <span><input class="bp-input" type="email" id="emailFieldStatus" ng-model="vm.batchStatusEmail" required></span>
+                    <span><input class="bp-input" type="email" id="emailFieldStatus" ng-model="vm.batchStatusEmail"
+                            required></span>
                 </div>
                 <!-- End email field -->
                 <!-- Button to fetch batch status -->
                 <div>
-                    <button type="submit" ng-click="vm.getBatchStatusList(vm.batchStatusEmail); vm.retrievingBatchStatus = true">
+                    <button type="submit"
+                        ng-click="vm.getBatchStatusList(vm.batchStatusEmail); vm.retrievingBatchStatus = true">
                         <i class="fa fa-share"></i>
                         <span>&nbsp;&nbsp;Check Status</span>
                     </button>
@@ -232,7 +252,7 @@
             </div>
             <!-- End query status by email -->
             <!-- Start batch status table -->
-            <div >
+            <div>
                 <div ng-if="vm.retrievingBatchStatus" style="padding-top: 15px;"><i
                         class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
                 </div>
@@ -259,58 +279,100 @@
                                 <td style="text-align: center;"><span ng-if="batch.timeSubmitted != null">{{batch.timeSubmitted | date:'M/d/yy h:mm a'}}</span></td>
                                 <td style="text-align: center;"><span ng-if="batch.timeStarted != null">{{batch.timeStarted | date:'M/d/yy h:mm a'}}</span></td>
                                 <td style="text-align: center;"><span ng-if="batch.timeCompleted != null">{{batch.timeCompleted | date:'M/d/yy h:mm a'}}</span></td>
-                                <td style="text-align: center;"><span><a ng-if="batch.resultsURL != null" ng-href="{{batch.resultsURL}}">Link</a></span></td>
+                                <td style="text-align: center;"><span><a ng-if="batch.resultsURL != null"
+                                            ng-href="{{batch.resultsURL}}">Link</a></span></td>
                                 <td style="text-align: center;"><span>{{batch.region}}</span></td>
                                 <td style="text-align: center;"><span>{{batch.pointsRequested}}</span></td>
-                                <td style="text-align: center;"><span ng-if="batch.pointsSuccessful != null">{{batch.pointsSuccessful}}</span></td>
-                                <td style="text-align: center;"><i ng-click="vm.trashBatch(batch.batchID, batch.deleteCode, batchStatusEmail)" class="fa fa-trash" style="cursor: pointer"></i></td>
+                                <td style="text-align: center;"><span
+                                        ng-if="batch.pointsSuccessful != null">{{batch.pointsSuccessful}}</span></td>
+                                <td style="text-align: center;"><i
+                                        ng-click="vm.trashBatch(batch.batchID, batch.deleteCode, batchStatusEmail)"
+                                        class="fa fa-trash" style="cursor: pointer"></i></td>
                             </tr>
                         </tbody>
                     </table>
                 </div><br>
                 <div ng-if="vm.batchStatusList.length == 0 && vm.retrievingBatchStatus == false">
                     <strong>No batches found for this email address.</strong>
-            </div>
+                </div>
+            </div> 
         </div> <!-- End batch status -->
-       
-</div> <!-- End of modal body -->
 
-<!-- Start modal footer -->
-<div class="modal-footer">
-    <div ng-if="vm.selectedBatchProcessorTabName == 'submitBatch' && vm.submitBatchOver250" class="bp-status-250" >
-        {{vm.submitBatchOver250Message}}
-    </div>
-    <div class="row" style="justify-content: center; padding-top: 15px;">
-        <!-- Button to submit batch -->
-        <button ng-if="vm.selectedBatchProcessorTabName==='submitBatch' && vm.submitBatchOver250 == false" type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.submitBatch()"
-            ng-disabled="vm.submittingBatch || !vm.selectedRegion || !vm.submitBatchData.idField || !vm.submitBatchData.email || !vm.submitBatchData.attachment">
-            <i ng-if="vm.submittingBatch == false" class="fa fa-share"></i>
-            <i ng-if="vm.submittingBatch == true" class="fa fa-refresh fa-spin"></i>
+        <!-- Start stream grids -->
+        <div id="streamGrid" ng-if="vm.selectedBatchProcessorTabName==='streamGrid'">
+        <!-- Start instructions -->
+        <div>
+            Batch points should be coincident with the stream grid used by StreamStats for delineation. Please use the links below to download the stream grid for each State/Region. 
+        </div><br>
+        <!-- End instructions -->
+            <div ng-if="vm.retrievingStreamGrids" style="padding-top: 15px;"><i
+                class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
+            </div>
+            <div ng-if="!vm.retrievingStreamGrids" style="overflow-x: scroll;">
+                <table class="table table-condensed">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center;"><small>State / Region</small></th>
+                            <th style="text-align: center;"><small>Download Stream Grid Link</small></th>
+                            <th style="text-align: center;"><small>Last Modified Date</small></th>
+                        </tr>
+                    </thead>
+                    <tbody ng-repeat="streamGrid in vm.streamGridList">
+                        <tr>
+                            <td style="text-align: center;"><span>{{streamGrid.region}}</span></td>
+                            <td style="text-align: center;"><span><a 
+                                ng-href="{{streamGrid.downloadURL}}">{{streamGrid.fileName}}</a></span></td>
+                            <td style="text-align: center;"><span>{{streamGrid.lastModified | date:'M/d/yy h:mm a'}}</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div><br>
+        </div> <!-- End stream grids -->
 
-            <span>&nbsp;&nbsp;Submit Batch</span>
-        </button>
-        <!-- End submit batch button -->
 
-        <!-- Button to submit GTE 250 batch -->
-        <button ng-if="vm.selectedBatchProcessorTabName==='submitBatch' && vm.submitBatchOver250 == true" type="submit"
-            class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.submitBatch(true)"
-            ng-disabled="vm.submittingBatch || !vm.selectedRegion || !vm.submitBatchData.idField || !vm.submitBatchData.email || !vm.submitBatchData.attachment">
-            <i ng-if="vm.submittingBatch == false" class="fa fa-share"></i>
-            <i ng-if="vm.submittingBatch == true" class="fa fa-refresh fa-spin"></i>
+        </div> <!-- End of modal body -->
 
-            <span>&nbsp;&nbsp;Submit Batch Over 250 Points</span>
-        </button>
-        <!-- End submit batch GTE 250 button -->
+        <!-- Start modal footer -->
+        <div class="modal-footer">
+            <div ng-if="vm.selectedBatchProcessorTabName == 'submitBatch' && vm.submitBatchOver250"
+                class="bp-status-250">
+                {{vm.submitBatchOver250Message}}
+            </div>
+            <div class="row" style="justify-content: center; padding-top: 15px;">
+                <!-- Button to submit batch -->
+                <button ng-if="vm.selectedBatchProcessorTabName==='submitBatch' && vm.submitBatchOver250 == false"
+                    type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.submitBatch()"
+                    ng-disabled="vm.submittingBatch || !vm.selectedRegion || !vm.submitBatchData.idField || !vm.submitBatchData.email || !vm.submitBatchData.attachment">
+                    <i ng-if="vm.submittingBatch == false" class="fa fa-share"></i>
+                    <i ng-if="vm.submittingBatch == true" class="fa fa-refresh fa-spin"></i>
 
-        <!-- Button to close modal -->
-        <button ng-click="vm.Close()" class="btn-black"><i
+                    <span>&nbsp;&nbsp;Submit Batch</span>
+                </button>
+                <!-- End submit batch button -->
 
-                class="fa fa-close"></i><span>&nbsp;&nbsp;Close</span></button>
-        <!-- End close modal button -->
-    </div>
+                <!-- Button to submit GTE 250 batch -->
+                <button ng-if="vm.selectedBatchProcessorTabName==='submitBatch' && vm.submitBatchOver250 == true"
+                    type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.submitBatch(true)"
+                    ng-disabled="vm.submittingBatch || !vm.selectedRegion || !vm.submitBatchData.idField || !vm.submitBatchData.email || !vm.submitBatchData.attachment">
+                    <i ng-if="vm.submittingBatch == false" class="fa fa-share"></i>
+                    <i ng-if="vm.submittingBatch == true" class="fa fa-refresh fa-spin"></i>
 
-    <div class="bp-submit-success" ng-show="vm.selectedBatchProcessorTabName == 'submitBatch' && vm.submitBatchSuccessAlert">The batch was submitted successfully. You will be
-        notified by email when results are available.
-    </div>
-    <div class="bp-submit-success" ng-show="vm.selectedBatchProcessorTabName == 'submitBatch' && vm.submitBatchFailedAlert">The batch failed to submit.</div>
-</div><!-- End modal footer -->
+                    <span>&nbsp;&nbsp;Submit Batch Over 250 Points</span>
+                </button>
+                <!-- End submit batch GTE 250 button -->
+
+                <!-- Button to close modal -->
+                <button ng-click="vm.Close()" class="btn-black"><i
+                        class="fa fa-close"></i><span>&nbsp;&nbsp;Close</span></button>
+                <!-- End close modal button -->
+            </div>
+
+            <div class="bp-submit-success"
+                ng-show="vm.selectedBatchProcessorTabName == 'submitBatch' && vm.submitBatchSuccessAlert">The batch was
+                submitted successfully. You will be
+                notified by email when results are available.
+            </div>
+            <div class="bp-submit-success"
+                ng-show="vm.selectedBatchProcessorTabName == 'submitBatch' && vm.submitBatchFailedAlert">The batch
+                failed to submit.</div>
+        </div><!-- End modal footer -->
