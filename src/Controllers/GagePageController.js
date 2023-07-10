@@ -660,23 +660,25 @@ var StreamStats;
                             if (forecastData[0] !== undefined) {
                                 var smallerData_1 = forecastData[0].childNodes;
                                 var forecastArray_1 = [];
-                                var timeZoneOffset = self.gageTimeZone.defaultTimeZone.zoneOffset;
-                                var numberOffset_1 = parseFloat(timeZoneOffset);
-                                smallerData_1.forEach(function (datum) {
-                                    if (datum.childNodes[0] !== undefined) {
-                                        var date = new Date(datum.childNodes[0].textContent);
-                                        date.setUTCHours(date.getUTCHours() + numberOffset_1);
-                                        var forecastObj = {
-                                            x: date,
-                                            y: parseFloat(datum.childNodes[2].textContent)
-                                        };
-                                        if ((smallerData_1[2].childNodes[2].getAttribute("units")) === 'kcfs') {
-                                            forecastObj.y *= 1000;
+                                if (self.dailyFlow !== undefined) {
+                                    var timeZoneOffset = self.gageTimeZone.defaultTimeZone.zoneOffset;
+                                    var numberOffset_1 = parseFloat(timeZoneOffset);
+                                    smallerData_1.forEach(function (datum) {
+                                        if (datum.childNodes[0] !== undefined) {
+                                            var date = new Date(datum.childNodes[0].textContent);
+                                            date.setUTCHours(date.getUTCHours() + numberOffset_1);
+                                            var forecastObj = {
+                                                x: date,
+                                                y: parseFloat(datum.childNodes[2].textContent)
+                                            };
+                                            if ((smallerData_1[2].childNodes[2].getAttribute("units")) === 'kcfs') {
+                                                forecastObj.y *= 1000;
+                                            }
+                                            forecastArray_1.push(forecastObj);
+                                            self.NWSforecast = forecastArray_1;
                                         }
-                                        forecastArray_1.push(forecastObj);
-                                        self.NWSforecast = forecastArray_1;
-                                    }
-                                });
+                                    });
+                                }
                             }
                             self.getShadedDailyStats();
                         });

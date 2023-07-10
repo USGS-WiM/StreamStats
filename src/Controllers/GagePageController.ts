@@ -883,6 +883,7 @@ module StreamStats.Controllers {
                             if (forecastData[0] !== undefined) {
                             const smallerData = forecastData[0].childNodes;
                             let forecastArray = [];
+                            if (self.dailyFlow !== undefined) {
                             let timeZoneOffset = self.gageTimeZone.defaultTimeZone.zoneOffset;
                             let numberOffset = parseFloat(timeZoneOffset);
                             smallerData.forEach(datum => {
@@ -906,7 +907,7 @@ module StreamStats.Controllers {
                                 self.NWSforecast = forecastArray;
                             }
                             })
-                        }
+                        }}
                             self.getShadedDailyStats();
                         }
                     );
