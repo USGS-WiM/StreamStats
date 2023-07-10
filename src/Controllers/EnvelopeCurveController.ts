@@ -172,7 +172,7 @@ module StreamStats.Controllers {
 
             let formattedPlotData = [];
             let completedStationCodes = [];
-            this.stationCodes.forEach(station => {
+            this.stationCodes.forEach((station, index) => {
                 var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + station;
                 console.log(url)
                 const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
@@ -200,7 +200,9 @@ module StreamStats.Controllers {
                 
                 }, (error) => {
                 }).finally(() => {
+                    if (this.stationCodes.length-1 === index) {
                     this.createEnvelopeCurvePlot();
+                    }
             });
         })
 

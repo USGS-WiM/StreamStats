@@ -148,7 +148,7 @@ var StreamStats;
                 console.log('getDrainageArea');
                 var formattedPlotData = [];
                 var completedStationCodes = [];
-                this.stationCodes.forEach(function (station) {
+                this.stationCodes.forEach(function (station, index) {
                     var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + station;
                     console.log(url);
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
@@ -173,7 +173,9 @@ var StreamStats;
                         _this.formattedPlotData = formattedPlotData;
                     }, function (error) {
                     }).finally(function () {
-                        _this.createEnvelopeCurvePlot();
+                        if (_this.stationCodes.length - 1 === index) {
+                            _this.createEnvelopeCurvePlot();
+                        }
                     });
                 });
             };
