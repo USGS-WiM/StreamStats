@@ -50,6 +50,22 @@ module StreamStats.Controllers {
         public toggleable: boolean;
     }
 
+    interface IStreamGrid {
+        region: string,
+        regionCode: string,
+        fileName: string,
+        downloadURL: string,
+        lastModified: Date;
+    }
+
+    class StreamGrid implements IStreamGrid {
+        public region: string;
+        public regionCode: string;
+        public fileName: string;
+        public downloadURL: string;
+        public lastModified: Date;
+    }
+
     interface IBatchStatusMessage {
         id: string,
         message: string
@@ -104,7 +120,7 @@ module StreamStats.Controllers {
         public toaster: any;
 
         // Regions
-        public regionList: Object;
+        public regionList: Array<any>;
         public selectedRegion: string;
 
         // Flow Stats
@@ -139,6 +155,10 @@ module StreamStats.Controllers {
         public batchStatusList: Array<BatchStatus>;
         public retrievingBatchStatus: boolean;
 
+        // stream grids
+        public streamGridList: Array<StreamGrid>;
+        public retrievingStreamGrids: boolean;
+
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', '$modalInstance', 'toaster'];
@@ -163,6 +183,8 @@ module StreamStats.Controllers {
             this.flowStatsListSpinner = false;
             this.parametersListSpinner = false;
             this.batchStatusMessageList = [];
+            this.streamGridList = [];
+            this.retrievingStreamGrids = false;
             this.batchStatusList = [];
             this.flowStatIDs = [];
             this.submitBatchOver250 = false
@@ -624,6 +646,15 @@ module StreamStats.Controllers {
             }
         }
 
+        public loadStreamGrids(): void {
+            this.getStreamGrids().then(
+                response => {
+                    this.streamGridList = response;
+                    this.retrievingStreamGrids = false;
+                }
+            );
+        }
+
         // Service methods
         // get basin characteristics list for region and nation
         public loadParametersByRegionBP(rcode: string): ng.IPromise<any> {
@@ -770,6 +801,44 @@ module StreamStats.Controllers {
                     }).finally(() => {
                         
                     });
+        }
+
+        // load stream grids
+        public getStreamGrids(): ng.IPromise<any> {
+            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorStreamGrids'];
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+
+            return this.Execute(request).then(
+                (response: any) => {
+
+                    var streamGrids = [];
+
+                    response.data.forEach((item) => {
+
+                        let baseURL = "https://s3.amazonaws.com/test.streamstats.usgs.gov/batch-processor/streamgrids/"
+                        if (window.location.host === 'streamstats.usgs.gov') {
+                            baseURL = "https://s3.amazonaws.com/streamstats.usgs.gov/batch-processor/streamgrids/"
+                        } 
+
+                        try {
+                            let streamGrid: StreamGrid = {
+                                region: this.regionList.filter((region) => {return region.Code == item.RegionCode})[0]["Name"],
+                                regionCode: item.RegionCode,
+                                fileName: item.FileName,
+                                downloadURL: baseURL + item.FileName,
+                                lastModified: item.LastModified
+                            }
+                            streamGrids.push(streamGrid);
+                        }
+
+                        catch (e) {
+                            console.log(e)
+                        }
+                    });
+                    return streamGrids;
+                }, (error) => {
+                }).finally(() => {
+                });
         }
 
         // Helper Methods
