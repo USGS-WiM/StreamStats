@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed  
 
+- Added missing parentheses
+
 ### Security 
 
 ## [v4.16.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.16.0) - 2023-06-22
