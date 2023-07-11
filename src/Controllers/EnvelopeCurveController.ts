@@ -93,7 +93,10 @@ module StreamStats.Controllers {
                             stations.push(site);
                         })
                         this.stationCodes = stations;
-                        console.log('stationCodes', this.stationCodes.toString())
+                        
+                        //console.log('stationCodes', this.stationCodes.toString())
+                        //console.log('stationString commas', (stationString.match(/,/g) || []).length);
+                        //console.log('should return 3', ("str1,str2,str3,str4".match(/,/g) || []).length);
                     }, (error) => {
                     }).finally(() => {
                         this.getStationStats();
@@ -112,10 +115,10 @@ module StreamStats.Controllers {
                         stations.push(site);
                     })
                     this.stationCodes = stations;
-                    console.log(this.stationCodes)
+                    console.log('station codes', this.stationCodes);
                 }, (error) => {
                 }).finally(() => {
-                    this.getStationStats();
+                    //this.getStationStats();
                 });
         }
     }
@@ -126,7 +129,21 @@ module StreamStats.Controllers {
             let peakData = [];
             let estPeakData = [];
             //this.stationCodes.forEach(station => {
-                const url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + this.stationCodes.toString();
+                let stationString = this.stationCodes.toString();
+                let numberOfGroups = Math.ceil(this.stationCodes.length / 50);
+                let arrayLength = this.stationCodes.length;
+                console.log(this.stationCodes.length, numberOfGroups );
+                for (let counter = 50; counter < (arrayLength +50) ; counter+=50 ) {
+                    let arraySegment = this.stationCodes.slice(counter - 50, counter);
+                    console.log(arraySegment);
+                    console.log(counter)
+                    const url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + arraySegment.toString();
+                    console.log(url);
+                }
+
+                const slicedArray = this.stationCodes.slice(0, 50);
+                //console.log(slicedArray);
+                const url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + slicedArray.toString();
                 //console.log(url)
                 const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(
@@ -172,9 +189,10 @@ module StreamStats.Controllers {
 
             let formattedPlotData = [];
             let completedStationCodes = [];
-            this.stationCodes.forEach((station, index) => {
+            const slicedArray = this.stationCodes.slice(0, 50);
+            slicedArray.forEach((station, index) => {
                 var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + station;
-                console.log(url)
+                //console.log(url)
                 const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(
                     (response: any) => {
@@ -200,7 +218,7 @@ module StreamStats.Controllers {
                 
                 }, (error) => {
                 }).finally(() => {
-                    if (this.stationCodes.length-1 === index) {
+                    if (slicedArray.length-1 === index) {
                     this.createEnvelopeCurvePlot();
                     }
             });
