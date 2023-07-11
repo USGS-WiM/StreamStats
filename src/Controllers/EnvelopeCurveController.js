@@ -112,10 +112,14 @@ var StreamStats;
                 console.log(this.stationCodes.length, numberOfGroups);
                 for (var counter = 50; counter < (arrayLength + 50); counter += 50) {
                     var arraySegment = this.stationCodes.slice(counter - 50, counter);
-                    console.log(arraySegment);
-                    console.log(counter);
                     var url_1 = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + arraySegment.toString();
-                    console.log(url_1);
+                    var request_1 = new WiM.Services.Helpers.RequestInfo(url_1, true, WiM.Services.Helpers.methodType.GET, 'json');
+                    this.Execute(request_1).then(function (response) {
+                        var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
+                        data.shift().split('\t');
+                        data.shift();
+                        console.log(data);
+                    });
                 }
                 var slicedArray = this.stationCodes.slice(0, 50);
                 var url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + slicedArray.toString();

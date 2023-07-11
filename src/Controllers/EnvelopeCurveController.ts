@@ -135,12 +135,20 @@ module StreamStats.Controllers {
                 console.log(this.stationCodes.length, numberOfGroups );
                 for (let counter = 50; counter < (arrayLength +50) ; counter+=50 ) {
                     let arraySegment = this.stationCodes.slice(counter - 50, counter);
-                    console.log(arraySegment);
-                    console.log(counter)
+                    //console.log(arraySegment);
+                    //console.log(counter)
                     const url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + arraySegment.toString();
-                    console.log(url);
-                }
+                    //console.log(url);
+                    const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                    this.Execute(request).then(
+                        (response: any) => {
+                            const data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") });
+                            data.shift().split('\t');
+                            data.shift();
 
+                            console.log(data);
+                        })                    
+                }
                 const slicedArray = this.stationCodes.slice(0, 50);
                 //console.log(slicedArray);
                 const url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + slicedArray.toString();
