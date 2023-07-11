@@ -145,51 +145,35 @@ module StreamStats.Controllers {
                             const data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") });
                             data.shift().split('\t');
                             data.shift();
-
-                            console.log(data);
+                            do {
+                                let dataRow = data.shift().split('\t');
+                                const peakObj = {
+                                    agency_cd: dataRow[0],
+                                    site_no: dataRow[1],
+                                    peak_dt: dataRow[2],
+                                    peak_va: parseInt(dataRow[4]),
+                                    peak_stage: parseFloat(dataRow[6])
+                                };
+                                peakData.push(peakObj)
+                                //making a new array of invalid dates (dates with month or day of '00') that will be 'estimated' (changed to '01')
+                                const estPeakObj = {
+                                    agency_cd: dataRow[0],
+                                    site_no: dataRow[1],
+                                    peak_dt: dataRow[2].replaceAll('-00', '-01'),
+                                    peak_va: parseInt(dataRow[4]),
+                                    peak_stage: parseFloat(dataRow[6])
+                                };
+                                if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00' || peakObj.peak_dt[5] + peakObj.peak_dt[6] === '00') {
+                                    estPeakData.push(estPeakObj) //pushing invalid dates to a new array
+                                };
+                            } while (data.length > 0);
                         })                    
                 }
-                const slicedArray = this.stationCodes.slice(0, 50);
-                //console.log(slicedArray);
-                const url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + slicedArray.toString();
-                //console.log(url)
-                const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-                this.Execute(request).then(
-                    (response: any) => {
-
-                        const data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") });
-                        data.shift().split('\t');
-                        //remove extra random line
-                        data.shift();
-                        do {
-                            let dataRow = data.shift().split('\t');
-                            const peakObj = {
-                                agency_cd: dataRow[0],
-                                site_no: dataRow[1],
-                                peak_dt: dataRow[2],
-                                peak_va: parseInt(dataRow[4]),
-                                peak_stage: parseFloat(dataRow[6])
-                            };
-                            peakData.push(peakObj)
-                            //making a new array of invalid dates (dates with month or day of '00') that will be 'estimated' (changed to '01')
-                            const estPeakObj = {
-                                agency_cd: dataRow[0],
-                                site_no: dataRow[1],
-                                peak_dt: dataRow[2].replaceAll('-00', '-01'),
-                                peak_va: parseInt(dataRow[4]),
-                                peak_stage: parseFloat(dataRow[6])
-                            };
-                            if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00' || peakObj.peak_dt[5] + peakObj.peak_dt[6] === '00') {
-                                estPeakData.push(estPeakObj) //pushing invalid dates to a new array
-                            };
-                        } while (data.length > 0);
-                        this.peakData = peakData;
-                        this.estPeakData = estPeakData;
-                    }, (error) => {
-                    }).finally(() => {
-                        this.getDrainageArea();
-                });
-            //})
+                console.log(peakData);
+                this.peakData = peakData;
+                this.estPeakData = estPeakData;
+                console.log('global', this.peakData)
+                    
         }
 
         public getDrainageArea() {

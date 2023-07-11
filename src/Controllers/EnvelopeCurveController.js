@@ -102,7 +102,6 @@ var StreamStats;
                 }
             };
             EnvelopeCurveController.prototype.getStationStats = function () {
-                var _this = this;
                 console.log('getStationStats');
                 var peakData = [];
                 var estPeakData = [];
@@ -112,50 +111,40 @@ var StreamStats;
                 console.log(this.stationCodes.length, numberOfGroups);
                 for (var counter = 50; counter < (arrayLength + 50); counter += 50) {
                     var arraySegment = this.stationCodes.slice(counter - 50, counter);
-                    var url_1 = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + arraySegment.toString();
-                    var request_1 = new WiM.Services.Helpers.RequestInfo(url_1, true, WiM.Services.Helpers.methodType.GET, 'json');
-                    this.Execute(request_1).then(function (response) {
+                    var url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + arraySegment.toString();
+                    var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                    this.Execute(request).then(function (response) {
                         var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
                         data.shift().split('\t');
                         data.shift();
-                        console.log(data);
+                        do {
+                            var dataRow = data.shift().split('\t');
+                            var peakObj = {
+                                agency_cd: dataRow[0],
+                                site_no: dataRow[1],
+                                peak_dt: dataRow[2],
+                                peak_va: parseInt(dataRow[4]),
+                                peak_stage: parseFloat(dataRow[6])
+                            };
+                            peakData.push(peakObj);
+                            var estPeakObj = {
+                                agency_cd: dataRow[0],
+                                site_no: dataRow[1],
+                                peak_dt: dataRow[2].replaceAll('-00', '-01'),
+                                peak_va: parseInt(dataRow[4]),
+                                peak_stage: parseFloat(dataRow[6])
+                            };
+                            if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00' || peakObj.peak_dt[5] + peakObj.peak_dt[6] === '00') {
+                                estPeakData.push(estPeakObj);
+                            }
+                            ;
+                        } while (data.length > 0);
                     });
                 }
-                var slicedArray = this.stationCodes.slice(0, 50);
-                var url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + slicedArray.toString();
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-                this.Execute(request).then(function (response) {
-                    var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
-                    data.shift().split('\t');
-                    data.shift();
-                    do {
-                        var dataRow = data.shift().split('\t');
-                        var peakObj = {
-                            agency_cd: dataRow[0],
-                            site_no: dataRow[1],
-                            peak_dt: dataRow[2],
-                            peak_va: parseInt(dataRow[4]),
-                            peak_stage: parseFloat(dataRow[6])
-                        };
-                        peakData.push(peakObj);
-                        var estPeakObj = {
-                            agency_cd: dataRow[0],
-                            site_no: dataRow[1],
-                            peak_dt: dataRow[2].replaceAll('-00', '-01'),
-                            peak_va: parseInt(dataRow[4]),
-                            peak_stage: parseFloat(dataRow[6])
-                        };
-                        if (peakObj.peak_dt[8] + peakObj.peak_dt[9] === '00' || peakObj.peak_dt[5] + peakObj.peak_dt[6] === '00') {
-                            estPeakData.push(estPeakObj);
-                        }
-                        ;
-                    } while (data.length > 0);
-                    _this.peakData = peakData;
-                    _this.estPeakData = estPeakData;
-                }, function (error) {
-                }).finally(function () {
-                    _this.getDrainageArea();
-                });
+                console.log(peakData);
+                this.peakData = peakData;
+                this.estPeakData = estPeakData;
+                console.log('global', this.peakData);
             };
             EnvelopeCurveController.prototype.getDrainageArea = function () {
                 var _this = this;
