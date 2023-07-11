@@ -140,6 +140,7 @@ module StreamStats.Controllers {
         public submitBatchData: SubmitBatchData;
         public submitBatchOver250: boolean;
         public submitBatchOver250Message: string;
+        public editingQueue: boolean;
         public reorderingQueue: boolean;
 
         // spinners
@@ -180,6 +181,7 @@ module StreamStats.Controllers {
             this.submitBatchSuccessAlert = false;
             this.submitBatchFailedAlert = false;
             this.submitBatchData = new SubmitBatchData();
+            this.editingQueue = false;
             this.reorderingQueue = false;
             this.regionListSpinner = true;
             this.flowStatsListSpinner = false;
@@ -679,6 +681,7 @@ module StreamStats.Controllers {
                     let r = response;
                     if (r.status == 200) {
                         this.getManageQueueList(); 
+                        this.editingQueue = false;
                         this.retrievingManageQueue = true;
                         this.toaster.clear();
                         this.toaster.pop('success', "Queue was successfully reordered", "", 5000);

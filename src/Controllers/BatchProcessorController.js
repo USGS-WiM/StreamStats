@@ -63,6 +63,7 @@ var StreamStats;
                 _this.submitBatchSuccessAlert = false;
                 _this.submitBatchFailedAlert = false;
                 _this.submitBatchData = new SubmitBatchData();
+                _this.editingQueue = false;
                 _this.reorderingQueue = false;
                 _this.regionListSpinner = true;
                 _this.flowStatsListSpinner = false;
@@ -391,6 +392,7 @@ var StreamStats;
                     var r = response;
                     if (r.status == 200) {
                         _this.getManageQueueList();
+                        _this.editingQueue = false;
                         _this.retrievingManageQueue = true;
                         _this.toaster.clear();
                         _this.toaster.pop('success', "Queue was successfully reordered", "", 5000);
