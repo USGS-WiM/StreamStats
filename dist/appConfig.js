@@ -352,7 +352,68 @@ configuration.regions = [
         }
     }, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/maine-streamstats" },
     { "RegionID": "MI", "Name": "Michigan", "Bounds": [[41.697494, -90.4082], [48.173795, -82.419836]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false, "URL": null },
-    { "RegionID": "MN", "Name": "Minnesota", "Bounds": [[43.498102, -97.229436], [49.37173, -89.530673]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/minnesota-streamstats" },
+    { "RegionID": "MN", "Name": "Minnesota", "Bounds": [[43.498102, -97.229436], [49.37173, -89.530673]], "Layers": 
+        {
+            "RiverSizeClass": {
+                "name": "River Size Class",
+                "url": "https://webgis.ornl.gov/arcgis/rest/services/Hydro/StreamClassification/MapServer",
+                "type": 'agsDynamic',
+                "visible": true,
+                "layerOptions": {
+                    "zIndex": 1,
+                    "format": "png8",
+                    "layers": [15],
+                    "minZoom": 9,
+                    "f": "image"
+                },
+                "queryProperties": { "Stream network of size classes": { "COMID": "COMID", "GNIS_NAME": "GNIS Name", "Size class": "Size Class" }},
+                "layerArray": [{
+                    "layerName": "Stream network of size classes",
+                    "legend": [{                        
+                        "contentType": "image/png;base64",
+                        "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADNJREFUOI1jYaAyYBk1cNTAwWTgw4cPGyg1TF5evoGFmoYxMEBdCONQAwyhSBk1cBgbCABbjgku2+Np1gAAAABJRU5ErkJggg==",
+                        "label": "Headwater (HW)"
+                    },
+                    {                        
+                        "contentType": "image/png;base64",
+                        "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADNJREFUOI1jYaAyYBk1cNTAwWTg5s2bGyg1zNfXt4GFmoYxMEBdCONQAwyhSBk1cBgbCACYCwm4tWRbQAAAAABJRU5ErkJggg==",
+                        "label": "Small Creek (SC)"
+                    },
+                    {                        
+                        "contentType": "image/png;base64",
+                        "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADJJREFUOI1jYaAyYBk1cNTAwWRgc3NzA6WG1dbWNrBQ0zAGBqgLYRxqgCEUKaMGDmMDAeJKCkiJfRtuAAAAAElFTkSuQmCC",
+                        "label": "Large Creek (LC)"
+                    },
+                    {                        
+                        "contentType": "image/png;base64",
+                        "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADNJREFUOI1jYaAyYBk1cNTAwWRgRvnZBkoNm9Fp3MBCTcMYGKAuhHGoAYZQpIwaOIwNBACSbgolquB/MgAAAABJRU5ErkJggg==",
+                        "label": "Small River (SR)"
+                    },
+                    {                        
+                        "contentType": "image/png;base64",
+                        "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADNJREFUOI1jYaAyYBk1cNTAwWSga2pnA6WG7Z5d3sBCTcMYGKAuhHGoAYZQpIwaOIwNBACnzwqeBuPCRgAAAABJRU5ErkJggg==",
+                        "label": "Medium River (MR)"
+                    },
+                    {                        
+                        "contentType": "image/png;base64",
+                        "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADFJREFUOI1jYaAyYBk1cNTAwWKgq3/nf2oYtntjOSNtXLh7YzkjVQ2kJhg1cNRAMgAAskcGNVLEHrYAAAAASUVORK5CYII=",
+                        "label": "Mainstem (MS)"
+                    },
+                    {                        
+                        "contentType": "image/png;base64",
+                        "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAEdJREFUOI1jYaAyYBk1cNRAMg3kVituoJqB3GrFDV8ZGOqpYRg3A0MjjbzMwNBIDcO+3uptYPl6q7eBGobBwBBJNqMGDi4DARqBCt3ReFrxAAAAAElFTkSuQmCC",
+                        "label": "Large River (LR)"
+                    },
+                    {                        
+                        "contentType": "image/png;base64",
+                        "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAEdJREFUOI1jYaAyYBk1cNRAMg08yv2/gWoGHuX+38DwlaGeKqZxMzTSKAy5GRqpYZj1V8YGFuuvjA3UMAwGhkiyGTVwcBkIAKVOCt3sxb7VAAAAAElFTkSuQmCC",
+                        "label": "Great River (GR)"
+                    }]
+                }],
+
+            }
+        },
+        "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/minnesota-streamstats" },
     { "RegionID": "MO", "Name": "Missouri", "Bounds": [[35.989656, -95.767479], [40.609784, -89.105034]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/missouri-streamstats" },
     {
         "RegionID": "MO_STL", "Name": "Missouri St. Louis", "Bounds": [[38.399258, -90.673599], [38.837568, -89.693069]], "Layers":
