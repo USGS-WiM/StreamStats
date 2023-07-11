@@ -342,7 +342,7 @@ configuration.regions = [
                     "DASQMI": "Drainage Area (mi2)",
                     "SANDGRAVAF": "Aquifer Area (%)",
                     "JULYAVPRE": "Mean July Precip (in)",
-                    "AUGAVGBF": "Mean August Baseflow (cfs/mi2",
+                    "AUGAVGBF": "Mean August Baseflow (cfs/mi2)",
                     "OOB_DA": "Drainage Area out-of-bounds",
                     "OOB_JULYAV":"Mean July Precip out-of-bounds",
                     "OOB_WARNIN": "% Aquifer Area out-of-bounds",
