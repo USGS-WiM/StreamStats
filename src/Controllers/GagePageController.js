@@ -2649,9 +2649,9 @@ var StreamStats;
                     chart: {
                         height: 450,
                         width: 800,
-                        zooming: {
-                            type: 'xy'
-                        },
+                        zoomType: 'xy',
+                        panning: true,
+                        panKey: 'shift',
                         events: {
                             load: function () {
                                 this.series.forEach(function (series) {
@@ -2832,7 +2832,7 @@ var StreamStats;
                                                 x: 12,
                                                 y: -4,
                                                 style: {
-                                                    fontSize: '10px',
+                                                    fontSize: '9px',
                                                 },
                                                 zIndex: 9999999
                                             }
@@ -2849,7 +2849,7 @@ var StreamStats;
                                                 y: -110,
                                                 x: 2,
                                                 style: {
-                                                    fontSize: '10px',
+                                                    fontSize: '9px',
                                                 },
                                                 zIndex: 9999999
                                             }

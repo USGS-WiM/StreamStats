@@ -256,7 +256,6 @@ module StreamStats.Controllers {
         public startYear: number;
         public endYear: number;
         public yearSliderOptions: any;
-        public showQuality: any;
         public formattedStages: any;
         public stages: any;
         public floodStagesData: any;
@@ -3035,9 +3034,12 @@ public createDischargePlot(): void {
         chart: {
             height: 450,
             width: 800,
-            zooming: {
-                type: 'xy'
-            },
+            // zooming: {
+            //     type: 'xy'
+            // },
+            zoomType: 'xy',  
+            panning: true, 
+            panKey: 'shift',
             events: {
                 load: function() {
                     this.series.forEach((series) => {
@@ -3225,7 +3227,7 @@ public createDischargePlot(): void {
                                 x: 12,
                                 y: -4,
                                 style: {
-                                    fontSize: '10px',
+                                    fontSize: '9px',
                                 },
                                 zIndex: 9999999 
                             }
@@ -3242,7 +3244,7 @@ public createDischargePlot(): void {
                                 y: -110,
                                 x: 2,
                                 style: {
-                                    fontSize: '10px',
+                                    fontSize: '9px',
                                 },
                                 zIndex: 9999999 
                             }
