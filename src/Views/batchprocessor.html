@@ -20,9 +20,13 @@
         <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'batchStatus'}"><a
                 ng-click="vm.selectBatchProcessorTab('batchStatus')"><i class="fa fa-info-circle"></i>&nbsp;Batch
                 Status</a></li>
+        <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'streamGrid'}"><a
+                ng-click="vm.selectBatchProcessorTab('streamGrid'); vm.loadStreamGrids(); vm.retrievingStreamGrids = true;"><i class="fa fa-download"></i>&nbsp;Download Stream
+                Grids</a></li>
         <li ng-if="vm.internalHost" ng-class="{'active':vm.selectedBatchProcessorTabName == 'manageQueue'}"><a
                 ng-click="vm.selectBatchProcessorTab('manageQueue'); vm.getManageQueueList(); vm.retrievingManageQueue = true;"><i class="fa fa-list-ol"></i>&nbsp;Manage
                 Queue</a></li>
+        
     </ul><!-- End batch processor tabs -->
 
 
@@ -39,7 +43,7 @@
                 <ol>
                     <li>Create a point shapefile:</li>
                     <ul style="list-style-type: disc; padding: 0px">
-                        <li>Ensure points are coincident with the stream grid used by StreamStats for delineation.</li>
+                        <li>Ensure points are coincident with the stream grid used by StreamStats for delineation. Visit the<a ng-click="vm.selectBatchProcessorTab('streamGrid'); vm.loadStreamGrids(); vm.retrievingStreamGrids = true;" href="">Download Stream Grids tab</a>to download the stream grid for each State/Region.</li>
                         <li>Shapefile must have an ID field that uniquely identifies each point. </li>
                         <li>Shapefile must be a point shapefile. Polyline, polygon, and multipoint geometries cannot be
                             processed.
@@ -78,9 +82,7 @@
                         class="fa fa-question-circle"></i>
                     <span ng-show="showTooltip" class="report-tooltip">
                         <span>This is the field heading from the shapefile of points that is unique to each point and
-                            allows the
-                            data to be
-                            joined with the batch results.</span>
+                            allows the data to be joined with the batch results.</span>
                     </span>
                     <input class="bp-input" type="text" id="idField" ng-model="vm.submitBatchData.idField" required>
                 </div><br /><!-- End idfield -->
@@ -137,12 +139,14 @@
             <div ng-if="cbFlowStats" style="padding-top: 15px;" class="well well-sm">
                 <h3>Select Flow Statistics</h3>
                 <!-- button to check/uncheck all -->
-                <button ng-if="vm.flowStatsList.length > 0" class="btn-blue fullwidth" ng-class="btn-blue" ng-click="vm.toggleFlowStatisticsAllChecked()">
+                <button ng-if="vm.flowStatsList.length > 0" class="btn-blue fullwidth" ng-class="btn-blue"
+                    ng-click="vm.toggleFlowStatisticsAllChecked()">
                     <span ng-if="vm.flowStatsAllChecked">Select All Flow Statistics</span>
                     <span ng-if="!vm.flowStatsAllChecked">Unselect All Flow Statistics</span>
                 </button>
                 <!-- create list of flow stats checkboxes -->
-                <div ng-if="vm.flowStatsListSpinner" style="padding-top: 15px;"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+                <div ng-if="vm.flowStatsListSpinner" style="padding-top: 15px;"><i
+                        class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
                 <div ng-if="!vm.flowStatsListSpinner" style="padding-top: 15px;text-align: center;">
                     <span>Please select a State / Region to select Flow Statistics</span>
                 </div>
@@ -172,14 +176,16 @@
             <div ng-show="vm.showBasinCharacteristics || cbBasinChar" style="padding-top: 15px;" class="well well-sm">
                 <h3>Select Basin Characteristics</h3>
                 <!-- button to check/uncheck all -->
-                <button ng-if="vm.availableParamList.length > 0" class="btn-blue fullwidth" ng-class="!vm.parametersAllChecked ? 'btn-black': 'btn-blue'"
+                <button ng-if="vm.availableParamList.length > 0" class="btn-blue fullwidth"
+                    ng-class="!vm.parametersAllChecked ? 'btn-black': 'btn-blue'"
                     ng-click="vm.toggleParametersAllChecked()">
                     <span ng-if="vm.parametersAllChecked">Select All Basin Characteristics</span>
                     <span ng-if="!vm.parametersAllChecked">Unselect All Basin Characteristics</span>
                 </button>
 
                 <!-- create table of parameters checkboxes -->
-                <div ng-if="vm.parametersListSpinner" style="padding-top: 15px;"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+                <div ng-if="vm.parametersListSpinner" style="padding-top: 15px;"><i
+                        class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
                 <div ng-if="!vm.parametersListSpinner" style="padding-top: 15px;text-align: center;">
                     <span>Please select a State / Region to select Basin Characteristics</span>
                 </div>
@@ -273,16 +279,10 @@
                         <tbody ng-repeat="batch in vm.batchStatusList" >
                             <tr>
                                 <td style="text-align: center;"><span>{{batch.batchID}}</span></td>
-                                <td style="text-align: center;"><span>{{batch.statusMessage}}</span></td>
-                                <td style="text-align: center;"><span
-                                        ng-if="batch.timeSubmitted != null">{{batch.timeSubmitted | date:'M/d/yy h:mm
-                                        a'}}</span></td>
-                                <td style="text-align: center;"><span
-                                        ng-if="batch.timeStarted != null">{{batch.timeStarted | date:'M/d/yy h:mm
-                                        a'}}</span></td>
-                                <td style="text-align: center;"><span
-                                        ng-if="batch.timeCompleted != null">{{batch.timeCompleted | date:'M/d/yy h:mm
-                                        a'}}</span></td>
+                                <td style="text-align: center;"><span>{{batch.status}}</span></td>
+                                <td style="text-align: center;"><span ng-if="batch.timeSubmitted != null">{{batch.timeSubmitted | date:'M/d/yy h:mm a'}}</span></td>
+                                <td style="text-align: center;"><span ng-if="batch.timeStarted != null">{{batch.timeStarted | date:'M/d/yy h:mm a'}}</span></td>
+                                <td style="text-align: center;"><span ng-if="batch.timeCompleted != null">{{batch.timeCompleted | date:'M/d/yy h:mm a'}}</span></td>
                                 <td style="text-align: center;"><span><a ng-if="batch.resultsURL != null"
                                             ng-href="{{batch.resultsURL}}">Link</a></span></td>
                                 <td style="text-align: center;"><span>{{batch.region}}</span></td>
@@ -442,6 +442,74 @@
                 <button ng-if="vm.editingQueue" ng-click="vm.editingQueue = false;" class="btn-black" style="margin-right: 10px;"><i
                         class="fa fa-close"></i><span>&nbsp;&nbsp;Cancel Reordering Queue</span></button>
                 <!-- End cancel Reordering Queue button -->
+            </div> 
+        </div> <!-- End batch status -->
+
+        <!-- Start stream grids -->
+        <div id="streamGrid" ng-if="vm.selectedBatchProcessorTabName==='streamGrid'">
+        <!-- Start instructions -->
+        <div>
+            Batch points should be coincident with the stream grid used by StreamStats for delineation. Please use the links below to download the stream grid for each State/Region. 
+        </div><br>
+        <!-- End instructions -->
+            <div ng-if="vm.retrievingStreamGrids" style="padding-top: 15px;"><i
+                class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
+            </div>
+            <div ng-if="!vm.retrievingStreamGrids && vm.streamGridList.length > 0" style="overflow-x: scroll;">
+                <table class="table table-condensed">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center;"><small>State / Region</small></th>
+                            <th style="text-align: center;"><small>Download Stream Grid Link</small></th>
+                            <th style="text-align: center;"><small>Last Modified Date</small></th>
+                        </tr>
+                    </thead>
+                    <tbody ng-repeat="streamGrid in vm.streamGridList | orderBy:'region'">
+                        <tr>
+                            <td style="text-align: center;"><span>{{streamGrid.region}}</span></td>
+                            <td style="text-align: center;"><span><a 
+                                ng-href="{{streamGrid.downloadURL}}">{{streamGrid.fileName}}</a></span></td>
+                            <td style="text-align: center;"><span>{{streamGrid.lastModified | date:'M/d/yy h:mm a'}}</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div><br>
+            <div ng-if="!vm.streamGridList && vm.retrievingStreamGrids == false">
+                <strong>Stream Grids were unable to be retrieved at this time. Please contact streamstats@usgs.gov for assistance.</strong>
+            </div><br>
+        </div> <!-- End stream grids -->
+
+
+        </div> <!-- End of modal body -->
+
+        <!-- Start modal footer -->
+        <div class="modal-footer">
+            <div ng-if="vm.selectedBatchProcessorTabName == 'submitBatch' && vm.submitBatchOver250"
+                class="bp-status-250">
+                {{vm.submitBatchOver250Message}}
+            </div>
+            <div class="row" style="justify-content: center; padding-top: 15px;">
+                <!-- Button to submit batch -->
+                <button ng-if="vm.selectedBatchProcessorTabName==='submitBatch' && vm.submitBatchOver250 == false"
+                    type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.submitBatch()"
+                    ng-disabled="vm.submittingBatch || !vm.selectedRegion || !vm.submitBatchData.idField || !vm.submitBatchData.email || !vm.submitBatchData.attachment">
+                    <i ng-if="vm.submittingBatch == false" class="fa fa-share"></i>
+                    <i ng-if="vm.submittingBatch == true" class="fa fa-refresh fa-spin"></i>
+
+                    <span>&nbsp;&nbsp;Submit Batch</span>
+                </button>
+                <!-- End submit batch button -->
+
+                <!-- Button to submit GTE 250 batch -->
+                <button ng-if="vm.selectedBatchProcessorTabName==='submitBatch' && vm.submitBatchOver250 == true"
+                    type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.submitBatch(true)"
+                    ng-disabled="vm.submittingBatch || !vm.selectedRegion || !vm.submitBatchData.idField || !vm.submitBatchData.email || !vm.submitBatchData.attachment">
+                    <i ng-if="vm.submittingBatch == false" class="fa fa-share"></i>
+                    <i ng-if="vm.submittingBatch == true" class="fa fa-refresh fa-spin"></i>
+
+                    <span>&nbsp;&nbsp;Submit Batch Over 250 Points</span>
+                </button>
+                <!-- End submit batch GTE 250 button -->
 
                 <!-- Button to close modal -->
                 <button ng-click="vm.Close()" class="btn-black"><i

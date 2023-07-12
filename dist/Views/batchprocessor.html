@@ -20,9 +20,13 @@
         <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'batchStatus'}"><a
                 ng-click="vm.selectBatchProcessorTab('batchStatus')"><i class="fa fa-info-circle"></i>&nbsp;Batch
                 Status</a></li>
+        <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'streamGrid'}"><a
+                ng-click="vm.selectBatchProcessorTab('streamGrid'); vm.loadStreamGrids(); vm.retrievingStreamGrids = true;"><i class="fa fa-download"></i>&nbsp;Download Stream
+                Grids</a></li>
         <li ng-if="vm.internalHost" ng-class="{'active':vm.selectedBatchProcessorTabName == 'manageQueue'}"><a
                 ng-click="vm.selectBatchProcessorTab('manageQueue'); vm.getManageQueueList(); vm.retrievingManageQueue = true;"><i class="fa fa-list-ol"></i>&nbsp;Manage
                 Queue</a></li>
+
     </ul><!-- End batch processor tabs -->
 
 
@@ -39,7 +43,7 @@
                 <ol>
                     <li>Create a point shapefile:</li>
                     <ul style="list-style-type: disc; padding: 0px">
-                        <li>Ensure points are coincident with the stream grid used by StreamStats for delineation.</li>
+                        <li>Ensure points are coincident with the stream grid used by StreamStats for delineation. Visit the<a ng-click="vm.selectBatchProcessorTab('streamGrid'); vm.loadStreamGrids(); vm.retrievingStreamGrids = true;" href="">Download Stream Grids tab</a>to download the stream grid for each State/Region.</li>
                         <li>Shapefile must have an ID field that uniquely identifies each point. </li>
                         <li>Shapefile must be a point shapefile. Polyline, polygon, and multipoint geometries cannot be
                             processed.
@@ -78,9 +82,7 @@
                         class="fa fa-question-circle"></i>
                     <span ng-show="showTooltip" class="report-tooltip">
                         <span>This is the field heading from the shapefile of points that is unique to each point and
-                            allows the
-                            data to be
-                            joined with the batch results.</span>
+                            allows the data to be joined with the batch results.</span>
                     </span>
                     <input class="bp-input" type="text" id="idField" ng-model="vm.submitBatchData.idField" required>
                 </div><br /><!-- End idfield -->
@@ -389,6 +391,131 @@
         </div>
         <!-- End manage queue -->
         <!-- End of modal body -->
+
+        </div><!-- End submit batch -->
+
+
+        <!-- Start batch status -->
+        <div id="batchStatus" ng-if="vm.selectedBatchProcessorTabName==='batchStatus'">
+            <!-- Start instructions -->
+            <div>
+                Batches may take several hours or days to complete. Use this tab to check the status and results of your
+                batches.
+                <br>
+                <br>
+                <b>How to Check Batch Status</b>
+                <ol>
+                    <li>Enter your email address.</li>
+                    <li>Batch status will appear in the <i>Status</i> column.</li>
+                    <li>When results are ready for download, a hyperlink will appear in the <i>Results</i> column.</li>
+                    <li>If you would like to remove a batch from the queue, click on the trash can icon.</li>
+                </ol>
+            </div>
+            <!-- End instructions -->
+            <!-- start query status by email-->
+            <div style="padding-top: 15px;" class="bp-status-email">
+                <!-- Start email field -->
+                <div>
+                    <span>Email Address:</span>
+                </div>
+                <div>
+                    <span><input class="bp-input" type="email" id="emailFieldStatus" ng-model="vm.batchStatusEmail"
+                            required></span>
+                </div>
+                <!-- End email field -->
+                <!-- Button to fetch batch status -->
+                <div>
+                    <button type="submit"
+                        ng-click="vm.getBatchStatusList(vm.batchStatusEmail); vm.retrievingBatchStatus = true">
+                        <i class="fa fa-share"></i>
+                        <span>&nbsp;&nbsp;Check Status</span>
+                    </button>
+                </div>
+            </div>
+            <!-- End query status by email -->
+            <!-- Start batch status table -->
+            <div>
+                <div ng-if="vm.retrievingBatchStatus" style="padding-top: 15px;"><i
+                        class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
+                </div>
+                <div ng-if="vm.batchStatusList.length > 0" style="overflow-x: scroll;">
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center;"><small>Batch ID</small></th>
+                                <th style="text-align: center;"><small>Status</small></th>
+                                <th style="text-align: center;"><small>Time Submitted (UTC)</small></th>
+                                <th style="text-align: center;"><small>Time Started (UTC)</small></th>
+                                <th style="text-align: center;"><small>Time Completed (UTC)</small></th>
+                                <th style="text-align: center;"><small>Results</small></th>
+                                <th style="text-align: center;"><small>State/ Region</small></th>
+                                <th style="text-align: center;"><small>Number Points Requested</small></th>
+                                <th style="text-align: center;"><small>Number Points Successful</small></th>
+                                <th style="text-align: center;"><small>Delete?</small></th>
+                            </tr>
+                        </thead>
+                        <tbody ng-repeat="batch in vm.batchStatusList">
+                            <tr>
+                                <td style="text-align: center;"><span>{{batch.batchID}}</span></td>
+                                <td style="text-align: center;"><span>{{batch.status}}</span></td>
+                                <td style="text-align: center;"><span ng-if="batch.timeSubmitted != null">{{batch.timeSubmitted | date:'M/d/yy h:mm a'}}</span></td>
+                                <td style="text-align: center;"><span ng-if="batch.timeStarted != null">{{batch.timeStarted | date:'M/d/yy h:mm a'}}</span></td>
+                                <td style="text-align: center;"><span ng-if="batch.timeCompleted != null">{{batch.timeCompleted | date:'M/d/yy h:mm a'}}</span></td>
+                                <td style="text-align: center;"><span><a ng-if="batch.resultsURL != null"
+                                            ng-href="{{batch.resultsURL}}">Link</a></span></td>
+                                <td style="text-align: center;"><span>{{batch.region}}</span></td>
+                                <td style="text-align: center;"><span>{{batch.pointsRequested}}</span></td>
+                                <td style="text-align: center;"><span
+                                        ng-if="batch.pointsSuccessful != null">{{batch.pointsSuccessful}}</span></td>
+                                <td style="text-align: center;"><i
+                                        ng-click="vm.trashBatch(batch.batchID, batch.deleteCode, batchStatusEmail)"
+                                        class="fa fa-trash" style="cursor: pointer"></i></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div><br>
+                <div ng-if="vm.batchStatusList.length == 0 && vm.retrievingBatchStatus == false">
+                    <strong>No batches found for this email address.</strong>
+                </div>
+            </div> 
+        </div> <!-- End batch status -->
+
+        <!-- Start stream grids -->
+        <div id="streamGrid" ng-if="vm.selectedBatchProcessorTabName==='streamGrid'">
+        <!-- Start instructions -->
+        <div>
+            Batch points should be coincident with the stream grid used by StreamStats for delineation. Please use the links below to download the stream grid for each State/Region. 
+        </div><br>
+        <!-- End instructions -->
+            <div ng-if="vm.retrievingStreamGrids" style="padding-top: 15px;"><i
+                class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
+            </div>
+            <div ng-if="!vm.retrievingStreamGrids && vm.streamGridList.length > 0" style="overflow-x: scroll;">
+                <table class="table table-condensed">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center;"><small>State / Region</small></th>
+                            <th style="text-align: center;"><small>Download Stream Grid Link</small></th>
+                            <th style="text-align: center;"><small>Last Modified Date</small></th>
+                        </tr>
+                    </thead>
+                    <tbody ng-repeat="streamGrid in vm.streamGridList | orderBy:'region'">
+                        <tr>
+                            <td style="text-align: center;"><span>{{streamGrid.region}}</span></td>
+                            <td style="text-align: center;"><span><a 
+                                ng-href="{{streamGrid.downloadURL}}">{{streamGrid.fileName}}</a></span></td>
+                            <td style="text-align: center;"><span>{{streamGrid.lastModified | date:'M/d/yy h:mm a'}}</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div><br>
+            <div ng-if="!vm.streamGridList && vm.retrievingStreamGrids == false">
+                <strong>Stream Grids were unable to be retrieved at this time. Please contact streamstats@usgs.gov for assistance.</strong>
+            </div><br>
+        </div> <!-- End stream grids -->
+
+
+        </div> <!-- End of modal body -->
 
         <!-- Start modal footer -->
         <div class="modal-footer">
