@@ -295,11 +295,6 @@ module StreamStats.Controllers {
                 }
             );
 
-            
-
-
-
-
         }
 
         public setRegionStats(statisticsGroup: Array<any>, allFlowStatsSelectedToggle: boolean = null): void {
@@ -534,7 +529,6 @@ module StreamStats.Controllers {
                     }
                 }
 
-
             });
 
             // toggle switch
@@ -738,8 +732,6 @@ module StreamStats.Controllers {
                     }
                 }).finally(() => {
                 });
-
-
         }
 
         // unpause a batch
@@ -760,7 +752,7 @@ module StreamStats.Controllers {
                 }).finally(() => {
                 });
         }
-        
+
         public loadStreamGrids(): void {
             this.getStreamGrids().then(
                 response => {

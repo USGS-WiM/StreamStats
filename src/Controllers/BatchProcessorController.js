@@ -596,6 +596,9 @@ var StreamStats;
                     return response;
                 }, function (error) {
                     return error;
+                }).finally(function () {
+                });
+            };
             BatchProcessorController.prototype.getStreamGrids = function () {
                 var _this = this;
                 var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorStreamGrids'];
