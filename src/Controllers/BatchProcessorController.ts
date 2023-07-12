@@ -759,6 +759,8 @@ module StreamStats.Controllers {
                     }
                 }).finally(() => {
                 });
+        }
+        
         public loadStreamGrids(): void {
             this.getStreamGrids().then(
                 response => {
