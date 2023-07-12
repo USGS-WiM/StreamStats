@@ -23,6 +23,11 @@ var StreamStats;
             }
             return Parameter;
         }());
+        var StreamGrid = (function () {
+            function StreamGrid() {
+            }
+            return StreamGrid;
+        }());
         var BatchStatusMessage = (function () {
             function BatchStatusMessage() {
             }
@@ -69,6 +74,8 @@ var StreamStats;
                 _this.flowStatsListSpinner = false;
                 _this.parametersListSpinner = false;
                 _this.batchStatusMessageList = [];
+                _this.streamGridList = [];
+                _this.retrievingStreamGrids = false;
                 _this.batchStatusList = [];
                 _this.retrievingManageQueue = false;
                 _this.flowStatIDs = [];
@@ -439,6 +446,13 @@ var StreamStats;
                 }).finally(function () {
                 });
             };
+            BatchProcessorController.prototype.loadStreamGrids = function () {
+                var _this = this;
+                this.getStreamGrids().then(function (response) {
+                    _this.streamGridList = response;
+                    _this.retrievingStreamGrids = false;
+                });
+            };
             BatchProcessorController.prototype.loadParametersByRegionBP = function (rcode) {
                 if (!rcode)
                     return;
@@ -584,6 +598,36 @@ var StreamStats;
                     return response;
                 }, function (error) {
                     return error;
+                }).finally(function () {
+                });
+            };
+            BatchProcessorController.prototype.getStreamGrids = function () {
+                var _this = this;
+                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorStreamGrids'];
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                return this.Execute(request).then(function (response) {
+                    var streamGrids = [];
+                    response.data.forEach(function (item) {
+                        var baseURL = "https://s3.amazonaws.com/test.streamstats.usgs.gov/batch-processor/streamgrids/";
+                        if (window.location.host === 'streamstats.usgs.gov') {
+                            baseURL = "https://s3.amazonaws.com/streamstats.usgs.gov/batch-processor/streamgrids/";
+                        }
+                        try {
+                            var streamGrid = {
+                                region: _this.regionList.filter(function (region) { return region.Code == item.RegionCode; })[0]["Name"],
+                                regionCode: item.RegionCode,
+                                fileName: item.FileName,
+                                downloadURL: baseURL + item.FileName,
+                                lastModified: item.LastModified
+                            };
+                            streamGrids.push(streamGrid);
+                        }
+                        catch (e) {
+                            console.log(e);
+                        }
+                    });
+                    return streamGrids;
+                }, function (error) {
                 }).finally(function () {
                 });
             };

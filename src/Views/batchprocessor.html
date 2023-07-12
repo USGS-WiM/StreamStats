@@ -20,6 +20,9 @@
         <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'batchStatus'}"><a
                 ng-click="vm.selectBatchProcessorTab('batchStatus')"><i class="fa fa-info-circle"></i>&nbsp;Batch
                 Status</a></li>
+        <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'streamGrid'}"><a
+                ng-click="vm.selectBatchProcessorTab('streamGrid'); vm.loadStreamGrids(); vm.retrievingStreamGrids = true;"><i class="fa fa-download"></i>&nbsp;Download Stream
+                Grids</a></li>
         <li ng-if="vm.internalHost" ng-class="{'active':vm.selectedBatchProcessorTabName == 'manageQueue'}"><a
                 ng-click="vm.selectBatchProcessorTab('manageQueue'); vm.getManageQueueList(); vm.retrievingManageQueue = true;"><i class="fa fa-list-ol"></i>&nbsp;Manage
                 Queue</a></li>
@@ -39,7 +42,7 @@
                 <ol>
                     <li>Create a point shapefile:</li>
                     <ul style="list-style-type: disc; padding: 0px">
-                        <li>Ensure points are coincident with the stream grid used by StreamStats for delineation.</li>
+                        <li>Ensure points are coincident with the stream grid used by StreamStats for delineation. Visit the<a ng-click="vm.selectBatchProcessorTab('streamGrid'); vm.loadStreamGrids(); vm.retrievingStreamGrids = true;" href="">Download Stream Grids tab</a>to download the stream grid for each State/Region.</li>
                         <li>Shapefile must have an ID field that uniquely identifies each point. </li>
                         <li>Shapefile must be a point shapefile. Polyline, polygon, and multipoint geometries cannot be
                             processed.
@@ -78,9 +81,7 @@
                         class="fa fa-question-circle"></i>
                     <span ng-show="showTooltip" class="report-tooltip">
                         <span>This is the field heading from the shapefile of points that is unique to each point and
-                            allows the
-                            data to be
-                            joined with the batch results.</span>
+                            allows the data to be joined with the batch results.</span>
                     </span>
                     <input class="bp-input" type="text" id="idField" ng-model="vm.submitBatchData.idField" required>
                 </div><br /><!-- End idfield -->
@@ -131,7 +132,7 @@
                         ng-disabled="vm.showBasinCharacteristics">
                     <label class="chx" for="cbBasinChar">&nbsp;Compute Basin Characteristics</label>
                 </span>
-            </div><!-- end checkboxes for different sections -->
+            </div><br><!-- end checkboxes for different sections -->
 
             <!-- Start select flow statistics -->
             <div ng-if="cbFlowStats" style="padding-top: 15px;" class="well well-sm">
@@ -274,17 +275,10 @@
                             <tr>
                                 <td style="text-align: center;"><span>{{batch.batchID}}</span></td>
                                 <td style="text-align: center;"><span>{{batch.statusMessage}}</span></td>
-                                <td style="text-align: center;"><span
-                                        ng-if="batch.timeSubmitted != null">{{batch.timeSubmitted | date:'M/d/yy h:mm
-                                        a'}}</span></td>
-                                <td style="text-align: center;"><span
-                                        ng-if="batch.timeStarted != null">{{batch.timeStarted | date:'M/d/yy h:mm
-                                        a'}}</span></td>
-                                <td style="text-align: center;"><span
-                                        ng-if="batch.timeCompleted != null">{{batch.timeCompleted | date:'M/d/yy h:mm
-                                        a'}}</span></td>
-                                <td style="text-align: center;"><span><a ng-if="batch.resultsURL != null"
-                                            ng-href="{{batch.resultsURL}}">Link</a></span></td>
+                                <td style="text-align: center;"><span ng-if="batch.timeSubmitted != null">{{batch.timeSubmitted | date:'M/d/yy h:mm a'}}</span></td>
+                                <td style="text-align: center;"><span ng-if="batch.timeStarted != null">{{batch.timeStarted | date:'M/d/yy h:mm a'}}</span></td>
+                                <td style="text-align: center;"><span ng-if="batch.timeCompleted != null">{{batch.timeCompleted | date:'M/d/yy h:mm a'}}</span></td>
+                                <td style="text-align: center;"><span><a ng-if="batch.resultsURL != null" ng-href="{{batch.resultsURL}}">Link</a></span></td>
                                 <td style="text-align: center;"><span>{{batch.region}}</span></td>
                                 <td style="text-align: center;"><span>{{batch.pointsRequested}}</span></td>
                                 <td style="text-align: center;"><span
@@ -302,6 +296,42 @@
             </div>
         </div>
         <!-- End batch status -->
+        <!-- Start stream grids -->
+        <div id="streamGrid" ng-if="vm.selectedBatchProcessorTabName==='streamGrid'">
+            <!-- Start instructions -->
+            <div>
+                Batch points should be coincident with the stream grid used by StreamStats for delineation. Please use the links below to download the stream grid for each State/Region. 
+            </div><br>
+            <!-- End instructions -->
+            <!-- Start stream grid table -->
+            <div ng-if="vm.retrievingStreamGrids" style="padding-top: 15px;"><i
+                class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
+            </div>
+            <div ng-if="!vm.retrievingStreamGrids && vm.streamGridList.length > 0" style="overflow-x: scroll;">
+                <table class="table table-condensed">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center;"><small>State / Region</small></th>
+                            <th style="text-align: center;"><small>Download Stream Grid Link</small></th>
+                            <th style="text-align: center;"><small>Last Modified Date</small></th>
+                        </tr>
+                    </thead>
+                    <tbody ng-repeat="streamGrid in vm.streamGridList | orderBy:'region'">
+                        <tr>
+                            <td style="text-align: center;"><span>{{streamGrid.region}}</span></td>
+                            <td style="text-align: center;"><span><a 
+                                ng-href="{{streamGrid.downloadURL}}">{{streamGrid.fileName}}</a></span></td>
+                            <td style="text-align: center;"><span>{{streamGrid.lastModified | date:'M/d/yy h:mm a'}}</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div><br>
+            <div ng-if="!vm.streamGridList && vm.retrievingStreamGrids == false">
+                <strong>Stream Grids were unable to be retrieved at this time. Please contact streamstats@usgs.gov for assistance.</strong>
+            </div><br>
+            <!-- End stream grid table -->
+        </div> 
+        <!-- End stream grids -->
         <!-- Start manage queue -->
         <div id="manageQueue" ng-if="vm.selectedBatchProcessorTabName==='manageQueue'">
             <!-- Start instructions -->
