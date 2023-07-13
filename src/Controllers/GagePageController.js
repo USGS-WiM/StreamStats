@@ -2649,9 +2649,9 @@ var StreamStats;
                     chart: {
                         height: 450,
                         width: 800,
-                        zoomType: 'xy',
-                        panning: true,
-                        panKey: 'shift',
+                        zooming: {
+                            type: 'xy'
+                        },
                         events: {
                             load: function () {
                                 this.series.forEach(function (series) {
@@ -2697,10 +2697,13 @@ var StreamStats;
                         tickPositioner: function () {
                             if (!self.logScaleDischarge) {
                                 var positions = [];
-                                var tick = Math.floor(measuredDataMin) > 0 ? Math.floor(measuredDataMin) - 1 : 1;
-                                var max = measuredDataMax + 2;
-                                var increment = (max - tick) > 18 ? 2 : 1;
-                                for (tick; tick - increment <= max; tick += increment) {
+                                var axis = this;
+                                var min = Math.max(axis.min, measuredDataMin);
+                                var max = Math.min(axis.max, measuredDataMax);
+                                var tick = Math.floor(min) > 0 ? Math.floor(min) - 1 : 1;
+                                var maxTick = max + 2;
+                                var increment = (maxTick - tick) > 18 ? 2 : 1;
+                                for (tick; tick - increment <= maxTick; tick += increment) {
                                     positions.push(tick);
                                 }
                                 return positions;
@@ -2801,10 +2804,18 @@ var StreamStats;
                     this.formattedStages = [];
                 if (this.stages) {
                     this.stages.forEach(function (stage, index) {
-                        if (stage.x != undefined && stage.y != undefined) {
+                        if (stage.y != undefined) {
                             var stageNameCapitalized_1 = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
+                            var stageX = _this_1.curveLookup(stage.y, _this_1.dischargeObj);
+                            var data = void 0;
+                            if (stageX !== undefined) {
+                                data = [[.1, stage.y], [stageX, stage.y], [stageX, 1]];
+                            }
+                            else {
+                                data = [[.1, stage.y], [_this_1.dischargeObj[_this_1.dischargeObj.length - 1].x, stage.y]];
+                            }
                             _this_1.formattedStages.push({
-                                data: [[.1, stage.y], [stage.x, stage.y], [stage.x, 1]],
+                                data: data,
                                 marker: {
                                     enabled: false
                                 },
@@ -2842,9 +2853,9 @@ var StreamStats;
                                             width: 0,
                                             zIndex: 6,
                                             id: 'floodStageLine' + stage.name + 'xPlotLine',
-                                            value: stage.x,
+                                            value: Math.round(stage.x),
                                             label: {
-                                                text: stageNameCapitalized_1 + ": " + stage.x + " cfs",
+                                                text: stageNameCapitalized_1 + ": " + Math.round(stage.x) + " cfs",
                                                 verticalAlign: "bottom",
                                                 y: -110,
                                                 x: 2,

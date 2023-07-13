@@ -913,13 +913,10 @@ module StreamStats.Controllers {
         public curveLookup(value, getRatingCurve) {
             let lowx, lowy, highx, highy;
             let lookupValue;
-
             // console.log("rating curve", getRatingCurve)
-
-            for(let i = 0; i < getRatingCurve.length; i++) {   // loop through all the points in the curve
+            for(let i = 0; i < getRatingCurve.length; i++) {
                 let val = getRatingCurve[i]; 
                 // console.log("value", val);
-
                 if(value === val.y) {  // if y value is same as target y value, get x value
                     lookupValue = val.x;
                     break;
@@ -929,7 +926,6 @@ module StreamStats.Controllers {
                     highy = val.y;
                     lowx = getRatingCurve[i-1].x;
                     lowy = getRatingCurve[i-1].y;
-        
                     // interpolate
                     lookupValue = ((value - lowy) / (highy - lowy)) * (highx - lowx) + lowx;
                     // console.log("lookupvalue: ", lookupValue);
@@ -966,26 +962,22 @@ module StreamStats.Controllers {
                             const moderate = parseFloat(sigStages.querySelector("moderate").textContent);
                             const major = parseFloat(sigStages.querySelector("major").textContent);
                             const record = parseFloat(sigStages.querySelector("record").textContent);
-        
                             // console.log("Action: ", action);
                             // console.log("Flood: ", flood);
                             // console.log("Moderate: ", moderate);
                             // console.log("Major: ", major);
                             // console.log("Record: ", record);
                             // console.log("dischargeObj: ", self.dischargeObj);
-
                             let actionX = self.curveLookup(action, self.dischargeObj);
                             let floodX = self.curveLookup(flood, self.dischargeObj);
                             let moderateX = self.curveLookup(moderate, self.dischargeObj);
                             let majorX = self.curveLookup(major, self.dischargeObj);
                             let recordX = self.curveLookup(record, self.dischargeObj);
-
                             // console.log("actionX", actionX)
                             // console.log("floodX", floodX)
                             // console.log("moderateX", moderateX)
                             // console.log("majorX", majorX)
                             // console.log("recordX", recordX)
-
                             self.stages = [
                                 {name: 'action', x: actionX, y: action, color: 'rgba(255,255,0,0.7)'},
                                 {name: 'flood', x: floodX, y: flood, color: 'rgba(255,153,0,0.7)'},
@@ -993,7 +985,6 @@ module StreamStats.Controllers {
                                 {name: 'major', x: majorX, y: major, color: 'rgba(204,51,255,0.7)'},
                                 {name: 'record', x: recordX, y: record, color: 'rgba(102,178,255,0.7)'}
                             ];
-                            
                             const forecastData = xmlDocument.querySelectorAll("forecast");
                             if (forecastData[0] !== undefined) {
                             const smallerData = forecastData[0].childNodes;
@@ -1022,7 +1013,6 @@ module StreamStats.Controllers {
                             }
                             })
                         }
-
                             self.getShadedDailyStats();
                         }
                     );
@@ -2986,7 +2976,6 @@ public stageDischargeQualityColor(quality) {
 //Create discharge and rating curve chart
 public createDischargePlot(): void {
     // console.log('peak value plot data', this.formattedPeakDates);
-
     // Set up month slider
     this.startMonth = 1;
     this.endMonth = 12;
@@ -3024,22 +3013,16 @@ public createDischargePlot(): void {
         .filter(obj => typeof obj.y === 'number' && !isNaN(obj.y))
         .map(obj => obj.y)
     );
-
     // console.log("max3147", measuredDataMax)
     // console.log("min3147", measuredDataMin)
-
     var self = this
     this.dischargeChartConfig = {
-
         chart: {
             height: 450,
             width: 800,
-            // zooming: {
-            //     type: 'xy'
-            // },
-            zoomType: 'xy',  
-            panning: true, 
-            panKey: 'shift',
+            zooming: {
+                type: 'xy'
+            },
             events: {
                 load: function() {
                     this.series.forEach((series) => {
@@ -3047,7 +3030,6 @@ public createDischargePlot(): void {
                             series.options.events.show.call(series);
                         }
                     });
-
                 }
             }
         },
@@ -3085,21 +3067,19 @@ public createDischargePlot(): void {
             },
             tickPositioner: function () {
                 if (!self.logScaleDischarge) {
-                var positions = [];
-                // console.log("datamax", measuredDataMax)
-                // console.log("datamin", measuredDataMin)
-                var tick = Math.floor(measuredDataMin) > 0 ? Math.floor(measuredDataMin) - 1 : 1;
-                var max = measuredDataMax + 2;
-                var increment = (max - tick) > 18? 2 : 1;
-                // console.log(increment)
-                // console.log("tick", tick)
-                // console.log("max", max)
-                for (tick; tick - increment <= max; tick += increment) {
-                    positions.push(tick);
+                    var positions = [];
+                    var axis = this;
+                    var min = Math.max(axis.min, measuredDataMin);
+                    var max = Math.min(axis.max, measuredDataMax);
+                    var tick = Math.floor(min) > 0 ? Math.floor(min) - 1 : 1;
+                    var maxTick = max + 2;
+                    var increment = (maxTick - tick) > 18? 2 : 1;
+                    for (tick; tick - increment <= maxTick; tick += increment) {
+                        positions.push(tick);
+                    }
+                    return positions;
                 }
-                // console.log(positions)
-                return positions;
-            }}
+            }
         },
         series  : [
         {
@@ -3161,7 +3141,7 @@ public createDischargePlot(): void {
                     style:{
                         fontSize: "9px",
                     },
-                    allowOverlap: false, // add this
+                    allowOverlap: false,
             },
         },
         {
@@ -3193,13 +3173,20 @@ public createDischargePlot(): void {
     ]},
     
     // Format flood stages as data series
-    this.formattedStages = []
-    if (this.stages) {
+this.formattedStages = [];
+if (this.stages) {
     this.stages.forEach((stage, index) => {
-        if (stage.x != undefined && stage.y != undefined) {
+        if (stage.y != undefined) {
             let stageNameCapitalized = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
+            let stageX = this.curveLookup(stage.y, this.dischargeObj);
+            let data;
+            if(stageX !== undefined) {
+                data = [[.1,stage.y],[stageX,stage.y],[stageX,1]];
+            } else {
+                data = [[.1, stage.y], [this.dischargeObj[this.dischargeObj.length - 1].x, stage.y]];
+            }
             this.formattedStages.push({
-                data: [[.1,stage.y],[stage.x,stage.y],[stage.x,1]],
+                data: data,
                 marker: {
                     enabled: false
                 },
@@ -3237,9 +3224,9 @@ public createDischargePlot(): void {
                             width: 0,
                             zIndex: 6,
                             id:'floodStageLine' + stage.name + 'xPlotLine',
-                            value: stage.x,
+                            value: Math.round(stage.x),
                             label: {
-                                text: stageNameCapitalized + ": " + stage.x + " cfs",
+                                text: stageNameCapitalized + ": " + Math.round(stage.x) + " cfs",
                                 verticalAlign: "bottom",
                                 y: -110,
                                 x: 2,
