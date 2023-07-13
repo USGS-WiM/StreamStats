@@ -214,19 +214,43 @@ module StreamStats.Controllers {
             this.flowStatIDs = [];
             this.submitBatchOver250 = false
             this.init();
+            this.selectBatchProcessorTab(this.selectedBatchProcessorTabName)
         }
 
         //Methods  
         //-+-+-+-+-+-+-+-+-+-+-+-
 
         public Close(): void {
+            var url= document.location.href;
+            window.history.pushState({}, "", url.split("?")[0]);
             this.submitBatchSuccessAlert = false;
             this.modalInstance.dismiss('cancel')
         }
 
-        // used for switching between tabs in batch processor modal
+        // used for switching between tabs in batch processor modal & updating URL parameters
         public selectBatchProcessorTab(tabname: string): void {
             this.selectedBatchProcessorTabName = tabname;
+            var queryParams = new URLSearchParams(window.location.search);
+            queryParams.set('BP', tabname)
+
+            if (tabname == 'streamGrid') {
+                this.loadStreamGrids()
+                this.retrievingStreamGrids = true;
+                queryParams.delete('email')
+            } else if (tabname == "manageQueue") {
+                this.getManageQueueList()
+                this.retrievingManageQueue = true;
+                queryParams.delete('email')
+            } else if(tabname == "submitBatch"){
+                queryParams.delete('email')
+            } else if(tabname == "batchStatus"){
+                if (this.batchStatusEmail) {
+                    var queryParams = new URLSearchParams(window.location.search);
+                    queryParams.set('email', this.batchStatusEmail)
+                }
+            }
+
+            history.replaceState(null, null, "?" + queryParams.toString());
         }
 
         // Get list of State/Regions from batchprocessor/regions
@@ -294,12 +318,6 @@ module StreamStats.Controllers {
                     )
                 }
             );
-
-            
-
-
-
-
         }
 
         public setRegionStats(statisticsGroup: Array<any>, allFlowStatsSelectedToggle: boolean = null): void {
@@ -543,6 +561,9 @@ module StreamStats.Controllers {
 
         // create list of batch statuses for an email address
         public getBatchStatusList(email: string): void {
+            var queryParams = new URLSearchParams(window.location.search);
+            queryParams.set('email', email)
+            history.replaceState(null, null, "?" + queryParams.toString());
 
             this.getBatchStatusByEmail(email).then(
                 response => {
@@ -1014,6 +1035,20 @@ module StreamStats.Controllers {
         // -+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
             this.getRegions();
+            // Get selected tab
+            if (this.modalService.modalOptions && this.modalService.modalOptions.tabName){
+                if (this.modalService.modalOptions.tabName == 'batchStatus' && this.modalService.modalOptions.urlParams) {
+                    this.selectBatchProcessorTab(this.modalService.modalOptions.tabName);
+                    this.batchStatusEmail = this.modalService.modalOptions.urlParams
+                    this.getBatchStatusList(this.batchStatusEmail)
+                    this.retrievingBatchStatus = true
+                }
+                if (this.modalService.modalOptions.tabName == 'manageQueue' && this.internalHost == false) { // Manage Queue is only available on internal
+                    this.selectBatchProcessorTab("submitBatch"); // If not internal go to submit batch tab
+                } else {
+                    this.selectBatchProcessorTab(this.modalService.modalOptions.tabName);
+                }
+            } 
             this.retrieveBatchStatusMessages().then(
                 response => {
                     this.batchStatusMessageList = response;

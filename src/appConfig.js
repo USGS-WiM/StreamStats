@@ -19,7 +19,7 @@ configuration.baseurls =
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
 if (window.location.host === 'streamstats.usgs.gov') {
-    configuration.baseurls.StreamStatsServices = 'https://streamstats.usgs.gov',
+        configuration.baseurls.StreamStatsServices = 'https://streamstats.usgs.gov',
         configuration.baseurls.StreamStatsMapServices = 'https://gis.streamstats.usgs.gov',
         configuration.baseurls.NSS = 'https://streamstats.usgs.gov/nssservices',
         configuration.baseurls.WaterUseServices = 'https://streamstats.usgs.gov/wateruseservices',
