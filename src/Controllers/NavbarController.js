@@ -31,6 +31,7 @@ var StreamStats;
                 _this.environment = configuration.environment;
                 _this.AppVersion = configuration.version;
                 _this.cloud = configuration.cloud;
+                _this.checkURLParams();
                 return _this;
             }
             NavbarController.prototype.checkActiveNews = function () {
@@ -65,6 +66,32 @@ var StreamStats;
                     self.freshdeskCreds = response.data;
                     self.checkActiveNews();
                 });
+            };
+            NavbarController.prototype.checkURLParams = function () {
+                var queryString = window.location.search;
+                var urlParams = new URLSearchParams(queryString);
+                console.log(urlParams);
+                console.log(urlParams.get('BP'));
+                var BP = urlParams.get('BP');
+                if (BP) {
+                    if (BP == 'submitBatch') {
+                        this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "submitBatch" });
+                    }
+                    if (BP == 'batchStatus') {
+                        var email = urlParams.get('email');
+                        if (email) {
+                        }
+                        else {
+                            this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "batchStatus" });
+                        }
+                    }
+                    if (BP == 'streamGrid') {
+                        this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "streamGrid" });
+                    }
+                    if (BP == 'manageQueue') {
+                        this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "manageQueue" });
+                    }
+                }
             };
             NavbarController.prototype.openBatchProcessor = function () {
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor);

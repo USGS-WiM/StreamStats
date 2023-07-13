@@ -59,6 +59,8 @@ module StreamStats.Controllers {
             this.environment = configuration.environment;
             this.AppVersion = configuration.version;
             this.cloud = configuration.cloud;
+
+            this.checkURLParams();
         }
 
         //Methods
@@ -103,6 +105,32 @@ module StreamStats.Controllers {
                 self.freshdeskCreds = response.data;
                 self.checkActiveNews();
             })
+        }
+        public checkURLParams() {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            console.log(urlParams)
+            console.log(urlParams.get('BP'))
+            const BP = urlParams.get('BP')
+            if (BP) {
+                if (BP == 'submitBatch') { // open submit batch processor page
+                    this.modalService.openModal(Services.SSModalType.e_batchprocessor, { "tabName": "submitBatch"});
+                }
+                if (BP == 'batchStatus') { // open status batch processor page
+                    const email = urlParams.get('email')
+                    if (email) {
+
+                    } else {
+                        this.modalService.openModal(Services.SSModalType.e_batchprocessor, { "tabName": "batchStatus"});
+                    }
+                }
+                if (BP == 'streamGrid') { // open streamgrids batch processor page
+                    this.modalService.openModal(Services.SSModalType.e_batchprocessor, { "tabName": "streamGrid"});
+                }
+                if (BP == 'manageQueue') { // open queue batch processor page
+                    this.modalService.openModal(Services.SSModalType.e_batchprocessor, { "tabName": "manageQueue"});
+                }
+            }
         }
         public openBatchProcessor(): void {
             this.modalService.openModal(Services.SSModalType.e_batchprocessor);

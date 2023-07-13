@@ -214,19 +214,25 @@ module StreamStats.Controllers {
             this.flowStatIDs = [];
             this.submitBatchOver250 = false
             this.init();
+            this.selectBatchProcessorTab(this.selectedBatchProcessorTabName)
         }
 
         //Methods  
         //-+-+-+-+-+-+-+-+-+-+-+-
 
         public Close(): void {
+            history.replaceState(null, null, "");
             this.submitBatchSuccessAlert = false;
             this.modalInstance.dismiss('cancel')
         }
 
-        // used for switching between tabs in batch processor modal
+        // used for switching between tabs in batch processor modal & updating URL parameters
         public selectBatchProcessorTab(tabname: string): void {
             this.selectedBatchProcessorTabName = tabname;
+            var queryParams = new URLSearchParams(window.location.search);
+            queryParams.set('BP', tabname)
+            console.log("?" + queryParams.toString())
+            history.replaceState(null, null, "?" + queryParams.toString());
         }
 
         // Get list of State/Regions from batchprocessor/regions
@@ -1013,6 +1019,14 @@ module StreamStats.Controllers {
         // -+-+-+-+-+-+-+-+-+-+-+-
         private init(): void {
             this.getRegions();
+            // Get selected tab
+            if (this.modalService.modalOptions && this.modalService.modalOptions.tabName){
+                if (this.modalService.modalOptions.tabName == 'manageQueue' && this.internalHost == false){ // Manage Queue is only available on internal
+                    this.selectBatchProcessorTab("submitBatch"); // If not internal go to submit batch tab
+                } else {
+                    this.selectBatchProcessorTab(this.modalService.modalOptions.tabName);
+                }
+            } 
             this.retrieveBatchStatusMessages().then(
                 response => {
                     this.batchStatusMessageList = response;

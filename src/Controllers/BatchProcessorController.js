@@ -81,14 +81,20 @@ var StreamStats;
                 _this.flowStatIDs = [];
                 _this.submitBatchOver250 = false;
                 _this.init();
+                _this.selectBatchProcessorTab(_this.selectedBatchProcessorTabName);
                 return _this;
             }
             BatchProcessorController.prototype.Close = function () {
+                history.replaceState(null, null, "");
                 this.submitBatchSuccessAlert = false;
                 this.modalInstance.dismiss('cancel');
             };
             BatchProcessorController.prototype.selectBatchProcessorTab = function (tabname) {
                 this.selectedBatchProcessorTabName = tabname;
+                var queryParams = new URLSearchParams(window.location.search);
+                queryParams.set('BP', tabname);
+                console.log("?" + queryParams.toString());
+                history.replaceState(null, null, "?" + queryParams.toString());
             };
             BatchProcessorController.prototype.getRegions = function () {
                 var _this = this;
@@ -634,6 +640,14 @@ var StreamStats;
             BatchProcessorController.prototype.init = function () {
                 var _this = this;
                 this.getRegions();
+                if (this.modalService.modalOptions && this.modalService.modalOptions.tabName) {
+                    if (this.modalService.modalOptions.tabName == 'manageQueue' && this.internalHost == false) {
+                        this.selectBatchProcessorTab("submitBatch");
+                    }
+                    else {
+                        this.selectBatchProcessorTab(this.modalService.modalOptions.tabName);
+                    }
+                }
                 this.retrieveBatchStatusMessages().then(function (response) {
                     _this.batchStatusMessageList = response;
                 });
