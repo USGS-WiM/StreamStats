@@ -322,6 +322,7 @@ var StreamStats;
                 if (this.batchStatusEmail == undefined || this.batchStatusEmail == null) {
                     this.batchStatusEmail = this.submitBatchData.email.toString();
                 }
+                this.flowStatIDs = [];
                 this.addStatIDtoList();
                 var formdata = new FormData();
                 formdata.append('region', this.selectedRegion.toString());

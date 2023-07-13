@@ -582,6 +582,7 @@ module StreamStats.Controllers {
                 this.batchStatusEmail = this.submitBatchData.email.toString()
             }
             // create flowStatIDs list
+            this.flowStatIDs = [];
             this.addStatIDtoList();
             
             // create formdata object and apend
