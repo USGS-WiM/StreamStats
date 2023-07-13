@@ -1,6 +1,4 @@
 ﻿﻿<!-- Modal -->
-
-<!-- Start modal header -->
 <div class="modal-header">
     <button class="close" ng-click="vm.Close()">
         &times;
@@ -21,10 +19,10 @@
                 ng-click="vm.selectBatchProcessorTab('batchStatus')"><i class="fa fa-info-circle"></i>&nbsp;Batch
                 Status</a></li>
         <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'streamGrid'}"><a
-                ng-click="vm.selectBatchProcessorTab('streamGrid'); vm.loadStreamGrids(); vm.retrievingStreamGrids = true;"><i class="fa fa-download"></i>&nbsp;Download Stream
+                ng-click="vm.selectBatchProcessorTab('streamGrid')"><i class="fa fa-download"></i>&nbsp;Download Stream
                 Grids</a></li>
         <li ng-if="vm.internalHost" ng-class="{'active':vm.selectedBatchProcessorTabName == 'manageQueue'}"><a
-                ng-click="vm.selectBatchProcessorTab('manageQueue'); vm.getManageQueueList(); vm.retrievingManageQueue = true;"><i class="fa fa-list-ol"></i>&nbsp;Manage
+                ng-click="vm.selectBatchProcessorTab('manageQueue');"><i class="fa fa-list-ol"></i>&nbsp;Manage
                 Queue</a></li>
     </ul><!-- End batch processor tabs -->
 

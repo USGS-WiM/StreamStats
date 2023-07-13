@@ -109,8 +109,6 @@ module StreamStats.Controllers {
         public checkURLParams() {
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
-            console.log(urlParams)
-            console.log(urlParams.get('BP'))
             const BP = urlParams.get('BP')
             if (BP) {
                 if (BP == 'submitBatch') { // open submit batch processor page
@@ -119,7 +117,7 @@ module StreamStats.Controllers {
                 if (BP == 'batchStatus') { // open status batch processor page
                     const email = urlParams.get('email')
                     if (email) {
-
+                        this.modalService.openModal(Services.SSModalType.e_batchprocessor, { "tabName": "batchStatus", "urlParams": email});
                     } else {
                         this.modalService.openModal(Services.SSModalType.e_batchprocessor, { "tabName": "batchStatus"});
                     }

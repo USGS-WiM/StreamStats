@@ -35,7 +35,8 @@ module StreamStats.Services {
         siteid?: string;
         tabName?: string;
         regionID?: string;
-        placeholder?:any
+        placeholder?:any;
+        urlParams?:any
     }
 
     class ModalService implements IModalService{       

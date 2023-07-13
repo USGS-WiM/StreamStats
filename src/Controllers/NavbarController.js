@@ -70,8 +70,6 @@ var StreamStats;
             NavbarController.prototype.checkURLParams = function () {
                 var queryString = window.location.search;
                 var urlParams = new URLSearchParams(queryString);
-                console.log(urlParams);
-                console.log(urlParams.get('BP'));
                 var BP = urlParams.get('BP');
                 if (BP) {
                     if (BP == 'submitBatch') {
@@ -80,6 +78,7 @@ var StreamStats;
                     if (BP == 'batchStatus') {
                         var email = urlParams.get('email');
                         if (email) {
+                            this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "batchStatus", "urlParams": email });
                         }
                         else {
                             this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "batchStatus" });
