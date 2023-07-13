@@ -146,7 +146,7 @@ var StreamStats;
                         _this.flowStatsList.forEach(function (flowStat) {
                             flowStat.regressionRegions.forEach(function (regressionRegion) {
                                 regressionRegion.parameters.forEach(function (parameter) {
-                                    if (availableParamCodes.indexOf(parameter.code) == -1) {
+                                    if (availableParamCodes.indexOf(parameter.code.toUpperCase()) == -1) {
                                         _this.availableParamList.push(parameter);
                                         availableParamCodes.push(parameter.code);
                                     }
@@ -350,6 +350,7 @@ var StreamStats;
                 if (this.batchStatusEmail == undefined || this.batchStatusEmail == null) {
                     this.batchStatusEmail = this.submitBatchData.email.toString();
                 }
+                this.flowStatIDs = [];
                 this.addStatIDtoList();
                 var formdata = new FormData();
                 formdata.append('region', this.selectedRegion.toString());

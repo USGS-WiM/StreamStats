@@ -304,7 +304,7 @@ module StreamStats.Controllers {
                             this.flowStatsList.forEach(flowStat => {
                                 flowStat.regressionRegions.forEach((regressionRegion) => {
                                     regressionRegion.parameters.forEach((parameter) => {
-                                        if (availableParamCodes.indexOf(parameter.code) == -1) {
+                                        if (availableParamCodes.indexOf(parameter.code.toUpperCase()) == -1) {
                                             this.availableParamList.push(parameter);
                                             availableParamCodes.push(parameter.code);
                                         } 
@@ -603,6 +603,7 @@ module StreamStats.Controllers {
                 this.batchStatusEmail = this.submitBatchData.email.toString()
             }
             // create flowStatIDs list
+            this.flowStatIDs = [];
             this.addStatIDtoList();
             
             // create formdata object and apend
