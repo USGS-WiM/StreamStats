@@ -143,9 +143,9 @@
                     <span ng-if="!vm.flowStatsAllChecked">Unselect All Flow Statistics</span>
                 </button>
                 <!-- create list of flow stats checkboxes -->
-                <div ng-if="vm.flowStatsListSpinner" style="padding-top: 15px;"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
-                <div ng-if="!vm.flowStatsListSpinner" style="padding-top: 15px;text-align: center;">
-                    <span>Please select a State / Region to select Flow Statistics</span>
+                <div ng-if="vm.selectedRegion && vm.flowStatsListSpinner" style="padding-top: 15px;"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+                <div ng-if="!vm.selectedRegion" style="padding-top: 15px;text-align: center;">
+                    <span>Please select a State / Region to view Flow Statistics.</span>
                 </div>
                 <div ng-if="vm.flowStatsList.length > 0">
                     <table class="table table-condensed">
@@ -180,9 +180,9 @@
                 </button>
 
                 <!-- create table of parameters checkboxes -->
-                <div ng-if="vm.parametersListSpinner" style="padding-top: 15px;"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
-                <div ng-if="!vm.parametersListSpinner" style="padding-top: 15px;text-align: center;">
-                    <span>Please select a State / Region to select Basin Characteristics</span>
+                <div ng-if="vm.selectedRegion && vm.parametersListSpinner" style="padding-top: 15px;"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+                <div ng-if="!vm.selectedRegion" style="padding-top: 15px;text-align: center;">
+                    <span>Please select a State / Region to view Basin Characteristics.</span>
                 </div>
                 <div ng-if="vm.availableParamList.length > 0">
                     <table class="table table-condensed">
