@@ -796,7 +796,6 @@ module StreamStats.Controllers {
                                     toggleable: true
                                 }
                                 paramRaw.push(param);
-                                console.log(parameter.code);
                             } catch (e) {
                                 alert(e)                           
                             }
@@ -1046,7 +1045,6 @@ module StreamStats.Controllers {
             try {
                 for (var i = 0; i < this.availableParamList.length; i++) {
                     let p = this.availableParamList[i];
-                    console.log(p);
 
                     if (p['code'].toUpperCase() === paramCode.toUpperCase() && this.checkArrayForObj(this.selectedParamList, p['code']) == -1) {
                         this.selectedParamList.push(p['code']);
