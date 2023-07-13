@@ -121,7 +121,7 @@ var StreamStats;
                         _this.flowStatsList.forEach(function (flowStat) {
                             flowStat.regressionRegions.forEach(function (regressionRegion) {
                                 regressionRegion.parameters.forEach(function (parameter) {
-                                    if (availableParamCodes.indexOf(parameter.code) == -1) {
+                                    if (availableParamCodes.indexOf(parameter.code.toUpperCase()) == -1) {
                                         _this.availableParamList.push(parameter);
                                         availableParamCodes.push(parameter.code);
                                     }
@@ -471,6 +471,7 @@ var StreamStats;
                                     toggleable: true
                                 };
                                 paramRaw.push(param);
+                                console.log(parameter.code);
                             }
                             catch (e) {
                                 alert(e);
@@ -659,6 +660,7 @@ var StreamStats;
                 try {
                     for (var i = 0; i < this.availableParamList.length; i++) {
                         var p = this.availableParamList[i];
+                        console.log(p);
                         if (p['code'].toUpperCase() === paramCode.toUpperCase() && this.checkArrayForObj(this.selectedParamList, p['code']) == -1) {
                             this.selectedParamList.push(p['code']);
                             p['checked'] = true;

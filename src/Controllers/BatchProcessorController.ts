@@ -280,7 +280,7 @@ module StreamStats.Controllers {
                             this.flowStatsList.forEach(flowStat => {
                                 flowStat.regressionRegions.forEach((regressionRegion) => {
                                     regressionRegion.parameters.forEach((parameter) => {
-                                        if (availableParamCodes.indexOf(parameter.code) == -1) {
+                                        if (availableParamCodes.indexOf(parameter.code.toUpperCase()) == -1) {
                                             this.availableParamList.push(parameter);
                                             availableParamCodes.push(parameter.code);
                                         } 
@@ -796,6 +796,7 @@ module StreamStats.Controllers {
                                     toggleable: true
                                 }
                                 paramRaw.push(param);
+                                console.log(parameter.code);
                             } catch (e) {
                                 alert(e)                           
                             }
@@ -1045,6 +1046,7 @@ module StreamStats.Controllers {
             try {
                 for (var i = 0; i < this.availableParamList.length; i++) {
                     let p = this.availableParamList[i];
+                    console.log(p);
 
                     if (p['code'].toUpperCase() === paramCode.toUpperCase() && this.checkArrayForObj(this.selectedParamList, p['code']) == -1) {
                         this.selectedParamList.push(p['code']);
