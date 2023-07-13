@@ -1,4 +1,4 @@
-﻿//------------------------------------------------------------------------------
+﻿﻿//------------------------------------------------------------------------------
 //----- BatchProcessorController ---------------------------------------------------------------
 //------------------------------------------------------------------------------
 
@@ -67,18 +67,26 @@ module StreamStats.Controllers {
     }
 
     interface IBatchStatusMessage {
-        id: string,
-        message: string
+        id: number,
+        message: string,
+        description: string
     }
 
     class BatchStatusMessage implements IBatchStatusMessage {
-        public id: string;
+        public id: number;
         public message: string;
+        public description: string;
     }
 
     interface IBatchStatus {
         batchID: string,
-        status: string,
+        deleteCode: string
+        emailAddress: string,
+        order: number,
+        queueList: string;
+        status: number,
+        statusMessage: string,
+        statusDescription: string,
         timeSubmitted: Date,
         timeStarted: Date,
         timeCompleted: Date,
@@ -86,12 +94,17 @@ module StreamStats.Controllers {
         region: string,
         pointsRequested: number,
         pointsSuccessful: number,
-        deleteCode: string
     }
 
     class BatchStatus implements IBatchStatus {
         public batchID: string;
-        public status: string;
+        public deleteCode: string;
+        public emailAddress: string;
+        public order: number;
+        public queueList: string;
+        public status: number;
+        public statusMessage: string;
+        public statusDescription: string;
         public timeSubmitted: Date;
         public timeStarted: Date;
         public timeCompleted: Date;
@@ -99,7 +112,6 @@ module StreamStats.Controllers {
         public region: string;
         public pointsRequested: number;
         public pointsSuccessful: number;
-        public deleteCode: string;
     }
 
     class SubmitBatchData {
@@ -118,6 +130,7 @@ module StreamStats.Controllers {
         public selectedBatchProcessorTabName: string;
         public displayMessage: string;
         public toaster: any;
+        public internalHost: boolean;
 
         // Regions
         public regionList: Array<any>;
@@ -143,6 +156,8 @@ module StreamStats.Controllers {
         public submitBatchData: SubmitBatchData;
         public submitBatchOver250: boolean;
         public submitBatchOver250Message: string;
+        public editingQueue: boolean;
+        public reorderingQueue: boolean;
 
         // spinners
         public regionListSpinner: boolean;
@@ -154,6 +169,8 @@ module StreamStats.Controllers {
         public batchStatusMessageList: Array<BatchStatusMessage>;
         public batchStatusList: Array<BatchStatus>;
         public retrievingBatchStatus: boolean;
+        public manageQueueList: Array<BatchStatus>;
+        public retrievingManageQueue: boolean;
 
         // stream grids
         public streamGridList: Array<StreamGrid>;
@@ -170,6 +187,11 @@ module StreamStats.Controllers {
             this.selectedBatchProcessorTabName = "submitBatch";
             this.nssService = nssService;
             this.toaster = toaster;
+            if (window.location.hostname == 'staging-apps.usgs.gov' || window.location.hostname == 'apps-int.usgs.gov' || window.location.hostname == "127.0.0.1:8080" || window.location.hostname == "localhost" || window.location.hostname == "127.0.0.1" || window.location.hostname == "") {
+                this.internalHost = true;
+            } else {
+                this.internalHost = false;
+            }
             this.selectedFlowStatsList = [];
             this.selectedParamList = [];
             this.flowStatsAllChecked = true;
@@ -179,6 +201,8 @@ module StreamStats.Controllers {
             this.submitBatchSuccessAlert = false;
             this.submitBatchFailedAlert = false;
             this.submitBatchData = new SubmitBatchData();
+            this.editingQueue = false;
+            this.reorderingQueue = false;
             this.regionListSpinner = true;
             this.flowStatsListSpinner = false;
             this.parametersListSpinner = false;
@@ -186,6 +210,7 @@ module StreamStats.Controllers {
             this.streamGridList = [];
             this.retrievingStreamGrids = false;
             this.batchStatusList = [];
+            this.retrievingManageQueue = false;
             this.flowStatIDs = [];
             this.submitBatchOver250 = false
             this.init();
@@ -516,7 +541,7 @@ module StreamStats.Controllers {
             this.parametersAllChecked = !this.parametersAllChecked;
         }
 
-        // create list of batch statuses
+        // create list of batch statuses for an email address
         public getBatchStatusList(email: string): void {
 
             this.getBatchStatusByEmail(email).then(
@@ -527,6 +552,18 @@ module StreamStats.Controllers {
             );
         }
 
+        // create list of batch statuses
+        public getManageQueueList(): void {
+
+            this.getBatchStatusByEmail().then(
+                response => {
+                    this.manageQueueList = response;
+                    this.retrievingManageQueue = false;
+                }
+            );
+        }
+
+        // soft delete a batch
         public trashBatch(batchID: number, deleteCode: string, batchStatusEmail: string) {
             let text = "Are you sure you want to delete Batch ID " + batchID + "?"
             if (confirm(text) == true) {
@@ -646,6 +683,84 @@ module StreamStats.Controllers {
             }
         }
 
+        // reorder the queue on the Manage Queue tab
+        public reorderQueue(): void {
+            this.reorderingQueue = true;
+            
+
+            let reorderBatchesPOSTBody = {"batchOrder": []}
+            this.manageQueueList.forEach(batch => {
+                if (batch.order != null) {
+                    reorderBatchesPOSTBody["batchOrder"].push({
+                        "batchID": batch.batchID,
+                        "order": batch.order
+                    })
+                }
+            });
+
+            this.reorderBatches(reorderBatchesPOSTBody).then(
+                response => {
+                    let r = response;
+                    if (r.status == 200) {
+                        this.getManageQueueList(); 
+                        this.editingQueue = false;
+                        this.retrievingManageQueue = true;
+                        this.toaster.clear();
+                        this.toaster.pop('success', "Queue was successfully reordered", "", 5000);
+                    } else {
+                        this.toaster.clear();
+                        this.toaster.pop('error', "Queue failed to reorder: ", r.data.detail, 15000);
+                        // Consideration: Refresh list to what it was before failure
+                        // this.getManageQueueList();
+                        // this.retrievingManageQueue = true
+                    }
+                }).finally(() => {
+                    this.reorderingQueue = false;
+                });
+
+        }
+
+        // pause a batch
+        public submitPauseBatch(batchID: number): void {
+            // console.log("Pausing batch " + batchID);
+
+            this.pauseBatch(batchID).then(
+                response => {
+                    let r = response;
+                    if (r.status == 200) {
+                        this.getManageQueueList(); 
+                        this.retrievingManageQueue = true;
+                        this.toaster.clear();
+                        this.toaster.pop('success', "Batch ID " + batchID + " was paused.", "", 5000);
+                    } else {
+                        this.toaster.clear();
+                        this.toaster.pop('error', "Batch ID " + batchID + " could not be paused.", r.data.detail, 15000);
+                    }
+                }).finally(() => {
+                });
+
+
+        }
+
+        // unpause a batch
+        public submitUnpauseBatch(batchID: number): void {
+            // console.log("Unpausing batch " + batchID);
+            this.unpauseBatch(batchID).then(
+                response => {
+                    let r = response;
+                    if (r.status == 200) {
+                        this.getManageQueueList(); 
+                        this.retrievingManageQueue = true;
+                        this.toaster.clear();
+                        this.toaster.pop('success', "Batch ID " + batchID + " was unpaused.", "", 5000);
+                    } else {
+                        this.toaster.clear();
+                        this.toaster.pop('error', "Batch ID " + batchID + " could not be unpaused.", r.data.detail, 15000);
+                    }
+                }).finally(() => {
+                });
+        }
+
         public loadStreamGrids(): void {
             this.getStreamGrids().then(
                 response => {
@@ -695,7 +810,7 @@ module StreamStats.Controllers {
         // return either response or error, as logic for either is handled in the calling function
         public postBatchFormData(formdata: FormData, headers: any): ng.IPromise<any> {
                 
-                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatch']
+                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorSubmitBatch']
     
                 var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', formdata, headers);
     
@@ -724,7 +839,8 @@ module StreamStats.Controllers {
                         try {
                             let status: BatchStatusMessage = {
                                 id: item.ID,
-                                message: item.Message
+                                message: item.Message,
+                                description: item.Description
                             }
 
                             batchStatusMessages.push(status);
@@ -742,9 +858,13 @@ module StreamStats.Controllers {
         }
 
         // get batchs status for email
-        public getBatchStatusByEmail(email: string): ng.IPromise<any> {
+        public getBatchStatusByEmail(email: string = null): ng.IPromise<any> {
 
-            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatchStatus'].format(email);
+            if (email) {
+                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatchStatus'].format(email);
+            } else {
+                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorGetBatch'];
+            }
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
             return this.Execute(request).then(
@@ -757,15 +877,20 @@ module StreamStats.Controllers {
                         try {
                             let status: BatchStatus = {
                                 batchID: batch.ID,
-                                status: this.batchStatusMessageList.filter((item) => { return item.id == batch.StatusID })[0].message,
+                                deleteCode: batch.DeleteCode,
+                                emailAddress: batch.EmailAddress,
+                                order: batch.Order,
+                                queueList: batch.QueueList == null ? "" : batch.QueueList.join(", "),
+                                status: this.batchStatusMessageList.filter((item) => { return item.id == batch.StatusID })[0].id,
+                                statusMessage: this.batchStatusMessageList.filter((item) => { return item.id == batch.StatusID })[0].message,
+                                statusDescription: this.batchStatusMessageList.filter((item) => { return item.id == batch.StatusID })[0].description,
                                 timeSubmitted: batch.TimeSubmitted,
                                 timeStarted: batch.TimeStarted,
                                 timeCompleted: batch.TimeCompleted,
                                 resultsURL: batch.ResultsURL,
                                 region: batch.Region,
                                 pointsRequested: batch.NumberPoints,
-                                pointsSuccessful: batch.NumberPointsSuccessful,
-                                deleteCode: batch.DeleteCode
+                                pointsSuccessful: batch.NumberPointsSuccessful
                             }
 
                             batchStatusMessages.push(status);
@@ -785,22 +910,65 @@ module StreamStats.Controllers {
         // soft delete a batch
         public deleteBatch(batchID: number, deleteCode: string, batchStatusEmail: string): ng.IPromise<any> {
 
-                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorDeleteBatch'].format(deleteCode);
-                var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.DELETE);
+            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorDeleteBatch'].format(deleteCode);
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.DELETE);
 
-                return this.Execute(request).then(
-                    (response: any) => {
-                        let text = "Batch ID " + batchID + " was deleted.";
-                        alert(text);
-                        // Refresh the list of batches
-                        this.getBatchStatusList(batchStatusEmail); 
-                        this.retrievingBatchStatus = true;
-                    }, (error) => {
-                        let text = "Error deleting batch ID " + batchID + ". Please try again later or click the Help menu button to submit a Support Request.";
-                        alert(text);
-                    }).finally(() => {
-                        
-                    });
+            return this.Execute(request).then(
+                (response: any) => {
+                    let text = "Batch ID " + batchID + " was deleted.";
+                    alert(text);
+                    // Refresh the list of batches
+                    this.getBatchStatusList(batchStatusEmail); 
+                    this.retrievingBatchStatus = true;
+                    this.getManageQueueList(); 
+                    this.retrievingManageQueue = true;
+                }, (error) => {
+                    let text = "Error deleting batch ID " + batchID + ". Please try again later or click the Help menu button to submit a Support Request.";
+                    alert(text);
+                }).finally(() => {
+                    
+                });
+        }
+
+        public reorderBatches(batchOrder): ng.IPromise<any> {
+            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorReorderBatch']
+    
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(batchOrder));
+
+            return this.Execute(request).then(
+                (response: any) => {
+                    return response;
+                }, (error) => {
+                    return error;
+                }).finally(() => {});
+        }
+
+        public pauseBatch(batchID: number): ng.IPromise<any> {
+            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatchPause'].format(batchID);
+    
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST);
+
+            return this.Execute(request).then(
+                (response: any) => {
+                    return response;
+                }, (error) => {
+                    return error;
+                }).finally(() => {
+                });
+        }
+
+        public unpauseBatch(batchID: number): ng.IPromise<any> {
+            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatchUnpause'].format(batchID);
+    
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST);
+
+            return this.Execute(request).then(
+                (response: any) => {
+                    return response;
+                }, (error) => {
+                    return error;
+                }).finally(() => {
+                });
         }
 
         // load stream grids

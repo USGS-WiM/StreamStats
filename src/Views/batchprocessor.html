@@ -1,4 +1,4 @@
-﻿<!-- Modal -->
+﻿﻿<!-- Modal -->
 
 <!-- Start modal header -->
 <div class="modal-header">
@@ -23,6 +23,9 @@
         <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'streamGrid'}"><a
                 ng-click="vm.selectBatchProcessorTab('streamGrid'); vm.loadStreamGrids(); vm.retrievingStreamGrids = true;"><i class="fa fa-download"></i>&nbsp;Download Stream
                 Grids</a></li>
+        <li ng-if="vm.internalHost" ng-class="{'active':vm.selectedBatchProcessorTabName == 'manageQueue'}"><a
+                ng-click="vm.selectBatchProcessorTab('manageQueue'); vm.getManageQueueList(); vm.retrievingManageQueue = true;"><i class="fa fa-list-ol"></i>&nbsp;Manage
+                Queue</a></li>
     </ul><!-- End batch processor tabs -->
 
 
@@ -129,20 +132,18 @@
                         ng-disabled="vm.showBasinCharacteristics">
                     <label class="chx" for="cbBasinChar">&nbsp;Compute Basin Characteristics</label>
                 </span>
-            </div><!-- end checkboxes for different sections -->
+            </div><br><!-- end checkboxes for different sections -->
 
             <!-- Start select flow statistics -->
             <div ng-if="cbFlowStats" style="padding-top: 15px;" class="well well-sm">
                 <h3>Select Flow Statistics</h3>
                 <!-- button to check/uncheck all -->
-                <button ng-if="vm.flowStatsList.length > 0" class="btn-blue fullwidth" ng-class="btn-blue"
-                    ng-click="vm.toggleFlowStatisticsAllChecked()">
+                <button ng-if="vm.flowStatsList.length > 0" class="btn-blue fullwidth" ng-class="btn-blue" ng-click="vm.toggleFlowStatisticsAllChecked()">
                     <span ng-if="vm.flowStatsAllChecked">Select All Flow Statistics</span>
                     <span ng-if="!vm.flowStatsAllChecked">Unselect All Flow Statistics</span>
                 </button>
                 <!-- create list of flow stats checkboxes -->
-                <div ng-if="vm.flowStatsListSpinner" style="padding-top: 15px;"><i
-                        class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+                <div ng-if="vm.flowStatsListSpinner" style="padding-top: 15px;"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
                 <div ng-if="!vm.flowStatsListSpinner" style="padding-top: 15px;text-align: center;">
                     <span>Please select a State / Region to select Flow Statistics</span>
                 </div>
@@ -172,16 +173,14 @@
             <div ng-show="vm.showBasinCharacteristics || cbBasinChar" style="padding-top: 15px;" class="well well-sm">
                 <h3>Select Basin Characteristics</h3>
                 <!-- button to check/uncheck all -->
-                <button ng-if="vm.availableParamList.length > 0" class="btn-blue fullwidth"
-                    ng-class="!vm.parametersAllChecked ? 'btn-black': 'btn-blue'"
+                <button ng-if="vm.availableParamList.length > 0" class="btn-blue fullwidth" ng-class="!vm.parametersAllChecked ? 'btn-black': 'btn-blue'"
                     ng-click="vm.toggleParametersAllChecked()">
                     <span ng-if="vm.parametersAllChecked">Select All Basin Characteristics</span>
                     <span ng-if="!vm.parametersAllChecked">Unselect All Basin Characteristics</span>
                 </button>
 
                 <!-- create table of parameters checkboxes -->
-                <div ng-if="vm.parametersListSpinner" style="padding-top: 15px;"><i
-                        class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+                <div ng-if="vm.parametersListSpinner" style="padding-top: 15px;"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
                 <div ng-if="!vm.parametersListSpinner" style="padding-top: 15px;text-align: center;">
                     <span>Please select a State / Region to select Basin Characteristics</span>
                 </div>
@@ -272,15 +271,14 @@
                                 <th style="text-align: center;"><small>Delete?</small></th>
                             </tr>
                         </thead>
-                        <tbody ng-repeat="batch in vm.batchStatusList">
+                        <tbody ng-repeat="batch in vm.batchStatusList" >
                             <tr>
                                 <td style="text-align: center;"><span>{{batch.batchID}}</span></td>
-                                <td style="text-align: center;"><span>{{batch.status}}</span></td>
+                                <td style="text-align: center;"><span>{{batch.statusMessage}}</span></td>
                                 <td style="text-align: center;"><span ng-if="batch.timeSubmitted != null">{{batch.timeSubmitted | date:'M/d/yy h:mm a'}}</span></td>
                                 <td style="text-align: center;"><span ng-if="batch.timeStarted != null">{{batch.timeStarted | date:'M/d/yy h:mm a'}}</span></td>
                                 <td style="text-align: center;"><span ng-if="batch.timeCompleted != null">{{batch.timeCompleted | date:'M/d/yy h:mm a'}}</span></td>
-                                <td style="text-align: center;"><span><a ng-if="batch.resultsURL != null"
-                                            ng-href="{{batch.resultsURL}}">Link</a></span></td>
+                                <td style="text-align: center;"><span><a ng-if="batch.resultsURL != null" ng-href="{{batch.resultsURL}}">Link</a></span></td>
                                 <td style="text-align: center;"><span>{{batch.region}}</span></td>
                                 <td style="text-align: center;"><span>{{batch.pointsRequested}}</span></td>
                                 <td style="text-align: center;"><span
@@ -291,20 +289,21 @@
                             </tr>
                         </tbody>
                     </table>
-                </div><br>
+                </div><br />
                 <div ng-if="vm.batchStatusList.length == 0 && vm.retrievingBatchStatus == false">
                     <strong>No batches found for this email address.</strong>
                 </div>
-            </div> 
-        </div> <!-- End batch status -->
-
+            </div>
+        </div>
+        <!-- End batch status -->
         <!-- Start stream grids -->
         <div id="streamGrid" ng-if="vm.selectedBatchProcessorTabName==='streamGrid'">
-        <!-- Start instructions -->
-        <div>
-            Batch points should be coincident with the stream grid used by StreamStats for delineation. Please use the links below to download the stream grid for each State/Region. 
-        </div><br>
-        <!-- End instructions -->
+            <!-- Start instructions -->
+            <div>
+                Batch points should be coincident with the stream grid used by StreamStats for delineation. Please use the links below to download the stream grid for each State/Region. 
+            </div><br>
+            <!-- End instructions -->
+            <!-- Start stream grid table -->
             <div ng-if="vm.retrievingStreamGrids" style="padding-top: 15px;"><i
                 class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
             </div>
@@ -330,10 +329,96 @@
             <div ng-if="!vm.streamGridList && vm.retrievingStreamGrids == false">
                 <strong>Stream Grids were unable to be retrieved at this time. Please contact streamstats@usgs.gov for assistance.</strong>
             </div><br>
-        </div> <!-- End stream grids -->
-
-
-        </div> <!-- End of modal body -->
+            <!-- End stream grid table -->
+        </div> 
+        <!-- End stream grids -->
+        <!-- Start manage queue -->
+        <div id="manageQueue" ng-if="vm.selectedBatchProcessorTabName==='manageQueue'">
+            <!-- Start instructions -->
+            <div>
+                <b>How to Edit the Batch Queue</b>
+                <ul>
+                    <li>To change the order of batches, edit the values in the <i>Order</i> column and click the "Reorder Order" button. Batches will proceed in the queue in numerical order.</li>
+                    <li>To delete a batch, click the trash can icon in the <i>Delete?</i> column.</li>
+                    <li>To pause a batch, click the pause button in the <i>Pause / Unpause?</i> column. The batch will
+                        automatically be unpaused (returned to the queue) when all the batches currently in the queue
+                        have completed. The IDs of the batches required to be completed for the batch to be unpaused are listed in the "Pause List" column.</li>
+                    <li>To manually unpause a batch, click the play button in the <i>Pause / Unpause?</i> column. The batch will
+                        be added to the bottom of the current queue.</li>
+                </ul>
+            </div>
+            <!-- End instructions-->
+            <!-- Start manage queue table -->
+            <div>
+                <div ng-if="vm.retrievingManageQueue" style="padding-top: 15px;"><i
+                        class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
+                </div>
+                <div ng-if="vm.manageQueueList.length > 0" style="overflow-x: scroll;">
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center;"><small>Batch ID</small></th>
+                                <th style="text-align: center;"><small>Order</small></th>
+                                <th style="text-align: center;"><small>Email Address</small></th>
+                                <th style="text-align: center;"><small>Status</small></th>
+                                <th style="text-align: center;"><small>Pause List</small></th>
+                                <th style="text-align: center;"><small>Time Submitted (UTC)</small></th>
+                                <th style="text-align: center;"><small>Time Started (UTC)</small></th>
+                                <th style="text-align: center;"><small>Time Completed (UTC)</small></th>
+                                <th style="text-align: center;"><small>Results</small></th>
+                                <th style="text-align: center;"><small>State/ Region</small></th>
+                                <th style="text-align: center;"><small>Number Points Requested</small></th>
+                                <th style="text-align: center;"><small>Number Points Successful</small></th>
+                                <th style="text-align: center;"><small>Pause / Unpause?</small></th>
+                                <th style="text-align: center;"><small>Delete?</small></th>
+                            </tr>
+                        </thead>
+                        <tbody ng-repeat="batch in vm.manageQueueList | orderBy:'order'">
+                            <tr>
+                                <td style="text-align: center;"><span>{{batch.batchID}}</span></td>
+                                <td style="text-align: center;"><span>
+                                    <input ng-if="vm.editingQueue && batch.status==1" class="bp-input" type="number" min="1" oninput="validity.valid||(value='');" ng-model="batch.order" style="text-align: center; width:80px;" required></span>
+                                    <span ng-if="!vm.editingQueue">{{batch.order}}</span>
+                                </td>
+                                <td style="text-align: center;"><span>{{batch.emailAddress}}</span></td>
+                                <td style="text-align: center;"><span>{{batch.statusDescription}}</span></td>
+                                <td style="text-align: center;"><span>{{batch.queueList}}</span></td>
+                                <td style="text-align: center;"><span
+                                        ng-if="batch.timeSubmitted != null">{{batch.timeSubmitted | date:'M/d/yy h:mm
+                                        a'}}</span></td>
+                                <td style="text-align: center;"><span
+                                        ng-if="batch.timeStarted != null">{{batch.timeStarted | date:'M/d/yy h:mm
+                                        a'}}</span></td>
+                                <td style="text-align: center;"><span
+                                        ng-if="batch.timeCompleted != null">{{batch.timeCompleted | date:'M/d/yy h:mm
+                                        a'}}</span></td>
+                                <td style="text-align: center;"><span><a ng-if="batch.resultsURL != null"
+                                            ng-href="{{batch.resultsURL}}">Link</a></span></td>
+                                <td style="text-align: center;"><span>{{batch.region}}</span></td>
+                                <td style="text-align: center;"><span>{{batch.pointsRequested}}</span></td>
+                                <td style="text-align: center;"><span
+                                        ng-if="batch.pointsSuccessful != null">{{batch.pointsSuccessful}}</span></td>
+                                <td style="text-align: center;">
+                                    <i ng-if="batch.status==9" ng-click="vm.submitUnpauseBatch(batch.batchID)"
+                                        class="fa fa-play-circle-o" style="cursor: pointer"></i>
+                                    <i ng-if="batch.status==1" ng-click="vm.submitPauseBatch(batch.batchID)"
+                                            class="fa fa-pause-circle-o" style="cursor: pointer"></i>
+                                </td>
+                                <td style="text-align: center;"><i
+                                        ng-click="vm.trashBatch(batch.batchID, batch.deleteCode, batchStatusEmail)"
+                                        class="fa fa-trash" style="cursor: pointer"></i></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div><br />
+                <div ng-if="vm.manageQueueList.length == 0 && vm.retrievingManageQueue == false">
+                    <strong>No batches found.</strong>
+                </div>
+            </div>
+            <!-- End manage queue table -->
+        </div>
+        <!-- End manage queue -->
+        <!-- End of modal body -->
 
         <!-- Start modal footer -->
         <div class="modal-footer">
@@ -363,6 +448,30 @@
                     <span>&nbsp;&nbsp;Submit Batch Over 250 Points</span>
                 </button>
                 <!-- End submit batch GTE 250 button -->
+
+                
+
+                <!-- Button to Start Reordering Queue Queue -->
+                <button ng-if="vm.selectedBatchProcessorTabName==='manageQueue' && vm.manageQueueList.length > 0 && !vm.editingQueue"
+                    type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.editingQueue = true">
+                    <i class="fa fa-exchange"></i>
+                    <span>&nbsp;Reorder Queue</span>
+                </button>
+
+                <!-- Button to Submit Reordered Queue -->
+                <button ng-if="vm.selectedBatchProcessorTabName==='manageQueue' && vm.manageQueueList.length > 0 && vm.editingQueue"
+                    type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.reorderQueue()"
+                    ng-disabled="vm.reorderingQueue">
+                    <i ng-if="vm.reorderingQueue == false" class="fa fa-exchange"></i>
+                    <i ng-if="vm.reorderingQueue == true" class="fa fa-refresh fa-spin"></i>
+                    <span>&nbsp;Submit Reordered Queue</span>
+                </button>
+                <!-- End button to manage queue -->
+
+                <!-- Button to cancel Reordering Queue modal -->
+                <button ng-if="vm.editingQueue" ng-click="vm.editingQueue = false;" class="btn-black" style="margin-right: 10px;"><i
+                        class="fa fa-close"></i><span>&nbsp;&nbsp;Cancel Reordering Queue</span></button>
+                <!-- End cancel Reordering Queue button -->
 
                 <!-- Button to close modal -->
                 <button ng-click="vm.Close()" class="btn-black"><i
