@@ -239,8 +239,12 @@
                     <span>Email Address:</span>
                 </div>
                 <div>
-                    <span><input class="bp-input" type="email" id="emailFieldStatus" ng-model="vm.batchStatusEmail"
-                            required></span>
+                    <span>
+                        <form ng-submit="vm.getBatchStatusList(vm.batchStatusEmail); vm.retrievingBatchStatus = true;">
+                            <input class="bp-input" type="email" id="emailFieldStatus" ng-model="vm.batchStatusEmail"
+                            required>
+                        </form>
+                    </span>
                 </div>
                 <!-- End email field -->
                 <!-- Button to fetch batch status -->
