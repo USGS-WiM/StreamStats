@@ -186,7 +186,7 @@
                 </div>
                 <div ng-if="vm.availableParamList.length > 0">
                     <br>
-                    <span>Please note that not all Basin Characteristics may be available for the requested batch points.</span>
+                    <span>* Please note that not that these Basin Characteristics may not be available for all the requested batch points.</span>
                     <br><br>
                     <table class="table table-condensed">
                         <thead class="param-table">
@@ -204,7 +204,7 @@
                                         ng-disabled="!parameter.toggleable">
                                     </checkbox>
                                 </td>
-                                <td><span>&nbsp;&nbsp;{{parameter.code}}</span></td>
+                                <td><span>&nbsp;&nbsp;{{parameter.code}}<span ng-if="parameter.asterisk"> *</span></span></td>
                                 <td><span>&nbsp;&nbsp;{{parameter.description}}</span></td>
                             </tr>
                         </tbody>

@@ -150,6 +150,7 @@ var StreamStats;
                             flowStat.regressionRegions.forEach(function (regressionRegion) {
                                 regressionRegion.parameters.forEach(function (parameter) {
                                     if (availableParamCodes.indexOf(parameter.code.toUpperCase()) == -1) {
+                                        parameter['asterisk'] = true;
                                         _this.availableParamList.push(parameter);
                                         availableParamCodes.push(parameter.code);
                                     }
@@ -240,7 +241,8 @@ var StreamStats;
                                         code: param.code,
                                         description: param.description,
                                         checked: false,
-                                        toggleable: true
+                                        toggleable: true,
+                                        asterisk: true
                                     };
                                     _this.availableParamList.push(newParam);
                                     _this.addParameterToSelectedParamList(param.code);
