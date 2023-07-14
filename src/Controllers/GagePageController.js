@@ -642,7 +642,6 @@ var StreamStats;
                         _this_1.instFlow = filteredInst;
                     }
                     _this_1.getNWSForecast();
-                    console.log(_this_1.gageTimeZone);
                 });
             };
             GagePageController.prototype.getNWSForecast = function () {
@@ -860,15 +859,17 @@ var StreamStats;
                         }
                     });
                 }
-                if (this.instFlow) {
+                if (this.instFlow !== undefined) {
                     this.instFlow.forEach(function (instObj) {
                         if (parseFloat(instObj.value) !== -999999) {
-                            var index = _this_1.formattedDailyFlow.length - 1;
-                            var finalDate = _this_1.formattedDailyFlow[index].x;
-                            var stringDate = instObj.dateTime.split('.')[0];
-                            var instDate = new Date(stringDate);
-                            if (instDate > finalDate) {
-                                _this_1.formattedInstFlow.push({ x: instDate, y: parseFloat(instObj.value) });
+                            if (_this_1.formattedDailyFlow.length !== 0) {
+                                var index = _this_1.formattedDailyFlow.length - 1;
+                                var finalDate = _this_1.formattedDailyFlow[index].x;
+                                var stringDate = instObj.dateTime.split('.')[0];
+                                var instDate = new Date(stringDate);
+                                if (instDate > finalDate) {
+                                    _this_1.formattedInstFlow.push({ x: instDate, y: parseFloat(instObj.value) });
+                                }
                             }
                         }
                     });

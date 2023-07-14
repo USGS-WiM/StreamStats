@@ -859,7 +859,6 @@ module StreamStats.Controllers {
                     }
                     //console.log('inst', this.instFlow)
                     this.getNWSForecast();
-                                        console.log(this.gageTimeZone)
 
                 });
         }
@@ -1168,16 +1167,19 @@ module StreamStats.Controllers {
                 }
                 });
             }
-            if (this.instFlow) {
+            if (this.instFlow !== undefined) {
                 this.instFlow.forEach(instObj => {
                     if (parseFloat(instObj.value) !== -999999) {
+                        if (this.formattedDailyFlow.length !== 0) {
                         let index  = this.formattedDailyFlow.length-1
                         let finalDate = this.formattedDailyFlow[index].x
                         let stringDate = instObj.dateTime.split('.')[0];
                         let instDate = new Date(stringDate);
+                        
                     if (instDate > finalDate) {
                     this.formattedInstFlow.push({x: instDate, y: parseFloat(instObj.value)})
                     }
+                }
                 }
             })
             }
