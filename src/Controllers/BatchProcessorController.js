@@ -80,6 +80,8 @@ var StreamStats;
                 _this.retrievingManageQueue = false;
                 _this.flowStatIDs = [];
                 _this.submitBatchOver250 = false;
+                _this.queues = ['Production Queue', 'Development & Test Queue'];
+                _this.selectedQueue = "Production Queue";
                 _this.init();
                 _this.selectBatchProcessorTab(_this.selectedBatchProcessorTabName);
                 return _this;
@@ -545,11 +547,19 @@ var StreamStats;
             BatchProcessorController.prototype.getBatchStatusByEmail = function (email) {
                 var _this = this;
                 if (email === void 0) { email = null; }
+                var url;
                 if (email) {
-                    var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatchStatus'].format(email);
+                    url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatchStatus'].format(email);
                 }
                 else {
-                    var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorGetBatch'];
+                    if (this.selectedQueue == "Production Queue") {
+                        url = 'https://streamstats.usgs.gov/notReadyYet';
+                        this.queueURL = 'https://streamstats.usgs.gov/notReadyYet';
+                    }
+                    else {
+                        url = 'https://streamstats.usgs.gov/batchprocessor' + configuration.queryparams['SSBatchProcessorGetBatch'];
+                        this.queueURL = 'https://streamstats.usgs.gov/batchprocessor';
+                    }
                 }
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 return this.Execute(request).then(function (response) {
@@ -586,7 +596,7 @@ var StreamStats;
             };
             BatchProcessorController.prototype.deleteBatch = function (batchID, deleteCode, batchStatusEmail) {
                 var _this = this;
-                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorDeleteBatch'].format(deleteCode);
+                var url = this.queueURL + configuration.queryparams['SSBatchProcessorDeleteBatch'].format(deleteCode);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.DELETE);
                 return this.Execute(request).then(function (response) {
                     var text = "Batch ID " + batchID + " was deleted.";
@@ -602,7 +612,7 @@ var StreamStats;
                 });
             };
             BatchProcessorController.prototype.reorderBatches = function (batchOrder) {
-                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorReorderBatch'];
+                var url = this.queueURL + configuration.queryparams['SSBatchProcessorReorderBatch'];
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(batchOrder));
                 return this.Execute(request).then(function (response) {
                     return response;
@@ -611,7 +621,7 @@ var StreamStats;
                 }).finally(function () { });
             };
             BatchProcessorController.prototype.pauseBatch = function (batchID) {
-                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatchPause'].format(batchID);
+                var url = this.queueURL + configuration.queryparams['SSBatchProcessorBatchPause'].format(batchID);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST);
                 return this.Execute(request).then(function (response) {
                     return response;
@@ -621,7 +631,7 @@ var StreamStats;
                 });
             };
             BatchProcessorController.prototype.unpauseBatch = function (batchID) {
-                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatchUnpause'].format(batchID);
+                var url = this.queueURL + configuration.queryparams['SSBatchProcessorBatchUnpause'].format(batchID);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST);
                 return this.Execute(request).then(function (response) {
                     return response;

@@ -176,6 +176,11 @@ module StreamStats.Controllers {
         public streamGridList: Array<StreamGrid>;
         public retrievingStreamGrids: boolean;
 
+        // queue
+        public queues: Array<String>;
+        public selectedQueue: string;
+        public queueURL: string;
+
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.nssService', '$modalInstance', 'toaster'];
@@ -213,6 +218,8 @@ module StreamStats.Controllers {
             this.retrievingManageQueue = false;
             this.flowStatIDs = [];
             this.submitBatchOver250 = false
+            this.queues = ['Production Queue', 'Development & Test Queue']
+            this.selectedQueue = "Production Queue"
             this.init();
             this.selectBatchProcessorTab(this.selectedBatchProcessorTabName)
         }
@@ -881,11 +888,19 @@ module StreamStats.Controllers {
 
         // get batchs status for email
         public getBatchStatusByEmail(email: string = null): ng.IPromise<any> {
-
-            if (email) {
-                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatchStatus'].format(email);
-            } else {
-                var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorGetBatch'];
+            var url;
+            if (email) { // batch status tab
+                url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatchStatus'].format(email);
+            } else { // manage queue tab
+                if (this.selectedQueue == "Production Queue") {
+                    // TODO : Will need to update this to the production url once we set up the different servers. 
+                    url = 'https://streamstats.usgs.gov/notReadyYet';
+                    this.queueURL = 'https://streamstats.usgs.gov/notReadyYet'
+                } else { // development & test queue
+                    // TODO : Will need to update this to the test url once we set up the different servers. 
+                    url = 'https://streamstats.usgs.gov/batchprocessor' + configuration.queryparams['SSBatchProcessorGetBatch'];
+                    this.queueURL = 'https://streamstats.usgs.gov/batchprocessor'
+                }
             }
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
 
@@ -932,7 +947,7 @@ module StreamStats.Controllers {
         // soft delete a batch
         public deleteBatch(batchID: number, deleteCode: string, batchStatusEmail: string): ng.IPromise<any> {
 
-            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorDeleteBatch'].format(deleteCode);
+            var url = this.queueURL + configuration.queryparams['SSBatchProcessorDeleteBatch'].format(deleteCode);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.DELETE);
 
             return this.Execute(request).then(
@@ -953,7 +968,7 @@ module StreamStats.Controllers {
         }
 
         public reorderBatches(batchOrder): ng.IPromise<any> {
-            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorReorderBatch']
+            var url = this.queueURL + configuration.queryparams['SSBatchProcessorReorderBatch']
     
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(batchOrder));
 
@@ -966,7 +981,7 @@ module StreamStats.Controllers {
         }
 
         public pauseBatch(batchID: number): ng.IPromise<any> {
-            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatchPause'].format(batchID);
+            var url = this.queueURL + configuration.queryparams['SSBatchProcessorBatchPause'].format(batchID);
     
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST);
 
@@ -980,7 +995,7 @@ module StreamStats.Controllers {
         }
 
         public unpauseBatch(batchID: number): ng.IPromise<any> {
-            var url = configuration.baseurls['BatchProcessorServices'] + configuration.queryparams['SSBatchProcessorBatchUnpause'].format(batchID);
+            var url = this.queueURL + configuration.queryparams['SSBatchProcessorBatchUnpause'].format(batchID);
     
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST);
 
