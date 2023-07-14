@@ -862,6 +862,7 @@ var StreamStats;
                     this.instFlow.forEach(function (instObj) {
                         if (parseFloat(instObj.value) !== -999999) {
                             var index = _this_1.formattedDailyFlow.length - 1;
+                            console.log(index, _this_1.formattedDailyFlow.length);
                             var finalDate = _this_1.formattedDailyFlow[index].x;
                             var stringDate = instObj.dateTime.split('.')[0];
                             var instDate = new Date(stringDate);

@@ -1164,16 +1164,21 @@ module StreamStats.Controllers {
                 }
                 });
             }
+            // !== undefined
             if (this.instFlow) {
                 this.instFlow.forEach(instObj => {
                     if (parseFloat(instObj.value) !== -999999) {
+                        // if (this.formattedDailyFlow.length !== 0) {
                         let index  = this.formattedDailyFlow.length-1
+                        console.log(index, this.formattedDailyFlow.length)
                         let finalDate = this.formattedDailyFlow[index].x
                         let stringDate = instObj.dateTime.split('.')[0];
                         let instDate = new Date(stringDate);
+                        
                     if (instDate > finalDate) {
                     this.formattedInstFlow.push({x: instDate, y: parseFloat(instObj.value)})
                     }
+                //}
                 }
             })
             }

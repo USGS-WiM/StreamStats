@@ -98,10 +98,12 @@ var StreamStats;
                         console.log('station codes', _this.stationCodes);
                     }, function (error) {
                     }).finally(function () {
+                        _this.getStationStats();
                     });
                 }
             };
             EnvelopeCurveController.prototype.getStationStats = function () {
+                var _this = this;
                 console.log('getStationStats');
                 var peakData = [];
                 var estPeakData = [];
@@ -109,11 +111,11 @@ var StreamStats;
                 var numberOfGroups = Math.ceil(this.stationCodes.length / 50);
                 var arrayLength = this.stationCodes.length;
                 console.log(this.stationCodes.length, numberOfGroups);
-                for (var counter = 50; counter < (arrayLength + 50); counter += 50) {
-                    var arraySegment = this.stationCodes.slice(counter - 50, counter);
+                var _loop_1 = function (counter) {
+                    var arraySegment = this_1.stationCodes.slice(counter - 50, counter);
                     var url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + arraySegment.toString();
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-                    this.Execute(request).then(function (response) {
+                    this_1.Execute(request).then(function (response) {
                         var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
                         data.shift().split('\t');
                         data.shift();
@@ -139,20 +141,27 @@ var StreamStats;
                             }
                             ;
                         } while (data.length > 0);
+                    }, function (error) {
+                    }).finally(function () {
+                        if (counter > arrayLength) {
+                            _this.peakData = peakData;
+                            _this.estPeakData = estPeakData;
+                            console.log('global', _this.peakData);
+                            _this.getDrainageArea();
+                        }
                     });
+                };
+                var this_1 = this;
+                for (var counter = 50; counter < (arrayLength + 50); counter += 50) {
+                    _loop_1(counter);
                 }
-                console.log(peakData);
-                this.peakData = peakData;
-                this.estPeakData = estPeakData;
-                console.log('global', this.peakData);
             };
             EnvelopeCurveController.prototype.getDrainageArea = function () {
                 var _this = this;
-                console.log('getDrainageArea');
+                console.log('getDrainageArea', this.peakData);
                 var formattedPlotData = [];
                 var completedStationCodes = [];
-                var slicedArray = this.stationCodes.slice(0, 50);
-                slicedArray.forEach(function (station, index) {
+                this.stationCodes.forEach(function (station, index) {
                     var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + station;
                     var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                     _this.Execute(request).then(function (response) {
@@ -176,7 +185,7 @@ var StreamStats;
                         _this.formattedPlotData = formattedPlotData;
                     }, function (error) {
                     }).finally(function () {
-                        if (slicedArray.length - 1 === index) {
+                        if (_this.stationCodes.length - 1 === index) {
                             _this.createEnvelopeCurvePlot();
                         }
                     });

@@ -118,7 +118,7 @@ module StreamStats.Controllers {
                     console.log('station codes', this.stationCodes);
                 }, (error) => {
                 }).finally(() => {
-                    //this.getStationStats();
+                    this.getStationStats();
                 });
         }
     }
@@ -133,6 +133,7 @@ module StreamStats.Controllers {
                 let numberOfGroups = Math.ceil(this.stationCodes.length / 50);
                 let arrayLength = this.stationCodes.length;
                 console.log(this.stationCodes.length, numberOfGroups );
+
                 for (let counter = 50; counter < (arrayLength +50) ; counter+=50 ) {
                     let arraySegment = this.stationCodes.slice(counter - 50, counter);
                     //console.log(arraySegment);
@@ -167,28 +168,34 @@ module StreamStats.Controllers {
                                     estPeakData.push(estPeakObj) //pushing invalid dates to a new array
                                 };
                             } while (data.length > 0);
-                        })                    
+                        }, (error) => {
+                        }).finally(() => {
+                            //console.log(counter, arrayLength)
+                            if (counter > arrayLength) {
+                                this.peakData = peakData;
+                                this.estPeakData = estPeakData;
+                                console.log('global', this.peakData);
+                                this.getDrainageArea();
+                            }
+                        });                  
                 }
-                console.log(peakData);
-                this.peakData = peakData;
-                this.estPeakData = estPeakData;
-                console.log('global', this.peakData)
-                    
+
         }
 
         public getDrainageArea() {
-            console.log('getDrainageArea');
-
+            console.log('getDrainageArea', this.peakData);
             let formattedPlotData = [];
             let completedStationCodes = [];
-            const slicedArray = this.stationCodes.slice(0, 50);
-            slicedArray.forEach((station, index) => {
+            //do the same process of splitting up requests as above(or something else, but it's currently too much for it to handle)
+            //const slicedArray = this.stationCodes.slice(0, 50);
+            this.stationCodes.forEach((station, index) => {
                 var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + station;
                 //console.log(url)
                 const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(
                     (response: any) => {
                         let characteristics = response.data.characteristics;
+                        //console.log(characteristics)
                         characteristics.forEach(index => {
                             if (index.variableTypeID === 1) {
                                 this.peakData.forEach(peakElement => {
@@ -205,12 +212,13 @@ module StreamStats.Controllers {
                             }
                         })
                         completedStationCodes.push(response.data.code)
+                        //console.log(formattedPlotData, completedStationCodes)
                         this.formattedPlotData = formattedPlotData;
                 
                 
                 }, (error) => {
                 }).finally(() => {
-                    if (slicedArray.length-1 === index) {
+                    if (this.stationCodes.length-1 === index) {
                     this.createEnvelopeCurvePlot();
                     }
             });
