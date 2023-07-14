@@ -250,6 +250,14 @@
                         <i class="fa fa-share"></i>
                         <span>&nbsp;&nbsp;Check Status</span>
                     </button>
+                    <button type="submit"
+                        ng-click="vm.isRefreshing = true; vm.getBatchStatusList(vm.batchStatusEmail); vm.retrievingBatchStatus = true"
+                        style="margin-left: 10px;"
+                        ng-if="vm.batchStatusList.length > 0">
+                        <i ng-if="vm.isRefreshing == false" class="fa fa-refresh"></i>
+                        <i ng-if="vm.isRefreshing == true" class="fa fa-refresh fa-spin"></i>
+                        <span>&nbsp;Refresh</span>
+                    </button>
                 </div>
             </div>
             <!-- End query status by email -->
@@ -453,7 +461,7 @@
 
                 
 
-                <!-- Button to Start Reordering Queue Queue -->
+                <!-- Button to Start Reordering Queue -->
                 <button ng-if="vm.selectedBatchProcessorTabName==='manageQueue' && vm.manageQueueList.length > 0 && !vm.editingQueue"
                     type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.editingQueue = true">
                     <i class="fa fa-exchange"></i>
@@ -474,6 +482,14 @@
                 <button ng-if="vm.editingQueue" ng-click="vm.editingQueue = false;" class="btn-black" style="margin-right: 10px;"><i
                         class="fa fa-close"></i><span>&nbsp;&nbsp;Cancel Reordering Queue</span></button>
                 <!-- End cancel Reordering Queue button -->
+
+                <!-- Button to Refresh Queue Management Table -->
+                <button ng-if="vm.selectedBatchProcessorTabName==='manageQueue' && vm.manageQueueList.length > 0 && !vm.editingQueue"
+                    type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.isRefreshing=true; vm.selectBatchProcessorTab('manageQueue');">
+                    <i ng-if="vm.isRefreshing == false" class="fa fa-refresh"></i>
+                    <i ng-if="vm.isRefreshing == true" class="fa fa-refresh fa-spin"></i>
+                    <span>&nbsp;Refresh</span>
+                </button>
 
                 <!-- Button to close modal -->
                 <button ng-click="vm.Close()" class="btn-black"><i

@@ -180,6 +180,7 @@ module StreamStats.Controllers {
         public queues: Array<String>;
         public selectedQueue: string;
         public queueURL: string;
+        public isRefreshing: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -220,6 +221,7 @@ module StreamStats.Controllers {
             this.submitBatchOver250 = false
             this.queues = ['Production Queue', 'Development & Test Queue']
             this.selectedQueue = "Production Queue"
+            this.isRefreshing = false;
             this.init();
             this.selectBatchProcessorTab(this.selectedBatchProcessorTabName)
         }
@@ -576,6 +578,7 @@ module StreamStats.Controllers {
                 response => {
                     this.batchStatusList = response;
                     this.retrievingBatchStatus = false;
+                    this.isRefreshing = false;
                 }
             );
         }
@@ -587,6 +590,7 @@ module StreamStats.Controllers {
                 response => {
                     this.manageQueueList = response;
                     this.retrievingManageQueue = false;
+                    this.isRefreshing = false;
                 }
             );
         }
