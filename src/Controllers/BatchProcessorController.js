@@ -82,6 +82,7 @@ var StreamStats;
                 _this.submitBatchOver250 = false;
                 _this.queues = ['Production Queue', 'Development & Test Queue'];
                 _this.selectedQueue = "Production Queue";
+                _this.isRefreshing = false;
                 _this.init();
                 _this.selectBatchProcessorTab(_this.selectedBatchProcessorTabName);
                 return _this;
@@ -149,6 +150,7 @@ var StreamStats;
                             flowStat.regressionRegions.forEach(function (regressionRegion) {
                                 regressionRegion.parameters.forEach(function (parameter) {
                                     if (availableParamCodes.indexOf(parameter.code.toUpperCase()) == -1) {
+                                        parameter['asterisk'] = true;
                                         _this.availableParamList.push(parameter);
                                         availableParamCodes.push(parameter.code);
                                     }
@@ -239,7 +241,8 @@ var StreamStats;
                                         code: param.code,
                                         description: param.description,
                                         checked: false,
-                                        toggleable: true
+                                        toggleable: true,
+                                        asterisk: true
                                     };
                                     _this.availableParamList.push(newParam);
                                     _this.addParameterToSelectedParamList(param.code);
@@ -330,6 +333,7 @@ var StreamStats;
                 this.getBatchStatusByEmail(email).then(function (response) {
                     _this.batchStatusList = response;
                     _this.retrievingBatchStatus = false;
+                    _this.isRefreshing = false;
                 });
             };
             BatchProcessorController.prototype.getManageQueueList = function () {
@@ -337,6 +341,7 @@ var StreamStats;
                 this.getBatchStatusByEmail().then(function (response) {
                     _this.manageQueueList = response;
                     _this.retrievingManageQueue = false;
+                    _this.isRefreshing = false;
                 });
             };
             BatchProcessorController.prototype.trashBatch = function (batchID, deleteCode, batchStatusEmail) {

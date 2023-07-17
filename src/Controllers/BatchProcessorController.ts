@@ -40,7 +40,8 @@ module StreamStats.Controllers {
         code: string,
         description: string,
         checked: boolean,
-        toggleable: boolean
+        toggleable: boolean,
+        asterisk: boolean
     }
 
     class Parameter implements IParameter {
@@ -48,6 +49,7 @@ module StreamStats.Controllers {
         public description: string;
         public checked: boolean;
         public toggleable: boolean;
+        public asterisk: boolean;
     }
 
     interface IStreamGrid {
@@ -180,6 +182,7 @@ module StreamStats.Controllers {
         public queues: Array<String>;
         public selectedQueue: string;
         public queueURL: string;
+        public isRefreshing: boolean;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -220,6 +223,7 @@ module StreamStats.Controllers {
             this.submitBatchOver250 = false
             this.queues = ['Production Queue', 'Development & Test Queue']
             this.selectedQueue = "Production Queue"
+            this.isRefreshing = false;
             this.init();
             this.selectBatchProcessorTab(this.selectedBatchProcessorTabName)
         }
@@ -312,6 +316,7 @@ module StreamStats.Controllers {
                                 flowStat.regressionRegions.forEach((regressionRegion) => {
                                     regressionRegion.parameters.forEach((parameter) => {
                                         if (availableParamCodes.indexOf(parameter.code.toUpperCase()) == -1) {
+                                            parameter['asterisk'] = true;
                                             this.availableParamList.push(parameter);
                                             availableParamCodes.push(parameter.code);
                                         } 
@@ -455,11 +460,11 @@ module StreamStats.Controllers {
                                     code: param.code,
                                     description: param.description,
                                     checked: false,
-                                    toggleable: true
-
+                                    toggleable: true,
+                                    asterisk: true
                                 }
 
-                                //push the param that was not in the original regionService paramaterList
+                                //push the param that was not in the original regionService parameterList
                                 this.availableParamList.push(newParam);
 
                                 //select it
@@ -576,6 +581,7 @@ module StreamStats.Controllers {
                 response => {
                     this.batchStatusList = response;
                     this.retrievingBatchStatus = false;
+                    this.isRefreshing = false;
                 }
             );
         }
@@ -587,6 +593,7 @@ module StreamStats.Controllers {
                 response => {
                     this.manageQueueList = response;
                     this.retrievingManageQueue = false;
+                    this.isRefreshing = false;
                 }
             );
         }

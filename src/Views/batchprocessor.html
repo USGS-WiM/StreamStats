@@ -186,7 +186,7 @@
                 </div>
                 <div ng-if="vm.availableParamList.length > 0">
                     <br>
-                    <span>Please note that not all Basin Characteristics may be available for the requested batch points.</span>
+                    <span>* Please note that not that these Basin Characteristics may not be available for all the requested batch points.</span>
                     <br><br>
                     <table class="table table-condensed">
                         <thead class="param-table">
@@ -204,7 +204,7 @@
                                         ng-disabled="!parameter.toggleable">
                                     </checkbox>
                                 </td>
-                                <td><span>&nbsp;&nbsp;{{parameter.code}}</span></td>
+                                <td><span>&nbsp;&nbsp;{{parameter.code}}<span ng-if="parameter.asterisk"> *</span></span></td>
                                 <td><span>&nbsp;&nbsp;{{parameter.description}}</span></td>
                             </tr>
                         </tbody>
@@ -239,8 +239,12 @@
                     <span>Email Address:</span>
                 </div>
                 <div>
-                    <span><input class="bp-input" type="email" id="emailFieldStatus" ng-model="vm.batchStatusEmail"
-                            required></span>
+                    <span>
+                        <form ng-submit="vm.getBatchStatusList(vm.batchStatusEmail); vm.retrievingBatchStatus = true;">
+                            <input class="bp-input" type="email" id="emailFieldStatus" ng-model="vm.batchStatusEmail"
+                            required>
+                        </form>
+                    </span>
                 </div>
                 <!-- End email field -->
                 <!-- Button to fetch batch status -->
@@ -249,6 +253,14 @@
                         ng-click="vm.getBatchStatusList(vm.batchStatusEmail); vm.retrievingBatchStatus = true">
                         <i class="fa fa-share"></i>
                         <span>&nbsp;&nbsp;Check Status</span>
+                    </button>
+                    <button type="submit"
+                        ng-click="vm.isRefreshing = true; vm.getBatchStatusList(vm.batchStatusEmail); vm.retrievingBatchStatus = true"
+                        style="margin-left: 10px;"
+                        ng-if="vm.batchStatusList.length > 0">
+                        <i ng-if="vm.isRefreshing == false" class="fa fa-refresh"></i>
+                        <i ng-if="vm.isRefreshing == true" class="fa fa-refresh fa-spin"></i>
+                        <span>&nbsp;Refresh</span>
                     </button>
                 </div>
             </div>
@@ -453,7 +465,7 @@
 
                 
 
-                <!-- Button to Start Reordering Queue Queue -->
+                <!-- Button to Start Reordering Queue -->
                 <button ng-if="vm.selectedBatchProcessorTabName==='manageQueue' && vm.manageQueueList.length > 0 && !vm.editingQueue"
                     type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.editingQueue = true">
                     <i class="fa fa-exchange"></i>
@@ -474,6 +486,14 @@
                 <button ng-if="vm.editingQueue" ng-click="vm.editingQueue = false;" class="btn-black" style="margin-right: 10px;"><i
                         class="fa fa-close"></i><span>&nbsp;&nbsp;Cancel Reordering Queue</span></button>
                 <!-- End cancel Reordering Queue button -->
+
+                <!-- Button to Refresh Queue Management Table -->
+                <button ng-if="vm.selectedBatchProcessorTabName==='manageQueue' && vm.manageQueueList.length > 0 && !vm.editingQueue"
+                    type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.isRefreshing=true; vm.selectBatchProcessorTab('manageQueue');">
+                    <i ng-if="vm.isRefreshing == false" class="fa fa-refresh"></i>
+                    <i ng-if="vm.isRefreshing == true" class="fa fa-refresh fa-spin"></i>
+                    <span>&nbsp;Refresh</span>
+                </button>
 
                 <!-- Button to close modal -->
                 <button ng-click="vm.Close()" class="btn-black"><i
