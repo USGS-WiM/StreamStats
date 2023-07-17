@@ -653,7 +653,7 @@ module StreamStats.Controllers {
                             this.submitBatchSuccessAlert = true;
                             this.toaster.clear();
                             this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
-                            
+                            gtag('event', 'BatchProcessor', { 'Category': 'Submit Batch - successful' });
                             // give blank form for next submission
                             this.clearBatchForm();
 
@@ -667,7 +667,7 @@ module StreamStats.Controllers {
                             var detail = r.data.detail
                             this.toaster.clear();
                             this.toaster.pop('error', "The submission failed for the following reason:", detail, 15000);
-
+                            gtag('event', 'BatchProcessor', { 'Category': 'Submit Batch - unsuccessful' });
                         }
                     }).finally(() => {
                     
@@ -698,7 +698,7 @@ module StreamStats.Controllers {
                             this.submitBatchSuccessAlert = true;
                             this.toaster.clear();
                             this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
-
+                            gtag('event', 'BatchProcessor', { 'Category': 'Submit Batch - successful' });
                             // give blank form for next submission
                             this.clearBatchForm();
 
@@ -711,6 +711,7 @@ module StreamStats.Controllers {
                             let detail = r.data.detail
                             this.toaster.clear();
                             this.toaster.pop('error', "The submission failed for the following reason:" + detail, "", 15000);
+                            gtag('event', 'BatchProcessor', { 'Category': 'Submit Batch - unsuccessful' });
                         }
 
                     }).finally(() => {
@@ -743,9 +744,11 @@ module StreamStats.Controllers {
                         this.retrievingManageQueue = true;
                         this.toaster.clear();
                         this.toaster.pop('success', "Queue was successfully reordered", "", 5000);
+                        gtag('event', 'BatchProcessor', { 'Category': 'Reorder Queue - successful' });
                     } else {
                         this.toaster.clear();
                         this.toaster.pop('error', "Queue failed to reorder: ", r.data.detail, 15000);
+                        gtag('event', 'BatchProcessor', { 'Category': 'Reorder Queue - unsuccessful' });
                         // Consideration: Refresh list to what it was before failure
                         // this.getManageQueueList();
                         // this.retrievingManageQueue = true
@@ -828,7 +831,8 @@ module StreamStats.Controllers {
                                     code: parameter.code,
                                     description: parameter.description,
                                     checked: false,
-                                    toggleable: true
+                                    toggleable: true,
+                                    asterisk: false
                                 }
                                 paramRaw.push(param);
                             } catch (e) {

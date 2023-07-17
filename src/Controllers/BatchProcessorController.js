@@ -378,6 +378,7 @@ var StreamStats;
                             _this.submitBatchSuccessAlert = true;
                             _this.toaster.clear();
                             _this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
+                            gtag('event', 'BatchProcessor', { 'Category': 'Submit Batch - successful' });
                             _this.clearBatchForm();
                             _this.getBatchStatusList(_this.batchStatusEmail);
                         }
@@ -385,6 +386,7 @@ var StreamStats;
                             var detail = r.data.detail;
                             _this.toaster.clear();
                             _this.toaster.pop('error', "The submission failed for the following reason:", detail, 15000);
+                            gtag('event', 'BatchProcessor', { 'Category': 'Submit Batch - unsuccessful' });
                         }
                     }).finally(function () {
                         _this.submittingBatch = false;
@@ -406,6 +408,7 @@ var StreamStats;
                             _this.submitBatchSuccessAlert = true;
                             _this.toaster.clear();
                             _this.toaster.pop('success', "The batch was submitted successfully. You will be notified by email when results are available.", "", 5000);
+                            gtag('event', 'BatchProcessor', { 'Category': 'Submit Batch - successful' });
                             _this.clearBatchForm();
                             _this.getBatchStatusList(_this.batchStatusEmail);
                         }
@@ -413,6 +416,7 @@ var StreamStats;
                             var detail = r.data.detail;
                             _this.toaster.clear();
                             _this.toaster.pop('error', "The submission failed for the following reason:" + detail, "", 15000);
+                            gtag('event', 'BatchProcessor', { 'Category': 'Submit Batch - unsuccessful' });
                         }
                     }).finally(function () {
                         _this.submittingBatch = false;
@@ -439,10 +443,12 @@ var StreamStats;
                         _this.retrievingManageQueue = true;
                         _this.toaster.clear();
                         _this.toaster.pop('success', "Queue was successfully reordered", "", 5000);
+                        gtag('event', 'BatchProcessor', { 'Category': 'Reorder Queue - successful' });
                     }
                     else {
                         _this.toaster.clear();
                         _this.toaster.pop('error', "Queue failed to reorder: ", r.data.detail, 15000);
+                        gtag('event', 'BatchProcessor', { 'Category': 'Reorder Queue - unsuccessful' });
                     }
                 }).finally(function () {
                     _this.reorderingQueue = false;
@@ -503,7 +509,8 @@ var StreamStats;
                                     code: parameter.code,
                                     description: parameter.description,
                                     checked: false,
-                                    toggleable: true
+                                    toggleable: true,
+                                    asterisk: false
                                 };
                                 paramRaw.push(param);
                             }
