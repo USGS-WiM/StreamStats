@@ -96,6 +96,7 @@ module StreamStats.Controllers {
         region: string,
         pointsRequested: number,
         pointsSuccessful: number,
+        uploadFileName: string,
     }
 
     class BatchStatus implements IBatchStatus {
@@ -114,6 +115,7 @@ module StreamStats.Controllers {
         public region: string;
         public pointsRequested: number;
         public pointsSuccessful: number;
+        public uploadFileName: string;
     }
 
     class SubmitBatchData {
@@ -917,7 +919,7 @@ module StreamStats.Controllers {
 
             return this.Execute(request).then(
                 (response: any) => {
-
+                    console.log(response)
                     var batchStatusMessages = [];
 
                     response.data.forEach((batch) => {
@@ -938,9 +940,10 @@ module StreamStats.Controllers {
                                 resultsURL: batch.ResultsURL,
                                 region: batch.Region,
                                 pointsRequested: batch.NumberPoints,
-                                pointsSuccessful: batch.NumberPointsSuccessful
+                                pointsSuccessful: batch.NumberPointsSuccessful,
+                                uploadFileName: batch.GeometryFilename
                             }
-
+                            console.log(status)
                             batchStatusMessages.push(status);
                         }
 

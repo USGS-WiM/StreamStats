@@ -575,6 +575,7 @@ var StreamStats;
                 }
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 return this.Execute(request).then(function (response) {
+                    console.log(response);
                     var batchStatusMessages = [];
                     response.data.forEach(function (batch) {
                         try {
@@ -593,8 +594,10 @@ var StreamStats;
                                 resultsURL: batch.ResultsURL,
                                 region: batch.Region,
                                 pointsRequested: batch.NumberPoints,
-                                pointsSuccessful: batch.NumberPointsSuccessful
+                                pointsSuccessful: batch.NumberPointsSuccessful,
+                                uploadFileName: batch.GeometryFilename
                             };
+                            console.log(status_2);
                             batchStatusMessages.push(status_2);
                         }
                         catch (e) {

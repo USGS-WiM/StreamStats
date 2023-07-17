@@ -279,6 +279,7 @@
                                 <th style="text-align: center;"><small>Time Submitted (UTC)</small></th>
                                 <th style="text-align: center;"><small>Time Started (UTC)</small></th>
                                 <th style="text-align: center;"><small>Time Completed (UTC)</small></th>
+                                <th style="text-align: center;"><small>Upload File Name</small></th>
                                 <th style="text-align: center;"><small>Results</small></th>
                                 <th style="text-align: center;"><small>State/ Region</small></th>
                                 <th style="text-align: center;"><small>Number Points Requested</small></th>
@@ -293,6 +294,7 @@
                                 <td style="text-align: center;"><span ng-if="batch.timeSubmitted != null">{{batch.timeSubmitted | date:'M/d/yy h:mm a'}}</span></td>
                                 <td style="text-align: center;"><span ng-if="batch.timeStarted != null">{{batch.timeStarted | date:'M/d/yy h:mm a'}}</span></td>
                                 <td style="text-align: center;"><span ng-if="batch.timeCompleted != null">{{batch.timeCompleted | date:'M/d/yy h:mm a'}}</span></td>
+                                <td style="text-align: center;"><span>{{batch.uploadFileName}}</span></td>
                                 <td style="text-align: center;"><span><a ng-if="batch.resultsURL != null" ng-href="{{batch.resultsURL}}">Link</a></span></td>
                                 <td style="text-align: center;"><span>{{batch.region}}</span></td>
                                 <td style="text-align: center;"><span>{{batch.pointsRequested}}</span></td>
@@ -382,6 +384,7 @@
                                 <th style="text-align: center;"><small>Time Submitted (UTC)</small></th>
                                 <th style="text-align: center;"><small>Time Started (UTC)</small></th>
                                 <th style="text-align: center;"><small>Time Completed (UTC)</small></th>
+                                <th style="text-align: center;"><small>Upload File Name</small></th>
                                 <th style="text-align: center;"><small>Results</small></th>
                                 <th style="text-align: center;"><small>State/ Region</small></th>
                                 <th style="text-align: center;"><small>Number Points Requested</small></th>
@@ -406,6 +409,7 @@
                                         ng-if="batch.timeStarted != null">{{batch.timeStarted | date:'M/d/yy h:mm a'}}</span></td>
                                 <td style="text-align: center;"><span
                                         ng-if="batch.timeCompleted != null">{{batch.timeCompleted | date:'M/d/yy h:mm a'}}</span></td>
+                                <td style="text-align: center;"><span>{{batch.uploadFileName}}</span></td>
                                 <td style="text-align: center;"><span><a ng-if="batch.resultsURL != null"
                                             ng-href="{{batch.resultsURL}}">Link</a></span></td>
                                 <td style="text-align: center;"><span>{{batch.region}}</span></td>
