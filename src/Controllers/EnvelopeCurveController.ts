@@ -45,8 +45,8 @@ module StreamStats.Controllers {
         envelopeChartConfig: {  chart: {height: number, width: number, zooming: {type: string}},
                         title: { text: string, align: string},
                         subtitle: { text: string, align: string}, 
-                        xAxis: { title: {text: string}},
-                        yAxis: { title: {text: string}},
+                        xAxis: { title: {text: string}, type: string},
+                        yAxis: { title: {text: string}, type: string},
                         series: { name: string; tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
                                 data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
         constructor($scope: IEnvelopeCurveScope, $http: ng.IHttpService, modalService: Services.IModalService, modal: ng.ui.bootstrap.IModalServiceInstance, $sce: any) {
@@ -171,7 +171,7 @@ module StreamStats.Controllers {
                         }, (error) => {
                         }).finally(() => {
                             //console.log(counter, arrayLength)
-                            if (counter > arrayLength) {
+                            if (counter >= arrayLength) {
                                 this.peakData = peakData;
                                 this.estPeakData = estPeakData;
                                 console.log('global', this.peakData);
@@ -188,17 +188,26 @@ module StreamStats.Controllers {
             let completedStationCodes = [];
             //do the same process of splitting up requests as above(or something else, but it's currently too much for it to handle)
             //const slicedArray = this.stationCodes.slice(0, 50);
-            this.stationCodes.forEach((station, index) => {
+            console.log('station code length', this.stationCodes.length);
+            this.stationCodes.forEach((station) => {
                 var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + station;
                 //console.log(url)
-                const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                let headers = {
+                    'Access-Control-Allow-Origin': "*"
+                };
+                const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                 this.Execute(request).then(
                     (response: any) => {
                         let characteristics = response.data.characteristics;
                         //console.log(characteristics)
+                        let haveDrainageArea = false;
                         characteristics.forEach(index => {
                             if (index.variableTypeID === 1) {
+                                if (index.value) {
+                                    haveDrainageArea = true
+                                }
                                 this.peakData.forEach(peakElement => {
+                                    //first checks if the station codes are the same then checks if that station has been dealt with yet
                                     if (peakElement.site_no === response.data.code && completedStationCodes.indexOf(response.data.code) == -1) {
                                         let formattedPeaksAndDrainage = {
                                             x: parseFloat(index.value),
@@ -211,6 +220,9 @@ module StreamStats.Controllers {
                                 })
                             }
                         })
+                        if (haveDrainageArea === false) {
+                            console.log(station);
+                        }
                         completedStationCodes.push(response.data.code)
                         //console.log(formattedPlotData, completedStationCodes)
                         this.formattedPlotData = formattedPlotData;
@@ -218,7 +230,8 @@ module StreamStats.Controllers {
                 
                 }, (error) => {
                 }).finally(() => {
-                    if (this.stationCodes.length-1 === index) {
+                    //console.log('index', index);
+                    if (completedStationCodes.length === this.stationCodes.length) {
                     this.createEnvelopeCurvePlot();
                     }
             });
@@ -246,10 +259,12 @@ module StreamStats.Controllers {
                     align: 'center'
                 }, 
                 xAxis: {
-                    title: {text: 'Drainage Area, in mi²'}
+                    title: {text: 'Drainage Area, in mi²'},
+                    type: 'logarithmic'
                 },
                 yAxis: { 
-                    title: {text: 'Peak Flow, in ft³/s'}
+                    title: {text: 'Peak Flow, in ft³/s'},
+                    type: 'logarithmic'
                 },
                 series: [{ 
                     name: 'Peak Flow', 

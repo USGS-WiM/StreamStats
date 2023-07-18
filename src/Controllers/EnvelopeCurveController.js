@@ -143,7 +143,7 @@ var StreamStats;
                         } while (data.length > 0);
                     }, function (error) {
                     }).finally(function () {
-                        if (counter > arrayLength) {
+                        if (counter >= arrayLength) {
                             _this.peakData = peakData;
                             _this.estPeakData = estPeakData;
                             console.log('global', _this.peakData);
@@ -161,13 +161,21 @@ var StreamStats;
                 console.log('getDrainageArea', this.peakData);
                 var formattedPlotData = [];
                 var completedStationCodes = [];
-                this.stationCodes.forEach(function (station, index) {
+                console.log('station code length', this.stationCodes.length);
+                this.stationCodes.forEach(function (station) {
                     var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + station;
-                    var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                    var headers = {
+                        'Access-Control-Allow-Origin': "*"
+                    };
+                    var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                     _this.Execute(request).then(function (response) {
                         var characteristics = response.data.characteristics;
+                        var haveDrainageArea = false;
                         characteristics.forEach(function (index) {
                             if (index.variableTypeID === 1) {
+                                if (index.value) {
+                                    haveDrainageArea = true;
+                                }
                                 _this.peakData.forEach(function (peakElement) {
                                     if (peakElement.site_no === response.data.code && completedStationCodes.indexOf(response.data.code) == -1) {
                                         var formattedPeaksAndDrainage = {
@@ -181,11 +189,14 @@ var StreamStats;
                                 });
                             }
                         });
+                        if (haveDrainageArea === false) {
+                            console.log(station);
+                        }
                         completedStationCodes.push(response.data.code);
                         _this.formattedPlotData = formattedPlotData;
                     }, function (error) {
                     }).finally(function () {
-                        if (_this.stationCodes.length - 1 === index) {
+                        if (completedStationCodes.length === _this.stationCodes.length) {
                             _this.createEnvelopeCurvePlot();
                         }
                     });
@@ -209,10 +220,12 @@ var StreamStats;
                         align: 'center'
                     },
                     xAxis: {
-                        title: { text: 'Drainage Area, in mi²' }
+                        title: { text: 'Drainage Area, in mi²' },
+                        type: 'logarithmic'
                     },
                     yAxis: {
-                        title: { text: 'Peak Flow, in ft³/s' }
+                        title: { text: 'Peak Flow, in ft³/s' },
+                        type: 'logarithmic'
                     },
                     series: [{
                             name: 'Peak Flow',
