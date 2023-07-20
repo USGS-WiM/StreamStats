@@ -1,5 +1,5 @@
 var configuration = {};
-configuration.version = "4.16.0";
+configuration.version = "4.16.1";
 configuration.environment = 'development';
 
 configuration.baseurls =
