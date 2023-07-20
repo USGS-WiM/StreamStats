@@ -3,7 +3,7 @@
     "name": "StreamStats",
     "organization": "U.S. Geological Survey",
     "description": "StreamStats client application",
-    "version": "4.16.0",
+    "version": "4.16.1",
     "status": "Production",	
 
     "permissions": {
