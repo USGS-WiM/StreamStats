@@ -11,19 +11,25 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
-- Enabled Wyoming flow statistics
-- Simplify to false in the delineation request
-- Updated status map
-
 ### Deprecated
 
 ### Removed
 
 ### Fixed
 
-- Added missing parentheses
-
 ### Security
+
+## [v4.16.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.16.1) - 2023-07-20
+
+### Changed
+
+- Enabled Wyoming flow statistics
+- Simplify to false in the delineation request
+- Updated status map
+
+### Fixed
+
+- Added missing parentheses
 
 ## [v4.16.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.16.0) - 2023-06-22
 
