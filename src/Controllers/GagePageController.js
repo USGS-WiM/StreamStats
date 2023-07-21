@@ -719,23 +719,25 @@ var StreamStats;
                             if (forecastData[0] !== undefined) {
                                 var smallerData_1 = forecastData[0].childNodes;
                                 var forecastArray_1 = [];
-                                var timeZoneOffset = self.gageTimeZone.defaultTimeZone.zoneOffset;
-                                var numberOffset_1 = parseFloat(timeZoneOffset);
-                                smallerData_1.forEach(function (datum) {
-                                    if (datum.childNodes[0] !== undefined) {
-                                        var date = new Date(datum.childNodes[0].textContent);
-                                        date.setUTCHours(date.getUTCHours() + numberOffset_1);
-                                        var forecastObj = {
-                                            x: date,
-                                            y: parseFloat(datum.childNodes[2].textContent)
-                                        };
-                                        if ((smallerData_1[2].childNodes[2].getAttribute("units")) === 'kcfs') {
-                                            forecastObj.y *= 1000;
+                                if (self.dailyFlow !== undefined) {
+                                    var timeZoneOffset = self.gageTimeZone.defaultTimeZone.zoneOffset;
+                                    var numberOffset_1 = parseFloat(timeZoneOffset);
+                                    smallerData_1.forEach(function (datum) {
+                                        if (datum.childNodes[0] !== undefined) {
+                                            var date = new Date(datum.childNodes[0].textContent);
+                                            date.setUTCHours(date.getUTCHours() + numberOffset_1);
+                                            var forecastObj = {
+                                                x: date,
+                                                y: parseFloat(datum.childNodes[2].textContent)
+                                            };
+                                            if ((smallerData_1[2].childNodes[2].getAttribute("units")) === 'kcfs') {
+                                                forecastObj.y *= 1000;
+                                            }
+                                            forecastArray_1.push(forecastObj);
+                                            self.NWSforecast = forecastArray_1;
                                         }
-                                        forecastArray_1.push(forecastObj);
-                                        self.NWSforecast = forecastArray_1;
-                                    }
-                                });
+                                    });
+                                }
                             }
                             self.getShadedDailyStats();
                         });
@@ -925,15 +927,17 @@ var StreamStats;
                         }
                     });
                 }
-                if (this.instFlow) {
+                if (this.instFlow !== undefined) {
                     this.instFlow.forEach(function (instObj) {
                         if (parseFloat(instObj.value) !== -999999) {
-                            var index = _this_1.formattedDailyFlow.length - 1;
-                            var finalDate = _this_1.formattedDailyFlow[index].x;
-                            var stringDate = instObj.dateTime.split('.')[0];
-                            var instDate = new Date(stringDate);
-                            if (instDate > finalDate) {
-                                _this_1.formattedInstFlow.push({ x: instDate, y: parseFloat(instObj.value) });
+                            if (_this_1.formattedDailyFlow.length !== 0) {
+                                var index = _this_1.formattedDailyFlow.length - 1;
+                                var finalDate = _this_1.formattedDailyFlow[index].x;
+                                var stringDate = instObj.dateTime.split('.')[0];
+                                var instDate = new Date(stringDate);
+                                if (instDate > finalDate) {
+                                    _this_1.formattedInstFlow.push({ x: instDate, y: parseFloat(instObj.value) });
+                                }
                             }
                         }
                     });

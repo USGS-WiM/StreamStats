@@ -989,6 +989,7 @@ module StreamStats.Controllers {
                             if (forecastData[0] !== undefined) {
                             const smallerData = forecastData[0].childNodes;
                             let forecastArray = [];
+                            if (self.dailyFlow !== undefined) {
                             let timeZoneOffset = self.gageTimeZone.defaultTimeZone.zoneOffset;
                             let numberOffset = parseFloat(timeZoneOffset);
                             smallerData.forEach(datum => {
@@ -1012,7 +1013,7 @@ module StreamStats.Controllers {
                                 self.NWSforecast = forecastArray;
                             }
                             })
-                        }
+                        }}
                             self.getShadedDailyStats();
                         }
                     );
@@ -1232,16 +1233,19 @@ module StreamStats.Controllers {
                 }
                 });
             }
-            if (this.instFlow) {
+            if (this.instFlow !== undefined) {
                 this.instFlow.forEach(instObj => {
                     if (parseFloat(instObj.value) !== -999999) {
+                        if (this.formattedDailyFlow.length !== 0) {
                         let index  = this.formattedDailyFlow.length-1
                         let finalDate = this.formattedDailyFlow[index].x
                         let stringDate = instObj.dateTime.split('.')[0];
                         let instDate = new Date(stringDate);
+                        
                     if (instDate > finalDate) {
                     this.formattedInstFlow.push({x: instDate, y: parseFloat(instObj.value)})
                     }
+                }
                 }
             })
             }
