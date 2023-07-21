@@ -142,7 +142,7 @@ var StreamStats;
                 _this_1.formattedDailyPlusAvg = [];
                 _this_1.formattedDischargePeakDates = [];
                 _this_1.dailyValuesOnly = [];
-                _this_1.ageQualityData = 'age';
+                _this_1.USGSMeasuredAgeQualityData = 'age';
                 _this_1.plotlines = true;
                 _this_1.showFloodStats = true;
                 _this_1.logScale = false;
@@ -641,8 +641,50 @@ var StreamStats;
                         });
                         _this_1.instFlow = filteredInst;
                     }
+                    _this_1.getRatingCurve();
+                });
+            };
+            GagePageController.prototype.getRatingCurve = function () {
+                var _this_1 = this;
+                var url = 'https://waterdata.usgs.gov/nwisweb/get_ratings?site_no=' + this.gage.code + '&file_type=exsa';
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.dischargeObj = [];
+                this.Execute(request).then(function (response) {
+                    var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
+                    data.shift().split('\t');
+                    data.shift();
+                    data.forEach(function (row) {
+                        var dataRow = row.split('\t');
+                        var object = {
+                            x: parseFloat(dataRow[2]),
+                            y: parseFloat(dataRow[0])
+                        };
+                        _this_1.dischargeObj.push(object);
+                    });
+                }, function (error) {
+                }).finally(function () {
                     _this_1.getNWSForecast();
                 });
+            };
+            GagePageController.prototype.curveLookup = function (value, getRatingCurve) {
+                var lowx, lowy, highx, highy;
+                var lookupValue;
+                for (var i = 0; i < getRatingCurve.length; i++) {
+                    var val = getRatingCurve[i];
+                    if (value === val.y) {
+                        lookupValue = val.x;
+                        break;
+                    }
+                    if (value < val.y) {
+                        highx = val.x;
+                        highy = val.y;
+                        lowx = getRatingCurve[i - 1].x;
+                        lowy = getRatingCurve[i - 1].y;
+                        lookupValue = ((value - lowy) / (highy - lowy)) * (highx - lowx) + lowx;
+                        break;
+                    }
+                }
+                return lookupValue;
             };
             GagePageController.prototype.getNWSForecast = function () {
                 var self = this;
@@ -655,6 +697,24 @@ var StreamStats;
                         var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
                         self.Execute(request).then(function (response) {
                             var xmlDocument = new DOMParser().parseFromString(response.data, "text/xml");
+                            var sigStages = xmlDocument.querySelector("sigstages");
+                            var action = parseFloat(sigStages.querySelector("action").textContent);
+                            var flood = parseFloat(sigStages.querySelector("flood").textContent);
+                            var moderate = parseFloat(sigStages.querySelector("moderate").textContent);
+                            var major = parseFloat(sigStages.querySelector("major").textContent);
+                            var record = parseFloat(sigStages.querySelector("record").textContent);
+                            var actionX = self.curveLookup(action, self.dischargeObj);
+                            var floodX = self.curveLookup(flood, self.dischargeObj);
+                            var moderateX = self.curveLookup(moderate, self.dischargeObj);
+                            var majorX = self.curveLookup(major, self.dischargeObj);
+                            var recordX = self.curveLookup(record, self.dischargeObj);
+                            self.stages = [
+                                { name: 'action', x: actionX, y: action, color: 'rgba(255,255,0,0.7)' },
+                                { name: 'flood', x: floodX, y: flood, color: 'rgba(255,153,0,0.7)' },
+                                { name: 'moderate', x: moderateX, y: moderate, color: 'rgba(255,0,0,0.7)' },
+                                { name: 'major', x: majorX, y: major, color: 'rgba(204,51,255,0.7)' },
+                                { name: 'record', x: recordX, y: record, color: 'rgba(102,178,255,0.7)' }
+                            ];
                             var forecastData = xmlDocument.querySelectorAll("forecast");
                             if (forecastData[0] !== undefined) {
                                 var smallerData_1 = forecastData[0].childNodes;
@@ -721,28 +781,6 @@ var StreamStats;
                     }
                     _this_1.meanPercent = meanPercentileStats;
                     _this_1.rawShaded = raw;
-                    _this_1.getRatingCurve();
-                });
-            };
-            GagePageController.prototype.getRatingCurve = function () {
-                var _this_1 = this;
-                var url = 'https://waterdata.usgs.gov/nwisweb/get_ratings?site_no=' + this.gage.code + '&file_type=exsa';
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-                this.dischargeObj = [];
-                this.Execute(request).then(function (response) {
-                    var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); });
-                    data.shift().split('\t');
-                    data.shift();
-                    data.forEach(function (row) {
-                        var dataRow = row.split('\t');
-                        var object = {
-                            x: parseFloat(dataRow[2]),
-                            y: parseFloat(dataRow[0])
-                        };
-                        _this_1.dischargeObj.push(object);
-                    });
-                }, function (error) {
-                }).finally(function () {
                     _this_1.getUSGSMeasured();
                 });
             };
@@ -778,7 +816,37 @@ var StreamStats;
                 }, function (error) {
                 }).finally(function () {
                     _this_1.formatData();
+                    _this_1.updateChart();
+                    _this_1.getMinYear();
                 });
+            };
+            GagePageController.prototype.getMinYear = function () {
+                var minYear = Math.min.apply(null, this.measuredObj.map(function (item) {
+                    var itemDate = new Date(item.dateTime);
+                    return itemDate.getFullYear();
+                }));
+                return minYear;
+            };
+            GagePageController.prototype.updateChart = function () {
+                var _this_1 = this;
+                var chart = $('#chart3').highcharts();
+                if (chart) {
+                    chart.series[2].update({ data: [] });
+                    var filteredData = structuredClone(this.measuredObj).filter(function (item) {
+                        var itemDate = new Date(item.dateTime);
+                        var itemMonth = itemDate.getMonth() + 1;
+                        var itemYear = itemDate.getFullYear();
+                        return itemMonth >= _this_1.startMonth && itemMonth <= _this_1.endMonth &&
+                            itemYear >= _this_1.startYear && itemYear <= _this_1.endYear;
+                    });
+                    filteredData.forEach(function (row) {
+                        row.color = (_this_1.USGSMeasuredAgeQualityData == 'age') ? row.ageColor : row.qualityColor;
+                    });
+                    chart.series[2].update({ data: filteredData });
+                    var show = true;
+                    var link = null;
+                    this.floodStagesData = filteredData;
+                }
             };
             GagePageController.prototype.formatData = function () {
                 var _this_1 = this;
@@ -2548,12 +2616,54 @@ var StreamStats;
                 return "#FFA200";
             };
             GagePageController.prototype.createDischargePlot = function () {
+                var _this_1 = this;
+                this.startMonth = 1;
+                this.endMonth = 12;
+                this.monthSliderOptions = {
+                    floor: 1,
+                    ceil: 12,
+                    noSwitching: true,
+                    showTicks: false,
+                    draggableRange: true,
+                    onChange: function () {
+                        _this_1.updateChart();
+                    },
+                };
+                var minYear = this.getMinYear();
+                this.startYear = minYear;
+                this.endYear = new Date().getFullYear();
+                this.yearSliderOptions = {
+                    floor: this.startYear,
+                    ceil: this.endYear,
+                    draggableRange: true,
+                    noSwitching: true,
+                    showTicks: false,
+                    onChange: function () {
+                        _this_1.updateChart();
+                    },
+                };
+                var measuredDataMax = Math.max.apply(Math, this.measuredObj
+                    .filter(function (obj) { return typeof obj.y === 'number' && !isNaN(obj.y); })
+                    .map(function (obj) { return obj.y; }));
+                var measuredDataMin = Math.min.apply(Math, this.measuredObj
+                    .filter(function (obj) { return typeof obj.y === 'number' && !isNaN(obj.y); })
+                    .map(function (obj) { return obj.y; }));
+                var self = this;
                 this.dischargeChartConfig = {
                     chart: {
                         height: 450,
                         width: 800,
                         zooming: {
                             type: 'xy'
+                        },
+                        events: {
+                            load: function () {
+                                this.series.forEach(function (series) {
+                                    if (series.options.id && series.options.id.startsWith('floodStageLine')) {
+                                        series.options.events.show.call(series);
+                                    }
+                                });
+                            }
                         }
                     },
                     title: {
@@ -2570,17 +2680,39 @@ var StreamStats;
                             text: 'River Discharge (cfs)'
                         },
                         custom: {
-                            allowNegativeLog: true
-                        }
+                            allowNegativeLog: false
+                        },
+                        crosshair: {
+                            color: 'red',
+                            dashStyle: 'Solid'
+                        },
                     },
                     yAxis: {
                         title: {
                             text: 'River Stage (ft)'
                         },
                         custom: {
-                            allowNegativeLog: true
+                            allowNegativeLog: false
                         },
-                        plotLines: [{ value: null, color: null, width: null, zIndex: null, label: { text: null }, id: 'plotlines' }]
+                        crosshair: {
+                            color: 'red',
+                            dashStyle: 'Solid'
+                        },
+                        tickPositioner: function () {
+                            if (!self.logScaleDischarge) {
+                                var positions = [];
+                                var axis = this;
+                                var min = Math.max(axis.min, measuredDataMin);
+                                var max = Math.min(axis.max, measuredDataMax);
+                                var tick = Math.floor(min) > 0 ? Math.floor(min) - 1 : 1;
+                                var maxTick = max + 2;
+                                var increment = (maxTick - tick) > 18 ? 2 : 1;
+                                for (tick; tick - increment <= maxTick; tick += increment) {
+                                    positions.push(tick);
+                                }
+                                return positions;
+                            }
+                        }
                     },
                     series: [
                         {
@@ -2632,7 +2764,18 @@ var StreamStats;
                                 symbol: 'circle',
                                 radius: 3
                             },
-                            showInLegend: this.formattedDischargePeakDates.length > 0
+                            showInLegend: this.formattedDischargePeakDates.length > 0,
+                            dataLabels: {
+                                enabled: true,
+                                formatter: function () {
+                                    return this.point.options.date.substring(0, 4);
+                                },
+                                y: -3,
+                                style: {
+                                    fontSize: "9px",
+                                },
+                                allowOverlap: false,
+                            },
                         },
                         {
                             name: 'USGS Measured',
@@ -2661,7 +2804,83 @@ var StreamStats;
                             showInLegend: this.error == false
                         }
                     ]
-                };
+                },
+                    this.formattedStages = [];
+                if (this.stages) {
+                    this.stages.forEach(function (stage, index) {
+                        if (stage.y != undefined) {
+                            var stageNameCapitalized_1 = stage.name.charAt(0).toUpperCase() + stage.name.slice(1);
+                            var stageX = _this_1.curveLookup(stage.y, _this_1.dischargeObj);
+                            var data = void 0;
+                            if (stageX !== undefined) {
+                                data = [[.1, stage.y], [stageX, stage.y], [stageX, 1]];
+                            }
+                            else {
+                                data = [[.1, stage.y], [_this_1.dischargeObj[_this_1.dischargeObj.length - 1].x, stage.y]];
+                            }
+                            _this_1.formattedStages.push({
+                                data: data,
+                                marker: {
+                                    enabled: false
+                                },
+                                lineWidth: 2,
+                                linkedTo: index == 0 ? null : ":previous",
+                                showInLegend: index == 0 ? true : false,
+                                name: 'Flood Stages',
+                                events: {
+                                    hide: function () {
+                                        this.chart.yAxis[0].removePlotLine('floodStageLine' + stage.name + 'yPlotLine');
+                                        this.chart.xAxis[0].removePlotLine('floodStageLine' + stage.name + 'xPlotLine');
+                                    },
+                                    show: function () {
+                                        this.chart.yAxis[0].removePlotLine('floodStageLine' + stage.name + 'yPlotLine');
+                                        this.chart.xAxis[0].removePlotLine('floodStageLine' + stage.name + 'xPlotLine');
+                                        this.chart.yAxis[0].addPlotLine({
+                                            color: 'black',
+                                            width: 0,
+                                            zIndex: 6,
+                                            id: 'floodStageLine' + stage.name + 'yPlotLine',
+                                            value: stage.y,
+                                            label: {
+                                                text: stageNameCapitalized_1 + ": " + stage.y + " ft",
+                                                textAlign: 'left',
+                                                x: 12,
+                                                y: -4,
+                                                style: {
+                                                    fontSize: '9px',
+                                                },
+                                                zIndex: 9999999
+                                            }
+                                        });
+                                        this.chart.xAxis[0].addPlotLine({
+                                            color: 'black',
+                                            width: 0,
+                                            zIndex: 6,
+                                            id: 'floodStageLine' + stage.name + 'xPlotLine',
+                                            value: Math.round(stage.x),
+                                            label: {
+                                                text: stageNameCapitalized_1 + ": " + Math.round(stage.x) + " cfs",
+                                                verticalAlign: "bottom",
+                                                y: -110,
+                                                x: 2,
+                                                style: {
+                                                    fontSize: '9px',
+                                                },
+                                                zIndex: 9999999
+                                            }
+                                        });
+                                    },
+                                },
+                                id: 'floodStageLine' + stage.name,
+                                color: stage.color
+                            });
+                        }
+                    });
+                }
+                ;
+                this.formattedStages.forEach(function (formattedStage) {
+                    _this_1.dischargeChartConfig.series.push(formattedStage);
+                });
             };
             GagePageController.prototype.createDailyRasterPlot = function () {
                 if (this.dailyValuesOnly.length > 0) {
@@ -2677,12 +2896,10 @@ var StreamStats;
                             min: fifthPercentile,
                             max: ninetyfifthPercentile,
                             stops: [
-                                [0, '#fde725'],
-                                [0.3, '#7ad151'],
-                                [0.5, '#22a884'],
-                                [0.6, '#2a788e'],
-                                [0.8, '#414487'],
-                                [1, '#440154']
+                                [0, '#FF0000'],
+                                [0.3, '#FFCC33'],
+                                [0.8, '#66CCFF'],
+                                [1, '#3300CC']
                             ],
                             startOnTick: false,
                             endOnTick: false,
@@ -2698,12 +2915,10 @@ var StreamStats;
                             min: null,
                             max: null,
                             stops: [
-                                [0, '#fde725'],
-                                [0.3, '#7ad151'],
-                                [0.5, '#22a884'],
-                                [0.6, '#2a788e'],
-                                [0.8, '#414487'],
-                                [1, '#440154']
+                                [0, '#FF0000'],
+                                [0.3, '#FFCC33'],
+                                [0.8, '#66CCFF'],
+                                [1, '#3300CC']
                             ],
                             startOnTick: false,
                             endOnTick: false,
@@ -2813,14 +3028,6 @@ var StreamStats;
                 };
             };
             ;
-            GagePageController.prototype.containsNegatives = function () {
-                if (this.dailyValuesOnly.some(function (v) { return v <= 0; })) {
-                    return true;
-                }
-                if (this.dailyValuesOnly.some(function (v) { return v > 0; })) {
-                    return false;
-                }
-            };
             GagePageController.prototype.togglePlotLines = function () {
                 var chart = $('#chart1').highcharts();
                 if (this.plotlines) {
@@ -3072,7 +3279,6 @@ var StreamStats;
                     chart.yAxis[0].update({ type: 'linear' });
                 }
             };
-            ;
             GagePageController.prototype.toggleDischargeData = function (dataType) {
                 var chart = $('#chart3').highcharts();
                 var currentUSGSMeasuredData = chart.series[2].data;

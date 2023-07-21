@@ -251,7 +251,7 @@
                         <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.heatChartConfig">
                             <highchart id="chart2" config="vm.heatChartConfig"></highchart>
                         </div>
-                    </center>
+                    </center> 
                     <center>
                         <div ng-if="!vm.dischargeChartConfig" class="panel panel-default reportSpinner">
                             &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
@@ -261,35 +261,57 @@
                             <input type="checkbox" ng-if="vm.formattedDischargePeakDates.length > 0" id="logScaleDischarge" name="logScaleDischarge" ng-model="vm.logScaleDischarge" ng-change="vm.toggleLogLinearDischarge()">
                             <label for="logScaleDischarge" ng-if="vm.formattedDischargePeakDates.length > 0"> Log Scale</label>
 
-                            <input type="radio" ng-if="vm.error == false" id="ageData" name="ageQualityData" ng-model="vm.ageQualityData" value="age" ng-change="vm.toggleDischargeData('age')"> 
+                            <input type="radio" ng-if="vm.error == false" id="ageData" name="toggleDischargeData" ng-model="vm.USGSMeasuredAgeQualityData" value="age" ng-change="vm.updateChart()"> 
                             <label for="ageData" ng-if="vm.error == false">  Age</label>
                 
-                            <input type="radio" ng-if="vm.error == false" id="qualityData" name="ageQualityData" ng-model="vm.ageQualityData" value="quality" ng-change="vm.toggleDischargeData('quality')"> 
+                            <input type="radio" ng-if="vm.error == false" id="qualityData" name="USGSMeasuredAgeQualityData" ng-model="vm.USGSMeasuredAgeQualityData" value="quality" ng-change="vm.toggleDischargeData('quality')"> 
                             <label for="qualityData" ng-if="vm.error == false"> Quality</label>
 
-                            <!-- <div class="group-wrapper">
-                                <label>Start Year:</label>
-                                <input type="number" name="sdate" ng-model="vm.StartYear" min="vm.YearRange.floor" max="vm.YearRange.ceil" required>
-            
-                                <label>End Year:</label>
-                                <input type="number" name="edate" ng-model="vm.EndYear" min="vm.YearRange.floor" max="vm.YearRange.ceil" required>
-                                
-                                
-                                <rzslider
-                                rz-slider-model="vm.minValue" 
-                                rz-slider-high="vm.maxValue" 
-                                rz-slider-options="vm.sliderOptions">
-                                </rzslider>
-                                
-                                <button type="button" class="btn-wim-sm btn-wim-success btn-wim-group-1" ng-click="vm.GetWaterUse()" ng-disabled="!vm.CanContinue"><span ng-class="vm.CanContinue && !vm.GetWaterUseLabel ? 'fa fa-check-circle' : 'fa fa-refresh fa-spin'"></span>&nbsp;&nbsp;{{ vm.CanContinue || vm.GetWaterUseLabel ? 'Get water use' : 'Initializing...' }}</button> -->
-                            <!-- </div> -->
+                            <!-- Start Sliders -->
+                            <div class="slider-container">
+                                <div class="slider-wrapper">
+                                  <span class="slider-text">Plot USGS Measurements Between Months</span>
+                                  <rzslider class="rzSlider" rz-slider-model="vm.startMonth" rz-slider-high="vm.endMonth" rz-slider-options="vm.monthSliderOptions"></rzslider>
+                                  <span id="months2show"></span>
+                                </div>
+                                <div class="slider-wrapper">
+                                  <span class="slider-text">Plot USGS Measurements Between Years</span>
+                                  <rzslider class="rzSlider" rz-slider-model="vm.startYear" rz-slider-high="vm.endYear" rz-slider-options="vm.yearSliderOptions"></rzslider>
+                                  <span id="years2show"></span>
+                                </div>
+                              </div>
+                              
+                            <!-- End Sliders -->
 
+                            <!-- Start Legend -->
+                            <div ng-show="vm.USGSMeasuredAgeQualityData === 'age'" class="ageQualityLegend" ng-style="{'left': vm.logScaleDischarge ? '222px' : '680px', 'bottom': vm.logScaleDischarge ? '200px' : '220px'}">
+                                <div class="ageQualityLegend-item">
+                                  <span style="color: red;">Most Recent Measurement</span>
+                            </div>
+                            <div class="ageQualityLegend-item">
+                                  <span style="color: orange;">Measurements in the Last Year</span>
+                            </div>
+                            <div class="ageQualityLegend-item">
+                                  <span style="color: #0000cdcc;">Newer -&nbsp</span><span style="color: #0000cd4d;">Older Measurements</span>
+                                </div>
+                            </div>
+                              
+                            <div ng-show="vm.USGSMeasuredAgeQualityData === 'quality'" class="ageQualityLegend" ng-style="{'left': vm.logScaleDischarge ? '222px' : '680px', 'bottom': vm.logScaleDischarge ? '200px' : '220px'}">
+                                <div class="ageQualityLegend-item">
+                                  <span style="color:#2ED017;">Excellent - Good</span>
+                            </div>
+                            <div class="ageQualityLegend-item">
+                                  <span style="color:#E7F317;">Fair</span>
+                            </div>
+                            <div class="ageQualityLegend-item">
+                                  <span style="color: #FFA200;">Poor</span>
+                            </div>
+                            </div>
+                            <!-- End Legend -->
 
-                            <!-- <rzslider rz-slider-model="slider_draggable_range.minValue" rz-slider-high="slider_draggable_range.maxValue" rz-slider-options="slider_draggable_range.options"></rzslider> -->
                             <highchart id="chart3" config="vm.dischargeChartConfig"></highchart>
                         </div>
-<!-- 
-                            <highchart id="chart3" config="vm.dischargeChartConfig"></highchart> -->
+
                         </center> 
                     </div>
                 </div>
