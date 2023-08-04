@@ -126,7 +126,7 @@ var StreamStats;
                 e.preventDefault();
                 $("#searchBox").trigger($.Event("keyup", { "keyCode": 13 }));
             };
-            SidebarController.prototype.startDelineate = function () {
+            SidebarController.prototype.startDelineate = function (type) {
                 var _this = this;
                 this.leafletData.getMap("mainMap").then(function (map) {
                     if (map.getZoom() < 15) {
@@ -134,8 +134,16 @@ var StreamStats;
                         return;
                     }
                     else {
-                        _this.toaster.pop('success', "Delineate", "Click on a blue stream cell to start delineation");
-                        _this.studyAreaService.doDelineateFlag = !_this.studyAreaService.doDelineateFlag;
+                        if (type == "point") {
+                            _this.toaster.pop("success", "Delineate", "Click on a blue stream cell to start delineation");
+                            _this.studyAreaService.delineateByPoint = !_this.studyAreaService.delineateByPoint;
+                            _this.studyAreaService.doDelineateFlag = !_this.studyAreaService.doDelineateFlag;
+                        }
+                        else {
+                            _this.toaster.pop("success", "Delineate", "Select two points to create a line to delineate from");
+                            _this.studyAreaService.delineateByLine = !_this.studyAreaService.delineateByLine;
+                            _this.studyAreaService.doDelineateFlag = !_this.studyAreaService.doDelineateFlag;
+                        }
                     }
                 });
             };

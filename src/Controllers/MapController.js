@@ -141,6 +141,8 @@ var StreamStats;
                         _this._prosperServices.GetPredictionValues(args.leafletEvent, _this.bounds);
                         return;
                     }
+                    if (_this.studyArea.delineateByLine)
+                        return;
                     if (_this.studyArea.doDelineateFlag) {
                         _this.checkDelineatePoint(args.leafletEvent.latlng);
                         return;
@@ -194,6 +196,12 @@ var StreamStats;
                 $scope.$watch(function () { return _this.explorationService.drawMeasurement; }, function (newval, oldval) {
                     if (newval)
                         _this.measurement();
+                });
+                $scope.$watch(function () { return _this.studyArea.delineateByLine; }, function (newval, oldval) {
+                    if (newval == true)
+                        _this.drawDelineationLine();
+                    else
+                        _this.drawControl.disable();
                 });
                 $scope.$watch(function () { return _this.regionServices.regionMapLayerListLoaded; }, function (newval, oldval) {
                     if (newval) {
@@ -565,8 +573,6 @@ var StreamStats;
                         drawnItems.clearLayers();
                         if (_this.measurestart)
                             map.off("click", _this.measurestart);
-                        if (_this.measuremove)
-                            map.off("mousemove", _this.measuremove);
                         if (_this.measurestop)
                             map.off("draw:created", _this.measurestop);
                     });
@@ -578,6 +584,49 @@ var StreamStats;
                 this.removeGeoJsonLayers("netnavroute", true);
                 this.selectedExplorationTool = null;
                 this.explorationService.explorationPointType = null;
+            };
+            MapController.prototype.drawDelineationLine = function () {
+                var _this = this;
+                console.log('drawDelineationLine');
+                this.leafletData.getMap("mainMap").then(function (map) {
+                    _this.leafletData.getLayers("mainMap").then(function (maplayers) {
+                        _this.drawController({ shapeOptions: { color: 'blue' }, metric: false }, true);
+                        var drawnItems = maplayers.overlays.draw;
+                        drawnItems.clearLayers();
+                        var coordinates = {
+                            point1: {
+                                lat: null,
+                                lng: null
+                            },
+                            point2: {
+                                lat: null,
+                                lng: null
+                            }
+                        };
+                        _this.lineDelineationstart = function (e) {
+                            console.log(e);
+                            if (coordinates.point1.lat === null && coordinates.point1.lng === null && coordinates.point2.lat === null && coordinates.point2.lng === null) {
+                                console.log('first point');
+                                coordinates.point1.lat = e.latlng.lat;
+                                coordinates.point1.lng = e.latlng.lng;
+                            }
+                            else if (coordinates.point1.lat !== null && coordinates.point1.lng !== null && coordinates.point2.lat === null && coordinates.point2.lng === null) {
+                                console.log('second point');
+                                coordinates.point2.lat = e.latlng.lat;
+                                coordinates.point2.lng = e.latlng.lng;
+                                var line = [
+                                    [coordinates.point1.lat, coordinates.point1.lng],
+                                    [coordinates.point2.lat, coordinates.point2.lng]
+                                ];
+                                L.polyline(line, { color: 'blue' }).addTo(map);
+                                console.log(coordinates);
+                                map.off("click", _this.lineDelineationstart);
+                                _this.drawControl.disable();
+                            }
+                        };
+                        map.on("click", _this.lineDelineationstart);
+                    });
+                });
             };
             MapController.prototype.measurement = function () {
                 var _this = this;

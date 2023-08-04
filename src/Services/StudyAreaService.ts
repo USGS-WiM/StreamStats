@@ -37,6 +37,8 @@ module StreamStats.Services {
         AddStudyArea(sa: Models.IStudyArea);
         RemoveStudyArea();
         doDelineateFlag: boolean;
+        delineateByLine: boolean;
+        delineateByPoint: boolean
         parametersLoading: boolean;
         showEditToolbar: boolean;
         checkingDelineatedPoint: boolean;
@@ -143,6 +145,8 @@ module StreamStats.Services {
             return this._studyAreaList;
         }
         public doDelineateFlag: boolean;
+        public delineateByLine: boolean;
+        public delineateByPoint: boolean;
 
         private _selectedStudyArea: Models.IStudyArea;
         public set selectedStudyArea(val: Models.IStudyArea) {

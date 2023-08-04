@@ -205,7 +205,7 @@ module StreamStats.Controllers {
             $("#searchBox").trigger($.Event("keyup", { "keyCode": 13 }));
         }
 
-        public startDelineate() {
+        public startDelineate(type: string) {
             //console.log('in startDelineate', this.studyAreaService.canUpdate, this.studyAreaService.doDelineateFlag);
             this.leafletData.getMap("mainMap").then((map: any) => {
                 //console.log('mapzoom', map.getZoom());
@@ -214,8 +214,24 @@ module StreamStats.Controllers {
                     return;
                 }
                 else {
-                    this.toaster.pop('success', "Delineate", "Click on a blue stream cell to start delineation");
-                    this.studyAreaService.doDelineateFlag = !this.studyAreaService.doDelineateFlag;
+                    if (type == "point") {
+                        this.toaster.pop(
+                          "success",
+                          "Delineate",
+                          "Click on a blue stream cell to start delineation"
+                        );
+                        this.studyAreaService.delineateByPoint = !this.studyAreaService.delineateByPoint;
+                        this.studyAreaService.doDelineateFlag = !this.studyAreaService.doDelineateFlag;
+                      } else {
+                        // line
+                        this.toaster.pop(
+                          "success",
+                          "Delineate",
+                          "Select two points to create a line to delineate from"
+                        );
+                        this.studyAreaService.delineateByLine = !this.studyAreaService.delineateByLine;
+                        this.studyAreaService.doDelineateFlag = !this.studyAreaService.doDelineateFlag;
+                    }
                 }
             });
         }

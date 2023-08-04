@@ -200,6 +200,8 @@ module StreamStats.Controllers {
             fillOpacity: 0.5
         }
         public imageryToggled = false;
+        public lineDelineationstart: any;
+        public lineDelineationstop: any;
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$compile', 'toaster', '$location', '$stateParams','leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack', '$http'];
@@ -287,6 +289,9 @@ module StreamStats.Controllers {
                     return;
                 }
 
+                // check if in delineate by line mode
+                if (this.studyArea.delineateByLine) return;
+
                 if (this.studyArea.doDelineateFlag) {
                     this.checkDelineatePoint(args.leafletEvent.latlng);
                     return;
@@ -353,6 +358,11 @@ module StreamStats.Controllers {
             $scope.$watch(() => this.explorationService.drawMeasurement,(newval, oldval) => {
                 //console.log('measurementListener ', newval, oldval);
                 if (newval) this.measurement();
+            });
+
+            $scope.$watch(() => this.studyArea.delineateByLine,(newval, oldval) => {
+                if (newval == true) this.drawDelineationLine()
+                else this.drawControl.disable();
             });
 
             $scope.$watch(() => this.regionServices.regionMapLayerListLoaded,(newval, oldval) => {
@@ -813,7 +823,7 @@ module StreamStats.Controllers {
 
                      //remove listeners
                     if (this.measurestart) map.off("click", this.measurestart);
-                    if (this.measuremove) map.off("mousemove", this.measuremove);
+                    //if (this.measuremove) map.off("mousemove", this.measuremove);
                     if (this.measurestop) map.off("draw:created", this.measurestop);
                 });
             });
@@ -826,6 +836,61 @@ module StreamStats.Controllers {
 
             this.selectedExplorationTool = null;
             this.explorationService.explorationPointType = null;
+        }
+
+        private drawDelineationLine(){
+            console.log('drawDelineationLine')
+            this.leafletData.getMap("mainMap").then((map: any) => {
+                this.leafletData.getLayers("mainMap").then((maplayers: any) => {
+
+                    this.drawController({shapeOptions: { color: 'blue' }, metric: false }, true);
+
+                    var drawnItems = maplayers.overlays.draw;
+                    drawnItems.clearLayers();
+
+                    let coordinates = {
+                        point1: {
+                            lat: null,
+                            lng: null
+                        },
+                        point2: {
+                            lat: null,
+                            lng: null
+                        }
+                    }
+
+                    //listeners active during drawing              
+                    this.lineDelineationstart = (e) => {
+                        console.log(e)
+
+                        if (coordinates.point1.lat === null && coordinates.point1.lng === null && coordinates.point2.lat === null && coordinates.point2.lng === null) {
+                            console.log('first point')
+                            coordinates.point1.lat = e.latlng.lat;
+                            coordinates.point1.lng = e.latlng.lng;
+                
+                        } else if (coordinates.point1.lat !== null && coordinates.point1.lng !== null && coordinates.point2.lat === null && coordinates.point2.lng === null) {
+                            console.log('second point')
+                            coordinates.point2.lat = e.latlng.lat;
+                            coordinates.point2.lng = e.latlng.lng;
+                        
+                            // We have enough points (2) to create a line
+                            const line = [
+                                [ coordinates.point1.lat, coordinates.point1.lng ],
+                                [ coordinates.point2.lat, coordinates.point2.lng ]
+                            ];
+                    
+                            L.polyline(line, {color: 'blue'}).addTo(map);
+                            console.log(coordinates);
+                            //remove listeners
+                            map.off("click", this.lineDelineationstart);
+                            this.drawControl.disable();
+                        } 
+                    };
+                    
+                    map.on("click", this.lineDelineationstart);
+
+                });
+            });
         }
 
         private measurement() {
