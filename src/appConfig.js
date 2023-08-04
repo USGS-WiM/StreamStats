@@ -15,7 +15,8 @@ configuration.baseurls =
         'WeightingServices': 'https://ss-weightingservices.streamstats.usgs.gov',
         'SCStormRunoffServices': 'https://streamstats.usgs.gov/local/scrunoffservices',
         'NationalMapServices': 'https://hydro.nationalmap.gov/arcgis/rest/services',
-        'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices'
+        'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices',
+        'PourPointServices': 'http://127.0.0.1:8000'
     };
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
@@ -89,7 +90,9 @@ configuration.queryparams =
         'SCComputeSpreadSheet': '/computespreadSheet',
         'SCFactorData': '/factorData',
         'FlowAnywhereEstimates': '/models/FLA/estimate?state={0}',
-        'FlowAnywhereGages': '/arcgis/rest/services/IowaStreamEst/FlowAnywhere/MapServer/1/query?geometry={0},{1}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.da_pub_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
+        'FlowAnywhereGages': '/arcgis/rest/services/IowaStreamEst/FlowAnywhere/MapServer/1/query?geometry={0},{1}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.da_pub_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
+        'lineIntersection': '/sslineIntersection',
+        'checkExcludePolygons': '/ssExcludePolygon'
     };
 
 configuration.SupportTicketService = {

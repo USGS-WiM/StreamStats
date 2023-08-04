@@ -839,7 +839,6 @@ module StreamStats.Controllers {
         }
 
         private drawDelineationLine(){
-            console.log('drawDelineationLine')
             this.leafletData.getMap("mainMap").then((map: any) => {
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => {
 
@@ -851,44 +850,35 @@ module StreamStats.Controllers {
                     let coordinates = {
                         point1: {
                             lat: null,
-                            lng: null
+                            long: null
                         },
                         point2: {
                             lat: null,
-                            lng: null
+                            long: null
                         }
                     }
 
                     //listeners active during drawing              
                     this.lineDelineationstart = (e) => {
-                        console.log(e)
-
-                        if (coordinates.point1.lat === null && coordinates.point1.lng === null && coordinates.point2.lat === null && coordinates.point2.lng === null) {
-                            console.log('first point')
+                        if (coordinates.point1.lat === null && coordinates.point1.long === null && coordinates.point2.lat === null && coordinates.point2.long === null) {
                             coordinates.point1.lat = e.latlng.lat;
-                            coordinates.point1.lng = e.latlng.lng;
-                
-                        } else if (coordinates.point1.lat !== null && coordinates.point1.lng !== null && coordinates.point2.lat === null && coordinates.point2.lng === null) {
-                            console.log('second point')
+                            coordinates.point1.long = e.latlng.lng;
+                        } else if (coordinates.point1.lat !== null && coordinates.point1.long !== null && coordinates.point2.lat === null && coordinates.point2.long === null) {
                             coordinates.point2.lat = e.latlng.lat;
-                            coordinates.point2.lng = e.latlng.lng;
-                        
+                            coordinates.point2.long = e.latlng.lng;
                             // We have enough points (2) to create a line
                             const line = [
-                                [ coordinates.point1.lat, coordinates.point1.lng ],
-                                [ coordinates.point2.lat, coordinates.point2.lng ]
+                                [ coordinates.point1.lat, coordinates.point1.long ],
+                                [ coordinates.point2.lat, coordinates.point2.long ]
                             ];
-                    
                             L.polyline(line, {color: 'blue'}).addTo(map);
-                            console.log(coordinates);
                             //remove listeners
                             map.off("click", this.lineDelineationstart);
                             this.drawControl.disable();
+                            this.checkDelineationLine(coordinates)
                         } 
                     };
-                    
                     map.on("click", this.lineDelineationstart);
-
                 });
             });
         }
@@ -959,6 +949,59 @@ module StreamStats.Controllers {
                     map.on("click", this.measurestart);
                     map.on("draw:created", this.measurestop);
 
+                });
+            });
+        }
+
+        private checkDelineationLine(line){
+            //make sure were still at level 15 or greater
+            this.leafletData.getMap("mainMap").then((map: any) => {
+                this.leafletData.getLayers("mainMap").then((maplayers: any) => {
+                    if (map.getZoom() < 15) {
+                        this.toaster.pop("error", "Delineation not allowed at this zoom level", 'Please zoom in to level 15 or greater', 5000);
+                    }
+
+                    //good to go
+                    else {
+                        this.toaster.clear();
+                        this.studyArea.checkingDelineatedPoint = true;
+
+                        this.toaster.pop("info", "Information", "Validating your line...", true, 0);
+                        this.cursorStyle = 'wait';
+
+                        //turn off delineate flag
+                        this.studyArea.doDelineateFlag = false;
+
+                        //build list of layers to query before delineate
+                        var queryString = 'visible:'
+
+                        this.regionServices.regionMapLayerList.forEach((item) => {
+                            if (item[0] == 'ExcludePolys') queryString += item[1];
+                        });
+
+                        //report ga event
+                        gtag('event', 'DelineationLine',{ 'Region': this.regionServices.selectedRegion.Name, 'Location': line });
+
+                        //force map refresh
+                        map.invalidateSize();
+
+                        this.studyArea.lineIntersection(line).then((points) => {
+                            points.forEach(point => {
+                                if (point.inExclude == true) {
+                                    if (point.type == 1){ // TODO: need to find points to test this
+                                        // not able to delineate
+                                        this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", point.message, 0);
+                                        return // break out - dont delineate 
+                                    } else {
+                                        //able to delineate but not advised
+                                        this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", point.message, true, 0);
+                                    }
+                                }
+                            });
+                            // TODO: send points to multipoint delineate function 
+                        })
+
+                    }
                 });
             });
         }

@@ -36,6 +36,7 @@ module StreamStats.Services {
         upstreamRegulation();
         AddStudyArea(sa: Models.IStudyArea);
         RemoveStudyArea();
+        lineIntersection(line);
         doDelineateFlag: boolean;
         delineateByLine: boolean;
         delineateByPoint: boolean
@@ -516,6 +517,46 @@ module StreamStats.Services {
                 });
         }
 
+        public lineIntersection(line) {
+            var data = {
+                'region': 'SC',
+                'startPoint': line.point1,
+                'endPoint': line.point2
+            }
+            var url = configuration.baseurls['PourPointServices'] + configuration.queryparams['lineIntersection']
+            var headers = {
+                "Content-Type": "application/json",
+                "X-warning": true
+            };
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
+            
+            return this.Execute(request).then((response: any) => {
+                    console.log(response.data.response)
+                    return this.checkExcludePolygon(response.data.response)
+                },(error) => {
+                }).finally(() => { 
+            });
+        }
+
+        public checkExcludePolygon(points) {
+            var data = {
+                'region': 'SC',
+                'points': points
+            }
+            var url = configuration.baseurls['PourPointServices'] + configuration.queryparams['checkExcludePolygons']
+            var headers = {
+                "Content-Type": "application/json",
+                "X-warning": true
+            };
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
+            
+            return this.Execute(request).then((response: any) => {
+                console.log(response.data.response)
+                return(response.data.response)
+            },(error) => {
+            }).finally(() => { 
+            });
+        }
 
         public loadAllIndexGages() {
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['KrigService'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude, this.selectedStudyArea.Pourpoint.Latitude, this.selectedStudyArea.Pourpoint.crs, '300');

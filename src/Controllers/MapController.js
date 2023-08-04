@@ -587,7 +587,6 @@ var StreamStats;
             };
             MapController.prototype.drawDelineationLine = function () {
                 var _this = this;
-                console.log('drawDelineationLine');
                 this.leafletData.getMap("mainMap").then(function (map) {
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {
                         _this.drawController({ shapeOptions: { color: 'blue' }, metric: false }, true);
@@ -596,32 +595,29 @@ var StreamStats;
                         var coordinates = {
                             point1: {
                                 lat: null,
-                                lng: null
+                                long: null
                             },
                             point2: {
                                 lat: null,
-                                lng: null
+                                long: null
                             }
                         };
                         _this.lineDelineationstart = function (e) {
-                            console.log(e);
-                            if (coordinates.point1.lat === null && coordinates.point1.lng === null && coordinates.point2.lat === null && coordinates.point2.lng === null) {
-                                console.log('first point');
+                            if (coordinates.point1.lat === null && coordinates.point1.long === null && coordinates.point2.lat === null && coordinates.point2.long === null) {
                                 coordinates.point1.lat = e.latlng.lat;
-                                coordinates.point1.lng = e.latlng.lng;
+                                coordinates.point1.long = e.latlng.lng;
                             }
-                            else if (coordinates.point1.lat !== null && coordinates.point1.lng !== null && coordinates.point2.lat === null && coordinates.point2.lng === null) {
-                                console.log('second point');
+                            else if (coordinates.point1.lat !== null && coordinates.point1.long !== null && coordinates.point2.lat === null && coordinates.point2.long === null) {
                                 coordinates.point2.lat = e.latlng.lat;
-                                coordinates.point2.lng = e.latlng.lng;
+                                coordinates.point2.long = e.latlng.lng;
                                 var line = [
-                                    [coordinates.point1.lat, coordinates.point1.lng],
-                                    [coordinates.point2.lat, coordinates.point2.lng]
+                                    [coordinates.point1.lat, coordinates.point1.long],
+                                    [coordinates.point2.lat, coordinates.point2.long]
                                 ];
                                 L.polyline(line, { color: 'blue' }).addTo(map);
-                                console.log(coordinates);
                                 map.off("click", _this.lineDelineationstart);
                                 _this.drawControl.disable();
+                                _this.checkDelineationLine(coordinates);
                             }
                         };
                         map.on("click", _this.lineDelineationstart);
@@ -673,6 +669,43 @@ var StreamStats;
                         };
                         map.on("click", _this.measurestart);
                         map.on("draw:created", _this.measurestop);
+                    });
+                });
+            };
+            MapController.prototype.checkDelineationLine = function (line) {
+                var _this = this;
+                this.leafletData.getMap("mainMap").then(function (map) {
+                    _this.leafletData.getLayers("mainMap").then(function (maplayers) {
+                        if (map.getZoom() < 15) {
+                            _this.toaster.pop("error", "Delineation not allowed at this zoom level", 'Please zoom in to level 15 or greater', 5000);
+                        }
+                        else {
+                            _this.toaster.clear();
+                            _this.studyArea.checkingDelineatedPoint = true;
+                            _this.toaster.pop("info", "Information", "Validating your line...", true, 0);
+                            _this.cursorStyle = 'wait';
+                            _this.studyArea.doDelineateFlag = false;
+                            var queryString = 'visible:';
+                            _this.regionServices.regionMapLayerList.forEach(function (item) {
+                                if (item[0] == 'ExcludePolys')
+                                    queryString += item[1];
+                            });
+                            gtag('event', 'DelineationLine', { 'Region': _this.regionServices.selectedRegion.Name, 'Location': line });
+                            map.invalidateSize();
+                            _this.studyArea.lineIntersection(line).then(function (points) {
+                                points.forEach(function (point) {
+                                    if (point.inExclude == true) {
+                                        if (point.type == 1) {
+                                            _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", point.message, 0);
+                                            return;
+                                        }
+                                        else {
+                                            _this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", point.message, true, 0);
+                                        }
+                                    }
+                                });
+                            });
+                        }
                     });
                 });
             };

@@ -347,6 +347,44 @@ var StreamStats;
                 }).finally(function () {
                 });
             };
+            StudyAreaService.prototype.lineIntersection = function (line) {
+                var _this = this;
+                var data = {
+                    'region': 'SC',
+                    'startPoint': line.point1,
+                    'endPoint': line.point2
+                };
+                var url = configuration.baseurls['PourPointServices'] + configuration.queryparams['lineIntersection'];
+                var headers = {
+                    "Content-Type": "application/json",
+                    "X-warning": true
+                };
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
+                return this.Execute(request).then(function (response) {
+                    console.log(response.data.response);
+                    return _this.checkExcludePolygon(response.data.response);
+                }, function (error) {
+                }).finally(function () {
+                });
+            };
+            StudyAreaService.prototype.checkExcludePolygon = function (points) {
+                var data = {
+                    'region': 'SC',
+                    'points': points
+                };
+                var url = configuration.baseurls['PourPointServices'] + configuration.queryparams['checkExcludePolygons'];
+                var headers = {
+                    "Content-Type": "application/json",
+                    "X-warning": true
+                };
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
+                return this.Execute(request).then(function (response) {
+                    console.log(response.data.response);
+                    return (response.data.response);
+                }, function (error) {
+                }).finally(function () {
+                });
+            };
             StudyAreaService.prototype.loadAllIndexGages = function () {
                 var _this = this;
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['KrigService'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude, this.selectedStudyArea.Pourpoint.Latitude, this.selectedStudyArea.Pourpoint.crs, '300');
