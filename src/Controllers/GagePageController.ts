@@ -3371,6 +3371,8 @@ public createDailyRasterPlot(): void {
                     if (this.formattedDailyPlusAvg !== null){
                         let year = this.y;
                         let doy = this.x;
+                        console.log(doy)
+
                         if (doy > 366) {
                             doy -= 366; //returning doy to 1-366 for labeling purposes
                         };
@@ -3389,8 +3391,8 @@ public createDailyRasterPlot(): void {
                         if (month > 9) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
                             waterYear += 1; // adding a year to dates that fall into the next water year
                         };
-                        if (doy > 282 && doy < 293) return '</b><br>Water Year: <b>' + waterYear + '</b><br>Water Year Average Value: <b>' + this.value.toFixed(2) + ' ft³/s</b>';
-                        if (doy !== 283 && doy !== 284 && doy !== 285 && doy !== 286 && doy !== 287 && doy !== 288 && doy !== 289 && doy !== 290 && doy !== 291 && doy !== 292) return '<br>Date: <b>'  + formattedUTCDate + '</b><br>Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                        if (this.x > 641) return '</b><br>Water Year: <b>' + waterYear + '</b><br>Water Year Average Value: <b>' + this.value.toFixed(2) + ' ft³/s</b>' + doy;
+                        if (this.x < 641) return '<br>Date: <b>' + formattedUTCDate + '</b><br>Value: <b>' + this.value + ' ft³/s' + doy + '</b><br>Water Year: <b>' + waterYear
                     }
                 }
             },
