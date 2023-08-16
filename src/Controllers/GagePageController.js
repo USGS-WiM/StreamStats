@@ -1848,7 +1848,7 @@ var StreamStats;
                         }
                     },
                     title: {
-                        text: 'Annual Peak Streamflow',
+                        text: 'Annual Peak Streamflow: ' + this.gage.code,
                         align: 'center'
                     },
                     time: {
@@ -2667,7 +2667,7 @@ var StreamStats;
                         }
                     },
                     title: {
-                        text: 'Stage vs. Discharge',
+                        text: 'Stage vs. Discharge: ' + this.gage.code,
                         align: 'center'
                     },
                     subtitle: {
@@ -2949,7 +2949,7 @@ var StreamStats;
                         }
                     },
                     title: {
-                        text: 'Daily Streamflow',
+                        text: 'Daily Streamflow: ' + this.gage.code,
                         align: 'center'
                     },
                     subtitle: {

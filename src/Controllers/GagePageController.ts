@@ -2203,7 +2203,7 @@ module StreamStats.Controllers {
                     }
                 },
                 title: {
-                    text: 'Annual Peak Streamflow',
+                    text: 'Annual Peak Streamflow: ' + this.gage.code,
                     align: 'center'
                 },
                 time: {
@@ -3038,7 +3038,7 @@ public createDischargePlot(): void {
             }
         },
         title: {
-            text: 'Stage vs. Discharge',
+            text: 'Stage vs. Discharge: ' + this.gage.code,
             align: 'center'
         },
         subtitle: {
@@ -3323,7 +3323,7 @@ public createDailyRasterPlot(): void {
                 }
         },
         title: {
-            text: 'Daily Streamflow',
+            text: 'Daily Streamflow: ' + this.gage.code,
             align: 'center'
         },
         subtitle: {
