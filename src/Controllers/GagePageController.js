@@ -887,8 +887,17 @@ var StreamStats;
                             _this_1.formattedDailyFlow.push({ x: date, y: parseFloat(dailyObj.value) });
                             _this_1.dailyDatesOnly.push(new Date(dailyObj.dateTime));
                         }
-                        var now = new Date(dailyObj.dateTime);
-                        var year = new Date(dailyObj.dateTime).getUTCFullYear();
+                    });
+                    var noLeapDay = this.dailyFlow.filter(function (item) {
+                        if (item.dateTime[5] + item.dateTime[6] === '02' && item.dateTime[8] + item.dateTime[9] === '29') {
+                        }
+                        else {
+                            return (item.dateTime);
+                        }
+                    });
+                    noLeapDay.forEach(function (dailyObjNoLeap) {
+                        var now = new Date(dailyObjNoLeap.dateTime);
+                        var year = new Date(dailyObjNoLeap.dateTime).getUTCFullYear();
                         function daysIntoYear(now) {
                             return (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
                         }
@@ -902,8 +911,8 @@ var StreamStats;
                             return year % 4 === 0;
                         }
                         ;
-                        if (parseInt(dailyObj.value) !== -999999) {
-                            _this_1.dailyValuesOnly.push(parseInt(dailyObj.value));
+                        if (parseInt(dailyObjNoLeap.value) !== -999999) {
+                            _this_1.dailyValuesOnly.push(parseInt(dailyObjNoLeap.value));
                             if (isLeapYear(year) == false && doy > 59) {
                                 doy += 1;
                             }
@@ -916,12 +925,11 @@ var StreamStats;
                                 doy += 366;
                             }
                             ;
-                            if (parseInt(dailyObj.value) !== -999999) {
-                                _this_1.formattedDailyHeat.push({ x: doy, y: year, value: parseInt(dailyObj.value), length: 1 });
+                            if (doy > 425) {
+                                doy -= 1;
                             }
-                            ;
-                            if (isLeapYear(year) == false) {
-                                _this_1.formattedDailyHeat.push({ x: 60, y: year, value: null, length: 1 });
+                            if (parseInt(dailyObjNoLeap.value) !== -999999) {
+                                _this_1.formattedDailyHeat.push({ x: doy, y: year, value: parseInt(dailyObjNoLeap.value), length: 1 });
                             }
                             ;
                         }
@@ -2960,7 +2968,7 @@ var StreamStats;
                         type: null,
                         min: 275,
                         max: 665,
-                        tickPositions: [275, 306, 336, 367, 398, 427, 458, 488, 519, 549, 580, 611, 650],
+                        tickPositions: [275, 306, 336, 367, 398, 426, 457, 487, 518, 548, 579, 610, 650],
                         title: {
                             text: 'Day of Year'
                         },
@@ -2998,17 +3006,23 @@ var StreamStats;
                                     if (this.formattedDailyPlusAvg !== null) {
                                         var year = this.y;
                                         var doy = this.x;
-                                        console.log(doy);
                                         if (doy > 366) {
-                                            doy -= 366;
+                                            doy -= 365;
                                         }
                                         ;
                                         if (doy > 274) {
                                             year -= 1;
                                         }
                                         ;
-                                        if (isLeapYear(year) == false && doy > 59) {
+                                        if (isLeapYear(year) == false) {
                                             doy -= 1;
+                                        }
+                                        ;
+                                        if (isLeapYear(year) == true && doy < 274) {
+                                            doy -= 1;
+                                        }
+                                        if (isLeapYear(year) == true && doy > 59 && doy < 274) {
+                                            doy += 1;
                                         }
                                         ;
                                         var fullDate = new Date(year, 0, doy);
@@ -3022,9 +3036,9 @@ var StreamStats;
                                         }
                                         ;
                                         if (this.x > 641)
-                                            return '</b><br>Water Year: <b>' + waterYear + '</b><br>Water Year Average Value: <b>' + this.value.toFixed(2) + ' ft³/s</b>' + doy;
+                                            return '</b><br>Water Year: <b>' + waterYear + '</b><br>Water Year Average Value: <b>' + this.value.toFixed(2) + ' ft³/s</b>';
                                         if (this.x < 641)
-                                            return '<br>Date: <b>' + formattedUTCDate + '</b><br>Value: <b>' + this.value + ' ft³/s' + doy + '</b><br>Water Year: <b>' + waterYear;
+                                            return '<br>Date: <b>' + formattedUTCDate + '</b><br>Value: <b>' + this.value + ' ft³/s' + '</b><br>Water Year: <b>' + waterYear;
                                     }
                                 }
                             },
