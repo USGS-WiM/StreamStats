@@ -1190,6 +1190,7 @@ module StreamStats.Controllers {
             this.formattedP75to90.sort((a, b) => a.x - b.x);
             this.formattedP90to100.sort((a, b) => a.x - b.x);
 
+
             if (this.dailyFlow) {
                 this.dailyFlow.forEach(dailyObj => {
                     if (parseFloat(dailyObj.value) !== -999999) {
@@ -1198,10 +1199,17 @@ module StreamStats.Controllers {
                     this.formattedDailyFlow.push({x: date, y: parseFloat(dailyObj.value)})
                     this.dailyDatesOnly.push(new Date(dailyObj.dateTime))
                 }
-                //console.log('before', this.formattedDailyFlow)
-
-                let now = new Date(dailyObj.dateTime);
-                    let year = new Date(dailyObj.dateTime).getUTCFullYear();
+                });
+                // filtering out Feb 29 (while this results in a bit of data loss, it results in a cleaner plot that emphasizes seasonality)
+                const noLeapDay = this.dailyFlow.filter(item => {
+                    if (item.dateTime[5] + item.dateTime[6] === '02' && item.dateTime[8] + item.dateTime[9] === '29') {
+                    } else {
+                        return (item.dateTime)
+                    }
+                });
+                noLeapDay.forEach(dailyObjNoLeap => {
+                    let now = new Date(dailyObjNoLeap.dateTime);
+                    let year = new Date(dailyObjNoLeap.dateTime).getUTCFullYear();
                     //Getting dates in Julian days
                     function daysIntoYear(now){
                         return (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
@@ -1212,9 +1220,8 @@ module StreamStats.Controllers {
                         if (year % 100 === 0) return false;
                         return year % 4 === 0;
                     };
-                    if (parseInt(dailyObj.value) !== -999999) {
-                    this.dailyValuesOnly.push(parseInt(dailyObj.value));
-
+                    if (parseInt(dailyObjNoLeap.value) !== -999999) {
+                    this.dailyValuesOnly.push(parseInt(dailyObjNoLeap.value));
                     if (isLeapYear(year) == false && doy > 59) {
                         doy += 1; //add a day onto non-leap years so that dates after Feb 28 will line up with leap years
                     };
@@ -1224,14 +1231,14 @@ module StreamStats.Controllers {
                     if (doy < 275) {
                         doy += 366; //making 275 (Oct 1) the lowest number so the x-axis can start at the beginning of the water year
                     };
-                    if (parseInt(dailyObj.value) !== -999999) {
-                        this.formattedDailyHeat.push({x: doy, y: year, value: parseInt(dailyObj.value), length: 1});
-                    };
-                    if (isLeapYear(year) == false) {
-                        this.formattedDailyHeat.push({x: 60, y: year, value: null, length: 1}); //adding a blank cell on Feb 29 on non-leap years so that data will line up
+                    if (doy > 425) {
+                        doy -= 1;
+                    }
+                    if (parseInt(dailyObjNoLeap.value) !== -999999) {
+                        this.formattedDailyHeat.push({x: doy, y: year, value: parseInt(dailyObjNoLeap.value), length: 1});
                     };
                 }
-                });
+                })
             }
             if (this.instFlow !== undefined) {
                 this.instFlow.forEach(instObj => {
@@ -3334,7 +3341,7 @@ public createDailyRasterPlot(): void {
             type: null,
             min: 275,
             max: 665,
-            tickPositions: [275, 306, 336, 367, 398, 427, 458, 488, 519, 549, 580, 611, 650],
+            tickPositions: [275, 306, 336, 367, 398, 426, 457, 487, 518, 548, 579, 610, 650],
             title: {
                 text: 'Day of Year'
             },
@@ -3372,13 +3379,22 @@ public createDailyRasterPlot(): void {
                         let year = this.y;
                         let doy = this.x;
                         if (doy > 366) {
-                            doy -= 366; //returning doy to 1-366 for labeling purposes
+                            doy -= 365; //returning doy to 1-366 for labeling purposes
                         };
                         if (doy > 274) {
                             year -= 1; //subracting a year from Oct-Dec dates to get the cal year vs water year
                         };
-                        if (isLeapYear(year) == false && doy > 59) {
-                            doy -= 1 //subtracting a day off of non-leap years after Feb 28 so that the labels are accurate
+                        // definitely a more concise way to do this, but a lot of adjustments to the Day of Year needed to be made to 
+                        // have the tooltip display the correct day. DOY = 60 corresponds to Feb 29, which we have excluded from the plot, 
+                        // so there needed to be a way to get labels to display correctly using Javascript dates
+                        if (isLeapYear(year) == false) {
+                            doy -= 1
+                        };
+                        if (isLeapYear(year) == true && doy < 274) {
+                            doy -= 1
+                        }
+                        if (isLeapYear(year) == true && doy > 59 && doy < 274) {
+                            doy += 1
                         };
                         let fullDate = new Date(year, 0, doy)
                         let UTCday = fullDate.getUTCDate();
@@ -3389,8 +3405,8 @@ public createDailyRasterPlot(): void {
                         if (month > 9) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
                             waterYear += 1; // adding a year to dates that fall into the next water year
                         };
-                        if (doy > 282 && doy < 293) return '</b><br>Water Year: <b>' + waterYear + '</b><br>Water Year Average Value: <b>' + this.value.toFixed(2) + ' ft³/s</b>';
-                        if (doy !== 283 && doy !== 284 && doy !== 285 && doy !== 286 && doy !== 287 && doy !== 288 && doy !== 289 && doy !== 290 && doy !== 291 && doy !== 292) return '<br>Date: <b>'  + formattedUTCDate + '</b><br>Value: <b>' + this.value + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                        if (this.x > 641) return '</b><br>Water Year: <b>' + waterYear + '</b><br>Water Year Average Value: <b>' + this.value.toFixed(2) + ' ft³/s</b>';
+                        if (this.x < 641) return '<br>Date: <b>' + formattedUTCDate + '</b><br>Value: <b>' + this.value + ' ft³/s' + '</b><br>Water Year: <b>' + waterYear
                     }
                 }
             },
@@ -3398,7 +3414,7 @@ public createDailyRasterPlot(): void {
         }]
     }
 };
-          
+        
         //checkbox for turning plotLines on and off
         public plotlines = true;
         public togglePlotLines () {
