@@ -471,7 +471,7 @@
 
                 <!-- Button to Start Reordering Queue -->
                 <button ng-if="vm.selectedBatchProcessorTabName==='manageQueue' && vm.manageQueueList.length > 0 && !vm.editingQueue"
-                    type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.editingQueue = true">
+                    type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.editingQueue = true" ng-disabled="!vm.canReorder">
                     <i class="fa fa-exchange"></i>
                     <span>&nbsp;Reorder Queue</span>
                 </button>

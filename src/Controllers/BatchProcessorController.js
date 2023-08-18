@@ -88,6 +88,7 @@ var StreamStats;
                 _this.queues = ["Production Queue", "Development & Test Queue"];
                 _this.selectedQueue = "Production Queue";
                 _this.isRefreshing = false;
+                _this.canReorder = false;
                 _this.init();
                 _this.selectBatchProcessorTab(_this.selectedBatchProcessorTabName);
                 return _this;
@@ -352,6 +353,12 @@ var StreamStats;
                     _this.manageQueueList = response;
                     _this.retrievingManageQueue = false;
                     _this.isRefreshing = false;
+                    if (response.filter(function (batch) { return batch.status === 1; }).length > 1) {
+                        _this.canReorder = true;
+                    }
+                    else {
+                        _this.canReorder = false;
+                    }
                 });
             };
             BatchProcessorController.prototype.trashBatch = function (batchID, deleteCode, batchStatusEmail) {

@@ -186,6 +186,7 @@ module StreamStats.Controllers {
     public selectedQueue: string;
     public queueURL: string;
     public isRefreshing: boolean;
+    public canReorder;
 
     //Constructor
     //-+-+-+-+-+-+-+-+-+-+-+-
@@ -248,6 +249,7 @@ module StreamStats.Controllers {
       this.queues = ["Production Queue", "Development & Test Queue"];
       this.selectedQueue = "Production Queue";
       this.isRefreshing = false;
+      this.canReorder = false;
       this.init();
       this.selectBatchProcessorTab(this.selectedBatchProcessorTabName);
     }
@@ -603,6 +605,11 @@ module StreamStats.Controllers {
         this.manageQueueList = response;
         this.retrievingManageQueue = false;
         this.isRefreshing = false;
+        if (response.filter((batch) => batch.status === 1).length > 1) {
+          this.canReorder = true;
+        } else {
+          this.canReorder = false;
+        }
       });
     }
 
