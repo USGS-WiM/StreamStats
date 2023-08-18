@@ -395,7 +395,6 @@ module StreamStats.Controllers {
 
             this.Execute(request).then(
                 (response: any) => {
-                    // console.log(response.data.split(this.gage.name));
                     var regex = /[+-]?((\d+(\.\d*)?)|(\.\d+))/g;
                     try {
                         var latLong = response.data.split(this.gage.name)[1].match(regex);
