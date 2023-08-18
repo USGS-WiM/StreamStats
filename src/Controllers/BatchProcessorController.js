@@ -353,13 +353,12 @@ var StreamStats;
                     _this.manageQueueList = response;
                     _this.retrievingManageQueue = false;
                     _this.isRefreshing = false;
-                    if (response.filter(function (batch) { return batch.status === 1; }).length > 0) {
+                    if (response.filter(function (batch) { return batch.status === 1; }).length > 1) {
                         _this.canReorder = true;
                     }
                     else {
                         _this.canReorder = false;
                     }
-                    console.log(_this.canReorder);
                 });
             };
             BatchProcessorController.prototype.trashBatch = function (batchID, deleteCode, batchStatusEmail) {

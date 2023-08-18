@@ -605,12 +605,11 @@ module StreamStats.Controllers {
         this.manageQueueList = response;
         this.retrievingManageQueue = false;
         this.isRefreshing = false;
-        if (response.filter((batch) => batch.status === 1).length > 0) {
+        if (response.filter((batch) => batch.status === 1).length > 1) {
           this.canReorder = true;
         } else {
           this.canReorder = false;
         }
-        console.log(this.canReorder);
       });
     }
 
