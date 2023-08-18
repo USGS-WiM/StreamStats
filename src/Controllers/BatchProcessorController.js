@@ -118,6 +118,8 @@ var StreamStats;
                 }
                 else if (tabname == "batchStatus") {
                     if (this.batchStatusEmail) {
+                        this.retrievingBatchStatus = true;
+                        this.getBatchStatusList(this.batchStatusEmail);
                         var queryParams = new URLSearchParams(window.location.search);
                         queryParams.set("email", this.batchStatusEmail);
                     }
