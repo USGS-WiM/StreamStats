@@ -358,7 +358,7 @@ configuration.regions = [
                 "name": "River Size Class",
                 "url": "https://webgis.ornl.gov/arcgis/rest/services/Hydro/StreamClassification/MapServer",
                 "type": 'agsDynamic',
-                "visible": true,
+                "visible": false,
                 "layerOptions": {
                     "zIndex": 1,
                     "format": "png8",
@@ -410,7 +410,47 @@ configuration.regions = [
                         "label": "Great River (GR)"
                     }]
                 }],
-
+            },
+            "SedimentRegions": {
+                "name": "Sediment Regions",
+                "url": "https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/SedRegions/FeatureServer/0/",
+                "type": 'agsFeature',
+                "visible": false,
+                "layerOptions": {
+                    style: function (feature) {
+                        switch(feature.properties.Region){
+                            case 'MID': return {color: "rgb(245, 245, 122)", fillOpacity: .80};
+                            case 'NE': return {color: "rgb(225, 225, 225)", fillOpacity: .80};
+                            case 'NW': return {color: "rgb(215, 194, 158)", fillOpacity: .80};
+                            case 'SE': return {color: "rgb(255, 255, 190)", fillOpacity: .80};
+                            case 'SW': return {color: "rgb(215, 215, 158)", fillOpacity: .80};
+                        }
+                    }
+                },
+                "layerArray": [{
+                    "layerName": "MN Sediment Regions",
+                    "legend": [{
+                        "contentType": "image/png;base64",
+                        "imageData": 'iVBORw0KGgoAAAANSUhEUgAAACQAAAAhCAYAAACxzQkrAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACuSURBVFhH7c69DYMwEIZhRg4DUKRAQmyAxABUlBQMQJtM4gZSX0TE12EfP+cDRfdJb2PJ9pPQzWYgbgbi5gVV1ZOGoSfn3HKiMy+o63J6vR/UtqUqLAiaPimNU6oKY0FIC7YZpAXbDUKxYIdBSBp2GoSkYGIgdBYmDkJHYdFAaC8sOggB1jTF8sP61EBofjc0AxmIy0BcBuL6H1BdZ7/L0s3vhuYFXTUDcTNQeERf/TdX/8h535sAAAAASUVORK5CYII=',
+                        "label": "Middle"
+                    },{
+                        "contentType": "image/png;base64",
+                        "imageData": 'iVBORw0KGgoAAAANSUhEUgAAACEAAAAeCAYAAACiyHcXAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACmSURBVFhH7dW7DcQgEEXR7T9HogASEqgBiUKgAVoYC69fNELrz8A6mCu9BMlwMn/oBb0TYYyhnDO11o6T+TFECIFSSuS9X4ZhiBgj1VqplLIMM0RgKzA/ESswpxHYDMxlBCaJuY3AJDCPEdgTjBgCu4MRR2BXMNMQGDDOueMF3nQE1n8Ho5Yh+r2jFIEUgRSBFIEYwlq7fyC9fu8ohvhHikCK+Ea0AXvVp2CuiifSAAAAAElFTkSuQmCC',
+                        "label": "Northeast"
+                    },{
+                        "contentType": "image/png;base64",
+                        "imageData": 'iVBORw0KGgoAAAANSUhEUgAAACEAAAAfCAYAAABplKSyAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACxSURBVFhH7dUxCoNAEIVhbx+sIohWBhIECz1BmoDJFZJr7BUmWfFVw2LU2XGL+eE1C+5+nRklkCFQmoiyyOk1Psg5N5/EjyH6tqb7cKbuWqthGGL4IT7Pht5jo4YJIjANzCJCA/M3AouBWY3AJDGbEZgEZjcC24MRQ2BbMOIIbA0mGgID5nYp5xd40RGY/x2EUkP4e0MZAhkCGQIZAjFEVZymD6Tn7w3FEEdkCJQAgugLGBuRHPqZzecAAAAASUVORK5CYII=',
+                        "label": "Northwest"
+                    },{
+                        "contentType": "image/png;base64",
+                        "imageData": 'iVBORw0KGgoAAAANSUhEUgAAACIAAAAiCAYAAAA6RwvCAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAC6SURBVFhH7dUxDoMwDIXh3n/gAEWCdunCxAhMXeAG7S1yA3CVCkutFauQ2haDf+ktkUi+jRMcJIfQHEJjIWVZwDjdIYSwnujGQrruAo/nDdq2MgGxkL6/wgIDzMtgAvoJwWmDNkO0QbshOGlQNgQnBfobgvsETRkgMQguFyQOwe0FqUFwW0HqEByCmua8vvCdGQQXfx2pzCHx3lQOoTmE5hCaQ2gspK6L90fSi/emYiHWOYTmENpBIAAvqwBZ7EZJYpUAAAAASUVORK5CYII=',
+                        "label": "Southeast"
+                    },{
+                        "contentType": "image/png;base64",
+                        "imageData": 'iVBORw0KGgoAAAANSUhEUgAAACEAAAAjCAYAAAAaLGNkAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAC0SURBVFhH7dWxDYMwEIXhbI/S0BDTUNFQhAmSgoYZgC28woEjniJZsgBzZ7m4X3qNJeyv40EZlDeiej1pHAey1u4ncgUR797Q51tS19XimCCi3xDz0tA0N+KYQwQmiTmNkMRcRmCcmGgExoG5jcDuYNgQWAyGHYFdwYghsDMYcQQGTNtW+wv/kiEw9zvwS45w9/opAikCKQIpAgURxhS/D7jn7vULIlKmCKQIpAikCJQBgmgFWKK71Hq4wkIAAAAASUVORK5CYII=',
+                        "label": "Southwest"
+                    }]
+                }],
             }
         },
         "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/minnesota-streamstats" },
