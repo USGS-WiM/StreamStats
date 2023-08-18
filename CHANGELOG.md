@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- Bug where some gages weren't showing NWIS latitude and longitude on the gage page
+
 ### Security
 
 ## [v4.16.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.16.1) - 2023-07-20
