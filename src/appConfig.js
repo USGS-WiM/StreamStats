@@ -425,6 +425,17 @@ configuration.regions = [
                             case 'SE': return {color: "rgb(255, 255, 190)", fillOpacity: .80};
                             case 'SW': return {color: "rgb(215, 215, 158)", fillOpacity: .80};
                         }
+                    },
+                    onEachFeature: function (feature, layer) {
+                        var popupContent = '<h5>MN Sediment Regions</h5> ';
+                        var queryProperties = { 
+                            "US_L4NAME": "Sediment Region", 
+                            "Region": "Region"
+                        };
+                        Object.keys(queryProperties).map(function (k) {
+                            popupContent += '<strong>' + queryProperties[k] + ': </strong>' + feature.properties[k] + '</br>';
+                        });
+                        layer.bindPopup(popupContent);                     
                     }
                 },
                 "layerArray": [{
@@ -451,6 +462,10 @@ configuration.regions = [
                         "label": "Southwest"
                     }]
                 }],
+                "queryProperties": { "MN Sediment Regions": { 
+                    "US_L4NAME": "Sediment Region", 
+                    "Region": "Region"
+                }}
             }
         },
         "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/minnesota-streamstats" },
