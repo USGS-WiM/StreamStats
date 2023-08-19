@@ -89,6 +89,8 @@ var StreamStats;
                 _this.selectedQueue = "Production Queue";
                 _this.isRefreshing = false;
                 _this.canReorder = false;
+                _this.basinCharCollapsed = false;
+                _this.flowStatsCollapsed = false;
                 _this.init();
                 _this.selectBatchProcessorTab(_this.selectedBatchProcessorTabName);
                 return _this;
@@ -753,6 +755,23 @@ var StreamStats;
                     return streamGrids;
                 }, function (error) { })
                     .finally(function () { });
+            };
+            BatchProcessorController.prototype.collapseSection = function (e, type) {
+                var content = e.currentTarget.nextElementSibling;
+                if (content.style.display === "none") {
+                    content.style.display = "block";
+                    if (type === "flowStatistics")
+                        this.flowStatsCollapsed = false;
+                    if (type === "basinCharacteristics")
+                        this.basinCharCollapsed = false;
+                }
+                else {
+                    content.style.display = "none";
+                    if (type === "flowStatistics")
+                        this.flowStatsCollapsed = true;
+                    if (type === "basinCharacteristics")
+                        this.basinCharCollapsed = true;
+                }
             };
             BatchProcessorController.prototype.init = function () {
                 var _this = this;
