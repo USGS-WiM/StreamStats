@@ -54,6 +54,10 @@ module StreamStats.Controllers {
             this.environment = configuration.environment;
             this.AppVersion = configuration.version;
             this.cloud = configuration.cloud;
+
+            if (configuration.showWarningModal) {
+                this.openWarningMessage();
+            }
         }
 
         //Methods
@@ -68,6 +72,10 @@ module StreamStats.Controllers {
 
         public openHelp(): void {
             this.modalService.openModal(Services.SSModalType.e_help);
+        }
+
+        public openWarningMessage(): void {
+            this.modalService.openModal(Services.SSModalType.e_warningmessage);
         }
 
         //Helper Methods

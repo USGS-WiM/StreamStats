@@ -1,6 +1,8 @@
 var configuration = {};
 configuration.version = "4.16.1";
 configuration.environment = 'development';
+configuration.showWarningModal = false;
+configuration.warningModalMessage = "Due to heavy demand, StreamStats is currently experiencing system interruptions.\nIf you receive errors, please try back again later. Thank you for your patience."
 
 configuration.baseurls =
     {
