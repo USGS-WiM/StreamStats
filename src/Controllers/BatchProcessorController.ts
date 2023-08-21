@@ -188,6 +188,10 @@ module StreamStats.Controllers {
     public isRefreshing: boolean;
     public canReorder;
 
+    // collapsing sections
+    public basinCharCollapsed;
+    public flowStatsCollapsed;
+
     //Constructor
     //-+-+-+-+-+-+-+-+-+-+-+-
     static $inject = [
@@ -250,6 +254,8 @@ module StreamStats.Controllers {
       this.selectedQueue = "Production Queue";
       this.isRefreshing = false;
       this.canReorder = false;
+      this.basinCharCollapsed = false;
+      this.flowStatsCollapsed = false;
       this.init();
       this.selectBatchProcessorTab(this.selectedBatchProcessorTabName);
     }
@@ -282,6 +288,8 @@ module StreamStats.Controllers {
         queryParams.delete("email");
       } else if (tabname == "batchStatus") {
         if (this.batchStatusEmail) {
+          this.retrievingBatchStatus = true;
+          this.getBatchStatusList(this.batchStatusEmail);
           var queryParams = new URLSearchParams(window.location.search);
           queryParams.set("email", this.batchStatusEmail);
         }
@@ -1232,6 +1240,19 @@ module StreamStats.Controllers {
         )
         .finally(() => {});
     }
+
+    public collapseSection(e, type) {
+      var content = e.currentTarget.nextElementSibling;
+      if (content.style.display === "none") {
+          content.style.display = "block";
+          if(type === "flowStatistics") this.flowStatsCollapsed = false;
+          if(type === "basinCharacteristics") this.basinCharCollapsed = false;
+      } else {
+          content.style.display = "none";
+          if(type === "flowStatistics") this.flowStatsCollapsed = true;
+          if(type === "basinCharacteristics") this.basinCharCollapsed = true;
+      }
+  }
 
     // Helper Methods
     // -+-+-+-+-+-+-+-+-+-+-+-

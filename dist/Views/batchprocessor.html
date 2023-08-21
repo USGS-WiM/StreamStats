@@ -136,79 +136,83 @@
 
             <!-- Start select flow statistics -->
             <div ng-if="cbFlowStats" style="padding-top: 15px;" class="well well-sm">
-                <h3>Select Flow Statistics</h3>
-                <!-- button to check/uncheck all -->
-                <button ng-if="vm.flowStatsList.length > 0" class="btn-blue fullwidth" ng-class="btn-blue" ng-click="vm.toggleFlowStatisticsAllChecked()">
-                    <span ng-if="vm.flowStatsAllChecked">Select All Flow Statistics</span>
-                    <span ng-if="!vm.flowStatsAllChecked">Unselect All Flow Statistics</span>
-                </button>
-                <!-- create list of flow stats checkboxes -->
-                <div ng-if="vm.selectedRegion && vm.flowStatsListSpinner" style="padding-top: 15px;"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
-                <div ng-if="!vm.selectedRegion" style="padding-top: 15px;text-align: center;">
-                    <span>Please select a State / Region to view Flow Statistics.</span>
-                </div>
-                <div ng-if="vm.flowStatsList.length > 0">
-                    <table class="table table-condensed">
-                        <thead class="param-table">
-                            <tr>
-                                <th>Select</th>
-                                <th class="col-xs-7">Statistic Group</th>
-                                <th class="col-xs-3"></th>
-                            </tr>
-                        </thead>
-                        <tbody ng-repeat="flowStat in vm.flowStatsList">
-                            <tr>
-                                <td>
-                                    <checkbox large ng-model="flowStat.checked" ng-change="vm.setRegionStats(flowStat)">
-                                    </checkbox>
-                                </td>
-                                <td><span>&nbsp;&nbsp;{{flowStat.statisticGroupName}}</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <h3 class="collapsible" ng-click="vm.collapseSection($event, 'flowStatistics')"><i ng-class="!vm.flowStatsCollapsed ? 'fa fa-chevron-right': 'fa fa-chevron-down'"></i>&nbsp;&nbsp;Select Flow Statistics</h3>
+                <div class="collapsible-content" style="background-color: #f5f5f5;">
+                    <!-- button to check/uncheck all -->
+                    <button ng-if="vm.flowStatsList.length > 0" class="btn-blue fullwidth" ng-class="btn-blue" ng-click="vm.toggleFlowStatisticsAllChecked()">
+                        <span ng-if="vm.flowStatsAllChecked">Select All Flow Statistics</span>
+                        <span ng-if="!vm.flowStatsAllChecked">Unselect All Flow Statistics</span>
+                    </button>
+                    <!-- create list of flow stats checkboxes -->
+                    <div ng-if="vm.selectedRegion && vm.flowStatsListSpinner" style="padding-top: 15px;"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+                    <div ng-if="!vm.selectedRegion" style="padding-top: 15px;text-align: center;">
+                        <span>Please select a State / Region to view Flow Statistics.</span>
+                    </div>
+                    <div ng-if="vm.flowStatsList.length > 0">
+                        <table class="table table-condensed">
+                            <thead class="param-table">
+                                <tr>
+                                    <th>Select</th>
+                                    <th class="col-xs-7">Statistic Group</th>
+                                    <th class="col-xs-3"></th>
+                                </tr>
+                            </thead>
+                            <tbody ng-repeat="flowStat in vm.flowStatsList">
+                                <tr>
+                                    <td>
+                                        <checkbox large ng-model="flowStat.checked" ng-change="vm.setRegionStats(flowStat)">
+                                        </checkbox>
+                                    </td>
+                                    <td><span>&nbsp;&nbsp;{{flowStat.statisticGroupName}}</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div><!-- End select flow statistics -->
 
             <!-- Start select parameters -->
             <div ng-show="vm.showBasinCharacteristics || cbBasinChar" style="padding-top: 15px;" class="well well-sm">
-                <h3>Select Basin Characteristics</h3>
-                <!-- button to check/uncheck all -->
-                <button ng-if="vm.availableParamList.length > 0" class="btn-blue fullwidth" ng-class="!vm.parametersAllChecked ? 'btn-black': 'btn-blue'"
-                    ng-click="vm.toggleParametersAllChecked()">
-                    <span ng-if="vm.parametersAllChecked">Select All Basin Characteristics</span>
-                    <span ng-if="!vm.parametersAllChecked">Unselect All Basin Characteristics</span>
-                </button>
+                <h3 class="collapsible" ng-click="vm.collapseSection($event, 'basinCharacteristics')"><i ng-class="!vm.basinCharCollapsed ? 'fa fa-chevron-right': 'fa fa-chevron-down'"></i>&nbsp;&nbsp;Select Basin Characteristics</h3>
+                <div class="collapsible-content" style="background-color: #f5f5f5;">
+                    <!-- button to check/uncheck all -->
+                    <button ng-if="vm.availableParamList.length > 0" class="btn-blue fullwidth" ng-class="!vm.parametersAllChecked ? 'btn-black': 'btn-blue'"
+                        ng-click="vm.toggleParametersAllChecked()">
+                        <span ng-if="vm.parametersAllChecked">Select All Basin Characteristics</span>
+                        <span ng-if="!vm.parametersAllChecked">Unselect All Basin Characteristics</span>
+                    </button>
 
-                <!-- create table of parameters checkboxes -->
-                <div ng-if="vm.selectedRegion && vm.parametersListSpinner" style="padding-top: 15px;"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
-                <div ng-if="!vm.selectedRegion" style="padding-top: 15px;text-align: center;">
-                    <span>Please select a State / Region to view Basin Characteristics.</span>
-                </div>
-                <div ng-if="vm.availableParamList.length > 0">
-                    <br>
-                    <span>* Please note that not that these Basin Characteristics may not be available for all the requested batch points.</span>
-                    <br><br>
-                    <table class="table table-condensed">
-                        <thead class="param-table">
-                            <tr>
-                                <th class="col-xs-2">Select</th>
-                                <th class="col-xs-3">Parameter</th>
-                                <th class="col-xs-7">Description</th>
-                            </tr>
-                        </thead>
-                        <tbody ng-repeat="parameter in vm.availableParamList | orderBy:'code'">
-                            <tr>
-                                <td>
-                                    <checkbox large ng-model="parameter.checked"
-                                        ng-change="vm.updateSelectedParamList(parameter)"
-                                        ng-disabled="!parameter.toggleable">
-                                    </checkbox>
-                                </td>
-                                <td><span>&nbsp;&nbsp;{{parameter.code}}<span ng-if="parameter.asterisk"> *</span></span></td>
-                                <td><span>&nbsp;&nbsp;{{parameter.description}}</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <!-- create table of parameters checkboxes -->
+                    <div ng-if="vm.selectedRegion && vm.parametersListSpinner" style="padding-top: 15px;"><i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i></div>
+                    <div ng-if="!vm.selectedRegion" style="padding-top: 15px;text-align: center;">
+                        <span>Please select a State / Region to view Basin Characteristics.</span>
+                    </div>
+                    <div ng-if="vm.availableParamList.length > 0">
+                        <br>
+                        <span>* Please note that not that these Basin Characteristics may not be available for all the requested batch points.</span>
+                        <br><br>
+                        <table class="table table-condensed">
+                            <thead class="param-table">
+                                <tr>
+                                    <th class="col-xs-2">Select</th>
+                                    <th class="col-xs-3">Parameter</th>
+                                    <th class="col-xs-7">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody ng-repeat="parameter in vm.availableParamList | orderBy:'code'">
+                                <tr>
+                                    <td>
+                                        <checkbox large ng-model="parameter.checked"
+                                            ng-change="vm.updateSelectedParamList(parameter)"
+                                            ng-disabled="!parameter.toggleable">
+                                        </checkbox>
+                                    </td>
+                                    <td><span>&nbsp;&nbsp;{{parameter.code}}<span ng-if="parameter.asterisk"> *</span></span></td>
+                                    <td><span>&nbsp;&nbsp;{{parameter.description}}</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div><!-- End parameter selection -->
 
@@ -471,7 +475,7 @@
 
                 <!-- Button to Start Reordering Queue -->
                 <button ng-if="vm.selectedBatchProcessorTabName==='manageQueue' && vm.manageQueueList.length > 0 && !vm.editingQueue"
-                    type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.editingQueue = true">
+                    type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.editingQueue = true" ng-disabled="!vm.canReorder">
                     <i class="fa fa-exchange"></i>
                     <span>&nbsp;Reorder Queue</span>
                 </button>
