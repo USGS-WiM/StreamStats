@@ -2,7 +2,7 @@ var configuration = {};
 configuration.version = "4.16.1";
 configuration.environment = 'development';
 configuration.showWarningModal = false;
-configuration.warningModalMessage = "Due to heavy demand, StreamStats is currently experiencing system interruptions.\nIf you receive errors, please try back again later. Thank you for your patience."
+configuration.warningModalMessage = "Due to heavy demand, StreamStats is currently experiencing system interruptions. If you receive errors, please try back again later.<br><br>The North Carolina region has been temporarily disabled. To run StreamStats in North Carolina, please use the Batch Processor at <a href='https://streamstatsags.cr.usgs.gov/ss_bp/' target='_blank'>https://streamstatsags.cr.usgs.gov/ss_bp/</a> or contact streamstats@usgs.gov for assistance.<br><br>Thank you for your patience."
 
 configuration.baseurls =
     {
