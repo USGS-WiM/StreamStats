@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- Warning Message Modal that can be toggled via showWarningModal boolean in appConfig.js
+
 ### Changed
 
 ### Deprecated

@@ -29,6 +29,9 @@ var StreamStats;
                 _this.environment = configuration.environment;
                 _this.AppVersion = configuration.version;
                 _this.cloud = configuration.cloud;
+                if (configuration.showWarningModal) {
+                    _this.openWarningMessage();
+                }
                 return _this;
             }
             NavbarController.prototype.openReport = function () {
@@ -39,6 +42,9 @@ var StreamStats;
             };
             NavbarController.prototype.openHelp = function () {
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_help);
+            };
+            NavbarController.prototype.openWarningMessage = function () {
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_warningmessage);
             };
             NavbarController.prototype.readCookie = function (name) {
                 var nameEQ = name + "=";
