@@ -45,9 +45,11 @@ var StreamStats;
         }());
         var BatchProcessorController = (function (_super) {
             __extends(BatchProcessorController, _super);
-            function BatchProcessorController($scope, $http, modalService, nssService, modal, toaster) {
+            function BatchProcessorController($scope, $http, modalService, nssService, modal, toaster, $sce) {
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
+                _this.displayWarning = false;
                 $scope.vm = _this;
+                _this.sce = $sce;
                 _this.modalInstance = modal;
                 _this.modalService = modalService;
                 _this.selectedBatchProcessorTabName = "submitBatch";
@@ -796,6 +798,10 @@ var StreamStats;
                 this.retrieveBatchStatusMessages().then(function (response) {
                     _this.batchStatusMessageList = response;
                 });
+                if (configuration.showBPWarning) {
+                    console.log('hi');
+                    this.warningMessage = configuration.warningBPMessage;
+                }
             };
             BatchProcessorController.prototype.checkArrayForObj = function (arr, obj) {
                 for (var i = 0; i < arr.length; i++) {
@@ -848,6 +854,10 @@ var StreamStats;
                 this.selectedFlowStatsList.length = 0;
                 this.checkStats();
             };
+            BatchProcessorController.prototype.convertUnsafe = function (x) {
+                return this.sce.trustAsHtml(x);
+            };
+            ;
             BatchProcessorController.$inject = [
                 "$scope",
                 "$http",
@@ -855,6 +865,7 @@ var StreamStats;
                 "StreamStats.Services.nssService",
                 "$modalInstance",
                 "toaster",
+                '$sce',
             ];
             return BatchProcessorController;
         }(WiM.Services.HTTPServiceBase));

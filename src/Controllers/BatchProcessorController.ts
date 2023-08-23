@@ -192,6 +192,11 @@ module StreamStats.Controllers {
     public basinCharCollapsed;
     public flowStatsCollapsed;
 
+    // warning message
+    public displayWarning = false;
+    public warningMessage: string;
+    public sce: any;
+
     //Constructor
     //-+-+-+-+-+-+-+-+-+-+-+-
     static $inject = [
@@ -201,6 +206,7 @@ module StreamStats.Controllers {
       "StreamStats.Services.nssService",
       "$modalInstance",
       "toaster",
+      '$sce',
     ];
     constructor(
       $scope: IBatchProcessorControllerScope,
@@ -208,10 +214,12 @@ module StreamStats.Controllers {
       modalService: Services.IModalService,
       nssService: Services.InssService,
       modal: ng.ui.bootstrap.IModalServiceInstance,
-      toaster
+      toaster,
+      $sce: any,
     ) {
       super($http, configuration.baseurls.StreamStats);
       $scope.vm = this;
+      this.sce = $sce;
       this.modalInstance = modal;
       this.modalService = modalService;
       this.selectedBatchProcessorTabName = "submitBatch";
@@ -1285,6 +1293,12 @@ module StreamStats.Controllers {
       this.retrieveBatchStatusMessages().then((response) => {
         this.batchStatusMessageList = response;
       });
+
+      // get warning message 
+      if (configuration.showBPWarning) {
+        console.log('hi')
+        this.warningMessage = configuration.warningBPMessage;
+      }
     }
 
     private checkArrayForObj(arr, obj): number {
@@ -1352,6 +1366,11 @@ module StreamStats.Controllers {
       this.selectedFlowStatsList.length = 0;
       this.checkStats();
     }
+
+    // warning message 
+    public convertUnsafe(x: string) {
+      return this.sce.trustAsHtml(x);
+    };
   } //end  class
 
   angular

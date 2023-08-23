@@ -1,6 +1,8 @@
 var configuration = {};
 configuration.version = "4.12.0";
 configuration.environment = 'development';
+configuration.showBPWarning = false;
+configuration.warningBPMessage = "Due to heavy demand, StreamStats is currently experiencing system interruptions. If you receive errors, please try back again later.<br><br>Thank you for your patience."
 
 configuration.baseurls =
     {
