@@ -426,8 +426,8 @@
                                     <i ng-if="batch.status==1" ng-click="vm.submitPauseBatch(batch.batchID)"
                                             class="fa fa-pause-circle-o" style="cursor: pointer"></i>
                                 </td>
-                                <td style="text-align: center;"><i
-                                        ng-click="vm.trashBatch(batch.batchID, batch.deleteCode, batchStatusEmail)"
+                                <td style="text-align: center;">
+                                    <i ng-if="batch.status!=2" ng-click="vm.trashBatch(batch.batchID, batch.deleteCode, batchStatusEmail)"
                                         class="fa fa-trash" style="cursor: pointer"></i></td>
                             </tr>
                         </tbody>
