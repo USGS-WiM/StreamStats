@@ -12,6 +12,11 @@
 <!-- Start modal body-->
 <div class="modal-body">
 
+    <!-- Warning Message -->
+    <div id="warningMessageContent" ng-if="!vm.showWarning">
+        <div class="wim-warning" ng-bind-html="vm.convertUnsafe(vm.warningMessage)"></div>
+    </div>
+
     <!-- Start batch processor tabs -->
     <ul id="bpTabs" class="nav nav-tabs">
         <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'submitBatch'}"><a
