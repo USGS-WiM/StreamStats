@@ -307,11 +307,14 @@
                                 <td style="text-align: center;"><span><a ng-if="batch.resultsURL != null" ng-href="{{batch.resultsURL}}">Link</a></span></td>
                                 <td style="text-align: center;"><span>{{batch.region}}</span></td>
                                 <td style="text-align: center;"><span>{{batch.pointsRequested}}</span></td>
-                                <td style="text-align: center;"><span
-                                        ng-if="batch.pointsSuccessful != null">{{batch.pointsSuccessful}}</span></td>
-                                <td style="text-align: center;"><i
-                                        ng-click="vm.trashBatch(batch.batchID, batch.deleteCode, batchStatusEmail)"
-                                        class="fa fa-trash" style="cursor: pointer"></i></td>
+                                <td style="text-align: center;">
+                                    <span ng-if="batch.pointsSuccessful != null">{{batch.pointsSuccessful}}</span>
+                                </td>
+                                <td style="text-align: center;">
+                                    <i ng-if="batch.status!=2" ng-click="vm.trashBatch(batch.batchID, batch.deleteCode, batchStatusEmail)"
+                                        class="fa fa-trash" style="cursor: pointer">
+                                    </i>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -431,8 +434,8 @@
                                     <i ng-if="batch.status==1" ng-click="vm.submitPauseBatch(batch.batchID)"
                                             class="fa fa-pause-circle-o" style="cursor: pointer"></i>
                                 </td>
-                                <td style="text-align: center;"><i
-                                        ng-click="vm.trashBatch(batch.batchID, batch.deleteCode, batchStatusEmail)"
+                                <td style="text-align: center;">
+                                    <i ng-if="batch.status!=2" ng-click="vm.trashBatch(batch.batchID, batch.deleteCode, batchStatusEmail)"
                                         class="fa fa-trash" style="cursor: pointer"></i></td>
                             </tr>
                         </tbody>
