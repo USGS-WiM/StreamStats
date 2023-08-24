@@ -669,17 +669,31 @@ var StreamStats;
             };
             BatchProcessorController.prototype.deleteBatch = function (batchID, deleteCode, batchStatusEmail) {
                 var _this = this;
-                var url = this.queueURL +
-                    configuration.queryparams["SSBatchProcessorDeleteBatch"].format(deleteCode);
+                var url;
+                if (this.selectedBatchProcessorTabName == 'manageQueue') {
+                    url =
+                        this.queueURL +
+                            configuration.queryparams["SSBatchProcessorDeleteBatch"].format(deleteCode);
+                }
+                else if (this.selectedBatchProcessorTabName == 'batchStatus') {
+                    url =
+                        configuration.baseurls["BatchProcessorServices"] +
+                            configuration.queryparams["SSBatchProcessorDeleteBatch"].format(deleteCode);
+                }
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.DELETE);
                 return this.Execute(request)
                     .then(function (response) {
                     var text = "Batch ID " + batchID + " was deleted.";
                     alert(text);
-                    _this.getBatchStatusList(batchStatusEmail);
-                    _this.retrievingBatchStatus = true;
-                    _this.getManageQueueList();
-                    _this.retrievingManageQueue = true;
+                    _this.isRefreshing = true;
+                    if (_this.selectedBatchProcessorTabName == 'manageQueue') {
+                        _this.getManageQueueList();
+                        _this.retrievingManageQueue = true;
+                    }
+                    else if (_this.selectedBatchProcessorTabName == 'batchStatus') {
+                        _this.getBatchStatusList(_this.batchStatusEmail);
+                        _this.retrievingBatchStatus = true;
+                    }
                 }, function (error) {
                     var text = "Error deleting batch ID " +
                         batchID +
