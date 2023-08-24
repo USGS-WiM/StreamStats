@@ -417,7 +417,7 @@ configuration.regions = [
             },
         "Applications": ["Regulation", "ChannelWidthWeighting"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/montana-streamstats-including-yellowstone-river-basin-wyoming"
     },
-    { "RegionID": "NC", "Name": "North Carolina", "Bounds": [[33.882164, -84.323773], [36.589767, -75.45658]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false, "URL": "https://www.usgs.gov/streamstats/north-carolina-streamstats" },
+    { "RegionID": "NC", "Name": "North Carolina", "Bounds": [[33.882164, -84.323773], [36.589767, -75.45658]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/north-carolina-streamstats" },
     { "RegionID": "ND", "Name": "North Dakota", "Bounds": [[45.930822, -104.062991], [49.000026, -96.551931]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/north-dakota-streamstats" },
     { "RegionID": "NE", "Name": "Nebraska", "Bounds": [[39.992595, -104.056219], [43.003062, -95.308697]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false, "URL": null },
     { "RegionID": "NH", "Name": "New Hampshire", "Bounds": [[42.698603, -72.553428], [45.301469, -70.734139]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/new-hampshire-streamstats" },
