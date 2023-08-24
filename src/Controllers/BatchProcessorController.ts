@@ -1096,11 +1096,20 @@ module StreamStats.Controllers {
       deleteCode: string,
       batchStatusEmail: string
     ): ng.IPromise<any> {
-      var url =
+      var url: string;
+      if (this.selectedBatchProcessorTabName == 'manageQueue') { // if on the Manage Queue tab, need to use the BP service url for the queue selected
+        url =
         this.queueURL +
         configuration.queryparams["SSBatchProcessorDeleteBatch"].format(
           deleteCode
         );
+      } else if (this.selectedBatchProcessorTabName == 'batchStatus') { // if on the Batch Status tab, need to use the BP service url based on the host url
+        url =
+        configuration.baseurls["BatchProcessorServices"] +
+        configuration.queryparams["SSBatchProcessorDeleteBatch"].format(
+          deleteCode
+        );
+      }
       var request: WiM.Services.Helpers.RequestInfo =
         new WiM.Services.Helpers.RequestInfo(
           url,
@@ -1114,10 +1123,14 @@ module StreamStats.Controllers {
             let text = "Batch ID " + batchID + " was deleted.";
             alert(text);
             // Refresh the list of batches
-            this.getBatchStatusList(batchStatusEmail);
-            this.retrievingBatchStatus = true;
-            this.getManageQueueList();
-            this.retrievingManageQueue = true;
+            this.isRefreshing = true; 
+            if (this.selectedBatchProcessorTabName == 'manageQueue') { // Need to update Manage Queue results
+              this.getManageQueueList();
+              this.retrievingManageQueue = true;
+            } else if (this.selectedBatchProcessorTabName == 'batchStatus') { // Need to update Batch Status results
+              this.getBatchStatusList(this.batchStatusEmail); 
+              this.retrievingBatchStatus = true
+            }
           },
           (error) => {
             let text =
