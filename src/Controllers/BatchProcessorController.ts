@@ -1296,7 +1296,6 @@ module StreamStats.Controllers {
 
       // get warning message 
       if (configuration.showBPWarning) {
-        console.log('hi')
         this.warningMessage = configuration.warningBPMessage;
       }
     }

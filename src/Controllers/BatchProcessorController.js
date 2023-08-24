@@ -799,7 +799,6 @@ var StreamStats;
                     _this.batchStatusMessageList = response;
                 });
                 if (configuration.showBPWarning) {
-                    console.log('hi');
                     this.warningMessage = configuration.warningBPMessage;
                 }
             };
