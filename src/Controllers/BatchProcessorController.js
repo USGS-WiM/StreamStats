@@ -66,6 +66,8 @@ var StreamStats;
                 else {
                     _this.internalHost = false;
                 }
+                _this.cbFlowStats = false;
+                _this.cbBasinChar = false;
                 _this.selectedFlowStatsList = [];
                 _this.selectedParamList = [];
                 _this.flowStatsAllChecked = true;
@@ -860,6 +862,8 @@ var StreamStats;
                 delete this.submitBatchData.email;
                 delete this.submitBatchData.idField;
                 delete this.submitBatchData.attachment;
+                this.cbFlowStats = false;
+                this.cbBasinChar = false;
                 this.selectedParamList.length = 0;
                 this.flowStatIDs.length = 0;
                 this.flowStatsList.length = 0;

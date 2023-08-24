@@ -129,10 +129,10 @@
                         ng-disabled="vm.selectedRegion">
                     <label class="chx" for="cbDelineate">&nbsp;Basin Delineation&nbsp;&nbsp;&nbsp;&nbsp;</label>
 
-                    <input id="cbFlowStats" type="checkbox" display="inline-block" ng-model="cbFlowStats">
+                    <input id="cbFlowStats" type="checkbox" display="inline-block" ng-model="vm.cbFlowStats">
                     <label class="chx" for="cbFlowStats">&nbsp;Compute Flow Statistics&nbsp;&nbsp;&nbsp;&nbsp;</label>
 
-                    <input id="cbBasinChar" type="checkbox" display="inline-block" ng-model="cbBasinChar"
+                    <input id="cbBasinChar" type="checkbox" display="inline-block" ng-model="vm.cbBasinChar"
                         ng-click="cbBasinChar = !cbBasinChar" ng-checked="vm.showBasinCharacteristics || cbBasinChar"
                         ng-disabled="vm.showBasinCharacteristics">
                     <label class="chx" for="cbBasinChar">&nbsp;Compute Basin Characteristics</label>
@@ -140,7 +140,7 @@
             </div><br><!-- end checkboxes for different sections -->
 
             <!-- Start select flow statistics -->
-            <div ng-if="cbFlowStats" style="padding-top: 15px;" class="well well-sm">
+            <div ng-if="vm.cbFlowStats" style="padding-top: 15px;" class="well well-sm">
                 <h3 class="collapsible" ng-click="vm.collapseSection($event, 'flowStatistics')"><i ng-class="!vm.flowStatsCollapsed ? 'fa fa-chevron-right': 'fa fa-chevron-down'"></i>&nbsp;&nbsp;Select Flow Statistics</h3>
                 <div class="collapsible-content" style="background-color: #f5f5f5;">
                     <!-- button to check/uncheck all -->
@@ -177,7 +177,7 @@
             </div><!-- End select flow statistics -->
 
             <!-- Start select parameters -->
-            <div ng-show="vm.showBasinCharacteristics || cbBasinChar" style="padding-top: 15px;" class="well well-sm">
+            <div ng-show="vm.showBasinCharacteristics || vm.cbBasinChar" style="padding-top: 15px;" class="well well-sm">
                 <h3 class="collapsible" ng-click="vm.collapseSection($event, 'basinCharacteristics')"><i ng-class="!vm.basinCharCollapsed ? 'fa fa-chevron-right': 'fa fa-chevron-down'"></i>&nbsp;&nbsp;Select Basin Characteristics</h3>
                 <div class="collapsible-content" style="background-color: #f5f5f5;">
                     <!-- button to check/uncheck all -->

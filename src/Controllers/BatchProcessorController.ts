@@ -142,6 +142,7 @@ module StreamStats.Controllers {
     public selectedRegion: string;
 
     // Flow Stats
+    public cbFlowStats: boolean;
     public flowStatsList: Array<any>;
     public flowStatsAllChecked: boolean;
     public selectedFlowStatsList: Array<Object>;
@@ -149,6 +150,7 @@ module StreamStats.Controllers {
     public flowStatIDs: Array<string>;
 
     // Parameters/basin characteristics
+    public cbBasinChar: boolean;
     public availableParamList: Array<Parameter>;
     public selectedParamList: Array<string>;
     public parametersAllChecked: boolean;
@@ -237,6 +239,8 @@ module StreamStats.Controllers {
       } else {
         this.internalHost = false;
       }
+      this.cbFlowStats = false;
+      this.cbBasinChar = false;
       this.selectedFlowStatsList = [];
       this.selectedParamList = [];
       this.flowStatsAllChecked = true;
@@ -1370,7 +1374,9 @@ module StreamStats.Controllers {
       delete this.submitBatchData.idField;
       delete this.submitBatchData.attachment;
 
-      // reset objects to default values that orginate in controller
+      // reset objects to default values that originate in controller
+      this.cbFlowStats = false;
+      this.cbBasinChar = false;
       this.selectedParamList.length = 0;
       this.flowStatIDs.length = 0;
       this.flowStatsList.length = 0;
