@@ -365,6 +365,7 @@ module StreamStats.Controllers {
                     -1
                   ) {
                     parameter["asterisk"] = true;
+                    parameter["toggleable"] = true;
                     this.availableParamList.push(parameter);
                     availableParamCodes.push(parameter.code);
                   }

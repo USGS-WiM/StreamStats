@@ -168,6 +168,7 @@ var StreamStats;
                                     if (availableParamCodes.indexOf(parameter.code.toUpperCase()) ==
                                         -1) {
                                         parameter["asterisk"] = true;
+                                        parameter["toggleable"] = true;
                                         _this.availableParamList.push(parameter);
                                         availableParamCodes.push(parameter.code);
                                     }
