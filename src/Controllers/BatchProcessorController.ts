@@ -717,7 +717,7 @@ module StreamStats.Controllers {
               this.toaster.clear();
               this.toaster.pop(
                 "error",
-                "The submission failed for the following reason:",
+                "Batch submission failed: ",
                 detail,
                 15000
               );
@@ -779,7 +779,7 @@ module StreamStats.Controllers {
               this.toaster.clear();
               this.toaster.pop(
                 "error",
-                "The submission failed for the following reason:" + detail,
+                "Batch submission failed: " + detail,
                 "",
                 15000
               );
