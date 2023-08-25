@@ -414,7 +414,7 @@ var StreamStats;
                         else {
                             var detail = r.data.detail;
                             _this.toaster.clear();
-                            _this.toaster.pop("error", "The submission failed for the following reason:", detail, 15000);
+                            _this.toaster.pop("error", "Batch submission failed: ", detail, 15000);
                             gtag("event", "BatchProcessor", {
                                 Category: "Submit Batch - unsuccessful",
                             });
@@ -451,7 +451,7 @@ var StreamStats;
                         else {
                             var detail = r.data.detail;
                             _this.toaster.clear();
-                            _this.toaster.pop("error", "The submission failed for the following reason:" + detail, "", 15000);
+                            _this.toaster.pop("error", "Batch submission failed: " + detail, "", 15000);
                             gtag("event", "BatchProcessor", {
                                 Category: "Submit Batch - unsuccessful",
                             });
