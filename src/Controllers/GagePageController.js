@@ -160,6 +160,7 @@ var StreamStats;
                 _this_1.statCitationList = [];
                 _this_1.charCitationList = [];
                 _this_1.showPreferred = false;
+                _this_1.dataSourcesCollapsed = true;
                 _this_1.print = function () {
                     gtag('event', 'Download', { 'Category': 'GagePage', "Type": 'Print' });
                     window.print();

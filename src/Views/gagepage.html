@@ -216,7 +216,7 @@
                                         <tr>
                                         <th scope="row">Station Name</th>
                                         <td>{{vm.gage.name}}</td>
-                                        </tr>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -240,9 +240,52 @@
                                 <button ng-click="vm.resetZoom()">Reset Zoom</button><br>
                                 <input type="checkbox" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" id="toggleFloodStats" name="toggleFloodStats" ng-model="vm.showFloodStats" ng-change="vm.toggleFloodStats()" checked>
                                 <label for="toggleFloodStats" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" > Show Flood Statistics:</label>
-                                <select id="gageFloodStatsSelect" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0 " style="width:31%; text-align-last:center; margin-top: 5px;" name="gageFloodStatsSelect" ng-model="vm.selectedFloodFreqStats" ng-options="floodFreqStat.name for floodFreqStat in vm.allFloodFreqStats" ng-change="vm.chooseFloodStats()" ng-disabled="vm.showFloodStats == false"></select><br>              
+                                <select id="gageFloodStatsSelect" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0 " style="width:31%; text-align-last:center; margin-top: 5px;" name="gageFloodStatsSelect" ng-model="vm.selectedFloodFreqStats" ng-options="floodFreqStat.name for floodFreqStat in vm.allFloodFreqStats" ng-change="vm.chooseFloodStats()" ng-disabled="vm.showFloodStats == false"></select><br> 
+                                    <div class="collapsible" ng-click="vm.dataSourcesCollapsed = !vm.dataSourcesCollapsed"><i ng-class="!vm.dataSourcesCollapsed ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i>&nbsp;&nbsp;Data Sources</div>
+                                        <!-- <div class="collapsible-content"> -->
+                                            <div class="panel panel-default" ng-show="!vm.dataSourcesCollapsed">
+                                                <div class="panel-heading">Annual Flow Plot Data Sources</div>
+                                                <div class="panel-body">
+                                                    <table class="table table-striped">
+                                                        <!-- <thead>
+                                                            <tr>
+                                                                <th>Data</th>
+                                                                <th>Source</th>
+                                                            </tr>
+                                                        </thead> -->
+                                                        <tbody>
+                                                            <tr>
+                                                                <th scope="row">Annual Peak Flow</th>
+                                                                <td><a href="https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no={{vm.gage.code}}">NWIS Annual Peak Flow Statistics</a></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row">Daily Flow</th>
+                                                                <td><a href="https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites={{vm.gage.code}}&parameterCd=00060&statCd=00003&startDT=1900-01-01">NWIS Daily Flow Statistics</a></td> 
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row">Instantaneous Flow</th>
+                                                                <td><a href="https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites={{vm.gage.code}}&parameterCd=00060&startDT=1900-01-01">NWIS Instantaneous Flow Statistics</a></td> 
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row">NWS Forecast</th>
+                                                                <td><a href="">National Weather Service</a></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row">Flood Statistics</th>
+                                                                <td><a href="https://test.streamstats.usgs.gov/gagestatsservices/stations/{{vm.gage.code}}">Flood Frequency</a></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row">Daily Percentile Streamflow</th>
+                                                                <td><a href="https://waterservices.usgs.gov/nwis/stat/?format=rdb,1.0&indent=on&sites={{vm.gage.code}}&statReportType=daily&statTypeCd=all&parameterCd=00060">NWIS Percentile Mean Flow</a></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                </div>
+                                            </div>
+                                    <!-- </div> -->
                             </div>
-                            </div>
+                        </div>
                     </center>
                     <center>
                         <div ng-if="!vm.heatChartConfig" class="panel panel-default reportSpinner">

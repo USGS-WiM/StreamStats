@@ -153,6 +153,7 @@ module StreamStats.Controllers {
         public sce: any;
         private modalInstance: ng.ui.bootstrap.IModalServiceInstance;
         private modalService: Services.IModalService;
+        private nssService: Services.InssService;
         public AppVersion: string;
         public gage: GageInfo;
         public selectedStatisticGroups;
@@ -249,6 +250,8 @@ module StreamStats.Controllers {
         public formattedDischargePeakDates = []; // Stage vs. Discharge Plot
         public dailyValuesOnly = [];
         public USGSMeasuredAgeQualityData = 'age';
+        public sectionCollapsed: Array<any>;
+        public dataSourcesCollapsed;
         public error: any;     
         public monthSliderOptions: any;
         public startMonth: number;
@@ -310,6 +313,7 @@ module StreamStats.Controllers {
             this.statCitationList = [];
             this.charCitationList = [];
             this.showPreferred = false;
+            this.dataSourcesCollapsed = true;
             this.print = function () {
                 //ga event
                 gtag('event', 'Download', { 'Category': 'GagePage', "Type": 'Print' });
@@ -3678,6 +3682,7 @@ public createDailyRasterPlot(): void {
             });
             chart.series[2].update({data:currentUSGSMeasuredData});
         }
+
         
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
