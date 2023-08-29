@@ -251,7 +251,9 @@ module StreamStats.Controllers {
         public dailyValuesOnly = [];
         public USGSMeasuredAgeQualityData = 'age';
         public sectionCollapsed: Array<any>;
-        public dataSourcesCollapsed;
+        public peakDataSourcesCollapsed;
+        public dailyDataSourcesCollapsed;
+        public stagedischargeDataSourcesCollapsed;
         public error: any;     
         public monthSliderOptions: any;
         public startMonth: number;
@@ -313,7 +315,9 @@ module StreamStats.Controllers {
             this.statCitationList = [];
             this.charCitationList = [];
             this.showPreferred = false;
-            this.dataSourcesCollapsed = true;
+            this.peakDataSourcesCollapsed = true;
+            this.dailyDataSourcesCollapsed = true;
+            this.stagedischargeDataSourcesCollapsed = true;
             this.print = function () {
                 //ga event
                 gtag('event', 'Download', { 'Category': 'GagePage', "Type": 'Print' });
