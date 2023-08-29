@@ -1,4 +1,4 @@
-﻿﻿//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //----- BatchProcessorController ---------------------------------------------------------------
 //------------------------------------------------------------------------------
 
@@ -353,35 +353,53 @@ module StreamStats.Controllers {
           p.code.toUpperCase()
         );
 
-        this.nssService.getFlowStatsList(rcode).then(
-          // set flowStatsList to values of promised response
-          (response) => {
-            this.flowStatsList = response;
-            // turn off Flow Statistics spinner
-            this.flowStatsListSpinner = false;
+        if (this.scenariosAvailable(rcode)) {
+          this.nssService.getFlowStatsList(rcode).then(
+            // set flowStatsList to values of promised response
+            (response) => {
+              this.flowStatsList = response;
+              // turn off Flow Statistics spinner
+              this.flowStatsListSpinner = false;
 
-            // Add additional parameters that were not returned by loadParametersByRegionBP
-            this.flowStatsList.forEach((flowStat) => {
-              flowStat.regressionRegions.forEach((regressionRegion) => {
-                regressionRegion.parameters.forEach((parameter) => {
-                  if (
-                    availableParamCodes.indexOf(parameter.code.toUpperCase()) ==
-                    -1
-                  ) {
-                    parameter["asterisk"] = true;
-                    parameter["toggleable"] = true;
-                    this.availableParamList.push(parameter);
-                    availableParamCodes.push(parameter.code);
-                  }
+              // Add additional parameters that were not returned by loadParametersByRegionBP
+              this.flowStatsList.forEach((flowStat) => {
+                flowStat.regressionRegions.forEach((regressionRegion) => {
+                  regressionRegion.parameters.forEach((parameter) => {
+                    if (
+                      availableParamCodes.indexOf(parameter.code.toUpperCase()) ==
+                      -1
+                    ) {
+                      parameter["asterisk"] = true;
+                      parameter["toggleable"] = true;
+                      this.availableParamList.push(parameter);
+                      availableParamCodes.push(parameter.code);
+                    }
+                  });
                 });
               });
-            });
 
-            // turn off Basin Characteristics spinner
-            this.parametersListSpinner = false;
-          }
-        );
+              // turn off Basin Characteristics spinner
+              this.parametersListSpinner = false;
+            }
+          );
+        } else { // If scenarios are not enabled, no flow statistics should be available for selection
+          this.flowStatsList = [];
+          // turn off Flow Statistics spinner
+          this.flowStatsListSpinner = false;
+          // turn off Basin Characteristics spinner
+          this.parametersListSpinner = false;
+        }
       });
+    }
+
+    // Checks if flow statistics are available for given region
+    public scenariosAvailable(rcode: string) {
+      var regionArray = configuration.regions;
+      for (var i = 0; i < regionArray.length; i++){
+          if (regionArray[i].Name.toUpperCase().trim() === rcode.toUpperCase().trim() ||
+              regionArray[i].RegionID.toUpperCase().trim() === rcode.toUpperCase().trim())
+              return(regionArray[i].ScenariosAvailable)
+      }//next region
     }
 
     public setRegionStats(
