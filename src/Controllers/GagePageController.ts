@@ -251,9 +251,9 @@ module StreamStats.Controllers {
         public dailyValuesOnly = [];
         public USGSMeasuredAgeQualityData = 'age';
         public sectionCollapsed: Array<any>;
-        public peakDataSourcesCollapsed;
-        public dailyDataSourcesCollapsed;
-        public stagedischargeDataSourcesCollapsed;
+        public peakDataSourcesCollapsed; // for Annual Peak plot data sources collapsible 
+        public dailyDataSourcesCollapsed; // for Daily Flow plot data sources collapsible
+        public stageDischargeDataSourcesCollapsed; // for Stage vs. Discharge plot data sources collapsible
         public error: any;     
         public monthSliderOptions: any;
         public startMonth: number;
@@ -317,7 +317,7 @@ module StreamStats.Controllers {
             this.showPreferred = false;
             this.peakDataSourcesCollapsed = true;
             this.dailyDataSourcesCollapsed = true;
-            this.stagedischargeDataSourcesCollapsed = true;
+            this.stageDischargeDataSourcesCollapsed = true;
             this.print = function () {
                 //ga event
                 gtag('event', 'Download', { 'Category': 'GagePage', "Type": 'Print' });
@@ -1070,7 +1070,7 @@ module StreamStats.Controllers {
                     this.getUSGSMeasured();
                 });
         }
-           
+        
 
 
         public getUSGSMeasured() {
