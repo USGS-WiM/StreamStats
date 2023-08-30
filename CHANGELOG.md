@@ -19,6 +19,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Security
 
+## [v4.17.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.17.0) - 2023-08-30
+
+### Added
+
+- Warning Message Modal that can be toggled via showWarningModal boolean in appConfig.js
+
+### Fixed
+
+- Bug where some gages weren't showing NWIS latitude and longitude on the gage page
+
 ## [v4.16.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.16.1) - 2023-07-20
 
 ### Changed
