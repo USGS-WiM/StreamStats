@@ -242,7 +242,7 @@
             </div>
             <!-- End instructions -->
             <!-- start query status by email-->
-            <div style="padding-top: 15px;" class="bp-status-email">
+            <div style="padding-top: 15px; padding-left: 15px" class="bp-status-email row">
                 <!-- Start email field -->
                 <div>
                     <span>Email Address:</span>
@@ -250,7 +250,7 @@
                 <div>
                     <span>
                         <form ng-submit="vm.getBatchStatusList(vm.batchStatusEmail); vm.retrievingBatchStatus = true;" onsubmit="gtag('event', 'BatchProcessor', { 'Category': 'Check Status' });">
-                            <input class="bp-input" type="email" id="emailFieldStatus" ng-model="vm.batchStatusEmail"
+                            <input size="30" class="bp-input" type="email" id="emailFieldStatus" ng-model="vm.batchStatusEmail"
                             required>
                         </form>
                     </span>
