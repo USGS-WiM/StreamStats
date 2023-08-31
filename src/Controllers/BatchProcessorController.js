@@ -161,25 +161,40 @@ var StreamStats;
                     var availableParamCodes = _this.availableParamList.map(function (p) {
                         return p.code.toUpperCase();
                     });
-                    _this.nssService.getFlowStatsList(rcode).then(function (response) {
-                        _this.flowStatsList = response;
-                        _this.flowStatsListSpinner = false;
-                        _this.flowStatsList.forEach(function (flowStat) {
-                            flowStat.regressionRegions.forEach(function (regressionRegion) {
-                                regressionRegion.parameters.forEach(function (parameter) {
-                                    if (availableParamCodes.indexOf(parameter.code.toUpperCase()) ==
-                                        -1) {
-                                        parameter["asterisk"] = true;
-                                        parameter["toggleable"] = true;
-                                        _this.availableParamList.push(parameter);
-                                        availableParamCodes.push(parameter.code);
-                                    }
+                    if (_this.scenariosAvailable(rcode)) {
+                        _this.nssService.getFlowStatsList(rcode).then(function (response) {
+                            _this.flowStatsList = response;
+                            _this.flowStatsListSpinner = false;
+                            _this.flowStatsList.forEach(function (flowStat) {
+                                flowStat.regressionRegions.forEach(function (regressionRegion) {
+                                    regressionRegion.parameters.forEach(function (parameter) {
+                                        if (availableParamCodes.indexOf(parameter.code.toUpperCase()) ==
+                                            -1) {
+                                            parameter["asterisk"] = true;
+                                            parameter["toggleable"] = true;
+                                            _this.availableParamList.push(parameter);
+                                            availableParamCodes.push(parameter.code);
+                                        }
+                                    });
                                 });
                             });
+                            _this.parametersListSpinner = false;
                         });
+                    }
+                    else {
+                        _this.flowStatsList = [];
+                        _this.flowStatsListSpinner = false;
                         _this.parametersListSpinner = false;
-                    });
+                    }
                 });
+            };
+            BatchProcessorController.prototype.scenariosAvailable = function (rcode) {
+                var regionArray = configuration.regions;
+                for (var i = 0; i < regionArray.length; i++) {
+                    if (regionArray[i].Name.toUpperCase().trim() === rcode.toUpperCase().trim() ||
+                        regionArray[i].RegionID.toUpperCase().trim() === rcode.toUpperCase().trim())
+                        return (regionArray[i].ScenariosAvailable);
+                }
             };
             BatchProcessorController.prototype.setRegionStats = function (statisticsGroup, allFlowStatsSelectedToggle) {
                 if (allFlowStatsSelectedToggle === void 0) { allFlowStatsSelectedToggle = null; }
