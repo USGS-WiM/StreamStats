@@ -765,10 +765,10 @@ var StreamStats;
                     .then(function (response) {
                     var streamGrids = [];
                     response.data.forEach(function (item) {
-                        var baseURL = "https://s3.amazonaws.com/test.streamstats.usgs.gov/batch-processor/streamgrids/";
+                        var baseURL = "https://s3.amazonaws.com/test.streamstats.usgs.gov/streamgrids/";
                         if (window.location.host === "streamstats.usgs.gov") {
                             baseURL =
-                                "https://s3.amazonaws.com/streamstats.usgs.gov/batch-processor/streamgrids/";
+                                "https://s3.amazonaws.com/streamstats.usgs.gov/streamgrids/";
                         }
                         try {
                             var streamGrid = {
