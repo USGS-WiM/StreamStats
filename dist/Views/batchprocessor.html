@@ -143,6 +143,10 @@
             <div ng-if="vm.cbFlowStats" style="padding-top: 15px;" class="well well-sm">
                 <h3 class="collapsible" ng-click="vm.collapseSection($event, 'flowStatistics')"><i ng-class="!vm.flowStatsCollapsed ? 'fa fa-chevron-right': 'fa fa-chevron-down'"></i>&nbsp;&nbsp;Select Flow Statistics</h3>
                 <div class="collapsible-content" style="background-color: #f5f5f5;">
+                    <!-- Message that no flow statistics are available -->
+                    <div ng-if="vm.flowStatsList.length == 0">
+                        <span>Scenario computation has not been enabled yet for selected region.</span>
+                    </div>
                     <!-- button to check/uncheck all -->
                     <button ng-if="vm.flowStatsList.length > 0" class="btn-blue fullwidth" ng-class="btn-blue" ng-click="vm.toggleFlowStatisticsAllChecked()">
                         <span ng-if="vm.flowStatsAllChecked">Select All Flow Statistics</span>
