@@ -816,6 +816,9 @@ var StreamStats;
                         this.selectBatchProcessorTab("submitBatch");
                     }
                 }
+                else if (this.manageQueue) {
+                    this.selectBatchProcessorTab("manageQueue");
+                }
                 this.retrieveBatchStatusMessages().then(function (response) {
                     _this.batchStatusMessageList = response;
                 });

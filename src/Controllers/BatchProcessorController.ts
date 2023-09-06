@@ -1310,7 +1310,8 @@ module StreamStats.Controllers {
         } else if (this.modalService.modalOptions.tabName == "manageQueue") {
             this.selectBatchProcessorTab("submitBatch")
         }
-
+      } else if (this.manageQueue) {
+        this.selectBatchProcessorTab("manageQueue")
       }
       this.retrieveBatchStatusMessages().then((response) => {
         this.batchStatusMessageList = response;
