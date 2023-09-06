@@ -135,7 +135,7 @@ module StreamStats.Controllers {
     public selectedBatchProcessorTabName: string;
     public displayMessage: string;
     public toaster: any;
-    public internalHost: boolean;
+    public manageQueue: boolean;
 
     // Regions
     public regionList: Array<any>;
@@ -227,18 +227,7 @@ module StreamStats.Controllers {
       this.selectedBatchProcessorTabName = "submitBatch";
       this.nssService = nssService;
       this.toaster = toaster;
-      if (
-        window.location.hostname == "staging-apps.usgs.gov" ||
-        window.location.hostname == "apps-int.usgs.gov" ||
-        window.location.hostname == "127.0.0.1:8080" ||
-        window.location.hostname == "localhost" ||
-        window.location.hostname == "127.0.0.1" ||
-        window.location.hostname == ""
-      ) {
-        this.internalHost = true;
-      } else {
-        this.internalHost = false;
-      }
+      this.manageQueue = configuration.manageBPQueue;
       this.cbFlowStats = false;
       this.cbBasinChar = false;
       this.selectedFlowStatsList = [];
@@ -1316,15 +1305,12 @@ module StreamStats.Controllers {
           this.getBatchStatusList(this.batchStatusEmail);
           this.retrievingBatchStatus = true;
         }
-        if (
-          this.modalService.modalOptions.tabName == "manageQueue" &&
-          this.internalHost == false
-        ) {
-          // Manage Queue is only available on internal
-          this.selectBatchProcessorTab("submitBatch"); // If not internal go to submit batch tab
-        } else {
-          this.selectBatchProcessorTab(this.modalService.modalOptions.tabName);
+        if (this.manageQueue) {
+          this.selectBatchProcessorTab("manageQueue")
+        } else if (this.modalService.modalOptions.tabName == "manageQueue") {
+            this.selectBatchProcessorTab("submitBatch")
         }
+
       }
       this.retrieveBatchStatusMessages().then((response) => {
         this.batchStatusMessageList = response;

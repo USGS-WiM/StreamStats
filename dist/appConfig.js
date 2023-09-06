@@ -5,6 +5,7 @@ configuration.showWarningModal = false;
 configuration.warningModalMessage = "Due to heavy demand, StreamStats is currently experiencing system interruptions. If you receive errors, please try back again later.<br><br>Thank you for your patience."
 configuration.showBPWarning = false;
 configuration.warningBPMessage = "Due to heavy demand, StreamStats is currently experiencing system interruptions. If you receive errors, please try back again later.<br><br>Thank you for your patience."
+configuration.manageBPQueue = false;
 
 configuration.baseurls =
     {
