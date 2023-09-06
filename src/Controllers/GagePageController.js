@@ -259,9 +259,16 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var regex = /[+-]?((\d+(\.\d*)?)|(\.\d+))/g;
-                    var latLong = response.data.split(_this_1.gage.name)[1].match(regex);
-                    _this_1.NWISlat = latLong[0];
-                    _this_1.NWISlng = latLong[1];
+                    try {
+                        var latLong = response.data.split(_this_1.gage.name)[1].match(regex);
+                        _this_1.NWISlat = latLong[0];
+                        _this_1.NWISlng = latLong[1];
+                    }
+                    catch (error) {
+                        var data = response.data.split('\n').filter(function (r) { return (!r.startsWith("#") && r != ""); })[2].split('\t');
+                        _this_1.NWISlat = data[4];
+                        _this_1.NWISlng = data[5];
+                    }
                 });
             };
             GagePageController.prototype.getNWISPeriodOfRecord = function (gage) {

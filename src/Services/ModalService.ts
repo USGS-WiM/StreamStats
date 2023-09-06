@@ -185,7 +185,15 @@ module StreamStats.Services {
                             backdrop: 'static',
                             windowClass: 'windowZ',
                         };
-                    
+                    case SSModalType.e_warningmessage:
+                        return {
+                            templateUrl: 'Views/warningmessage.html',
+                            controller: 'StreamStats.Controllers.WarningMessageController',
+                            size: 'sm',
+                            backdropClass: 'backdropZ',
+                            backdrop: 'static',
+                            windowClass: 'windowZ',
+                        };
                     case SSModalType.e_batchprocessor:
                         return {
                             templateUrl: 'Views/batchprocessor.html',
@@ -194,7 +202,7 @@ module StreamStats.Services {
                             backdropClass: 'backdropZ',
                             windowClass: 'windowZ',
                         };
-     
+
                     default:
                         return null;
                 }//end switch          
@@ -219,7 +227,10 @@ export enum SSModalType {
         e_gagepage = 10,
         e_nearestgages = 11,        
         e_flowanywhere = 12,
-        e_batchprocessor = 13
+        e_warningmessage = 13,
+        e_batchprocessor = 14
+        
+        
     }
 
     factory.$inject = ['$modal'];

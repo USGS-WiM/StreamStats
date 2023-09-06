@@ -35,12 +35,9 @@ module StreamStats.Controllers {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
         private modalService: Services.IModalService;
-        private cookies: any;
-        private newArticleCount: number;
         private environment: string;
         private AppVersion: string;
         private cloud: boolean;
-        private freshdeskCreds: Object;
         private http: any;
         private studyAreaService: Services.IStudyAreaService;
 
@@ -53,59 +50,19 @@ module StreamStats.Controllers {
             this.http = $http;
             
             this.modalService = modal;
-            this.getFreshdeskCreds();
             this.studyAreaService = studyArea;
-            this.newArticleCount = 0;
             this.environment = configuration.environment;
             this.AppVersion = configuration.version;
             this.cloud = configuration.cloud;
 
             this.checkURLParams();
+            if (configuration.showWarningModal) {
+                this.openWarningMessage();
+            }
         }
 
         //Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
-        public checkActiveNews() {
-            console.log("Checking for active news articles");
-
-            var headers = {
-                "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
-            };
-
-            var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.ActiveNewsFolder;
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
-
-            this.Execute(request).then(
-                (response: any) => {
-                    console.log('Successfully retrieved active news articles page');
-
-                    if (response.data.folder.articles.length > 0) {
-                        response.data.folder.articles.forEach((article) => {
-                            //check if a cookie exists for this article;
-                            if (this.readCookie(article.id) == null) {
-                                console.log('New news article found: ', article);
-                                this.newArticleCount += 1;
-                                this.createCookie(article.id, true, 30);
-                            }
-                        });
-
-                        if (this.newArticleCount > 0) this.modalService.openModal(Services.SSModalType.e_about, { "tabName": "news", "regionID": '' })
-                    }
-
-                }, (error) => {
-                    //sm when error
-                }).finally(() => {
-
-                });
-        }
-        public getFreshdeskCreds() {
-            var self = this;
-            this.http.get('./data/secrets.json').then(function(response) {
-                self.studyAreaService.freshdeskCredentials = response.data;
-                self.freshdeskCreds = response.data;
-                self.checkActiveNews();
-            })
-        }
         public checkURLParams() {
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
@@ -144,6 +101,10 @@ module StreamStats.Controllers {
 
         public openHelp(): void {
             this.modalService.openModal(Services.SSModalType.e_help);
+        }
+
+        public openWarningMessage(): void {
+            this.modalService.openModal(Services.SSModalType.e_warningmessage);
         }
 
         //Helper Methods

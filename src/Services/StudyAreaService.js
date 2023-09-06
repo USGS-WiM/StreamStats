@@ -55,6 +55,7 @@ var StreamStats;
                 _this.NSSServicesVersion = '';
                 _this.streamgagesVisible = true;
                 _this.additionalFeaturesLoaded = false;
+                _this.global = true;
                 _this.extensionDateRange = null;
                 _this.extensionsConfigured = false;
                 _this.loadingDrainageArea = false;
@@ -142,17 +143,6 @@ var StreamStats;
                 enumerable: false,
                 configurable: true
             });
-            Object.defineProperty(StudyAreaService.prototype, "freshdeskCredentials", {
-                get: function () {
-                    return this._freshdeskCreds;
-                },
-                set: function (val) {
-                    if (this._freshdeskCreds != val)
-                        this._freshdeskCreds = val;
-                },
-                enumerable: false,
-                configurable: true
-            });
             StudyAreaService.prototype.editBasin = function (selection) {
                 this.selectedStudyArea.Disclaimers['isEdited'] = true;
                 this.drawControlOption = selection;
@@ -202,6 +192,18 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 request.withCredentials = true;
                 this.Execute(request).then(function (response) {
+                    try {
+                        var RELATEDOID = response.data.featurecollection.filter(function (f) { return f.name == "globalwatershed"; })[0].feature.features[0].properties.RELATEDOID;
+                        if (RELATEDOID == " ") {
+                            _this.global = false;
+                        }
+                        else {
+                            _this.global = true;
+                        }
+                    }
+                    catch (e) {
+                        _this.global = true;
+                    }
                     if (_this.regionService.selectedRegion.Applications.indexOf('StormDrain') > -1) {
                         if (response.data.layers && response.data.layers.features && response.data.layers.features[1].geometry.coordinates.length > 0) {
                             _this.selectedStudyArea.Disclaimers['isStormDrain'] = true;

@@ -158,6 +158,8 @@ module StreamStats.Controllers {
         }
 
         public Query(): void {
+            gtag('event', 'ExplorationTools', { 'Category': 'QueryProsper' });
+
             this._prosperServices.CanQuery = true;
             this.modalInstance.dismiss();
 
