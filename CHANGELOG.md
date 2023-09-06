@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- Updated status map in About modal
+
 ### Security
 
 ## [v4.17.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.17.0) - 2023-08-30
