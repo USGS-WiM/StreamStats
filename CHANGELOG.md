@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
+- Manage Queue tab now toggled by manageBPQueue boolean variable in appConfig
+
 ### Deprecated
 
 ### Removed

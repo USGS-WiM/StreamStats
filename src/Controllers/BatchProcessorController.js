@@ -55,17 +55,7 @@ var StreamStats;
                 _this.selectedBatchProcessorTabName = "submitBatch";
                 _this.nssService = nssService;
                 _this.toaster = toaster;
-                if (window.location.hostname == "staging-apps.usgs.gov" ||
-                    window.location.hostname == "apps-int.usgs.gov" ||
-                    window.location.hostname == "127.0.0.1:8080" ||
-                    window.location.hostname == "localhost" ||
-                    window.location.hostname == "127.0.0.1" ||
-                    window.location.hostname == "") {
-                    _this.internalHost = true;
-                }
-                else {
-                    _this.internalHost = false;
-                }
+                _this.manageQueue = configuration.manageBPQueue;
                 _this.cbFlowStats = false;
                 _this.cbBasinChar = false;
                 _this.selectedFlowStatsList = [];
@@ -819,12 +809,11 @@ var StreamStats;
                         this.getBatchStatusList(this.batchStatusEmail);
                         this.retrievingBatchStatus = true;
                     }
-                    if (this.modalService.modalOptions.tabName == "manageQueue" &&
-                        this.internalHost == false) {
-                        this.selectBatchProcessorTab("submitBatch");
+                    if (this.manageQueue) {
+                        this.selectBatchProcessorTab("manageQueue");
                     }
-                    else {
-                        this.selectBatchProcessorTab(this.modalService.modalOptions.tabName);
+                    else if (this.modalService.modalOptions.tabName == "manageQueue") {
+                        this.selectBatchProcessorTab("submitBatch");
                     }
                 }
                 this.retrieveBatchStatusMessages().then(function (response) {
