@@ -35,7 +35,8 @@ module StreamStats.Services {
         siteid?: string;
         tabName?: string;
         regionID?: string;
-        placeholder?:any
+        placeholder?:any;
+        urlParams?:any;
     }
 
     class ModalService implements IModalService{       
@@ -193,6 +194,15 @@ module StreamStats.Services {
                             backdrop: 'static',
                             windowClass: 'windowZ',
                         };
+                    case SSModalType.e_batchprocessor:
+                        return {
+                            templateUrl: 'Views/batchprocessor.html',
+                            controller: 'StreamStats.Controllers.BatchProcessorController',
+                            size: 'lg',
+                            backdropClass: 'backdropZ',
+                            windowClass: 'windowZ',
+                        };
+
                     default:
                         return null;
                 }//end switch          
@@ -217,7 +227,8 @@ export enum SSModalType {
         e_gagepage = 10,
         e_nearestgages = 11,        
         e_flowanywhere = 12,
-        e_warningmessage = 13
+        e_warningmessage = 13,
+        e_batchprocessor = 14
         
         
     }
