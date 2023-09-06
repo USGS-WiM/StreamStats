@@ -13,14 +13,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
-- Changed USGS logo to include "science for a changing world"
+- USGS logo now includes "science for a changing world"
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
-
 
 ### Security
 
