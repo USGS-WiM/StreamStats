@@ -19,16 +19,16 @@
 
     <!-- Start batch processor tabs -->
     <ul id="bpTabs" class="nav nav-tabs">
-        <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'submitBatch'}"><a
+        <li ng-if="!vm.manageQueue" ng-class="{'active':vm.selectedBatchProcessorTabName == 'submitBatch'}"><a
                 ng-click="vm.selectBatchProcessorTab('submitBatch')"><i class="fa fa-file"></i>&nbsp;Submit
                 Batch</a></li>
-        <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'batchStatus'}"><a
+        <li ng-if="!vm.manageQueue" ng-class="{'active':vm.selectedBatchProcessorTabName == 'batchStatus'}"><a
                 ng-click="vm.selectBatchProcessorTab('batchStatus')"><i class="fa fa-info-circle"></i>&nbsp;Batch
                 Status</a></li>
-        <li ng-class="{'active':vm.selectedBatchProcessorTabName == 'streamGrid'}"><a
+        <li ng-if="!vm.manageQueue" ng-class="{'active':vm.selectedBatchProcessorTabName == 'streamGrid'}"><a
                 ng-click="vm.selectBatchProcessorTab('streamGrid')"><i class="fa fa-download"></i>&nbsp;Download Stream
                 Grids</a></li>
-        <li ng-if="vm.internalHost" ng-class="{'active':vm.selectedBatchProcessorTabName == 'manageQueue'}"><a
+        <li ng-if="vm.manageQueue" ng-class="{'active':vm.selectedBatchProcessorTabName == 'manageQueue'}"><a
                 ng-click="vm.selectBatchProcessorTab('manageQueue');"><i class="fa fa-list-ol"></i>&nbsp;Manage
                 Queue</a></li>
     </ul><!-- End batch processor tabs -->
