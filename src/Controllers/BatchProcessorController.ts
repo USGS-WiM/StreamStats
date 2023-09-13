@@ -251,7 +251,7 @@ module StreamStats.Controllers {
       this.retrievingManageQueue = false;
       this.flowStatIDs = [];
       this.submitBatchOver250 = false;
-      this.queues = ["Production Queue", "Development & Test Queue"];
+      this.queues = ["Production Queue", "Development Queue"];
       this.selectedQueue = "Production Queue";
       this.isRefreshing = false;
       this.canReorder = false;
@@ -1039,17 +1039,14 @@ module StreamStats.Controllers {
           );
       } else {
         // manage queue tab
-        if (this.selectedQueue == "Production Queue") {
-          // TODO : Will need to update this to the production url once we set up the different servers.
-          url = "https://streamstats.usgs.gov/notReadyYet";
-          this.queueURL = "https://streamstats.usgs.gov/notReadyYet";
-        } else {
-          // development & test queue
-          // TODO : Will need to update this to the test url once we set up the different servers.
+        if (this.selectedQueue == "Production Queue") { // Production Queue
+          url = configuration.baseurls["BatchProcessorServices"];
+          this.queueURL = configuration.baseurls["BatchProcessorServices"];
+        } else { // development queue
           url =
-            "https://streamstats.usgs.gov/batchprocessor" +
+            configuration.baseurls["BatchProcessorServices"] +
             configuration.queryparams["SSBatchProcessorGetBatch"];
-          this.queueURL = "https://streamstats.usgs.gov/batchprocessor";
+            this.queueURL = configuration.baseurls["BatchProcessorServices"];
         }
       }
       var request: WiM.Services.Helpers.RequestInfo =

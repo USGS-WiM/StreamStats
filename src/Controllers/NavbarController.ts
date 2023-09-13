@@ -40,7 +40,8 @@ module StreamStats.Controllers {
         private cloud: boolean;
         private http: any;
         private studyAreaService: Services.IStudyAreaService;
-
+        private showBatchButton;
+        
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
@@ -58,6 +59,9 @@ module StreamStats.Controllers {
             this.checkURLParams();
             if (configuration.showWarningModal) {
                 this.openWarningMessage();
+            }
+            if (window.location.host === "test.streamstats.usgs.gov") {
+                this.showBatchButton == false;
             }
         }
 
