@@ -79,7 +79,7 @@ var StreamStats;
                 _this.retrievingManageQueue = false;
                 _this.flowStatIDs = [];
                 _this.submitBatchOver250 = false;
-                _this.queues = ["Production Queue", "Development & Test Queue"];
+                _this.queues = ["Production Queue", "Development Queue"];
                 _this.selectedQueue = "Production Queue";
                 _this.isRefreshing = false;
                 _this.canReorder = false;
@@ -158,8 +158,7 @@ var StreamStats;
                             _this.flowStatsList.forEach(function (flowStat) {
                                 flowStat.regressionRegions.forEach(function (regressionRegion) {
                                     regressionRegion.parameters.forEach(function (parameter) {
-                                        if (availableParamCodes.indexOf(parameter.code.toUpperCase()) ==
-                                            -1) {
+                                        if (availableParamCodes.indexOf(parameter.code.toUpperCase()) == -1) {
                                             parameter["asterisk"] = true;
                                             parameter["toggleable"] = true;
                                             _this.availableParamList.push(parameter);
@@ -181,9 +180,11 @@ var StreamStats;
             BatchProcessorController.prototype.scenariosAvailable = function (rcode) {
                 var regionArray = configuration.regions;
                 for (var i = 0; i < regionArray.length; i++) {
-                    if (regionArray[i].Name.toUpperCase().trim() === rcode.toUpperCase().trim() ||
-                        regionArray[i].RegionID.toUpperCase().trim() === rcode.toUpperCase().trim())
-                        return (regionArray[i].ScenariosAvailable);
+                    if (regionArray[i].Name.toUpperCase().trim() ===
+                        rcode.toUpperCase().trim() ||
+                        regionArray[i].RegionID.toUpperCase().trim() ===
+                            rcode.toUpperCase().trim())
+                        return regionArray[i].ScenariosAvailable;
                 }
             };
             BatchProcessorController.prototype.setRegionStats = function (statisticsGroup, allFlowStatsSelectedToggle) {
@@ -625,14 +626,14 @@ var StreamStats;
                 }
                 else {
                     if (this.selectedQueue == "Production Queue") {
-                        url = "https://streamstats.usgs.gov/notReadyYet";
-                        this.queueURL = "https://streamstats.usgs.gov/notReadyYet";
+                        url = configuration.baseurls["BatchProcessorServices"];
+                        this.queueURL = configuration.baseurls["BatchProcessorServices"];
                     }
                     else {
                         url =
-                            "https://streamstats.usgs.gov/batchprocessor" +
+                            configuration.baseurls["BatchProcessorServices"] +
                                 configuration.queryparams["SSBatchProcessorGetBatch"];
-                        this.queueURL = "https://streamstats.usgs.gov/batchprocessor";
+                        this.queueURL = configuration.baseurls["BatchProcessorServices"];
                     }
                 }
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
@@ -678,12 +679,12 @@ var StreamStats;
             BatchProcessorController.prototype.deleteBatch = function (batchID, deleteCode, batchStatusEmail) {
                 var _this = this;
                 var url;
-                if (this.selectedBatchProcessorTabName == 'manageQueue') {
+                if (this.selectedBatchProcessorTabName == "manageQueue") {
                     url =
                         this.queueURL +
                             configuration.queryparams["SSBatchProcessorDeleteBatch"].format(deleteCode);
                 }
-                else if (this.selectedBatchProcessorTabName == 'batchStatus') {
+                else if (this.selectedBatchProcessorTabName == "batchStatus") {
                     url =
                         configuration.baseurls["BatchProcessorServices"] +
                             configuration.queryparams["SSBatchProcessorDeleteBatch"].format(deleteCode);
@@ -694,11 +695,11 @@ var StreamStats;
                     var text = "Batch ID " + batchID + " was deleted.";
                     alert(text);
                     _this.isRefreshing = true;
-                    if (_this.selectedBatchProcessorTabName == 'manageQueue') {
+                    if (_this.selectedBatchProcessorTabName == "manageQueue") {
                         _this.getManageQueueList();
                         _this.retrievingManageQueue = true;
                     }
-                    else if (_this.selectedBatchProcessorTabName == 'batchStatus') {
+                    else if (_this.selectedBatchProcessorTabName == "batchStatus") {
                         _this.getBatchStatusList(_this.batchStatusEmail);
                         _this.retrievingBatchStatus = true;
                     }
@@ -882,7 +883,6 @@ var StreamStats;
             BatchProcessorController.prototype.convertUnsafe = function (x) {
                 return this.sce.trustAsHtml(x);
             };
-            ;
             BatchProcessorController.$inject = [
                 "$scope",
                 "$http",
@@ -890,7 +890,7 @@ var StreamStats;
                 "StreamStats.Services.nssService",
                 "$modalInstance",
                 "toaster",
-                '$sce',
+                "$sce",
             ];
             return BatchProcessorController;
         }(WiM.Services.HTTPServiceBase));

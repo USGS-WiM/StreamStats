@@ -17,7 +17,7 @@ var StreamStats;
 (function (StreamStats) {
     var Controllers;
     (function (Controllers) {
-        'use strict';
+        "use strict";
         var NavbarController = (function (_super) {
             __extends(NavbarController, _super);
             function NavbarController($scope, $http, modal, studyArea) {
@@ -33,30 +33,44 @@ var StreamStats;
                 if (configuration.showWarningModal) {
                     _this.openWarningMessage();
                 }
+                if (window.location.host === "test.streamstats.usgs.gov") {
+                    _this.showBatchButton == false;
+                }
                 return _this;
             }
             NavbarController.prototype.checkURLParams = function () {
                 var queryString = window.location.search;
                 var urlParams = new URLSearchParams(queryString);
-                var BP = urlParams.get('BP');
+                var BP = urlParams.get("BP");
                 if (BP) {
-                    if (BP == 'submitBatch') {
-                        this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "submitBatch" });
+                    if (BP == "submitBatch") {
+                        this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, {
+                            tabName: "submitBatch",
+                        });
                     }
-                    if (BP == 'batchStatus') {
-                        var email = urlParams.get('email');
+                    if (BP == "batchStatus") {
+                        var email = urlParams.get("email");
                         if (email) {
-                            this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "batchStatus", "urlParams": email });
+                            this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, {
+                                tabName: "batchStatus",
+                                urlParams: email,
+                            });
                         }
                         else {
-                            this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "batchStatus" });
+                            this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, {
+                                tabName: "batchStatus",
+                            });
                         }
                     }
-                    if (BP == 'streamGrid') {
-                        this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "streamGrid" });
+                    if (BP == "streamGrid") {
+                        this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, {
+                            tabName: "streamGrid",
+                        });
                     }
-                    if (BP == 'manageQueue') {
-                        this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "manageQueue" });
+                    if (BP == "manageQueue") {
+                        this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, {
+                            tabName: "manageQueue",
+                        });
                     }
                 }
             };
@@ -77,10 +91,10 @@ var StreamStats;
             };
             NavbarController.prototype.readCookie = function (name) {
                 var nameEQ = name + "=";
-                var ca = document.cookie.split(';');
+                var ca = document.cookie.split(";");
                 for (var i = 0; i < ca.length; i++) {
                     var c = ca[i];
-                    while (c.charAt(0) == ' ')
+                    while (c.charAt(0) == " ")
                         c = c.substring(1, c.length);
                     if (c.indexOf(nameEQ) == 0)
                         return c.substring(nameEQ.length, c.length);
@@ -90,17 +104,23 @@ var StreamStats;
             NavbarController.prototype.createCookie = function (name, value, days) {
                 if (days) {
                     var date = new Date();
-                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
                     var expires = "; expires=" + date.toUTCString();
                 }
                 else
                     var expires = "";
                 document.cookie = name + "=" + value + expires + "; path=/";
             };
-            NavbarController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService'];
+            NavbarController.$inject = [
+                "$scope",
+                "$http",
+                "StreamStats.Services.ModalService",
+                "StreamStats.Services.StudyAreaService",
+            ];
             return NavbarController;
         }(WiM.Services.HTTPServiceBase));
-        angular.module('StreamStats.Controllers')
-            .controller('StreamStats.Controllers.NavbarController', NavbarController);
+        angular
+            .module("StreamStats.Controllers")
+            .controller("StreamStats.Controllers.NavbarController", NavbarController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
 })(StreamStats || (StreamStats = {}));

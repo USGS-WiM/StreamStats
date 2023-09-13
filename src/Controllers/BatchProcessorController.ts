@@ -208,7 +208,7 @@ module StreamStats.Controllers {
       "StreamStats.Services.nssService",
       "$modalInstance",
       "toaster",
-      '$sce',
+      "$sce",
     ];
     constructor(
       $scope: IBatchProcessorControllerScope,
@@ -217,7 +217,7 @@ module StreamStats.Controllers {
       nssService: Services.InssService,
       modal: ng.ui.bootstrap.IModalServiceInstance,
       toaster,
-      $sce: any,
+      $sce: any
     ) {
       super($http, configuration.baseurls.StreamStats);
       $scope.vm = this;
@@ -251,7 +251,7 @@ module StreamStats.Controllers {
       this.retrievingManageQueue = false;
       this.flowStatIDs = [];
       this.submitBatchOver250 = false;
-      this.queues = ["Production Queue", "Development & Test Queue"];
+      this.queues = ["Production Queue", "Development Queue"];
       this.selectedQueue = "Production Queue";
       this.isRefreshing = false;
       this.canReorder = false;
@@ -355,8 +355,9 @@ module StreamStats.Controllers {
                 flowStat.regressionRegions.forEach((regressionRegion) => {
                   regressionRegion.parameters.forEach((parameter) => {
                     if (
-                      availableParamCodes.indexOf(parameter.code.toUpperCase()) ==
-                      -1
+                      availableParamCodes.indexOf(
+                        parameter.code.toUpperCase()
+                      ) == -1
                     ) {
                       parameter["asterisk"] = true;
                       parameter["toggleable"] = true;
@@ -371,7 +372,8 @@ module StreamStats.Controllers {
               this.parametersListSpinner = false;
             }
           );
-        } else { // If scenarios are not enabled, no flow statistics should be available for selection
+        } else {
+          // If scenarios are not enabled, no flow statistics should be available for selection
           this.flowStatsList = [];
           // turn off Flow Statistics spinner
           this.flowStatsListSpinner = false;
@@ -384,11 +386,15 @@ module StreamStats.Controllers {
     // Checks if flow statistics are available for given region
     public scenariosAvailable(rcode: string) {
       var regionArray = configuration.regions;
-      for (var i = 0; i < regionArray.length; i++){
-          if (regionArray[i].Name.toUpperCase().trim() === rcode.toUpperCase().trim() ||
-              regionArray[i].RegionID.toUpperCase().trim() === rcode.toUpperCase().trim())
-              return(regionArray[i].ScenariosAvailable)
-      }//next region
+      for (var i = 0; i < regionArray.length; i++) {
+        if (
+          regionArray[i].Name.toUpperCase().trim() ===
+            rcode.toUpperCase().trim() ||
+          regionArray[i].RegionID.toUpperCase().trim() ===
+            rcode.toUpperCase().trim()
+        )
+          return regionArray[i].ScenariosAvailable;
+      } //next region
     }
 
     public setRegionStats(
@@ -1040,16 +1046,15 @@ module StreamStats.Controllers {
       } else {
         // manage queue tab
         if (this.selectedQueue == "Production Queue") {
-          // TODO : Will need to update this to the production url once we set up the different servers.
-          url = "https://streamstats.usgs.gov/notReadyYet";
-          this.queueURL = "https://streamstats.usgs.gov/notReadyYet";
+          // production queue
+          url = configuration.baseurls["BatchProcessorServices"];
+          this.queueURL = configuration.baseurls["BatchProcessorServices"];
         } else {
-          // development & test queue
-          // TODO : Will need to update this to the test url once we set up the different servers.
+          // development queue
           url =
-            "https://streamstats.usgs.gov/batchprocessor" +
+            configuration.baseurls["BatchProcessorServices"] +
             configuration.queryparams["SSBatchProcessorGetBatch"];
-          this.queueURL = "https://streamstats.usgs.gov/batchprocessor";
+          this.queueURL = configuration.baseurls["BatchProcessorServices"];
         }
       }
       var request: WiM.Services.Helpers.RequestInfo =
@@ -1109,18 +1114,20 @@ module StreamStats.Controllers {
       batchStatusEmail: string
     ): ng.IPromise<any> {
       var url: string;
-      if (this.selectedBatchProcessorTabName == 'manageQueue') { // if on the Manage Queue tab, need to use the BP service url for the queue selected
+      if (this.selectedBatchProcessorTabName == "manageQueue") {
+        // if on the Manage Queue tab, need to use the BP service url for the queue selected
         url =
-        this.queueURL +
-        configuration.queryparams["SSBatchProcessorDeleteBatch"].format(
-          deleteCode
-        );
-      } else if (this.selectedBatchProcessorTabName == 'batchStatus') { // if on the Batch Status tab, need to use the BP service url based on the host url
+          this.queueURL +
+          configuration.queryparams["SSBatchProcessorDeleteBatch"].format(
+            deleteCode
+          );
+      } else if (this.selectedBatchProcessorTabName == "batchStatus") {
+        // if on the Batch Status tab, need to use the BP service url based on the host url
         url =
-        configuration.baseurls["BatchProcessorServices"] +
-        configuration.queryparams["SSBatchProcessorDeleteBatch"].format(
-          deleteCode
-        );
+          configuration.baseurls["BatchProcessorServices"] +
+          configuration.queryparams["SSBatchProcessorDeleteBatch"].format(
+            deleteCode
+          );
       }
       var request: WiM.Services.Helpers.RequestInfo =
         new WiM.Services.Helpers.RequestInfo(
@@ -1135,13 +1142,15 @@ module StreamStats.Controllers {
             let text = "Batch ID " + batchID + " was deleted.";
             alert(text);
             // Refresh the list of batches
-            this.isRefreshing = true; 
-            if (this.selectedBatchProcessorTabName == 'manageQueue') { // Need to update Manage Queue results
+            this.isRefreshing = true;
+            if (this.selectedBatchProcessorTabName == "manageQueue") {
+              // Need to update Manage Queue results
               this.getManageQueueList();
               this.retrievingManageQueue = true;
-            } else if (this.selectedBatchProcessorTabName == 'batchStatus') { // Need to update Batch Status results
-              this.getBatchStatusList(this.batchStatusEmail); 
-              this.retrievingBatchStatus = true
+            } else if (this.selectedBatchProcessorTabName == "batchStatus") {
+              // Need to update Batch Status results
+              this.getBatchStatusList(this.batchStatusEmail);
+              this.retrievingBatchStatus = true;
             }
           },
           (error) => {
@@ -1277,15 +1286,15 @@ module StreamStats.Controllers {
     public collapseSection(e, type) {
       var content = e.currentTarget.nextElementSibling;
       if (content.style.display === "none") {
-          content.style.display = "block";
-          if(type === "flowStatistics") this.flowStatsCollapsed = false;
-          if(type === "basinCharacteristics") this.basinCharCollapsed = false;
+        content.style.display = "block";
+        if (type === "flowStatistics") this.flowStatsCollapsed = false;
+        if (type === "basinCharacteristics") this.basinCharCollapsed = false;
       } else {
-          content.style.display = "none";
-          if(type === "flowStatistics") this.flowStatsCollapsed = true;
-          if(type === "basinCharacteristics") this.basinCharCollapsed = true;
+        content.style.display = "none";
+        if (type === "flowStatistics") this.flowStatsCollapsed = true;
+        if (type === "basinCharacteristics") this.basinCharCollapsed = true;
       }
-  }
+    }
 
     // Helper Methods
     // -+-+-+-+-+-+-+-+-+-+-+-
@@ -1306,18 +1315,18 @@ module StreamStats.Controllers {
           this.retrievingBatchStatus = true;
         }
         if (this.manageQueue) {
-          this.selectBatchProcessorTab("manageQueue")
+          this.selectBatchProcessorTab("manageQueue");
         } else if (this.modalService.modalOptions.tabName == "manageQueue") {
-            this.selectBatchProcessorTab("submitBatch")
+          this.selectBatchProcessorTab("submitBatch");
         }
       } else if (this.manageQueue) {
-        this.selectBatchProcessorTab("manageQueue")
+        this.selectBatchProcessorTab("manageQueue");
       }
       this.retrieveBatchStatusMessages().then((response) => {
         this.batchStatusMessageList = response;
       });
 
-      // get warning message 
+      // get warning message
       if (configuration.showBPWarning) {
         this.warningMessage = configuration.warningBPMessage;
       }
@@ -1391,10 +1400,10 @@ module StreamStats.Controllers {
       this.checkStats();
     }
 
-    // warning message 
+    // warning message
     public convertUnsafe(x: string) {
       return this.sce.trustAsHtml(x);
-    };
+    }
   } //end  class
 
   angular
