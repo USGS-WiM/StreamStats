@@ -31,7 +31,7 @@ if (window.location.host === 'streamstats.usgs.gov') {
         configuration.baseurls.StormRunoffServices = 'https://streamstats.usgs.gov/runoffmodelingservices',
         configuration.baseurls.GageStatsServices = 'https://streamstats.usgs.gov/gagestatsservices',
 		configuration.baseurls.FlowAnywhereRegressionServices = 'https://streamstats.usgs.gov/regressionservices',
-        configuration.baseurls.BatchProcessorServices = 'https://dev.streamstats.usgs.gov/batchprocessor',
+        configuration.baseurls.BatchProcessorServices = 'https://streamstats.usgs.gov/batchprocessor',
         configuration.environment = 'production';
 }
 
