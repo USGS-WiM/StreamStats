@@ -19,7 +19,7 @@ configuration.baseurls =
         'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices',
         'WeightingServices': 'https://streamstats.usgs.gov/channelweightingservices',
         'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices',
-        'BatchProcessorServices': 'https://streamstats.usgs.gov/batchprocessor'
+        'BatchProcessorServices': 'https://dev.streamstats.usgs.gov/batchprocessor' // Will need to change this if running locally and want to use production data
     };
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
@@ -31,6 +31,7 @@ if (window.location.host === 'streamstats.usgs.gov') {
         configuration.baseurls.StormRunoffServices = 'https://streamstats.usgs.gov/runoffmodelingservices',
         configuration.baseurls.GageStatsServices = 'https://streamstats.usgs.gov/gagestatsservices',
 		configuration.baseurls.FlowAnywhereRegressionServices = 'https://streamstats.usgs.gov/regressionservices',
+        configuration.baseurls.BatchProcessorServices = 'https://streamstats.usgs.gov/batchprocessor',
         configuration.environment = 'production';
 }
 
