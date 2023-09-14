@@ -29,12 +29,10 @@ var StreamStats;
                 _this.environment = configuration.environment;
                 _this.AppVersion = configuration.version;
                 _this.cloud = configuration.cloud;
+                _this.showBatchButton = configuration.showBPButton;
                 _this.checkURLParams();
                 if (configuration.showWarningModal) {
                     _this.openWarningMessage();
-                }
-                if (window.location.host === "test.streamstats.usgs.gov") {
-                    _this.showBatchButton == false;
                 }
                 return _this;
             }

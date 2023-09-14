@@ -55,13 +55,11 @@ module StreamStats.Controllers {
             this.environment = configuration.environment;
             this.AppVersion = configuration.version;
             this.cloud = configuration.cloud;
+            this.showBatchButton = configuration.showBPButton;
 
             this.checkURLParams();
             if (configuration.showWarningModal) {
                 this.openWarningMessage();
-            }
-            if (window.location.host === "test.streamstats.usgs.gov") {
-                this.showBatchButton == false;
             }
         }
 
