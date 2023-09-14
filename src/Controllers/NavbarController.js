@@ -33,6 +33,9 @@ var StreamStats;
                 if (configuration.showWarningModal) {
                     _this.openWarningMessage();
                 }
+                if (window.location.host === "test.streamstats.usgs.gov") {
+                    _this.showBatchButton == false;
+                }
                 return _this;
             }
             NavbarController.prototype.checkURLParams = function () {
