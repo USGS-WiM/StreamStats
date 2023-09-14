@@ -298,10 +298,10 @@
                                     <th style="text-align: center;"><small>State/ Region</small></th>
                                     <th style="text-align: center;"><small>Number Points Requested</small></th>
                                     <th style="text-align: center;"><small>Number Points Successful</small></th>
-                                    <th style="text-align: center;"><small>Delete?</small></th>
+                                    <!-- <th style="text-align: center;"><small>Delete?</small></th> -->
                                 </tr>
                             </thead>
-                            <tbody ng-repeat="batch in vm.batchStatusList" >
+                            <tbody ng-repeat="batch in vm.batchStatusList | orderBy: '-batchID'" >
                                 <tr>
                                     <td style="text-align: center;"><span>{{batch.batchID}}</span></td>
                                     <td style="text-align: center;"><span>{{batch.statusMessage}}</span></td>
@@ -315,11 +315,11 @@
                                     <td style="text-align: center;">
                                         <span ng-if="batch.pointsSuccessful != null">{{batch.pointsSuccessful}}</span>
                                     </td>
-                                    <td style="text-align: center;">
+                                    <!-- <td style="text-align: center;">
                                         <i ng-if="batch.status!=2" ng-click="vm.trashBatch(batch.batchID, batch.deleteCode, batchStatusEmail)"
                                             class="fa fa-trash" style="cursor: pointer">
                                         </i>
-                                    </td>
+                                    </td> -->
                                 </tr>
                             </tbody>
                         </table>
@@ -412,7 +412,7 @@
                                     <th style="text-align: center;"><small>Delete?</small></th>
                                 </tr>
                             </thead>
-                            <tbody ng-repeat="batch in vm.manageQueueList | orderBy:'order'">
+                            <tbody ng-repeat="batch in vm.manageQueueList | orderBy:['order','-batchID']">
                                 <tr>
                                     <td style="text-align: center;"><span>{{batch.batchID}}</span></td>
                                     <td style="text-align: center;"><span>
@@ -512,7 +512,7 @@
                 <!-- End cancel Reordering Queue button -->
 
                 <!-- Button to Refresh Queue Management Table -->
-                <button ng-if="vm.selectedBatchProcessorTabName==='manageQueue' && vm.manageQueueList.length > 0 && !vm.editingQueue"
+                <button ng-if="vm.selectedBatchProcessorTabName==='manageQueue' && !vm.editingQueue"
                     type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.isRefreshing=true; vm.selectBatchProcessorTab('manageQueue');">
                     <i ng-if="vm.isRefreshing == false" class="fa fa-refresh"></i>
                     <i ng-if="vm.isRefreshing == true" class="fa fa-refresh fa-spin"></i>

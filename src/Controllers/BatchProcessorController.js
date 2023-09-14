@@ -79,7 +79,7 @@ var StreamStats;
                 _this.retrievingManageQueue = false;
                 _this.flowStatIDs = [];
                 _this.submitBatchOver250 = false;
-                _this.queues = ["Production Queue", "Development & Test Queue"];
+                _this.queues = ["Production Queue", "Development Queue"];
                 _this.selectedQueue = "Production Queue";
                 _this.isRefreshing = false;
                 _this.canReorder = false;
@@ -625,14 +625,14 @@ var StreamStats;
                 }
                 else {
                     if (this.selectedQueue == "Production Queue") {
-                        url = "https://streamstats.usgs.gov/notReadyYet";
-                        this.queueURL = "https://streamstats.usgs.gov/notReadyYet";
+                        url = configuration.baseurls["BatchProcessorServices"];
+                        this.queueURL = configuration.baseurls["BatchProcessorServices"];
                     }
                     else {
                         url =
-                            "https://streamstats.usgs.gov/batchprocessor" +
+                            configuration.baseurls["BatchProcessorServices"] +
                                 configuration.queryparams["SSBatchProcessorGetBatch"];
-                        this.queueURL = "https://streamstats.usgs.gov/batchprocessor";
+                        this.queueURL = configuration.baseurls["BatchProcessorServices"];
                     }
                 }
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
