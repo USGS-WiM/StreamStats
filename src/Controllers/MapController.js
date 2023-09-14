@@ -88,7 +88,6 @@ var StreamStats;
                 this.environment = configuration.environment;
                 this.selectedExplorationTool = null;
                 this.http = $http;
-                this.getCulvertCreds();
                 this.init();
                 this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler(function () {
                     _this.onSelectedStudyAreaChanged();

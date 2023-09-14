@@ -224,7 +224,7 @@ module StreamStats.Controllers {
             this.environment = configuration.environment;
             this.selectedExplorationTool = null;
             this.http = $http;
-            this.getCulvertCreds();
+            // this.getCulvertCreds();
             this.init();
 
             //subscribe to Events

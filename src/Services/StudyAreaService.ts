@@ -296,7 +296,7 @@ module StreamStats.Services {
 
         public loadCulvertBoundary(surveyID, regionIndex) {
             // this.canUpdate = false;
-            var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/Massachusetts_Stream_Crossing_Project_Data/FeatureServer/1' + configuration.queryparams['CulvertWatersheds']  + '&token=' +  configuration.regions[regionIndex].Layers.Culverts.layerOptions.token).format(surveyID);
+            var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/arcgis/rest/services/Massachusetts_Stream_Crossing_Spatial_Data/FeatureServer/1' + configuration.queryparams['CulvertWatersheds']).format(surveyID);
 
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
             this.Execute(request).then(
@@ -322,7 +322,7 @@ module StreamStats.Services {
         }
 
         public getCulvertAttachments(surveyID, regionIndex) {
-            var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/Massachusetts_Stream_Crossing_Project_Data/FeatureServer/0' + configuration.queryparams['CulvertGeometryFiles'] + '&token=' +  configuration.regions[regionIndex].Layers.Culverts.layerOptions.token).format(surveyID);
+            var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/arcgis/rest/services/Massachusetts_Stream_Crossing_Spatial_Data/FeatureServer/0' + configuration.queryparams['CulvertGeometryFiles']).format(surveyID);
 
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
             this.Execute(request).then(

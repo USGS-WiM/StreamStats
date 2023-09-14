@@ -189,7 +189,7 @@ var StreamStats;
             };
             StudyAreaService.prototype.loadCulvertBoundary = function (surveyID, regionIndex) {
                 var _this = this;
-                var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/Massachusetts_Stream_Crossing_Project_Data/FeatureServer/1' + configuration.queryparams['CulvertWatersheds'] + '&token=' + configuration.regions[regionIndex].Layers.Culverts.layerOptions.token).format(surveyID);
+                var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/arcgis/rest/services/Massachusetts_Stream_Crossing_Spatial_Data/FeatureServer/1' + configuration.queryparams['CulvertWatersheds']).format(surveyID);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
@@ -206,7 +206,7 @@ var StreamStats;
             };
             StudyAreaService.prototype.getCulvertAttachments = function (surveyID, regionIndex) {
                 var _this = this;
-                var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/Massachusetts_Stream_Crossing_Project_Data/FeatureServer/0' + configuration.queryparams['CulvertGeometryFiles'] + '&token=' + configuration.regions[regionIndex].Layers.Culverts.layerOptions.token).format(surveyID);
+                var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/arcgis/rest/services/Massachusetts_Stream_Crossing_Spatial_Data/FeatureServer/0' + configuration.queryparams['CulvertGeometryFiles']).format(surveyID);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     _this.culvertAttachments = { filename: surveyID, url: response.data.attachmentGroups[0].attachmentInfos[0].url + "?token=" + configuration.regions[regionIndex].Layers.Culverts.layerOptions.token };
