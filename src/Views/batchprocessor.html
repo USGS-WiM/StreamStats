@@ -298,7 +298,7 @@
                                     <th style="text-align: center;"><small>State/ Region</small></th>
                                     <th style="text-align: center;"><small>Number Points Requested</small></th>
                                     <th style="text-align: center;"><small>Number Points Successful</small></th>
-                                    <th style="text-align: center;"><small>Delete?</small></th>
+                                    <!-- <th style="text-align: center;"><small>Delete?</small></th> -->
                                 </tr>
                             </thead>
                             <tbody ng-repeat="batch in vm.batchStatusList" >
@@ -315,11 +315,11 @@
                                     <td style="text-align: center;">
                                         <span ng-if="batch.pointsSuccessful != null">{{batch.pointsSuccessful}}</span>
                                     </td>
-                                    <td style="text-align: center;">
+                                    <!-- <td style="text-align: center;">
                                         <i ng-if="batch.status!=2" ng-click="vm.trashBatch(batch.batchID, batch.deleteCode, batchStatusEmail)"
                                             class="fa fa-trash" style="cursor: pointer">
                                         </i>
-                                    </td>
+                                    </td> -->
                                 </tr>
                             </tbody>
                         </table>
