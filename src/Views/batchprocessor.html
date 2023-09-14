@@ -512,7 +512,7 @@
                 <!-- End cancel Reordering Queue button -->
 
                 <!-- Button to Refresh Queue Management Table -->
-                <button ng-if="vm.selectedBatchProcessorTabName==='manageQueue' && vm.manageQueueList.length > 0 && !vm.editingQueue"
+                <button ng-if="vm.selectedBatchProcessorTabName==='manageQueue' && !vm.editingQueue"
                     type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.isRefreshing=true; vm.selectBatchProcessorTab('manageQueue');">
                     <i ng-if="vm.isRefreshing == false" class="fa fa-refresh"></i>
                     <i ng-if="vm.isRefreshing == true" class="fa fa-refresh fa-spin"></i>
