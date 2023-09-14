@@ -412,7 +412,7 @@
                                     <th style="text-align: center;"><small>Delete?</small></th>
                                 </tr>
                             </thead>
-                            <tbody ng-repeat="batch in vm.manageQueueList | orderBy:'order'">
+                            <tbody ng-repeat="batch in vm.manageQueueList | orderBy:['order','-batchID']">
                                 <tr>
                                     <td style="text-align: center;"><span>{{batch.batchID}}</span></td>
                                     <td style="text-align: center;"><span>
