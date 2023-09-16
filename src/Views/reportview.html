@@ -138,7 +138,7 @@
                                 </div>
 
                                 <h3>{{statisticsGroup.name}} Flow Report&nbsp;&nbsp;<span ng-bind="vm.GetRegressionRegionHeader(regressionRegion)"></span></h3>
-                                <span ng-show="regressionRegion.results[0].intervalBounds || regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0">PIL: Prediction Interval-Lower, PIU: Prediction Interval-Upper, ASEp: Average Standard Error of Prediction, SE: Standard Error (other -- see report)</span>
+                                <span ng-show="regressionRegion.results[0].intervalBounds || regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0">PIL: Lower 90% Prediction Interval, PIU: Upper 90% Prediction Interval, ASEp: Average Standard Error of Prediction, SE: Standard Error (other -- see report)</span>
                                 <table id="{{vm.camelize(statisticsGroup.name + regressionRegion.name + 'ScenarioFlowTable')}}" class="scenarioFlowTable table table-condensed">
                                     <thead class="flow-table">
                                         <tr>
@@ -425,7 +425,7 @@
                                 <div ng-repeat="message in vm.nssService.equationWeightingDisclaimers track by $index">
                                     <div class="wim-alert-warning">{{message}}</div>
                                 </div>
-                                <span>PIL: Prediction Interval-Lower, PIU: Prediction Interval-Upper, ASEp: Average Standard Error of Prediction</span>
+                                <span>PIL: Lower 90% Prediction Interval, PIU: Upper 90% Prediction Interval, ASEp: Average Standard Error of Prediction</span>
                                 <div ng-repeat="rr in vm.nssService.equationWeightingResults">
                                     <h3>{{rr.RR}}</h3>
                                     <table id="channelWidthWeightingTable" class="scenarioFlowTable table table-condensed">
