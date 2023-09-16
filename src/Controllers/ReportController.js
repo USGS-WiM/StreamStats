@@ -183,7 +183,7 @@ var StreamStats;
                             finalVal += statGroup.name + ' Flow Report,' + regionPercent + regressionRegion.name.split("_").join(" ") + '\r\n';
                             if (regressionRegion.results[0].intervalBounds && regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0)
                                 finalVal +=
-                                    '"PIl: Prediction Interval- Lower, PIu: Prediction Interval- Upper, ASEp: Average Standard Error of Prediction, SE: Standard Error (other-- see report)"\r\n';
+                                    '"PIL: Prediction Interval- Lower, PIU: Prediction Interval- Upper, ASEp: Average Standard Error of Prediction, SE: Standard Error (other-- see report)"\r\n';
                             finalVal += _this.tableToCSV($(document.getElementById(_this.camelize(statGroup.name + regressionRegion.name + 'ScenarioFlowTable')))) + '\n';
                         }
                     });
@@ -247,7 +247,7 @@ var StreamStats;
                         if (isChannelWidthWeighting && isPFS) {
                             extVal += 'Channel-width Methods Weighting\n';
                             if (document.getElementById("channelWidthWeightingTable")) {
-                                extVal += 'PIl: Prediction Interval-Lower, PIu: Prediction Interval-Upper, ASEp: Average Standard Error of Prediction\n';
+                                extVal += 'PIL: Prediction Interval-Lower, PIU: Prediction Interval-Upper, ASEp: Average Standard Error of Prediction\n';
                                 if (self.nssService.equationWeightingDisclaimers && self.nssService.equationWeightingDisclaimers.length > 0) {
                                     extVal += 'Warning messages:,';
                                     self.nssService.equationWeightingDisclaimers.forEach(function (message) {
