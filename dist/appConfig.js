@@ -7,6 +7,11 @@ configuration.showBPWarning = false;
 configuration.warningBPMessage = "Due to heavy demand, StreamStats is currently experiencing system interruptions. If you receive errors, please try back again later.<br><br>Thank you for your patience."
 configuration.manageBPQueue = false;
 configuration.showBPButton = true;
+if (window.location.host === 'test.streamstats.usgs.gov') {
+    configuration.showBPButton = false;
+} else {
+    configuration.showBPButton = true;
+}
 
 configuration.baseurls =
     {
