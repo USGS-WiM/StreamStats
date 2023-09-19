@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Manage Queue tab now toggled by manageBPQueue boolean variable in appConfig
 - USGS logo now includes "science for a changing world"
+- Disable BP button on test
 - Prediction Interval descriptions and capitalization
 
 ### Deprecated
