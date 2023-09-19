@@ -68,7 +68,6 @@ module StreamStats.Controllers {
         public sideBarCollapsed: boolean;
         public selectedProcedure: ProcedureType;
         public toaster: any;
-        public angulartics: any;
         public selectedStatisticsGroupList: Services.IStatisticsGroup;
         private regionService: Services.IRegionService;
         private nssService: Services.InssService;
@@ -92,8 +91,8 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', 'toaster', '$analytics', '$compile', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
-        constructor(public $scope: ISidebarControllerScope, toaster, $analytics, public $compile: ISidebarControllerCompile, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, modal: Services.IModalService, leafletData: ILeafletData, exploration: Services.IExplorationService, private EventManager:WiM.Event.IEventManager) {
+        static $inject = ['$scope', 'toaster', '$compile', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
+        constructor(public $scope: ISidebarControllerScope, toaster, public $compile: ISidebarControllerCompile, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, modal: Services.IModalService, leafletData: ILeafletData, exploration: Services.IExplorationService, private EventManager:WiM.Event.IEventManager) {
             this.dateRange = { dates: { startDate: new Date(), endDate: new Date() }, minDate: new Date(1900, 1, 1), maxDate: new Date() };
 
             $scope.vm = this;
@@ -101,7 +100,6 @@ module StreamStats.Controllers {
             this.setCulvertPopups();
 
             this.toaster = toaster;
-            this.angulartics = $analytics;
             this.sideBarCollapsed = false;
             this.selectedProcedure = ProcedureType.INIT;
             this.regionService = region;
@@ -176,7 +174,7 @@ module StreamStats.Controllers {
         }
         public setRegion(region: Services.IRegion) {
             //ga event
-            this.angulartics.eventTrack('initialOperation', { category: 'SideBar', label: 'Region Selection Button' });
+            gtag('event', 'SetRegion', { 'Region': region.RegionID });
 
             //console.log('setting region: ', region);
             if (this.regionService.selectedRegion == undefined || this.regionService.selectedRegion.RegionID !== region.RegionID)
@@ -230,10 +228,11 @@ module StreamStats.Controllers {
 
             var checkStatisticsGroup = this.checkArrayForObj(this.nssService.selectedStatisticsGroupList, statisticsGroup);
 
-            //console.log('set stat group: ', statisticsGroup, checkStatisticsGroup);
+            // console.log('set stat group: ', statisticsGroup, checkStatisticsGroup);
 
             //if toggled remove selected parameter set
             if (checkStatisticsGroup != -1) {
+                var preventRemoval = false;
                 // need to remove QPPQ when deselected
                 if (typeof statisticsGroup.id != 'number' && statisticsGroup.id.indexOf('fdctm')) {
                     var qppqExtension = this.studyAreaService.selectedStudyAreaExtensions.filter(e => e.code == 'QPPQ')[0];
@@ -241,25 +240,44 @@ module StreamStats.Controllers {
                     // splice and send new event
                     this.studyAreaService.selectedStudyAreaExtensions.splice(extensionIndex, 1);
                     this.EventManager.RaiseEvent(Services.onScenarioExtensionChanged, this, new Services.NSSEventArgs(this.studyAreaService.selectedStudyAreaExtensions) );
+                    // select the Flow-Duration Statistics group
                 }
 
-                //remove this statisticsGroup from the list
-                this.nssService.selectedStatisticsGroupList.splice(checkStatisticsGroup, 1);
+                // if Flow Duration Curve Transfer Method (FDCTM) is selected, prevent Flow-Duration Statistics from being de-selected
+                if (this.nssService.selectedStatisticsGroupList.filter((selectedStatisticsGroup) => selectedStatisticsGroup.name == "Flow-Duration Curve Transfer Method").length > 0 && statisticsGroup.name == "Flow-Duration Statistics") {
+                    preventRemoval = true;
+                } 
+                
+                if (!preventRemoval) {
+                    //remove this statisticsGroup from the list
+                    this.nssService.selectedStatisticsGroupList.splice(checkStatisticsGroup, 1);
 
-                //if no selected scenarios, clear studyareaparameter list
-                if (this.nssService.selectedStatisticsGroupList.length == 0) {
-                    this.studyAreaService.studyAreaParameterList = [];
+                    //if no selected scenarios, clear studyareaparameter list
+                    if (this.nssService.selectedStatisticsGroupList.length == 0) {
+                        this.studyAreaService.studyAreaParameterList = [];
 
-                    this.regionService.parameterList.forEach((parameter) => {
-                        parameter.checked = false;
-                        parameter.toggleable = true;
-                    });
+                        this.regionService.parameterList.forEach((parameter) => {
+                            parameter.checked = false;
+                            parameter.toggleable = true;
+                        });
+                    }
                 }
+                
             }
 
             //add it to the list and get its required parameters
             else {
                 this.nssService.selectedStatisticsGroupList.push(statisticsGroup);
+
+                // if Flow Duration Curve Transfer Method (FDCTM) was selected, also select Flow-Duration Statistics
+                if (typeof statisticsGroup.id != 'number' && statisticsGroup.id.indexOf('fdctm')) {
+                    // see if the Flow-Duration Statistics group has been selected already and select it if not
+                    var statisticsGroupFDS = this.nssService.statisticsGroupList.filter((statisticsGroup) => statisticsGroup.name == "Flow-Duration Statistics")[0];
+                    var checkStatisticsGroupFDS = this.checkArrayForObj(this.nssService.selectedStatisticsGroupList, statisticsGroupFDS);
+                    if (checkStatisticsGroupFDS == -1) {
+                        this.nssService.selectedStatisticsGroupList.push(statisticsGroupFDS);
+                    }
+                }
 
                 if (this.studyAreaService.selectedStudyArea.CoordinatedReach != null && statisticsGroup.code.toUpperCase() == "PFS") {
                     this.addParameterToStudyAreaList("DRNAREA");
@@ -347,10 +365,8 @@ module StreamStats.Controllers {
         }
 
         public calculateParameters() {
-
             //ga event
-            this.angulartics.eventTrack('CalculateParameters', {
-                category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",")});
+            gtag('event', 'Calculate', { 'Category': "Parameters", 'Location': this.regionService.selectedRegion.Name, 'Value':  this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",")});
 
             //console.log('in Calculate Parameters');
             this.studyAreaService.loadParameters();
@@ -359,14 +375,20 @@ module StreamStats.Controllers {
             }
         }
 
-        public configureExtensions() {
+        public configureExtensions(extensionName) {
             //open modal for extensions
-            this.modalService.openModal(Services.SSModalType.e_extensionsupport);
+            if (extensionName == "FDCTM") {
+                this.modalService.openModal(Services.SSModalType.e_extensionsupport);
+            } else if (extensionName == "FLA") {
+                this.modalService.openModal(Services.SSModalType.e_flowanywhere);
+                this.addParameterToStudyAreaList("DRNAREA");
+            }
         }
 
         public submitBasinEdits() {
-
-            this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'sumbitEdits' });
+            //ga event
+            var latLong = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + ',' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5);
+            gtag('event', 'BasinEditor', { 'Type': 'SubmitEdits', 'Location': latLong });
 
             this.studyAreaService.showEditToolbar = false;
 
@@ -398,10 +420,16 @@ module StreamStats.Controllers {
 
             //console.log('in estimateFlows');
             this.toaster.pop('wait', "Opening Report", "Please wait...",5000);
-
+            
             //ga event
-            this.angulartics.eventTrack('CalculateFlows', {
-                category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.name; }).join(",") });
+            gtag('event', 'Calculate', { 'Category': 'Flows', 'Location': this.regionService.selectedRegion.Name, 'Value': this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.name; }).join(",") });
+
+            this.studyAreaService.extensionResultsChanged = 0; //reset FDCTM results
+
+            // Compute FlowAnywhereResults
+            if (this.regionService.selectedRegion.Applications.indexOf('FLA') != -1 && this.studyAreaService.flowAnywhereData && this.studyAreaService.flowAnywhereData.selectedGage && this.studyAreaService.flowAnywhereData.dateRange) {
+                this.studyAreaService.computeFlowAnywhereResults();
+            }
 
             if(this.nssService.showHydraulicModelTable){
                     this.toaster.clear();
@@ -465,6 +493,9 @@ module StreamStats.Controllers {
 
         public checkRegulation() {
             //console.log('checking for regulation');
+            //ga event
+            gtag('event', 'AdditionalFunctionality', { 'Category': 'Regulation' });
+
             this.studyAreaService.upstreamRegulation();
         }
 
@@ -795,17 +826,26 @@ module StreamStats.Controllers {
         }
 
         public OpenWateruse() {
+            //ga event
+            gtag('event', 'AdditionalFunctionality', { 'Category': 'WaterUse' });
             this.modalService.openModal(Services.SSModalType.e_wateruse);
         }
         public OpenStormRunoff() {
+            //ga event
+            gtag('event', 'AdditionalFunctionality', { 'Category': 'StormRunoff' });
             this.modalService.openModal(Services.SSModalType.e_stormrunnoff);
         }
 
         public OpenNearestGages() {
+            //ga event
+            gtag('event', 'AdditionalFunctionality', { 'Category': 'NearestGages' });
             this.modalService.openModal(Services.SSModalType.e_nearestgages);
         }
 
         public downloadGeoJSON() {
+
+            //ga event
+            gtag('event', 'Download', { 'Category': 'Basin', 'Type': 'Geojson' });
 
             var GeoJSON = angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection);
 
@@ -834,6 +874,9 @@ module StreamStats.Controllers {
         }
 
         public downloadKML() {
+            //ga event
+            gtag('event', 'Download', { 'Category': 'Basin', 'Type': 'KML' });
+
             //https://github.com/mapbox/tokml
             //https://gis.stackexchange.com/questions/159344/export-to-kml-option-using-leaflet
             var geojson = JSON.parse(angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection));
@@ -860,6 +903,9 @@ module StreamStats.Controllers {
             }
         }
         public downloadShapeFile() {
+            //ga event
+            gtag('event', 'Download', { 'Category': 'Basin', 'Type': 'Shapefile' });
+
             try {
                 var flowTable: Array<Services.INSSResultTable> = null;
 

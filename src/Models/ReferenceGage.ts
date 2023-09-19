@@ -29,7 +29,10 @@ module StreamStats.Models {
         DrainageArea_sqMI: number;
         Latitude_DD: number;
         Longitude_DD: number;
-        URL: string;
+        URL: string;        
+        AggregatedRegion: any;
+        StartDate: any;
+        EndDate: any;
     }
 
     export class ReferenceGage implements IReferenceGage {
@@ -40,10 +43,12 @@ module StreamStats.Models {
         public Latitude_DD: number;
         public Longitude_DD: number;
         public URL: string;
-        public correlation: number;
+        public correlation?: number;
         public properties?: any;
         public HasZeroFlows?: any;
-
+        public AggregatedRegion: any;
+        public StartDate: any;
+        public EndDate: any;
 
         // Constructor
         constructor(id: string, name: string) {

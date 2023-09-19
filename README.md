@@ -7,8 +7,8 @@ StreamStats client application
 ### Prerequisites
 
 ##### required software
-[node.js](http://nodejs.org)  
-[git](https://git-scm.com/)  
+- [node.js](http://nodejs.org) version 10.15.0
+- [git](https://git-scm.com/)  
 
 Install global dependencies
 ```bash
@@ -33,11 +33,33 @@ Inside of your project folder (after clone):
 ```bash
 npm install
 typings install 
+npm install -g concurrently
+npm install -g live-server
 ```
 
-For Freshdesk functionalities (used in the About and Help modals), you will need the secrets.json from [here](https://doimspp.sharepoint.com/sites/StreamStatsTeam/Shared%20Documents/Forms/AllItems.aspx?viewid=9f283fd0%2D4904%2D450b%2D80ce%2Da5211e70406e&id=%2Fsites%2FStreamStatsTeam%2FShared%20Documents%2FSS%5FTeamSpace%2FV4%20Freshdesk%20Creds). This requires access to the StreamStats Sharepoint, and should be placed locally at src/data.
+## Development Workflow
 
-Note: the secrets file is in the .gitignore and should _never_ be uploaded to GitHub 
+An issue will be assigned to you via GitHub. Your workflow begins after assignment:
+1. Create a branch based on the `dev` branch with your initials and the issue number as the branch name (e.g. JD-5): `git checkout -b JD-5`
+3. Work on the issue.
+     1. In the "Projects" section on the sidebar of the issue page, under "StreamStats Ecoystem", change the "Status" to "In Progress".
+     2. While you work, you may wish to have the app running live with live reload: `npm start`
+     3. Add your changes: `git add .`
+     4. Check that your files were added as expected: `git status`
+     5. Frequently commit your work to your local branch. Use simple, short, and descriptive messages with a verb describing the work. Include the issue number. Example: `git commit -m "#5 added styling"`
+4. Update the [CHANGELOG.md](https://github.com/USGS-WiM/StreamStats/blob/dev/CHANGELOG.md) to describe your work.
+5. Ensure your code is synced with the latest version of the `dev` branch: 
+     1. Use this command: `git pull origin dev`
+     2. If there are no merge conflicts, the updates made to the `dev` branch will be incorporated into your local branch automatically.
+     3. If there are merge conflicts, you will need to resolve conflicts manually. Please be careful with this step so that no code is lost. Once complete, you will need to add your changes: `git add .` and then commit again: `git commit -m "add message here"`
+6. Push your committed and synced branch to the remote repository on GitHub: `git push origin JD-5`
+7. Submit a [Pull Request](https://github.com/USGS-WiM/StreamStats/pulls):
+     1. Request that your branch be merged into the `dev` branch.
+     2. Name the Pull Request in this format: "Fixes #5 - Issue Description". 
+     3. Use [keywords](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/using-keywords-in-issues-and-pull-requests) to automatically close issues (e.g. "Closes #5).
+     4. Assign a reviewer (typically the lead developer).
+8. Once your Pull Request is reviewed, address any feedback that needs to be addressed. Once you have addressed feedback, click the button to re-request review.
+9. Upon approval of the Pull Request, your issue will be merged into the `dev` branch and you can start on a new issue.
 
 ## Building and testing
 
@@ -64,14 +86,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 **Make sure you have the latest dependencies by running `npm install`**
 
 ##### Step 1.
-Bump the version.  Run only one of the below commands.  
-This creates a local commit with the package.json, bower.json and tsd.json updated to the new version number
-
-```
-gulp patch     # makes v0.1.0 → v0.1.1
-gulp feature   # makes v0.1.1 → v0.2.0
-gulp release   # makes v0.2.1 → v1.0.0
-```
+Update version number. Search for the current version number in the code, replace all instances of old version number with new version number.
 
 ##### Step 2.   
  Push the commit that contains the json files with bumped versions to your personal github repo 

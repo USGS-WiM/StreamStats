@@ -41,7 +41,7 @@ var StreamStats;
             return MapDefault;
         }());
         var MapController = (function () {
-            function MapController($scope, $compile, toaster, $analytics, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, _prosperServices, eventManager, modal, modalStack, $http) {
+            function MapController($scope, $compile, toaster, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, _prosperServices, eventManager, modal, modalStack, $http) {
                 var _this = this;
                 this.$scope = $scope;
                 this.$compile = $compile;
@@ -62,6 +62,7 @@ var StreamStats;
                 this._prosperIsActive = false;
                 this.explorationToolsExpanded = false;
                 this.gageLegendFix = false;
+                this.regionLegendFix = false;
                 this.nonsimplifiedBasinStyle = {
                     displayName: "Non-Simplified Basin",
                     imagesrc: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANkAAADJCAYAAACuaJftAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKsSURBVHhe7dwxbsJAEEBRkyPQU3L/A1HScwWCFEuRkEDB7I+t5L2Grei+lmEs7643E5D5mD+BiMggJjKIiQxiIoOYyCD2a3/hXw7H+QTbsz+f5tN4bjKIiQxiIoPYsJnMzMV/8soM5yaDmMggJjKILZ7JzGDw7dmM5iaDmMggJjKIiQxiIoOYyCAmMoj9eE9mLwaP2ZPBikQGMZFBzLOLMICZDFYkMoiJDGIig5jIICYyiIkMYvZksID3LsKGiAxiIoOYmQwG8OwirEhkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnEvOMDFvDeRdgQkUFMZBAzkz3wym9ueMZNBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQ211v5vNbLofjfPob9ufTfIL3uMkgJjKIiQxiIoOYyCAmMoiJDGLD9mT3Ru/N7vdW9ffDKG4yiIkMYiKDWDaTAV/cZBATGcREBjGRQUxkEBMZxEQGMZFBTGSQmqZPLJhZUkx8RY8AAAAASUVORK5CYII=",
@@ -74,7 +75,6 @@ var StreamStats;
                 this.imageryToggled = false;
                 $scope.vm = this;
                 this.toaster = toaster;
-                this.angulartics = $analytics;
                 this.searchService = search;
                 this.$locationService = $location;
                 this.regionServices = region;
@@ -89,6 +89,9 @@ var StreamStats;
                 this.selectedExplorationTool = null;
                 this.http = $http;
                 this.init();
+                this.eventManager.SubscribeToEvent(StreamStats.Services.onAdditionalFeaturesLoaded, new WiM.Event.EventHandler(function () {
+                    _this.onAdditionalFeaturesLoaded();
+                }));
                 this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler(function () {
                     _this.onSelectedStudyAreaChanged();
                 }));
@@ -116,6 +119,11 @@ var StreamStats;
                     if (sender.selectedMethod.navigationID == 0)
                         _this.selectedExplorationTool = null;
                 }));
+                $scope.$on('leafletDirectiveMap.mainMap.zoomend', function (event, args) {
+                    if (_this.regionServices.selectedRegion && _this.center.zoom > 8 && _this.regionServices.selectedRegion.RegionID == "ME") {
+                        _this.updateLegendText("MeanAugustBaseflow");
+                    }
+                });
                 $scope.$on('leafletDirectiveMap.mainMap.mousemove', function (event, args) {
                     var latlng = args.leafletEvent.latlng;
                     _this.mapPoint.lat = latlng.lat;
@@ -386,17 +394,25 @@ var StreamStats;
                                 return;
                             querylayers.append('<h5>' + item.layerName + '</h5>');
                             _this.queryContent.responseCount++;
-                            _this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
+                            gtag('event', 'ExplorationTools', { 'Category': 'QueryPoints' });
                             if (_this.layers.overlays[lyr].hasOwnProperty("queryProperties") && _this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {
                                 var queryProperties_1 = _this.layers.overlays[lyr].queryProperties[item.layerName];
                                 Object.keys(queryProperties_1).map(function (k) {
                                     if (item.layerName == "Streamgages" && k == "FeatureURL") {
                                         var siteNo = queryResult.properties[k].split('site_no=')[1];
-                                        var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
-                                        var SSgagepageNew = "vm.openGagePage('" + siteNo + "')";
-                                        var html = '<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a ng-click="' + SSgagepageNew + '">link</a></br>';
+                                        var SSgagepage = "vm.openGagePage('" + siteNo + "')";
+                                        var html = '</br><br><button ng-click="' + SSgagepage + '" type="button" class="btn-blue fullwidth">Open StreamStats Gage Page</button>';
                                         querylayers.append(html);
-                                        _this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
+                                        gtag('event', 'ExplorationTools', { 'Category': 'QueryStreamgage' });
+                                    }
+                                    else if (item.layerName == "Mean August Baseflow") {
+                                        if (queryProperties_1[k] == "Drainage Area out-of-bounds" || queryProperties_1[k] == "Mean July Precip out-of-bounds" || queryProperties_1[k] == "% Aquifer Area out-of-bounds" || queryProperties_1[k] == "Regulated stream/river") {
+                                            if (queryResult.properties[k] == 0)
+                                                queryResult.properties[k] = "No";
+                                            else if (queryResult.properties[k] == 1)
+                                                queryResult.properties[k] = "Yes";
+                                        }
+                                        querylayers.append('<strong>' + queryProperties_1[k] + ': </strong>' + queryResult.properties[k] + '</br>');
                                     }
                                     else {
                                         querylayers.append('<strong>' + queryProperties_1[k] + ': </strong>' + queryResult.properties[k] + '</br>');
@@ -440,7 +456,7 @@ var StreamStats;
                     if (control._container.className.indexOf("elevation") > -1)
                         el = control;
                 });
-                this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'elevationProfile' });
+                gtag('event', 'ExplorationTools', { 'Category': 'ElevationProfile' });
                 this.leafletData.getMap("mainMap").then(function (map) {
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {
                         var drawnItems = maplayers.overlays.draw;
@@ -502,7 +518,7 @@ var StreamStats;
             };
             MapController.prototype.showLocation = function () {
                 var _this = this;
-                this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'showLocation' });
+                gtag('event', 'ExplorationTools', { 'Category': 'ShowLocation' });
                 var lc;
                 this.controls.custom.forEach(function (control) {
                     if (control._container.className.indexOf("leaflet-control-locate") > -1)
@@ -547,7 +563,7 @@ var StreamStats;
             MapController.prototype.measurement = function () {
                 var _this = this;
                 this.explorationService.measurementData = 'Click the map to begin\nDouble click to end the Drawing';
-                this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'measurement' });
+                gtag('event', 'ExplorationTools', { 'Category': 'Measurement' });
                 this.leafletData.getMap("mainMap").then(function (map) {
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {
                         var stopclick = false;
@@ -618,21 +634,30 @@ var StreamStats;
                                 if (item[0] == 'ExcludePolys')
                                     queryString += item[1];
                             });
-                            _this.angulartics.eventTrack('delineationClick', { category: 'Map', label: _this.regionServices.selectedRegion.Name });
+                            gtag('event', 'DelineationClick', { 'Region': _this.regionServices.selectedRegion.Name, 'Location': latlng });
                             map.invalidateSize();
                             var selectedRegionLayerName = _this.regionServices.selectedRegion.RegionID + "_region";
                             if (queryString === 'visible:') {
                                 _this.toaster.clear();
                                 _this.toaster.pop("warning", "Selected State/Region does not have exlusion areas defined", "Delineating with no exclude polygon layer...", true, 0);
                                 _this.startDelineate(latlng, true);
-                                _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not advised (no point query)' });
+                                gtag('event', 'ValidatePoint', { 'Label': 'Not advised (no point query)' });
                                 _this.cursorStyle = 'pointer';
                                 return;
                             }
-                            maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run(function (error, results) {
+                            var layerName;
+                            for (var layer in maplayers.overlays) {
+                                for (var llayer in _this.layers.overlays) {
+                                    if (llayer === layer && _this.layers.overlays[llayer].layerArray !== undefined && _this.layers.overlays[llayer].layerArray[0].layerName === 'ExcludePolys') {
+                                        layerName = layer;
+                                    }
+                                }
+                            }
+                            ;
+                            maplayers.overlays[layerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run(function (error, results) {
                                 _this.toaster.clear();
                                 if (results.features.length == 0) {
-                                    _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'valid' });
+                                    gtag('event', 'ValidatePoint', { 'Label': 'Valid' });
                                     _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
                                     _this.studyArea.checkingDelineatedPoint = false;
                                     _this.startDelineate(latlng, false);
@@ -643,12 +668,12 @@ var StreamStats;
                                     var popupMsg = results.features[0].properties.ExcludeRea;
                                     if (excludeCode == 1) {
                                         _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
-                                        _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not allowed' });
+                                        gtag('event', 'ValidatePoint', { 'Label': 'Not allowed' });
                                     }
                                     else {
                                         _this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
                                         _this.startDelineate(latlng, true, popupMsg);
-                                        _this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not advised' });
+                                        gtag('event', 'ValidatePoint', { 'Label': 'Not advised' });
                                     }
                                 }
                                 _this.cursorStyle = 'pointer';
@@ -676,7 +701,7 @@ var StreamStats;
                                 }
                                 else {
                                     _this.addGeoJSON('adds', clipPolygon);
-                                    _this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'addArea' });
+                                    gtag('event', 'BasinEditor', { 'Type': 'Add Area' });
                                     _this.studyArea.WatershedEditDecisionList.append.push(clipPolygon);
                                 }
                             }
@@ -686,7 +711,7 @@ var StreamStats;
                                 }
                                 else {
                                     _this.addGeoJSON('removes', clipPolygon);
-                                    _this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'removeArea' });
+                                    gtag('event', 'BasinEditor', { 'Type': 'Remove Area' });
                                     _this.studyArea.WatershedEditDecisionList.remove.push(clipPolygon);
                                 }
                             }
@@ -724,7 +749,7 @@ var StreamStats;
             };
             MapController.prototype.onExplorationMethodComplete = function (sender, e) {
                 var _this = this;
-                this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'networknav-' + this.explorationService.selectedMethod.navigationInfo.code });
+                gtag('event', 'ExplorationTools', { 'Category': 'networknav-' + this.explorationService.selectedMethod.navigationInfo.code });
                 this.explorationService.explorationMethodBusy = false;
                 if (e.features != null && e.features['features'].length > 0) {
                     this.removeMarkerLayers("netnav_", true);
@@ -750,7 +775,7 @@ var StreamStats;
                 this.modal.openModal(StreamStats.Services.SSModalType.e_exploration);
             };
             MapController.prototype.onSelectedAreaOfInterestChanged = function (sender, e) {
-                this.angulartics.eventTrack('Search', { category: 'Sidebar' });
+                gtag('event', 'Search', {});
                 this.paths = {};
                 var AOI = e.selectedAreaOfInterest;
                 this.paths['AOI'] = {
@@ -786,6 +811,18 @@ var StreamStats;
                 if (this.studyArea.zoomLevel15 && !this.imageryToggled && this.regionServices.selectedRegion.Applications.some(function (a) { return ['StormDrain', 'Localres'].indexOf(a) > -1; }))
                     this.toggleImageryLayer();
                 this.regionServices.loadMapLayersByRegion(this.regionServices.selectedRegion.RegionID);
+            };
+            MapController.prototype.onAdditionalFeaturesLoaded = function () {
+                var _this = this;
+                if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.FeatureCollection)
+                    return;
+                this.studyArea.selectedStudyArea.FeatureCollection.features.forEach(function (layer) {
+                    var item = angular.fromJson(angular.toJson(layer));
+                    if (item.id === 'longestflowpath3d' || item.id === 'longestflowpath') {
+                        _this.addGeoJSON(item.id, item.geometry);
+                    }
+                });
+                this.toaster.pop('success', "Additional features have been downloaded", "Please continue", 5000);
             };
             MapController.prototype.onSelectedStudyAreaChanged = function () {
                 var _this = this;
@@ -1000,11 +1037,10 @@ var StreamStats;
                         },
                         onEachFeature: function (feature, layer) {
                             var siteNo = feature.properties['Code'];
-                            var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
-                            var NWISpage = 'http://nwis.waterdata.usgs.gov/nwis/inventory/?site_no=' + siteNo;
+                            var NWISpage = 'https://waterdata.usgs.gov/monitoring-location/' + siteNo;
                             var gageButtonDiv = L.DomUtil.create('div', 'innerDiv');
                             gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
-                                '</br><strong>NWIS page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
+                                '</br><br><button id="gagePageLink" type="button" class="btn-blue fullwidth">Open StreamStats Gage Page</button>';
                             layer.bindPopup(gageButtonDiv);
                             var styling = configuration.streamgageSymbology.filter(function (item) {
                                 return item.label.toLowerCase() == feature.properties.StationType.name.toLowerCase();
@@ -1028,16 +1064,19 @@ var StreamStats;
                                 }
                             });
                             layer.on('mouseover', function (e) {
-                                if (self.studyArea.doSelectMapGage)
+                                if (self.studyArea.doSelectMapGage) {
                                     this.openPopup();
+                                }
                             });
                             layer.on('click', function (e) {
+                                gtag('event', 'ExplorationTools', { 'Category': 'QueryStreamgage' });
                                 if (self.studyArea.doSelectMapGage) {
                                     self.studyArea.selectGage(feature);
                                     self.studyArea.doSelectMapGage = false;
                                 }
-                                else
+                                else {
                                     this.openPopup();
+                                }
                             });
                         }
                     };
@@ -1074,8 +1113,12 @@ var StreamStats;
             MapController.prototype.onLayerChanged = function (sender, e) {
                 var _this = this;
                 if (e.PropertyName === "visible") {
-                    if (!e.Value)
+                    if (!e.Value) {
                         delete this.geojson[e.LayerName];
+                        if (e.LayerName === "streamgages") {
+                            this.studyArea.streamgagesVisible = false;
+                        }
+                    }
                     else {
                         var value = null;
                         if (this.studyArea.selectedStudyArea && this.studyArea.selectedStudyArea.FeatureCollection.features.length > 0) {
@@ -1100,6 +1143,9 @@ var StreamStats;
                         if (e.LayerName == 'streamgages' && this.center.zoom >= 8) {
                             this.studyArea.getStreamgages(this.bounds.southWest.lng, this.bounds.northEast.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
                         }
+                        else if (e.LayerName == 'streamgages' && this.center.zoom < 8) {
+                            this.studyArea.streamgagesVisible = true;
+                        }
                     }
                 }
             };
@@ -1110,7 +1156,9 @@ var StreamStats;
                     if (!this.regionServices.selectedRegion) {
                         this.toaster.pop("info", "Information", "User input is needed to continue", 5000);
                     }
-                    this.studyArea.getStreamgages(this.bounds.southWest.lng, this.bounds.northEast.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
+                    if (this.studyArea.streamgagesVisible) {
+                        this.studyArea.getStreamgages(this.bounds.southWest.lng, this.bounds.northEast.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
+                    }
                 }
                 if (this.center.zoom < 8 && oldValue !== newValue) {
                     this.regionServices.regionList = [];
@@ -1123,6 +1171,31 @@ var StreamStats;
                 }
                 else {
                     this.studyArea.zoomLevel15 = false;
+                }
+            };
+            MapController.prototype.updateLegendText = function (LayerName) {
+                var _this = this;
+                if (LayerName == "MeanAugustBaseflow") {
+                    this.leafletData.getLayers("mainMap").then(function (maplayers) {
+                        if (_this.center.zoom == 9 || _this.center.zoom == 10 || _this.center.zoom == 11) {
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.60 - 1.34 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.45 - 0.60 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.30 - 0.45 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.30 cfs/mi^2";
+                        }
+                        else if (_this.center.zoom == 12 || _this.center.zoom == 13 || _this.center.zoom == 14) {
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.50 - 1.34 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.40 - 0.50 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.20 - 0.44 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.20 cfs/mi^2";
+                        }
+                        else if (_this.center.zoom == 15 || _this.center.zoom == 16) {
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.35 - 1.34 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.25 - 0.35 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.15 - 0.25 cfs/mi^2";
+                            _this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.15 cfs/mi^2";
+                        }
+                    });
                 }
             };
             MapController.prototype.updateLegend = function () {
@@ -1176,23 +1249,41 @@ var StreamStats;
                 this.imageryToggled = true;
             };
             MapController.prototype.addRegionOverlayLayers = function (regionId) {
+                var _this = this;
                 if (this.regionServices.regionMapLayerList.length < 1)
                     return;
                 var layerList = [];
+                var visibleList = [];
+                var self = this;
                 var roots = this.regionServices.regionMapLayerList.map(function (layer) {
                     layerList.push(layer[1]);
+                    if (self.regionServices.selectedRegion.Applications.indexOf("StormDrain") > -1 && layer[0] == 'StreamGrid') {
+                        visibleList.push(false);
+                    }
+                    else {
+                        visibleList.push(true);
+                    }
                 });
-                var visible = true;
-                if (regionId == 'MRB')
-                    visible = false;
-                this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'], "agsDynamic", visible, {
-                    "opacity": 1,
-                    "layers": layerList,
-                    "format": "png8",
-                    "f": "image"
+                layerList.forEach(function (layer, index) {
+                    _this.layers.overlays[regionId + "_region" + layer] =
+                        {
+                            name: String(layer),
+                            group: regionId + " Map layers",
+                            url: configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'],
+                            type: 'agsDynamic',
+                            visible: visibleList[index],
+                            layerOptions: {
+                                opacity: 1,
+                                layers: [layer],
+                                format: "png8",
+                                f: "image"
+                            },
+                        };
                 });
                 this.leafletData.getLayers("mainMap").then(function (maplayers) {
-                    maplayers.overlays[regionId + "_region"].bringToBack();
+                    layerList.forEach(function (layer) {
+                        maplayers.overlays[regionId + "_region" + layer].bringToBack();
+                    });
                     maplayers.overlays.SSLayer.bringToFront();
                 });
                 var layers = this.regionServices.selectedRegion.Layers;
@@ -1264,7 +1355,7 @@ var StreamStats;
                     });
                 }
             };
-            MapController.$inject = ['$scope', '$compile', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack', '$http'];
+            MapController.$inject = ['$scope', '$compile', 'toaster', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack', '$http'];
             return MapController;
         }());
         angular.module('StreamStats.Controllers')

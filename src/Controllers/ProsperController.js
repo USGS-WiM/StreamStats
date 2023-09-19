@@ -97,9 +97,11 @@ var StreamStats;
                 this.init();
             };
             ProsperController.prototype.Print = function () {
+                gtag('event', 'Download', { 'Category': 'Prosper', "Type": 'Print' });
                 window.print();
             };
             ProsperController.prototype.DownloadCSV = function () {
+                gtag('event', 'Download', { 'Category': 'Prosper', "Type": 'CSV' });
                 var filename = 'prosper.csv';
                 var csvFile = 'StreamStats PROSPER Report\n\n' +
                     '\nLatitude,' + this.Location.lat.toFixed(5) + '\nLongitude,' + this.Location.lng.toFixed(5) +
@@ -127,6 +129,7 @@ var StreamStats;
                 }
             };
             ProsperController.prototype.Query = function () {
+                gtag('event', 'ExplorationTools', { 'Category': 'QueryProsper' });
                 this._prosperServices.CanQuery = true;
                 this.modalInstance.dismiss();
             };
