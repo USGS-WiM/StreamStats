@@ -1,6 +1,16 @@
 var configuration = {};
-configuration.version = "4.7.0";
+configuration.version = "4.17.0";
 configuration.environment = 'development';
+configuration.showWarningModal = false;
+configuration.warningModalMessage = "Due to heavy demand, StreamStats is currently experiencing system interruptions. If you receive errors, please try back again later.<br><br>Thank you for your patience."
+configuration.showBPWarning = false;
+configuration.warningBPMessage = "Due to heavy demand, StreamStats is currently experiencing system interruptions. If you receive errors, please try back again later.<br><br>Thank you for your patience."
+configuration.manageBPQueue = false;
+if (window.location.host === 'test.streamstats.usgs.gov') {
+    configuration.showBPButton = false;
+} else {
+    configuration.showBPButton = false;
+}
 
 configuration.baseurls =
     {
@@ -11,17 +21,22 @@ configuration.baseurls =
         'WaterUseServices': 'https://test.streamstats.usgs.gov/wateruseservices',
         'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
         'ScienceBase': 'https://gis.usgs.gov/sciencebase2',
-        'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices'
+        'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices',
+        'WeightingServices': 'https://streamstats.usgs.gov/channelweightingservices',
+        'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices',
+        'BatchProcessorServices': 'https://dev.streamstats.usgs.gov/batchprocessor' // Will need to change this if running locally and want to use production data
     };
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
 if (window.location.host === 'streamstats.usgs.gov') {
-    configuration.baseurls.StreamStatsServices = 'https://streamstats.usgs.gov',
+        configuration.baseurls.StreamStatsServices = 'https://streamstats.usgs.gov',
         configuration.baseurls.StreamStatsMapServices = 'https://gis.streamstats.usgs.gov',
         configuration.baseurls.NSS = 'https://streamstats.usgs.gov/nssservices',
         configuration.baseurls.WaterUseServices = 'https://streamstats.usgs.gov/wateruseservices',
         configuration.baseurls.StormRunoffServices = 'https://streamstats.usgs.gov/runoffmodelingservices',
         configuration.baseurls.GageStatsServices = 'https://streamstats.usgs.gov/gagestatsservices',
+		configuration.baseurls.FlowAnywhereRegressionServices = 'https://streamstats.usgs.gov/regressionservices',
+        configuration.baseurls.BatchProcessorServices = 'https://streamstats.usgs.gov/batchprocessor',
         configuration.environment = 'production';
 }
 
@@ -36,17 +51,26 @@ configuration.queryparams =
         'statisticsGroupLookup': '/statisticgroups?regions={0},NA&regressionregions={1}',
         'statisticsGroupParameterLookup': '/scenarios?regions={0},NA&statisticgroups={1}&regressionregions={2}',
         'estimateFlows': '/scenarios/estimate?regions={0},NA',
-        'SSdelineation': '/streamstatsservices/watershed.{0}?rcode={1}&xlocation={2}&ylocation={3}&crs={4}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
-        'SSstormwaterDelineation': '/stormwaterservices/watershed?rcode={0}&xlocation={1}&ylocation={2}&surfacecontributiononly={3}',
-        'SSwatershedByWorkspace': '/streamstatsservices/watershed.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
+        'SSdelineation': '/streamstatsservices/watershed.{0}?rcode={1}&xlocation={2}&ylocation={3}&crs={4}&simplify=false&includeparameters=false&includeflowtypes=false&includefeatures=true',
+        'SSstormwaterDelineation': '/stormwaterservices/watershed?rcode={0}&xlocation={1}&ylocation={2}&simplify=false&surfacecontributiononly={3}',
+        'SSwatershedByWorkspace': '/streamstatsservices/watershed.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=false&includeparameters=false&includeflowtypes=false&includefeatures=true',
         'SSeditBasin': '/streamstatsservices/watershed/edit.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
         'SSAvailableParams': '/streamstatsservices/parameters.json?rcode={0}',
         'SSComputeParams': '/streamstatsservices/parameters.json?rcode={0}&workspaceID={1}&includeparameters={2}',
         'SSavailableFeatures': '/streamstatsservices/features.json?workspaceID={0}',
-        'SSfeatures': '/streamstatsservices/features.geojson?workspaceID={0}&crs={1}&includefeatures={2}&simplify=true',
-        'SSStateLayers': '/arcgis/rest/services/StreamStats/stateServices_test/MapServer',
-        'SSNationalLayers': '/arcgis/rest/services/StreamStats/nationalLayers_test/MapServer',
-        'FARefGage': '/2/query?geometry={0}&geometryType=esriGeometryPoint&inSR={1}&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
+        'SSfeatures': '/streamstatsservices/features.geojson?workspaceID={0}&crs={1}&includefeatures={2}&simplify=false',
+        'SSStateLayers': '/arcgis/rest/services/StreamStats/stateServices/MapServer',
+        'SSNationalLayers': '/arcgis/rest/services/StreamStats/nationalLayers/MapServer',
+        'SSBatchProcessorBatch': '/batch',
+        'SSBatchProcessorBatchPause': '/pauseBatch?batchID={0}',
+        'SSBatchProcessorBatchStatus': '/batch/?emailAddress={0}',
+        'SSBatchProcessorBatchUnpause': '/unpauseBatch?batchID={0}',
+        'SSBatchProcessorDeleteBatch': '/batch/{0}',
+        'SSBatchProcessorGetBatch': '/batch/',
+        'SSBatchProcessorReorderBatch': '/batch/order',
+        'SSBatchProcessorStatusMessages': '/status/',
+        'SSBatchProcessorStreamGrids': '/streamgrids/',
+        'SSBatchProcessorSubmitBatch': '/batch',
         'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
         'NLCDQueryService': '/LandCover/USGS_EROS_LandCover_NLCD/MapServer/4',
         'regulationService': '/arcgis/rest/services/regulations/{0}/MapServer/exts/RegulationRESTSOE/Regulation',
@@ -78,20 +102,10 @@ configuration.queryparams =
         'GageStatsServicesBounds': '/stations/Bounds?xmin={0}&xmax={1}&ymin={2}&ymax={3}&geojson=true',
         'CulvertWatersheds': '/query?where=SurveyID={0}&f=pgeojson',
         'CulvertGeometryFiles': '/queryAttachments?DefinitionExpression=SurveyID={0}&returnUrl=true&f=pjson',
+        'FlowAnywhereEstimates': '/models/FLA/estimate?state={0}',
+        'FlowAnywhereGages': '/arcgis/rest/services/IowaStreamEst/FlowAnywhere/MapServer/1/query?geometry={0},{1}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.da_pub_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
+        'Regions': '/regions/'
     };
-
-configuration.SupportTicketService = {
-    'BaseURL': 'https://streamstats.freshdesk.com',
-    'CreateTicket': '/helpdesk/tickets.json',
-    'AboutArticle': '/solution/categories/9000106503/folders/9000163536/articles/9000052344.json',
-    'RegionInfoFolder': '/solution/categories/9000106501/folders/9000163157.json',
-    'UserManualArticlesFolder': '/solution/categories/9000028363/folders/9000042933.json',
-    'FAQarticlesFolder': '/solution/categories/9000028363/folders/9000042932.json',
-    'ActiveNewsFolder': '/solution/categories/9000028363/folders/9000163894.json',
-    'PastNewsFolder': '/solution/categories/9000028363/folders/9000163895.json',
-    'DisclaimersArticle': '/solution/categories/9000106503/folders/9000163536/articles/9000127695.json',
-    'CreditsArticle': '/solution/categories/9000106503/folders/9000163536/articles/9000127697.json'
-};
 
 configuration.basemaps =
     {
@@ -227,12 +241,12 @@ configuration.basemaps =
     };// end baselayer
 
 configuration.regions = [
-    { "RegionID": "AK", "Name": "Alaska", "Bounds": [[51.583032, -178.217598], [71.406235, -129.992235]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "AL", "Name": "Alabama", "Bounds": [[30.233604, -88.472952], [35.016033, -84.894016]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "AR", "Name": "Arkansas", "Bounds": [[33.010151, -94.617257], [36.492811, -89.645479]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "AS", "Name": "American Samoa", "Bounds": [[-14.375555, -170.82611], [-14.166389, -169.438323]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
-    { "RegionID": "AZ", "Name": "Arizona", "Bounds": [[31.335634, -114.821761], [37.003926, -109.045615]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "CA", "Name": "California", "Bounds": [[32.535781, -124.392638], [42.002191, -114.12523]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
+    { "RegionID": "AK", "Name": "Alaska", "Bounds": [[51.583032, -178.217598], [71.406235, -129.992235]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/alaska-streamstats-cook-inlet-basin" },
+    { "RegionID": "AL", "Name": "Alabama", "Bounds": [[30.233604, -88.472952], [35.016033, -84.894016]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/alabama-streamstats" },
+    { "RegionID": "AR", "Name": "Arkansas", "Bounds": [[33.010151, -94.617257], [36.492811, -89.645479]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/arkansas-streamstats" },
+    { "RegionID": "AS", "Name": "American Samoa", "Bounds": [[-14.375555, -170.82611], [-14.166389, -169.438323]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false, "URL": null },
+    { "RegionID": "AZ", "Name": "Arizona", "Bounds": [[31.335634, -114.821761], [37.003926, -109.045615]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/arizona-streamstats" },
+    { "RegionID": "CA", "Name": "California", "Bounds": [[32.535781, -124.392638], [42.002191, -114.12523]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/california-streamstats" },
     {
         "RegionID": "CO", "Name": "Colorado", "Bounds": [[36.988994, -109.055861], [41.003375, -102.037207]], "Layers": {
             "CO_Regulation": {
@@ -248,24 +262,17 @@ configuration.regions = [
                 },
                 "queryProperties": { "Regulation Points": {"Source_Fea":"Description", "Source_Dat": "Source" } }
             }
-        }, "Applications": ["Regulation", "StormRunoff"],
-        "regionEnabled": false,
-        "ScenariosAvailable": true
+        }, "Applications": ["Regulation", "StormRunoff"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/colorado-streamstats"
     },
-    { "RegionID": "CT", "Name": "Connecticut", "Bounds": [[40.998392, -73.725237], [42.047428, -71.788249]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "DE", "Name": "Delaware", "Bounds": [[38.449602, -75.791094], [39.840119, -75.045623]], "Layers": {}, "Applications": ["Localres"], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "FL", "Name": "Florida", "Bounds": [[24.956376, -87.625711], [31.003157, -80.050911]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
-    { "RegionID": "GA", "Name": "Georgia", "Bounds": [[30.361291, -85.60896], [35.000366, -80.894753]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "GU", "Name": "Guam", "Bounds": [[13.234996, 144.634155], [13.65361, 144.953308]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "HI", "Name": "Hawaii", "Bounds": [[18.921786, -160.242406], [22.22912, -154.791096]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    {
-        "RegionID": "IA", "Name": "Iowa", "Bounds": [[40.371946, -96.640709], [43.501457, -90.142796]], "Layers":{},
-        "Applications": [],
-        "regionEnabled": false,
-        "ScenariosAvailable": true
-    },
-    { "RegionID": "ID", "Name": "Idaho", "Bounds": [[41.994599, -117.236921], [48.99995, -111.046771]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "IL", "Name": "Illinois", "Bounds": [[36.986822, -91.516284], [42.509363, -87.507909]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
+    { "RegionID": "CT", "Name": "Connecticut", "Bounds": [[40.998392, -73.725237], [42.047428, -71.788249]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/connecticut-streamstats" },
+    { "RegionID": "DE", "Name": "Delaware", "Bounds": [[38.449602, -75.791094], [39.840119, -75.045623]], "Layers": {}, "Applications": ["Localres"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/delaware-streamstats" },
+    { "RegionID": "FL", "Name": "Florida", "Bounds": [[24.956376, -87.625711], [31.003157, -80.050911]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false, "URL": null },
+    { "RegionID": "GA", "Name": "Georgia", "Bounds": [[30.361291, -85.60896], [35.000366, -80.894753]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/georgia-streamstats" },
+    { "RegionID": "GU", "Name": "Guam", "Bounds": [[13.234996, 144.634155], [13.65361, 144.953308]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": null },
+    { "RegionID": "HI", "Name": "Hawaii", "Bounds": [[18.921786, -160.242406], [22.22912, -154.791096]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/hawaii-streamstats" },
+    { "RegionID": "IA", "Name": "Iowa", "Bounds": [[40.371946, -96.640709], [43.501457, -90.142796]], "Layers":{}, "Applications": ["FDCTM", "FLA"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/iowa-streamstats" },
+    { "RegionID": "ID", "Name": "Idaho", "Bounds": [[41.994599, -117.236921], [48.99995, -111.046771]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/idaho-streamstats" },
+    { "RegionID": "IL", "Name": "Illinois", "Bounds": [[36.986822, -91.516284], [42.509363, -87.507909]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/illinois-streamstats" },
     { 
         "RegionID": "IN", "Name": "Indiana", "Bounds": [[37.776224, -88.10149], [41.76554, -84.787446]], "Layers": {
             "IN_Reaches": {
@@ -280,9 +287,9 @@ configuration.regions = [
                     "minZoom": 15,
                 }
             }
-        }, "Applications": ["CoordinatedReach"], "regionEnabled": false, "ScenariosAvailable": true 
+        }, "Applications": ["CoordinatedReach"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/indiana-streamstats"
     },
-    { "RegionID": "KS", "Name": "Kansas", "Bounds": [[36.988875, -102.051535], [40.002987, -94.601224]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
+    { "RegionID": "KS", "Name": "Kansas", "Bounds": [[36.988875, -102.051535], [40.002987, -94.601224]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/kansas-streamstats" },
     {
         "RegionID": "KY", "Name": "Kentucky", "Bounds": [[36.49657, -89.568231], [39.142063, -81.959575]], "Layers":
         {
@@ -309,55 +316,106 @@ configuration.regions = [
                     }]
                 }]
             }
-        }, "Applications": ["KarstCheck"], "regionEnabled": false, "ScenariosAvailable": true
+        }, "Applications": ["KarstCheck"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/kentucky-streamstats"
     },
-    { "RegionID": "LA", "Name": "Louisiana", "Bounds": [[28.939655, -94.041785], [33.023422, -89.021803]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
-    { 
-        "RegionID": "MA", "Name": "Massachusetts", "Bounds": [[41.238279, -73.49884], [42.886877, -69.91778]], "Layers": 
-            {
-                "Culverts": {
-                    "name": "Stream Crossings",
-                    "url": "https://services.arcgis.com/v01gqwM5QqNysAAi/arcgis/rest/services/Massachusetts_Stream_Crossing_Spatial_Data/FeatureServer/0",
-                    "type": 'agsFeature',
-                    "visible": true,
-                    "layerOptions": {
-                        "token": "",
-                        pointToLayer: function (geojson, latlng) {
-                            return L.marker(latlng, {
-                                icon: L.icon({
-                                    iconUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABHklEQVQ4jaWTwYnDMBBF3yE9GLsIQXBaMOTgEhZ8SwpwAXKugTSgWyAdJIcF1WACKsIhXexBo81YxGRhB4Qt6c+b+TBa8c9YLZzXsiqgBG7ACEx/AQyAbYBCloddiHcHuV8EXA20PdCowx4IQAf2CS2weQcYDLTfC54McAe2UIfYxaABNWCPWVJQySnOwBos4IDpF9Bkwg7w8v8FJHgh9ny04hKgKrLKXu0vAkkFRFtpC6UGfArRlhpw87DrZWOk4kX2uT3p7qEBY5DWk/AoEJgnJx1w1YAJOHRg70qsE1Oc4scRJ3M+B09ot1CfXz5nlU+x/RHYp/N8EjcBhjVYIx3IKKe2nU5+B4A4YS5AG16P6SGex1y89BonqfYxfgDUS0KdfzRtEwAAAABJRU5ErkJggg==",
-                                    iconSize: [18, 18],
-                                    iconAnchor: [13.5, 17.5],
-                                    popupAnchor: [0, -11]
-                                })
-                            });
-                        },
-                        "minZoom": 12,
+    { "RegionID": "LA", "Name": "Louisiana", "Bounds": [[28.939655, -94.041785], [33.023422, -89.021803]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false, "URL": null },
+    { "RegionID": "MA", "Name": "Massachusetts", "Bounds": [[41.238279, -73.49884], [42.886877, -69.91778]], "Layers": 
+        {
+            "Culverts": {
+                "name": "Stream Crossings",
+                "url": "https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/PROVISIONAL_Massachusetts_Stream_Crossing_Sites_Web_Map_Service/FeatureServer/0",
+                "type": 'agsFeature',
+                "visible": true,
+                "layerOptions": {
+                    "token": "",
+                    pointToLayer: function (geojson, latlng) {
+                        return L.marker(latlng, {
+                            icon: L.icon({
+                                iconUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABHklEQVQ4jaWTwYnDMBBF3yE9GLsIQXBaMOTgEhZ8SwpwAXKugTSgWyAdJIcF1WACKsIhXexBo81YxGRhB4Qt6c+b+TBa8c9YLZzXsiqgBG7ACEx/AQyAbYBCloddiHcHuV8EXA20PdCowx4IQAf2CS2weQcYDLTfC54McAe2UIfYxaABNWCPWVJQySnOwBos4IDpF9Bkwg7w8v8FJHgh9ny04hKgKrLKXu0vAkkFRFtpC6UGfArRlhpw87DrZWOk4kX2uT3p7qEBY5DWk/AoEJgnJx1w1YAJOHRg70qsE1Oc4scRJ3M+B09ot1CfXz5nlU+x/RHYp/N8EjcBhjVYIx3IKKe2nU5+B4A4YS5AG16P6SGex1y89BonqfYxfgDUS0KdfzRtEwAAAABJRU5ErkJggg==",
+                                iconSize: [18, 18],
+                                iconAnchor: [13.5, 17.5],
+                                popupAnchor: [0, -11]
+                            })
+                        });
                     },
-                    "layerArray": [{
-                        note: "This overrides the ESRI legend",
-                        "layerName": "Stream Crossings",
-                        "legend": [{
-                            "contentType": "image/png",
-                            "imageData": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABHklEQVQ4jaWTwYnDMBBF3yE9GLsIQXBaMOTgEhZ8SwpwAXKugTSgWyAdJIcF1WACKsIhXexBo81YxGRhB4Qt6c+b+TBa8c9YLZzXsiqgBG7ACEx/AQyAbYBCloddiHcHuV8EXA20PdCowx4IQAf2CS2weQcYDLTfC54McAe2UIfYxaABNWCPWVJQySnOwBos4IDpF9Bkwg7w8v8FJHgh9ny04hKgKrLKXu0vAkkFRFtpC6UGfArRlhpw87DrZWOk4kX2uT3p7qEBY5DWk/AoEJgnJx1w1YAJOHRg70qsE1Oc4scRJ3M+B09ot1CfXz5nlU+x/RHYp/N8EjcBhjVYIx3IKKe2nU5+B4A4YS5AG16P6SGex1y89BonqfYxfgDUS0KdfzRtEwAAAABJRU5ErkJggg==",
-                            "label": ""
-                        }]
-                    }],
-                    "queryProperties": { "Stream Crossings": { 
-                        "SurveyID": "Survey ID",
-                        "HQSCORE": "Habitat Quality Score",
-                        "RCPSCORE": "Restoration Connectivity Potential Score",
-                        "MEPCF": "Maximum Extent Practicable (MEP) Cost Factor",
-                    }}
+                    "minZoom": 12,
                 },
-            }, 
-        "Applications": ["Wateruse", "Culverts"], "regionEnabled": true, "ScenariosAvailable": true 
-    },
-    { "RegionID": "MD", "Name": "Maryland and District of Columbia", "Bounds": [[37.970255, -79.489865], [39.725461, -75.045623]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true },
-    { "RegionID": "ME", "Name": "Maine", "Bounds": [[43.09105, -71.087509], [47.453334, -66.969271]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
-    { "RegionID": "MI", "Name": "Michigan", "Bounds": [[41.697494, -90.4082], [48.173795, -82.419836]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
-    { "RegionID": "MN", "Name": "Minnesota", "Bounds": [[43.498102, -97.229436], [49.37173, -89.530673]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "MO", "Name": "Missouri", "Bounds": [[35.989656, -95.767479], [40.609784, -89.105034]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
+                "layerArray": [{
+                    note: "This overrides the ESRI legend",
+                    "layerName": "Stream Crossings",
+                    "legend": [{
+                        "contentType": "image/png",
+                        "imageData": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABHklEQVQ4jaWTwYnDMBBF3yE9GLsIQXBaMOTgEhZ8SwpwAXKugTSgWyAdJIcF1WACKsIhXexBo81YxGRhB4Qt6c+b+TBa8c9YLZzXsiqgBG7ACEx/AQyAbYBCloddiHcHuV8EXA20PdCowx4IQAf2CS2weQcYDLTfC54McAe2UIfYxaABNWCPWVJQySnOwBos4IDpF9Bkwg7w8v8FJHgh9ny04hKgKrLKXu0vAkkFRFtpC6UGfArRlhpw87DrZWOk4kX2uT3p7qEBY5DWk/AoEJgnJx1w1YAJOHRg70qsE1Oc4scRJ3M+B09ot1CfXz5nlU+x/RHYp/N8EjcBhjVYIx3IKKe2nU5+B4A4YS5AG16P6SGex1y89BonqfYxfgDUS0KdfzRtEwAAAABJRU5ErkJggg==",
+                        "label": ""
+                    }]
+                }],
+                "queryProperties": { "Stream Crossings": { 
+                    "SurveyID": "Survey ID",
+                    "HQSCORE": "Habitat Quality Score",
+                    "RCPSCORE": "Restoration Connectivity Potential Score",
+                    "MEPCF": "Maximum Extent Practicable (MEP) Cost Factor",
+                }}
+            },
+        }, "Applications": ["Wateruse", "Culverts"], "regionEnabled": true, "ScenariosAvailable": true, },
+    { "RegionID": "MD", "Name": "Maryland and District of Columbia", "Bounds": [[37.970255, -79.489865], [39.725461, -75.045623]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/maryland-and-district-columbia-streamstats" },
+    { "RegionID": "ME", "Name": "Maine", "Bounds": [[43.09105, -71.087509], [47.453334, -66.969271]], "Layers": 
+    {
+        "MeanAugustBaseflow": {
+            "name": "Mean August Baseflow",
+            "url": "https://gis.usgs.gov/sciencebase3/rest/services/Catalog/620408c1d34e622189de5ad6/MapServer",
+            "type": 'agsDynamic',
+            "visible": true,
+            "layerOptions": {
+                "zIndex": 1,
+                "format": "png",
+                "layers": [0,1,2,3,4],
+                "f": "image",
+                "minZoom": 9
+            },
+            "layerArray": [
+                {
+                    "layerName": "Mean August Baseflow",
+                    "layerId": 1,
+                    "legend": [{                        
+                        "contentType": "image/svg+xml;base64",
+                        "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/Pgo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMC8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9UUi8yMDAxL1JFQy1TVkctMjAwMTA5MDQvRFREL3N2ZzEwLmR0ZCI+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgaWQ9ImJvZHlfMSIgd2lkdGg9IjI1IiBoZWlnaHQ9IjUiPgoKPGcgdHJhbnNmb3JtPSJtYXRyaXgoMC4xOTY4NTAzOSAwIDAgMC4yMDAwMDAwMiAwIDApIj4KICAgIDxwYXRoIGQ9Ik0wIDBMMCAyNUwxMjcgMjVMMTI3IDBMMCAweiIgc3Ryb2tlPSJub25lIiBmaWxsPSIjRkZGRkZGIiBmaWxsLXJ1bGU9Im5vbnplcm8iIC8+CiAgICA8cGF0aCBkPSJNNC42MDMzOSA0LjAyNzc4QyAxLjQxNTI1IDYuNTUyODMgMS45Mzg3IDE3LjQzMjQgNi4xNDgxNSAxOC42ODIxQyAxMy44ODYxIDIwLjk3OTQgMjQuOTM0NyAxOSAzMyAxOUwzMyAxOUw5MyAxOUMgOTguMzgwNCAxOSAxMTYuNDQ4IDIxLjg0NTkgMTE5Ljk3MiAxNy4zOTY2QyAxMjIuMzM4IDE0LjQwOTYgMTIyLjAwOSA0LjU1MTk4IDExNy44NTIgMy4zMTc5QyAxMTAuMTE0IDEuMDIwNiA5OS4wNjUzIDMgOTEgM0w5MSAzTDMyIDNDIDI1Ljc3NzUgMyA5LjU3MDQyIDAuMDkzODI0NCA0LjYwMzM5IDQuMDI3Nzh6IiBzdHJva2U9Im5vbmUiIGZpbGw9IiNGRDRERjciIGZpbGwtcnVsZT0ibm9uemVybyIgLz4KPC9nPgo8L3N2Zz4=",
+                        "label": ""
+                    },
+                    {                        
+                        "contentType": "image/svg+xml;base64",
+                        "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/Pgo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMC8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9UUi8yMDAxL1JFQy1TVkctMjAwMTA5MDQvRFREL3N2ZzEwLmR0ZCI+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgaWQ9ImJvZHlfMSIgd2lkdGg9IjI1IiBoZWlnaHQ9IjUiPgoKPGcgdHJhbnNmb3JtPSJtYXRyaXgoMC4xOTY4NTAzOSAwIDAgMC4yMDAwMDAwMiAwIDApIj4KICAgIDxwYXRoIGQ9Ik0wIDBMMCAyNUwxMjcgMjVMMTI3IDBMMCAweiIgc3Ryb2tlPSJub25lIiBmaWxsPSIjRkZGRkZGIiBmaWxsLXJ1bGU9Im5vbnplcm8iIC8+CiAgICA8cGF0aCBkPSJNNC4zMTc5IDMuMDI3NzhDIC0wLjAwNjUzMzE1IDUuOTEzNDUgMC43Nzk2OSAxOC4yMzI0IDYuMDU4NjQgMTkuNjgyMUMgMTQuMjc0NSAyMS45MzgzIDI1LjQ4NjYgMjAgMzQgMjBMMzQgMjBMOTMgMjBDIDk5LjA5NjUgMjAgMTE1Ljg4MyAyMi45MTAzIDEyMC4zOTcgMTguMzk2NkMgMTIzLjgxOSAxNC45NzQ2IDEyMy4wNTQgMy43MjE4NiAxMTcuOTQxIDIuMzE3OUMgMTEwLjAxIDAuMTM5OTE0IDk5LjIxNjUgMiA5MSAyTDkxIDJMMzMgMkMgMjUuOTUxOSAyIDEwLjI3MTUgLTAuOTQ1MDA3IDQuMzE3OSAzLjAyNzc4eiIgc3Ryb2tlPSJub25lIiBmaWxsPSIjRERBN0ZCIiBmaWxsLXJ1bGU9Im5vbnplcm8iIC8+CiAgICA8cGF0aCBkPSJNNC42MDMzOSA0LjAyNzc4QyAxLjQxNTI1IDYuNTUyODMgMS45Mzg3IDE3LjQzMjQgNi4xNDgxNSAxOC42ODIxQyAxMy44ODYxIDIwLjk3OTQgMjQuOTM0NyAxOSAzMyAxOUwzMyAxOUw5MyAxOUMgOTguMzgwNCAxOSAxMTYuNDQ4IDIxLjg0NTkgMTE5Ljk3MiAxNy4zOTY2QyAxMjIuMzM4IDE0LjQwOTYgMTIyLjAwOSA0LjU1MTk4IDExNy44NTIgMy4zMTc5QyAxMTAuMTE0IDEuMDIwNiA5OS4wNjUzIDMgOTEgM0w5MSAzTDMyIDNDIDI1Ljc3NzUgMyA5LjU3MDQyIDAuMDkzODI0NCA0LjYwMzM5IDQuMDI3Nzh6IiBzdHJva2U9Im5vbmUiIGZpbGw9IiNCMTM1RjciIGZpbGwtcnVsZT0ibm9uemVybyIgLz4KPC9nPgo8L3N2Zz4=",
+                        "label": ""
+                    },
+                    {                        
+                        "contentType": "image/svg+xml;base64",
+                        "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/Pgo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMC8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9UUi8yMDAxL1JFQy1TVkctMjAwMTA5MDQvRFREL3N2ZzEwLmR0ZCI+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgaWQ9ImJvZHlfMSIgd2lkdGg9IjI1IiBoZWlnaHQ9IjUiPgoKPGcgdHJhbnNmb3JtPSJtYXRyaXgoMC4xOTY4NTAzOSAwIDAgMC4yMDAwMDAwMiAwIDApIj4KICAgIDxwYXRoIGQ9Ik0wIDBMMCAyNUwxMjcgMjVMMTI3IDBMMCAweiIgc3Ryb2tlPSJub25lIiBmaWxsPSIjRkZGRkZGIiBmaWxsLXJ1bGU9Im5vbnplcm8iIC8+CiAgICA8cGF0aCBkPSJNNC4zMTc5IDMuMDI3NzhDIC0wLjAwNjUzMzE1IDUuOTEzNDUgMC43Nzk2OSAxOC4yMzI0IDYuMDU4NjQgMTkuNjgyMUMgMTQuMjc0NSAyMS45MzgzIDI1LjQ4NjYgMjAgMzQgMjBMMzQgMjBMOTMgMjBDIDk5LjA5NjUgMjAgMTE1Ljg4MyAyMi45MTAzIDEyMC4zOTcgMTguMzk2NkMgMTIzLjgxOSAxNC45NzQ2IDEyMy4wNTQgMy43MjE4NiAxMTcuOTQxIDIuMzE3OUMgMTEwLjAxIDAuMTM5OTE0IDk5LjIxNjUgMiA5MSAyTDkxIDJMMzMgMkMgMjUuOTUxOSAyIDEwLjI3MTUgLTAuOTQ1MDA3IDQuMzE3OSAzLjAyNzc4eiIgc3Ryb2tlPSJub25lIiBmaWxsPSIjOTE4REY5IiBmaWxsLXJ1bGU9Im5vbnplcm8iIC8+CiAgICA8cGF0aCBkPSJNNC42MDMzOSA0LjAyNzc4QyAxLjQxNTI1IDYuNTUyODMgMS45Mzg3IDE3LjQzMjQgNi4xNDgxNSAxOC42ODIxQyAxMy44ODYxIDIwLjk3OTQgMjQuOTM0NyAxOSAzMyAxOUwzMyAxOUw5MyAxOUMgOTguMzgwNCAxOSAxMTYuNDQ4IDIxLjg0NTkgMTE5Ljk3MiAxNy4zOTY2QyAxMjIuMzM4IDE0LjQwOTYgMTIyLjAwOSA0LjU1MTk4IDExNy44NTIgMy4zMTc5QyAxMTAuMTE0IDEuMDIwNiA5OS4wNjUzIDMgOTEgM0w5MSAzTDMyIDNDIDI1Ljc3NzUgMyA5LjU3MDQyIDAuMDkzODI0NCA0LjYwMzM5IDQuMDI3Nzh6IiBzdHJva2U9Im5vbmUiIGZpbGw9IiM4Nzg5RjkiIGZpbGwtcnVsZT0ibm9uemVybyIgLz4KPC9nPgo8L3N2Zz4=",
+                        "label": ""
+                    },
+                    {                        
+                        "contentType": "image/svg+xml;base64",
+                        "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/Pgo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMC8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9UUi8yMDAxL1JFQy1TVkctMjAwMTA5MDQvRFREL3N2ZzEwLmR0ZCI+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgaWQ9ImJvZHlfMSIgd2lkdGg9IjI1IiBoZWlnaHQ9IjUiPgoKPGcgdHJhbnNmb3JtPSJtYXRyaXgoMC4xOTY4NTAzOSAwIDAgMC4yMDAwMDAwMiAwIDApIj4KICAgIDxwYXRoIGQ9Ik0wIDBMMCAyNUwxMjcgMjVMMTI3IDBMMCAweiIgc3Ryb2tlPSJub25lIiBmaWxsPSIjRkZGRkZGIiBmaWxsLXJ1bGU9Im5vbnplcm8iIC8+CiAgICA8cGF0aCBkPSJNNC4xNDgxNSAyLjAyNzc4QyAtMS4zNzYwOSA1LjI5ODY2IC0wLjQzODMzNSAxOC45ODk5IDYuMDE5MjkgMjAuNjgyMUMgMTQuMzQyMSAyMi44NjMxIDI1LjQwMzUgMjEgMzQgMjFMMzQgMjFMOTIgMjFDIDk4Ljg2NjMgMjEgMTE1LjIzNCAyMy45ODY5IDEyMC42ODIgMTkuMzk2NkMgMTI1LjI1NCAxNS41NDQ5IDEyNC4xNTkgMi45MzY5OSAxMTcuOTgxIDEuMzE3OUMgMTA5Ljk0NiAtMC43ODc0NDUgOTkuMjk2NyAxIDkxIDFMOTEgMUwzNCAxQyAyNi4yOTIxIDEgMTAuODY3OCAtMS45NTA4OCA0LjE0ODE1IDIuMDI3Nzh6IiBzdHJva2U9Im5vbmUiIGZpbGw9IiM5N0ZCRkQiIGZpbGwtcnVsZT0ibm9uemVybyIgLz4KICAgIDxwYXRoIGQ9Ik00LjMxNzkgMy4wMjc3OEMgLTAuMDA2NTMzMTUgNS45MTM0NSAwLjc3OTY5IDE4LjIzMjQgNi4wNTg2NCAxOS42ODIxQyAxNC4yNzQ1IDIxLjkzODMgMjUuNDg2NiAyMCAzNCAyMEwzNCAyMEw5MyAyMEMgOTkuMDk2NSAyMCAxMTUuODgzIDIyLjkxMDMgMTIwLjM5NyAxOC4zOTY2QyAxMjMuODE5IDE0Ljk3NDYgMTIzLjA1NCAzLjcyMTg2IDExNy45NDEgMi4zMTc5QyAxMTAuMDEgMC4xMzk5MTQgOTkuMjE2NSAyIDkxIDJMOTEgMkwzMyAyQyAyNS45NTE5IDIgMTAuMjcxNSAtMC45NDUwMDcgNC4zMTc5IDMuMDI3Nzh6IiBzdHJva2U9Im5vbmUiIGZpbGw9IiMzOUY3RjkiIGZpbGwtcnVsZT0ibm9uemVybyIgLz4KPC9nPgo8L3N2Zz4=",
+                        "label": ""
+                    }]
+                }
+            ],
+            "queryProperties": { 
+                "Mean August Baseflow": { 
+                    "GNIS_Name": "GNIS Name", 
+                    "DASQMI": "Drainage Area (mi2)",
+                    "SANDGRAVAF": "Aquifer Area (%)",
+                    "JULYAVPRE": "Mean July Precip (in)",
+                    "AUGAVGBF": "Mean August Baseflow (cfs/mi2)",
+                    "OOB_DA": "Drainage Area out-of-bounds",
+                    "OOB_JULYAV":"Mean July Precip out-of-bounds",
+                    "OOB_WARNIN": "% Aquifer Area out-of-bounds",
+                    "REGULATED": "Regulated stream/river"
+                } 
+            }
+        }
+    }, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/maine-streamstats" },
+    { "RegionID": "MI", "Name": "Michigan", "Bounds": [[41.697494, -90.4082], [48.173795, -82.419836]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false, "URL": null },
+    { "RegionID": "MN", "Name": "Minnesota", "Bounds": [[43.498102, -97.229436], [49.37173, -89.530673]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/minnesota-streamstats" },
+    { "RegionID": "MO", "Name": "Missouri", "Bounds": [[35.989656, -95.767479], [40.609784, -89.105034]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/missouri-streamstats" },
     {
         "RegionID": "MO_STL", "Name": "Missouri St. Louis", "Bounds": [[38.399258, -90.673599], [38.837568, -89.693069]], "Layers":
             {
@@ -376,9 +434,9 @@ configuration.regions = [
 
                 }
             },
-        "Applications": ["StormDrain"], "regionEnabled": false, "ScenariosAvailable": true
+        "Applications": ["StormDrain"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/missouri-st-louis-streamstats"
     },
-    { "RegionID": "MP", "Name": "Northern Mariana Islands", "Bounds": [[14.105276, 144.89859], [20.556385, 145.870788]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
+    { "RegionID": "MP", "Name": "Northern Mariana Islands", "Bounds": [[14.105276, 144.89859], [20.556385, 145.870788]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": null },
     { 
 		"RegionID": "MRB", "Name": "Mystic River Basin", "Bounds": [[42.334, -71.3469], [42.5685, -70.8422]], "Layers": 
 			{
@@ -390,15 +448,16 @@ configuration.regions = [
                     "layerOptions": {
                         "zIndex": 1,
                         "format": "png8",
+						"layers": [0,1,2],
                         "f": "image"
                     },
                     "queryProperties": { "Pipe": { "USGS_Type": "USGS Type", "USGS_SourceID": "USGS Source ID", "USGS_Town": "USGS Town" } }
 
                 }
             }, 
-		"Applications": ["StormDrain"], "regionEnabled": false, "ScenariosAvailable": false
+		"Applications": ["StormDrain"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/mystic-river-basin-streamstats"
     },
-    { "RegionID": "MS", "Name": "Mississippi", "Bounds": [[30.194935, -91.643682], [35.005041, -88.090468]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
+    { "RegionID": "MS", "Name": "Mississippi", "Bounds": [[30.194935, -91.643682], [35.005041, -88.090468]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/mississippi-streamstats" },
     {
         "RegionID": "MT", "Name": "Montana", "Bounds": [[44.353639, -116.063531], [49.000026, -104.043072]], "Layers":
             {
@@ -416,24 +475,22 @@ configuration.regions = [
                     "queryProperties": { "Regulation Points": { "Descript": "Description" } }
                 }
             },
-        "Applications": ["Regulation"],
-        "regionEnabled": false,
-        "ScenariosAvailable": true
+        "Applications": ["Regulation", "ChannelWidthWeighting"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/montana-streamstats-including-yellowstone-river-basin-wyoming"
     },
-    { "RegionID": "NC", "Name": "North Carolina", "Bounds": [[33.882164, -84.323773], [36.589767, -75.45658]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "ND", "Name": "North Dakota", "Bounds": [[45.930822, -104.062991], [49.000026, -96.551931]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "NE", "Name": "Nebraska", "Bounds": [[39.992595, -104.056219], [43.003062, -95.308697]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
-    { "RegionID": "NH", "Name": "New Hampshire", "Bounds": [[42.698603, -72.553428], [45.301469, -70.734139]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "NJ", "Name": "New Jersey", "Bounds": [[38.956682, -75.570234], [41.350573, -73.896148]], "Layers": {}, "Applications": ["Localres"], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "NM", "Name": "New Mexico", "Bounds": [[31.343453, -109.051346], [36.99976, -102.997401]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "NV", "Name": "Nevada", "Bounds": [[34.998914, -119.996324], [41.996637, -114.037392]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
-    { "RegionID": "NY", "Name": "New York", "Bounds": [[40.506003, -79.763235], [45.006138, -71.869986]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "OH", "Name": "Ohio", "Bounds": [[38.400511, -84.81207], [41.986872, -80.519996]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "OK", "Name": "Oklahoma", "Bounds": [[33.621136, -102.997709], [37.001478, -94.428552]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "OR", "Name": "Oregon", "Bounds": [[41.987672, -124.559617], [46.236091, -116.470418]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "PA", "Name": "Pennsylvania", "Bounds": [[39.719313, -80.526045], [42.267327, -74.700062]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "PR", "Name": "Puerto Rico", "Bounds": [[17.922222, -67.938339], [18.519443, -65.241958]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "RI", "Name": "Rhode Island", "Bounds": [[41.322769, -71.866678], [42.013713, -71.117132]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
+    { "RegionID": "NC", "Name": "North Carolina", "Bounds": [[33.882164, -84.323773], [36.589767, -75.45658]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/north-carolina-streamstats" },
+    { "RegionID": "ND", "Name": "North Dakota", "Bounds": [[45.930822, -104.062991], [49.000026, -96.551931]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/north-dakota-streamstats" },
+    { "RegionID": "NE", "Name": "Nebraska", "Bounds": [[39.992595, -104.056219], [43.003062, -95.308697]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false, "URL": null },
+    { "RegionID": "NH", "Name": "New Hampshire", "Bounds": [[42.698603, -72.553428], [45.301469, -70.734139]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/new-hampshire-streamstats" },
+    { "RegionID": "NJ", "Name": "New Jersey", "Bounds": [[38.956682, -75.570234], [41.350573, -73.896148]], "Layers": {}, "Applications": ["Localres"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/new-jersey-streamstats" },
+    { "RegionID": "NM", "Name": "New Mexico", "Bounds": [[31.343453, -109.051346], [36.99976, -102.997401]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/new-mexico-streamstats" },
+    { "RegionID": "NV", "Name": "Nevada", "Bounds": [[34.998914, -119.996324], [41.996637, -114.037392]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false, "URL": null },
+    { "RegionID": "NY", "Name": "New York", "Bounds": [[40.506003, -79.763235], [45.006138, -71.869986]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/new-york-streamstats" },
+    { "RegionID": "OH", "Name": "Ohio", "Bounds": [[38.400511, -84.81207], [41.986872, -80.519996]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/ohio-streamstats" },
+    { "RegionID": "OK", "Name": "Oklahoma", "Bounds": [[33.621136, -102.997709], [37.001478, -94.428552]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/oklahoma-streamstats" },
+    { "RegionID": "OR", "Name": "Oregon", "Bounds": [[41.987672, -124.559617], [46.236091, -116.470418]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/oregon-streamstats" },
+    { "RegionID": "PA", "Name": "Pennsylvania", "Bounds": [[39.719313, -80.526045], [42.267327, -74.700062]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/pennsylvania-streamstats" },
+    { "RegionID": "PR", "Name": "Puerto Rico", "Bounds": [[17.922222, -67.938339], [18.519443, -65.241958]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/puerto-rico-streamstats" },
+    { "RegionID": "RI", "Name": "Rhode Island", "Bounds": [[41.322769, -71.866678], [42.013713, -71.117132]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/rhode-island-streamstats" },
     {
         "RegionID": "SC", "Name": "South Carolina", "Bounds": [[32.068173, -83.350685], [35.208356, -78.579453]], "Layers":
             {
@@ -458,7 +515,7 @@ configuration.regions = [
                             var popupContent = '<h5>SCDOT Bridges</h5> ';
                             var queryProperties = { 
                                 "STRUCTURE_": "Structure ID", 
-                                "ASSET_ID": "Asset ID",
+                                "ASSET_ID": "Asset ID",
                                 "CROSSING": "Crossing", 
                                 "COUNTY_ID": "County Identifier", 
                                 "RTE_TYPE": "Route Type", 
@@ -560,22 +617,22 @@ configuration.regions = [
                     "queryProperties": { "Regulation Points": { "NAME": "NID ID Number" } }
                 }
             },
-        "Applications": ["Regulation"], "regionEnabled": false, "ScenariosAvailable": true
+        "Applications": ["Regulation"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/south-carolina-streamstats"
     },
-    { "RegionID": "SD", "Name": "South Dakota", "Bounds": [[42.488459, -104.061036], [45.943547, -96.439394]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "TN", "Name": "Tennessee", "Bounds": [[34.988759, -90.305448], [36.679683, -81.652272]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "TX", "Name": "Texas", "Bounds": [[25.845557, -106.650062], [36.493912, -93.507389]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
-    { "RegionID": "UT", "Name": "Utah", "Bounds": [[36.991746, -114.047273], [42.0023, -109.043206]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "VA", "Name": "Virginia", "Bounds": [[36.541623, -83.675177], [39.456998, -75.242219]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "VT", "Name": "Vermont", "Bounds": [[42.725852, -73.436], [45.013351, -71.505372]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "VI", "Name": "Virgin Islands", "Bounds": [[17.676666, -65.026947], [18.377777, -64.560287]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
-    { "RegionID": "WA", "Name": "Washington", "Bounds": [[45.543092, -124.732769], [48.999931, -116.919132]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "WI", "Name": "Wisconsin", "Bounds": [[42.489152, -92.885397], [46.952479, -86.967712]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
-    { "RegionID": "WV", "Name": "West Virginia", "Bounds": [[37.20491, -82.647158], [40.637203, -77.727467]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true },
-    { "RegionID": "WY", "Name": "Wyoming", "Bounds": [[40.994289, -111.053428], [45.002793, -104.051705]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
-    { "RegionID": "CRB", "Name": "Connecticut River Basin", "Bounds": [[41.227366, -73.254776], [45.305324, -71.059248]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false },
-    { "RegionID": "DRB", "Name": "Delaware River Basin", "Bounds": [[38.666626, -76.452907], [42.507076, -74.319593]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": false, "ScenariosAvailable": false },
-    { "RegionID": "RRB", "Name": "Rainy River Basin", "Bounds": [[47.268377, -95.64855], [50.054196, -89.766532]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": true }
+    { "RegionID": "SD", "Name": "South Dakota", "Bounds": [[42.488459, -104.061036], [45.943547, -96.439394]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/south-dakota-streamstats" },
+    { "RegionID": "TN", "Name": "Tennessee", "Bounds": [[34.988759, -90.305448], [36.679683, -81.652272]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/tennessee-streamstats-0" },
+    { "RegionID": "TX", "Name": "Texas", "Bounds": [[25.845557, -106.650062], [36.493912, -93.507389]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false, "URL": null },
+    { "RegionID": "UT", "Name": "Utah", "Bounds": [[36.991746, -114.047273], [42.0023, -109.043206]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/utah-streamstats" },
+    { "RegionID": "VA", "Name": "Virginia", "Bounds": [[36.541623, -83.675177], [39.456998, -75.242219]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": null },
+    { "RegionID": "VT", "Name": "Vermont", "Bounds": [[42.725852, -73.436], [45.013351, -71.505372]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/vermont-streamstats" },
+    { "RegionID": "VI", "Name": "Virgin Islands", "Bounds": [[17.676666, -65.026947], [18.377777, -64.560287]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false, "URL": null },
+    { "RegionID": "WA", "Name": "Washington", "Bounds": [[45.543092, -124.732769], [48.999931, -116.919132]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/washington-streamstats" },
+    { "RegionID": "WI", "Name": "Wisconsin", "Bounds": [[42.489152, -92.885397], [46.952479, -86.967712]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/wisconsin-streamstats" },
+    { "RegionID": "WV", "Name": "West Virginia", "Bounds": [[37.20491, -82.647158], [40.637203, -77.727467]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/west-virginia-streamstats" },
+    { "RegionID": "WY", "Name": "Wyoming", "Bounds": [[40.994289, -111.053428], [45.002793, -104.051705]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/wyoming-streamstats" },
+    { "RegionID": "CRB", "Name": "Connecticut River Basin", "Bounds": [[41.227366, -73.254776], [45.305324, -71.059248]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": false, "URL": "https://www.usgs.gov/streamstats/connecticut-river-basin-streamstats" },
+    { "RegionID": "DRB", "Name": "Delaware River Basin", "Bounds": [[38.666626, -76.452907], [42.507076, -74.319593]], "Layers": {}, "Applications": ["Wateruse","Localres"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/delaware-river-basin-streamstats" },
+    { "RegionID": "RRB", "Name": "Rainy River Basin", "Bounds": [[47.268377, -95.64855], [50.054196, -89.766532]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/rainy-river-basin-streamstats" }
 
 ];//end regions
 
@@ -767,8 +824,8 @@ configuration.overlayedLayers = {
                 "layerName": "Region",
                 "layerId": 1,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAEhJREFUOI1jYWBgYJg7d+5/BiqA5ORkRhZqGcbAAHEYC7UMgwHaG5icnMxIigHoQTYEvTxq4KiBw9JASouzIeDl5ORkRmpWAQArIxX92VSV8QAAAABJRU5ErkJggg==",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ViZWJlYjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDEgMUwwIDB6Ii8+CjxwYXRoIHN0eWxlPSJmaWxsOiNkN2Q3ZDc7IHN0cm9rZTpub25lOyIgZD0iTTEgMEwxIDFMMzAgMUwxIDB6Ii8+CjxwYXRoIHN0eWxlPSJmaWxsOiNlYmViZWI7IHN0cm9rZTpub25lOyIgZD0iTTMwIDBMMzEgMUwzMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYzNjM2MzOyBzdHJva2U6bm9uZTsiIGQ9Ik0wIDFDMS4zNDkyMyA5LjA4NDc4IDI5LjY1MDggOS4wODQ3NyAzMSAxTDMwIDFMMzAgNUwxIDVMMCAxeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojODc4Nzg3OyBzdHJva2U6bm9uZTsiIGQ9Ik0xIDFMMSA1TDMwIDVMMzAgMUwxIDF6Ii8+CjxwYXRoIHN0eWxlPSJmaWxsOiNlMWUxZTE7IHN0cm9rZTpub25lOyIgZD0iTTAgNUwxIDZMMCA1TTMwIDVMMzEgNkwzMCA1eiIvPgo8L3N2Zz4K",
                     "label": "2-digit HU"
                 }]
             },
@@ -776,8 +833,8 @@ configuration.overlayedLayers = {
                 "layerName": "Subregion",
                 "layerId": 2,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ZmZmZmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDAgNkwzMSA2TDMxIDBMMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYTVhNWE1OyBzdHJva2U6bm9uZTsiIGQ9Ik0xLjMzMzMzIDIuNjY2NjdMMS42NjY2NyAzLjMzMzMzTDEuMzMzMzMgMi42NjY2N3oiLz4KPHBhdGggc3R5bGU9ImZpbGw6Izg3ODc4Nzsgc3Ryb2tlOm5vbmU7IiBkPSJNMiAyTDIgNEwyOSA0TDI5IDJMMiAyeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojZTFlMWUxOyBzdHJva2U6bm9uZTsiIGQ9Ik0yOS4zMzMzIDIuNjY2NjdMMjkuNjY2NyAzLjMzMzMzTDI5LjMzMzMgMi42NjY2N3oiLz4KPC9zdmc+Cg==",
                     "label": "4-digit HU"
                 }]
             },
@@ -785,8 +842,8 @@ configuration.overlayedLayers = {
                 "layerName": "Basin",
                 "layerId": 3,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ZmZmZmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDAgNkwzMSA2TDMxIDBMMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYTVhNWE1OyBzdHJva2U6bm9uZTsiIGQ9Ik0xLjMzMzMzIDIuNjY2NjdMMS42NjY2NyAzLjMzMzMzTDEuMzMzMzMgMi42NjY2N3oiLz4KPHBhdGggc3R5bGU9ImZpbGw6Izg3ODc4Nzsgc3Ryb2tlOm5vbmU7IiBkPSJNMiAyTDIgNEwyOSA0TDI5IDJMMiAyeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojZTFlMWUxOyBzdHJva2U6bm9uZTsiIGQ9Ik0yOS4zMzMzIDIuNjY2NjdMMjkuNjY2NyAzLjMzMzMzTDI5LjMzMzMgMi42NjY2N3oiLz4KPC9zdmc+Cg==",
                     "label": "6-digit HU"
                 }]
             },
@@ -794,8 +851,8 @@ configuration.overlayedLayers = {
                 "layerName": "Subbasin",
                 "layerId": 4,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ZmZmZmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDAgNkwzMSA2TDMxIDBMMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYTVhNWE1OyBzdHJva2U6bm9uZTsiIGQ9Ik0xLjMzMzMzIDIuNjY2NjdMMS42NjY2NyAzLjMzMzMzTDEuMzMzMzMgMi42NjY2N3oiLz4KPHBhdGggc3R5bGU9ImZpbGw6Izg3ODc4Nzsgc3Ryb2tlOm5vbmU7IiBkPSJNMiAyTDIgNEwyOSA0TDI5IDJMMiAyeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojZTFlMWUxOyBzdHJva2U6bm9uZTsiIGQ9Ik0yOS4zMzMzIDIuNjY2NjdMMjkuNjY2NyAzLjMzMzMzTDI5LjMzMzMgMi42NjY2N3oiLz4KPC9zdmc+Cg==",
                     "label": "8-digit HU"
                 }]
             },
@@ -803,8 +860,8 @@ configuration.overlayedLayers = {
                 "layerName": "Watershed",
                 "layerId": 5,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ZmZmZmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDAgNkwzMSA2TDMxIDBMMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYTVhNWE1OyBzdHJva2U6bm9uZTsiIGQ9Ik0xLjMzMzMzIDIuNjY2NjdMMS42NjY2NyAzLjMzMzMzTDEuMzMzMzMgMi42NjY2N3oiLz4KPHBhdGggc3R5bGU9ImZpbGw6Izg3ODc4Nzsgc3Ryb2tlOm5vbmU7IiBkPSJNMiAyTDIgNEwyOSA0TDI5IDJMMiAyeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojZTFlMWUxOyBzdHJva2U6bm9uZTsiIGQ9Ik0yOS4zMzMzIDIuNjY2NjdMMjkuNjY2NyAzLjMzMzMzTDI5LjMzMzMgMi42NjY2N3oiLz4KPC9zdmc+Cg==",
                     "label": "10-digit HU"
                 }]
             },
@@ -812,8 +869,8 @@ configuration.overlayedLayers = {
                 "layerName": "Subwatershed",
                 "layerId": 6,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ZmZmZmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDAgNkwzMSA2TDMxIDBMMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYTVhNWE1OyBzdHJva2U6bm9uZTsiIGQ9Ik0xLjMzMzMzIDIuNjY2NjdMMS42NjY2NyAzLjMzMzMzTDEuMzMzMzMgMi42NjY2N3oiLz4KPHBhdGggc3R5bGU9ImZpbGw6Izg3ODc4Nzsgc3Ryb2tlOm5vbmU7IiBkPSJNMiAyTDIgNEwyOSA0TDI5IDJMMiAyeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojZTFlMWUxOyBzdHJva2U6bm9uZTsiIGQ9Ik0yOS4zMzMzIDIuNjY2NjdMMjkuNjY2NyAzLjMzMzMzTDI5LjMzMzMgMi42NjY2N3oiLz4KPC9zdmc+Cg==",
                     "label": "12-digit HU"
                 }]
             },
@@ -821,8 +878,8 @@ configuration.overlayedLayers = {
                 "layerName": "",
                 "layerId": 7,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ZmZmZmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDAgNkwzMSA2TDMxIDBMMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYTVhNWE1OyBzdHJva2U6bm9uZTsiIGQ9Ik0xLjMzMzMzIDIuNjY2NjdMMS42NjY2NyAzLjMzMzMzTDEuMzMzMzMgMi42NjY2N3oiLz4KPHBhdGggc3R5bGU9ImZpbGw6Izg3ODc4Nzsgc3Ryb2tlOm5vbmU7IiBkPSJNMiAyTDIgNEwyOSA0TDI5IDJMMiAyeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojZTFlMWUxOyBzdHJva2U6bm9uZTsiIGQ9Ik0yOS4zMzMzIDIuNjY2NjdMMjkuNjY2NyAzLjMzMzMzTDI5LjMzMzMgMi42NjY2N3oiLz4KPC9zdmc+Cg==",
                     "label": "14-digit HU"
                 }]
             },
@@ -830,8 +887,8 @@ configuration.overlayedLayers = {
                 "layerName": "",
                 "layerId": 8,
                 "legend": [{                        
-                    "contentType": "image/png",
-                    "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAElJREFUOI3t1DEKACAMA8AI/jTvylvrVEFwqpmkmTpdM2XCnAkAkuIVIjk26IikIDkOML9UsLxtDRtssMGPQccu2hoeA1vdwVsWQMARe7k7EAEAAAAASUVORK5CYII=",
+                    "contentType": "image/svg+xml;base64",
+                    "imageData": "PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMSIgaGVpZ2h0PSI2Ij4KPHBhdGggc3R5bGU9ImZpbGw6I2ZmZmZmZjsgc3Ryb2tlOm5vbmU7IiBkPSJNMCAwTDAgNkwzMSA2TDMxIDBMMCAweiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojYTVhNWE1OyBzdHJva2U6bm9uZTsiIGQ9Ik0xLjMzMzMzIDIuNjY2NjdMMS42NjY2NyAzLjMzMzMzTDEuMzMzMzMgMi42NjY2N3oiLz4KPHBhdGggc3R5bGU9ImZpbGw6Izg3ODc4Nzsgc3Ryb2tlOm5vbmU7IiBkPSJNMiAyTDIgNEwyOSA0TDI5IDJMMiAyeiIvPgo8cGF0aCBzdHlsZT0iZmlsbDojZTFlMWUxOyBzdHJva2U6bm9uZTsiIGQ9Ik0yOS4zMzMzIDIuNjY2NjdMMjkuNjY2NyAzLjMzMzMzTDI5LjMzMzMgMi42NjY2N3oiLz4KPC9zdmc+Cg==",
                     "label": "16-digit HU"
                 }]
             }

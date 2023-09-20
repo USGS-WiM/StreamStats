@@ -115,6 +115,7 @@
     <TypeScriptCompile Include="src\Controllers\Navbarcontroller.ts" />
     <TypeScriptCompile Include="src\Controllers\ExplorationToolsModalController.ts" />
     <TypeScriptCompile Include="src\Controllers\ExtensionModalController.ts" />
+    <TypeScriptCompile Include="src\Controllers\FlowAnywhereController.ts" />
     <TypeScriptCompile Include="src\Controllers\NavigationReportModalController.ts" />
     <TypeScriptCompile Include="src\Controllers\ReportController.ts" />
     <TypeScriptCompile Include="src\Controllers\SidebarController.ts" />

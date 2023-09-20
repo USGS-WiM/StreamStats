@@ -73,10 +73,10 @@ module StreamStats.Controllers {
     class ReportController implements IReportController  {
         //Properties
         //-+-+-+-+-+-+-+-+-+-+-+-
-        private disclaimer = "USGS Data Disclaimer: Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty." + '\n' +
-        "USGS Software Disclaimer: This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use." + '\n' +
-        "USGS Product Names Disclaimer: Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government." + '\n\n';
-
+        private disclaimer = '"USGS Data Disclaimer: Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty."\n'
+        + '"USGS Software Disclaimer: This software has been approved for release by the U.S. Geological Survey (USGS). Although the software has been subjected to rigorous review, the USGS reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use."\n'
+        + '"USGS Product Names Disclaimer: Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government."\n\n';
+            
         public close: any;
         public print: any;
         private studyAreaService: Services.IStudyAreaService;
@@ -87,17 +87,19 @@ module StreamStats.Controllers {
         public bounds: any;
         public layers: IMapLayers = null;
         public extensions;
+        public applications;
 
         public geojson: Object = null;
+        private eventManager: WiM.Event.IEventManager;
 
         public defaults: any;
         private leafletData: ILeafletData;
         public reportTitle: string;
         public reportComments: string;
-        public angulartics: any;
         public AppVersion: string;
         public isExceedanceTableOpen = false;
         public isFlowTableOpen = false;
+        public isEstimatedFlowFLATableOpen = false;
         private environment: string;
         public NSSServicesVersion: string;
         public SSServicesVersion = '1.2.22'; // TODO: This needs to pull from the services when ready
@@ -108,6 +110,11 @@ module StreamStats.Controllers {
             if(this.regionService.selectedRegion.Applications.indexOf("Culverts") !== -1) return true; 
             else return false;
         };
+        public selectedFDCTMTabName: string;
+
+        public sectionCollapsed: Array<any>;
+        public basinCharCollapsed;
+        public collapsed;
 
         public get showReport(): boolean {
             if (!this.studyAreaService.studyAreaParameterList) return false;
@@ -126,6 +133,11 @@ module StreamStats.Controllers {
             if (this.regionService.selectedRegion.Applications.indexOf("RegulationFlows") > -1) return true;
             else return false;                
         }
+        public get ActiveApplications(): Array<any> {
+            if (this.regionService.selectedRegion.Applications && this.regionService.selectedRegion.Applications.length > 0)
+                return this.regionService.selectedRegion.Applications
+            else return null;                
+        }
         public get ActiveExtensions(): Array<any> {
             if (this.studyAreaService.selectedStudyArea.NSS_Extensions && this.studyAreaService.selectedStudyArea.NSS_Extensions.length > 0)
                 return this.studyAreaService.selectedStudyArea.NSS_Extensions
@@ -138,13 +150,13 @@ module StreamStats.Controllers {
         public get GraphData():any {
             return this._graphData;
         }
+
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$analytics', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService'];
-        constructor($scope: IReportControllerScope, $analytics, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, leafletData: ILeafletData, private regionService:Services.IRegionService, private modal: Services.IModalService) {
+        static $inject = ['$scope', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService', 'WiM.Event.EventManager'];
+        constructor($scope: IReportControllerScope, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, leafletData: ILeafletData, private regionService:Services.IRegionService, private modal: Services.IModalService, eventManager: WiM.Event.IEventManager) {
             $scope.vm = this;
 
-            this.angulartics = $analytics;
             this.studyAreaService = studyArea;
             this.nssService = StatisticsGroup;
             this.leafletData = leafletData;
@@ -152,15 +164,44 @@ module StreamStats.Controllers {
             this.reportComments = 'Some comments here';
             this.AppVersion = configuration.version;
             this.extensions = this.ActiveExtensions;
+            this.applications = this.ActiveApplications;
             this.environment = configuration.environment;
             this.selectedTabName = "Box";
             this.showTooltip = false;
+            this.sectionCollapsed = [];
+            this.basinCharCollapsed = false;
+            this.collapsed = false;
+            this.selectedFDCTMTabName = "";
+            this.eventManager = eventManager;
+
+            // If we add QPPQ to additional states we might need to add an if statement here to limit to IN and IL
+            // Handles states where there is more than one regression region in the same place
+            if (this.extensions && this.extensions[0].result  && this.extensions[0].result.length > 1) {
+
+                // Select default tab
+                this.extensions[0].result.forEach(r => {
+                    if (r.name.toLowerCase().includes("multivar")) {
+                        this.selectedFDCTMTabName = r.name;
+                    }
+                });
+                
+                // Remove duplicate Regression Regions
+                var names = this.extensions[0].result.map(r => r.name)
+                this.extensions[0].result = this.extensions[0].result.filter(({name}, index) => !names.includes(name, index + 1));
+            }
             this.initMap();
             
+            //subscribe to Events
+            this.eventManager.SubscribeToEvent(Services.onAdditionalFeaturesLoaded, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>(() => {
+                var additionalFeatures = this.studyAreaService.selectedStudyArea.FeatureCollection.features.filter(object => {
+                    return object.id !== 'globalwatershed';
+                });
+                this.showFeatures(additionalFeatures);
+            }));
 
             $scope.$on('leafletDirectiveMap.reportMap.load',(event, args) => {
                 //console.log('report map load');
-                this.showFeatures();
+                this.showFeatures(this.studyAreaService.selectedStudyArea.FeatureCollection.features);
             });
 
             this.close = function () {
@@ -168,6 +209,8 @@ module StreamStats.Controllers {
             };
 
             this.print = function () {
+                //ga event
+                gtag('event', 'Download', { 'Category': 'Report', 'Type':'Print' });
                 window.print();
             };
 
@@ -179,12 +222,16 @@ module StreamStats.Controllers {
         public selectCulvertTab(tabname: string): void {
             if (this.selectedTabName == tabname) return;
             this.selectedTabName = tabname;
+        public selectFDCTMTab(tabname: string): void {
+            if (this.selectedFDCTMTabName == tabname) return;
+            this.selectedFDCTMTabName = tabname;
         }
 
         public downloadCSV() {
 
             //ga event
-            this.angulartics.eventTrack('Download', { category: 'Report', label: 'CSV' });
+            gtag('event', 'Download', { 'Category': 'Report', 'Type':'CSV' });
+
 
             var filename = 'data.csv';
 
@@ -263,7 +310,7 @@ module StreamStats.Controllers {
 
                         //add explanatory row if needed
                         if (regressionRegion.results[0].intervalBounds && regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0) finalVal +=
-                         '"PIl: Prediction Interval- Lower, PIu: Prediction Interval- Upper, ASEp: Average Standard Error of Prediction, SE: Standard Error (other-- see report)"\r\n'
+                         '"PIL: Lower 90% Prediction Interval, PIU: Upper 90% Prediction Interval, ASEp: Average Standard Error of Prediction, SE: Standard Error (other-- see report)"\r\n'
 
                         //get this table by ID --need to use this type of selected because jquery doesn't like the possibility of colons in div id
                         finalVal += this.tableToCSV($(document.getElementById(this.camelize(statGroup.name + regressionRegion.name + 'ScenarioFlowTable')))) + '\n';
@@ -291,6 +338,9 @@ module StreamStats.Controllers {
 
             // add in QPPQ section, need tables open to add to csv
             this.isExceedanceTableOpen = true; this.isFlowTableOpen = true;
+
+            // add in Flow Anywhere section, need table open to add to csv
+            this.isEstimatedFlowFLATableOpen = true;
             
             var self = this;
             // timeout here to give the tables time to open in view
@@ -300,6 +350,7 @@ module StreamStats.Controllers {
                     for (var sc of self.extensions) {
                         if (sc.code == 'QPPQ') {
                             extVal += sc.name += ' (FDCTM)' + '\n';
+                            extVal += "Regression Region:, " + self.selectedFDCTMTabName + '\n';
                             for (var p of sc.parameters) {
                                 if (['sdate','edate'].indexOf(p.code) >-1) {
                                     var date = new Date(p.value);
@@ -318,11 +369,63 @@ module StreamStats.Controllers {
                             // add flow table
                             extVal += '\n\nEstimated Flows\n';
                             extVal += self.tableToCSV($('#flowTable'));
+                            extVal += '\n\n';
                         }
                     }
-
-                    csvFile += extVal + '\n\n';
                 }
+
+                if (self.applications) {
+                    // add Flow Anywhere content to CSV
+                    if (self.applications.indexOf('FLA') != -1) {
+                        extVal += 'Flow Anywhere Method';
+
+                        // add reference gage table
+                        extVal += '\n\n';
+                        extVal += self.tableToCSV($('#flowAnywhereReferenceGage'))
+
+                        
+                        // add reference gage table
+                        extVal += '\n\n';
+                        extVal += self.tableToCSV($('#flowAnywhereModelParameters'))
+                        
+                        // add flow table
+                        extVal += '\n\nEstimated Flows\n';
+                        extVal += self.tableToCSV($('#estimatedFlowFLATable'));
+                            
+                        extVal += '\n\n';
+
+                    }
+
+                    // add Channel-width Methods Weighting content to CSV
+                    var isChannelWidthWeighting = self.applications.indexOf('ChannelWidthWeighting') != -1;
+                    var isPFS = false;
+                    self.nssService.selectedStatisticsGroupList.forEach(s => {
+                        if (s.name == "Peak-Flow Statistics") {
+                            isPFS = true
+                        }
+                    });
+                    if (isChannelWidthWeighting && isPFS) {
+                        extVal += 'Channel-width Methods Weighting\n';
+                        if (document.getElementById("channelWidthWeightingTable")){
+                            extVal += 'PIL: Lower 90% Prediction Interval, PIU: Upper 90% Prediction Interval, ASEp: Average Standard Error of Prediction\n';
+                            if (self.nssService.equationWeightingDisclaimers && self.nssService.equationWeightingDisclaimers.length > 0) {
+                                extVal += 'Warning messages:,';
+                                self.nssService.equationWeightingDisclaimers.forEach(message => {
+                                    extVal += message + ". ";
+                                });
+                                extVal += '\n';
+                            }
+                            extVal += self.tableToCSV($('#channelWidthWeightingTable'));
+                        } else {
+                            extVal += 'No method weighting results returned.'
+                        }
+                        extVal += '\n\n';
+                    }
+
+
+                }
+                
+                csvFile += extVal;
 
                 //disclaimer
                 csvFile += self.disclaimer + 'Application Version: ' + self.AppVersion;
@@ -351,11 +454,15 @@ module StreamStats.Controllers {
                     }
                 }
                 this.isExceedanceTableOpen = false; this.isFlowTableOpen = false; // TODO: not working
+                this.isEstimatedFlowFLATableOpen = false;
             }, 300);
 
         }
 
         public downloadGeoJSON() {
+
+            //ga event
+            gtag('event', 'Download', { 'Category': 'Report', "Type": 'Geojson' });
 
             var fc: GeoJSON.FeatureCollection = this.studyAreaService.selectedStudyArea.FeatureCollection
             fc.features.forEach(f => {
@@ -395,6 +502,8 @@ module StreamStats.Controllers {
         }
 
         public downloadKML() {
+            //ga event
+            gtag('event', 'Download', { 'Category': 'Report', "Type": 'KML' });
 
             var fc: GeoJSON.FeatureCollection = this.studyAreaService.selectedStudyArea.FeatureCollection
             fc.features.forEach(f => {
@@ -436,6 +545,10 @@ module StreamStats.Controllers {
         }
 
         public downloadShapeFile() {
+
+            //ga event
+            gtag('event', 'Download', { 'Category': 'Report', "Type": 'Shapefile' });
+
             try {
                 var flowTable: Array<Services.INSSResultTable> = null;
 
@@ -514,10 +627,45 @@ module StreamStats.Controllers {
         public downloadGeomFileZip() {
             var zipfile = this.studyAreaService.culvertAttachments.url;
             window.open(zipfile, '_self');
+        public collapseSection(e, type, group: "") {
+            var content = e.currentTarget.nextElementSibling;
+            if (content.style.display === "none") {
+                content.style.display = "block";
+                if(type === "stats") this.sectionCollapsed[group] = false;
+                if(type === "basin") this.basinCharCollapsed = false;
+            } else {
+                content.style.display = "none";
+                if(type === "stats") this.sectionCollapsed[group] = true;
+                if(type === "basin") this.basinCharCollapsed = true;
+            }
+        }
+
+        public expandAll(expandOrCollapse) {
+            let content = document.querySelectorAll<HTMLElement>(".collapsible-content")
+            if(expandOrCollapse === "expand"){
+                content.forEach((element) => {
+                    element.style.display = "block";
+                });
+                this.basinCharCollapsed = false;
+                this.nssService.statisticsGroupList.forEach((group) => {
+                    this.sectionCollapsed[group.name] = false;
+                })
+                this.collapsed = false;
+            }else{
+                content.forEach((element) => {
+                    element.style.display = "none";
+                });
+                this.basinCharCollapsed = true;
+                this.nssService.statisticsGroupList.forEach((group) => {
+                    this.sectionCollapsed[group.name] = true;
+                })
+                this.collapsed = true;
+            }
         }
 
         public ActivateGraphs(result: any) {
             // TODO: fix flow graph yaxis label - gets overlapped with tick labels sometimes
+            
             result.graphdata = {
                 exceedance: {
                     data: [{ values: [], area: true, color: '#7777ff' }],
@@ -529,7 +677,7 @@ module StreamStats.Controllers {
                                 top: 20,
                                 right: 30,
                                 bottom: 60,
-                                left: 65
+                                left: 100
                             },
                             x: function (d) { return d.label; },
                             y: function (d) { return d.value; },
@@ -558,8 +706,8 @@ module StreamStats.Controllers {
                 },
                 flow: {
                     data: [
-                        { key: result.referanceGage.name, values: this.processData(result.referanceGage.discharge.observations)},
-                        { key: "Estimated (at clicked point)", values: this.processData(result.estimatedFlow.observations) }
+                        { key: "Observed", values: this.processData(result.referanceGage.discharge.observations)},
+                        { key: "Estimated", values: this.processData(result.estimatedFlow.observations) }
                     ],
                     options: {
                         chart: {
@@ -567,9 +715,9 @@ module StreamStats.Controllers {
                             height: 450,
                             margin: {
                                 top: 20,
-                                right: 0,
-                                bottom: 50,
-                                left: 0
+                                right: 30,
+                                bottom: 60,
+                                left: 100
                             },
                             x: function (d) {
                                 return new Date(d.x).getTime();
@@ -606,6 +754,16 @@ module StreamStats.Controllers {
             for (var key in result.exceedanceProbabilities) {
                 result.graphdata.exceedance.data[0].values.push({ label: key, value: result.exceedanceProbabilities[key] })
             }//next key
+
+            // Convert exceedance probabilities to an array so it can be sorted in the report
+            result.exceedanceProbabilitiesArray = [];
+            angular.forEach(result.exceedanceProbabilities, function(value, key) {
+                result.exceedanceProbabilitiesArray.push({
+                    exceedance: key,
+                    flowExceeded: value
+                });
+            });
+            
         }
         //Helper Methods
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -639,7 +797,7 @@ module StreamStats.Controllers {
             }
             return '['+header+']';                        
         }
-        private showFeatures(): void {
+        private showFeatures(featureArray): void {
 
             if (!this.studyAreaService.selectedStudyArea) return;
             this.overlays = {};
@@ -647,6 +805,9 @@ module StreamStats.Controllers {
                 this.studyAreaService.selectedStudyArea.FeatureCollection.features.forEach((item) => {
                     this.addGeoJSON(item.id, item);
                 });
+            featureArray.forEach((item) => {
+                this.addGeoJSON(item.id, item);
+            });
 
                 // add reference gage to report map
                 if (this.studyAreaService.selectedGage && this.studyAreaService.selectedGage.hasOwnProperty('Latitude_DD') && this.studyAreaService.selectedGage.hasOwnProperty('Longitude_DD')) {
@@ -693,7 +854,6 @@ module StreamStats.Controllers {
             }
         }
         private addGeoJSON(LayerName: string|number, feature: any) {
-
             if (LayerName == 'globalwatershed') {
                 this.layers.overlays[LayerName] =
                     {
@@ -713,7 +873,6 @@ module StreamStats.Controllers {
                     };
             }
             else if (LayerName == 'globalwatershedpoint') {
-
                 this.layers.overlays[LayerName] = {
                     name: 'Basin Clicked Point',
                     type: 'geoJSONShape',
@@ -722,7 +881,6 @@ module StreamStats.Controllers {
                 }
             }
             else if (LayerName == 'referenceGage') {
-
                 this.geojson[LayerName] = {
                     data: feature,
                     style: {

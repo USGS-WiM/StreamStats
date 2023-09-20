@@ -32,6 +32,8 @@ module StreamStats.Models {
         readonly streamID: string;
         readonly streamName: string;
         readonly basinName: string;
+        readonly begDrainageArea: number;
+        readonly endDrainageArea: number;
         readonly eqID: string;
         readonly FlowCoefficients: { [code: string]: ICoordReachCoeff; }; 
         readonly label: string;
@@ -57,6 +59,16 @@ module StreamStats.Models {
         public get streamID(): string {
             return this._streamID;
         }
+        
+        private _begDrainageArea: number
+        public get begDrainageArea(): number {
+            return this._begDrainageArea;
+        }
+        
+        private _endDrainageArea: number
+        public get endDrainageArea(): number {
+            return this._endDrainageArea;
+        }
 
         private _streamName: string
         public get streamName(): string {
@@ -68,12 +80,14 @@ module StreamStats.Models {
             return this._label;
         }
  
-        constructor(basinName: string, eqID: string, streamName: string, streamID: string) {
-            this._label = "Coordinated Reach - Stream ID: " + streamID + ", Stream Name: " + streamName + ", Basin Name: " + basinName
+        constructor(basinName: string, eqID: string, streamName: string, streamID: string, beginDrainageArea: number, endDrainageArea: number) {
+            this._label = "Coordinated Reach - Stream ID: " + streamID + ", Stream Name: " + streamName + ", Basin Name: " + basinName + ", Begin Drainage Area: " + beginDrainageArea + " sq mi, End Drainage Area: " + endDrainageArea + " sq mi";
             this._basinName = basinName;
             this._eqID = eqID;
             this._streamName = streamName;
             this._streamID = streamID;
+            this._begDrainageArea = beginDrainageArea;
+            this._endDrainageArea = endDrainageArea;
             this._flowCoefficients = {};
         }
 
@@ -168,10 +182,13 @@ module StreamStats.Models {
             return "{0} year Peak Flood".format(result);
         }
         private getValue(item: ICoordReachCoeff, drnArea: number): number {
-             //compute flow = acoeff*DRNArea^bcoeff
+            //compute flow = acoeff*DRNArea^bcoeff
             try {
-                if (!item.CoefficientA || !item.CoefficientB || !drnArea) return null;
-                return item.CoefficientA * drnArea ** item.CoefficientB; //** is equivalent to Math.pow
+                if (item.CoefficientA || item.CoefficientA === 0 || item.CoefficientB || item.CoefficientB === 0 || drnArea) {
+                    return item.CoefficientA * drnArea ** item.CoefficientB; //** is equivalent to Math.pow
+                } else {
+                    return null 
+                }
             } catch (e) {
                 return null;
             }

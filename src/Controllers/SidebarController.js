@@ -4,7 +4,7 @@ var StreamStats;
     (function (Controllers) {
         'use strinct';
         var SidebarController = (function () {
-            function SidebarController($scope, toaster, $analytics, $compile, region, studyArea, StatisticsGroup, modal, leafletData, exploration, EventManager) {
+            function SidebarController($scope, toaster, $compile, region, studyArea, StatisticsGroup, modal, leafletData, exploration, EventManager) {
                 var _this = this;
                 this.$scope = $scope;
                 this.$compile = $compile;
@@ -15,7 +15,6 @@ var StreamStats;
                 this.init();
                 this.setCulvertPopups();
                 this.toaster = toaster;
-                this.angulartics = $analytics;
                 this.sideBarCollapsed = false;
                 this.selectedProcedure = ProcedureType.INIT;
                 this.regionService = region;
@@ -107,7 +106,7 @@ var StreamStats;
                 var region = angular.fromJson(inRegion);
             };
             SidebarController.prototype.setRegion = function (region) {
-                this.angulartics.eventTrack('initialOperation', { category: 'SideBar', label: 'Region Selection Button' });
+                gtag('event', 'SetRegion', { 'Region': region.RegionID });
                 if (this.regionService.selectedRegion == undefined || this.regionService.selectedRegion.RegionID !== region.RegionID)
                     this.regionService.selectedRegion = region;
                 this.setProcedureType(2);
@@ -146,23 +145,36 @@ var StreamStats;
             SidebarController.prototype.setStatisticsGroup = function (statisticsGroup) {
                 var checkStatisticsGroup = this.checkArrayForObj(this.nssService.selectedStatisticsGroupList, statisticsGroup);
                 if (checkStatisticsGroup != -1) {
+                    var preventRemoval = false;
                     if (typeof statisticsGroup.id != 'number' && statisticsGroup.id.indexOf('fdctm')) {
                         var qppqExtension = this.studyAreaService.selectedStudyAreaExtensions.filter(function (e) { return e.code == 'QPPQ'; })[0];
                         var extensionIndex = this.studyAreaService.selectedStudyAreaExtensions.indexOf(qppqExtension);
                         this.studyAreaService.selectedStudyAreaExtensions.splice(extensionIndex, 1);
                         this.EventManager.RaiseEvent(StreamStats.Services.onScenarioExtensionChanged, this, new StreamStats.Services.NSSEventArgs(this.studyAreaService.selectedStudyAreaExtensions));
                     }
-                    this.nssService.selectedStatisticsGroupList.splice(checkStatisticsGroup, 1);
-                    if (this.nssService.selectedStatisticsGroupList.length == 0) {
-                        this.studyAreaService.studyAreaParameterList = [];
-                        this.regionService.parameterList.forEach(function (parameter) {
-                            parameter.checked = false;
-                            parameter.toggleable = true;
-                        });
+                    if (this.nssService.selectedStatisticsGroupList.filter(function (selectedStatisticsGroup) { return selectedStatisticsGroup.name == "Flow-Duration Curve Transfer Method"; }).length > 0 && statisticsGroup.name == "Flow-Duration Statistics") {
+                        preventRemoval = true;
+                    }
+                    if (!preventRemoval) {
+                        this.nssService.selectedStatisticsGroupList.splice(checkStatisticsGroup, 1);
+                        if (this.nssService.selectedStatisticsGroupList.length == 0) {
+                            this.studyAreaService.studyAreaParameterList = [];
+                            this.regionService.parameterList.forEach(function (parameter) {
+                                parameter.checked = false;
+                                parameter.toggleable = true;
+                            });
+                        }
                     }
                 }
                 else {
                     this.nssService.selectedStatisticsGroupList.push(statisticsGroup);
+                    if (typeof statisticsGroup.id != 'number' && statisticsGroup.id.indexOf('fdctm')) {
+                        var statisticsGroupFDS = this.nssService.statisticsGroupList.filter(function (statisticsGroup) { return statisticsGroup.name == "Flow-Duration Statistics"; })[0];
+                        var checkStatisticsGroupFDS = this.checkArrayForObj(this.nssService.selectedStatisticsGroupList, statisticsGroupFDS);
+                        if (checkStatisticsGroupFDS == -1) {
+                            this.nssService.selectedStatisticsGroupList.push(statisticsGroupFDS);
+                        }
+                    }
                     if (this.studyAreaService.selectedStudyArea.CoordinatedReach != null && statisticsGroup.code.toUpperCase() == "PFS") {
                         this.addParameterToStudyAreaList("DRNAREA");
                         this.nssService.showFlowsTable = true;
@@ -222,19 +234,24 @@ var StreamStats;
                 }
             };
             SidebarController.prototype.calculateParameters = function () {
-                this.angulartics.eventTrack('CalculateParameters', {
-                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",")
-                });
+                gtag('event', 'Calculate', { 'Category': "Parameters", 'Location': this.regionService.selectedRegion.Name, 'Value': this.studyAreaService.studyAreaParameterList.map(function (elem) { return elem.code; }).join(",") });
                 this.studyAreaService.loadParameters();
                 if (this.scenarioHasExtensions && this.nssService.selectedStatisticsGroupList.length == 1) {
                     this.nssService.showBasinCharacteristicsTable = false;
                 }
             };
-            SidebarController.prototype.configureExtensions = function () {
-                this.modalService.openModal(StreamStats.Services.SSModalType.e_extensionsupport);
+            SidebarController.prototype.configureExtensions = function (extensionName) {
+                if (extensionName == "FDCTM") {
+                    this.modalService.openModal(StreamStats.Services.SSModalType.e_extensionsupport);
+                }
+                else if (extensionName == "FLA") {
+                    this.modalService.openModal(StreamStats.Services.SSModalType.e_flowanywhere);
+                    this.addParameterToStudyAreaList("DRNAREA");
+                }
             };
             SidebarController.prototype.submitBasinEdits = function () {
-                this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'sumbitEdits' });
+                var latLong = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + ',' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5);
+                gtag('event', 'BasinEditor', { 'Type': 'SubmitEdits', 'Location': latLong });
                 this.studyAreaService.showEditToolbar = false;
                 this.toaster.pop('wait', "Submitting edited basin", "Please wait...", 0);
                 if (this.studyAreaService.selectedStudyArea.Disclaimers['isEdited']) {
@@ -251,9 +268,11 @@ var StreamStats;
             SidebarController.prototype.generateReport = function () {
                 var _this = this;
                 this.toaster.pop('wait', "Opening Report", "Please wait...", 5000);
-                this.angulartics.eventTrack('CalculateFlows', {
-                    category: 'SideBar', label: this.regionService.selectedRegion.Name + '; ' + this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.name; }).join(",")
-                });
+                gtag('event', 'Calculate', { 'Category': 'Flows', 'Location': this.regionService.selectedRegion.Name, 'Value': this.nssService.selectedStatisticsGroupList.map(function (elem) { return elem.name; }).join(",") });
+                this.studyAreaService.extensionResultsChanged = 0;
+                if (this.regionService.selectedRegion.Applications.indexOf('FLA') != -1 && this.studyAreaService.flowAnywhereData && this.studyAreaService.flowAnywhereData.selectedGage && this.studyAreaService.flowAnywhereData.dateRange) {
+                    this.studyAreaService.computeFlowAnywhereResults();
+                }
                 if (this.nssService.showHydraulicModelTable) {
                     this.toaster.clear();
                     this.modalService.openModal(StreamStats.Services.SSModalType.e_report);
@@ -307,6 +326,7 @@ var StreamStats;
                 });
             };
             SidebarController.prototype.checkRegulation = function () {
+                gtag('event', 'AdditionalFunctionality', { 'Category': 'Regulation' });
                 this.studyAreaService.upstreamRegulation();
             };
             SidebarController.prototype.getAccuracy = function (param, value) {
@@ -602,15 +622,19 @@ var StreamStats;
                 });
             };
             SidebarController.prototype.OpenWateruse = function () {
+                gtag('event', 'AdditionalFunctionality', { 'Category': 'WaterUse' });
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_wateruse);
             };
             SidebarController.prototype.OpenStormRunoff = function () {
+                gtag('event', 'AdditionalFunctionality', { 'Category': 'StormRunoff' });
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_stormrunnoff);
             };
             SidebarController.prototype.OpenNearestGages = function () {
+                gtag('event', 'AdditionalFunctionality', { 'Category': 'NearestGages' });
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_nearestgages);
             };
             SidebarController.prototype.downloadGeoJSON = function () {
+                gtag('event', 'Download', { 'Category': 'Basin', 'Type': 'Geojson' });
                 var GeoJSON = angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection);
                 var filename = 'data.geojson';
                 var blob = new Blob([GeoJSON], { type: 'text/csv;charset=utf-8;' });
@@ -634,6 +658,7 @@ var StreamStats;
                 }
             };
             SidebarController.prototype.downloadKML = function () {
+                gtag('event', 'Download', { 'Category': 'Basin', 'Type': 'KML' });
                 var geojson = JSON.parse(angular.toJson(this.studyAreaService.selectedStudyArea.FeatureCollection));
                 var kml = tokml(geojson);
                 var blob = new Blob([kml], { type: 'text/csv;charset=utf-8;' });
@@ -658,6 +683,7 @@ var StreamStats;
                 }
             };
             SidebarController.prototype.downloadShapeFile = function () {
+                gtag('event', 'Download', { 'Category': 'Basin', 'Type': 'Shapefile' });
                 try {
                     var flowTable = null;
                     if (this.nssService.showFlowsTable)
@@ -732,7 +758,7 @@ var StreamStats;
                 catch (e) {
                 }
             };
-            SidebarController.$inject = ['$scope', 'toaster', '$analytics', '$compile', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
+            SidebarController.$inject = ['$scope', 'toaster', '$compile', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ModalService', 'leafletData', 'StreamStats.Services.ExplorationService', 'WiM.Event.EventManager'];
             return SidebarController;
         }());
         var ProcedureType;

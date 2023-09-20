@@ -3,12 +3,14 @@ var StreamStats;
     var Models;
     (function (Models) {
         var CoordinatedReach = (function () {
-            function CoordinatedReach(basinName, eqID, streamName, streamID) {
-                this._label = "Coordinated Reach - Stream ID: " + streamID + ", Stream Name: " + streamName + ", Basin Name: " + basinName;
+            function CoordinatedReach(basinName, eqID, streamName, streamID, beginDrainageArea, endDrainageArea) {
+                this._label = "Coordinated Reach - Stream ID: " + streamID + ", Stream Name: " + streamName + ", Basin Name: " + basinName + ", Begin Drainage Area: " + beginDrainageArea + " sq mi, End Drainage Area: " + endDrainageArea + " sq mi";
                 this._basinName = basinName;
                 this._eqID = eqID;
                 this._streamName = streamName;
                 this._streamID = streamID;
+                this._begDrainageArea = beginDrainageArea;
+                this._endDrainageArea = endDrainageArea;
                 this._flowCoefficients = {};
             }
             Object.defineProperty(CoordinatedReach.prototype, "FlowCoefficients", {
@@ -35,6 +37,20 @@ var StreamStats;
             Object.defineProperty(CoordinatedReach.prototype, "streamID", {
                 get: function () {
                     return this._streamID;
+                },
+                enumerable: false,
+                configurable: true
+            });
+            Object.defineProperty(CoordinatedReach.prototype, "begDrainageArea", {
+                get: function () {
+                    return this._begDrainageArea;
+                },
+                enumerable: false,
+                configurable: true
+            });
+            Object.defineProperty(CoordinatedReach.prototype, "endDrainageArea", {
+                get: function () {
+                    return this._endDrainageArea;
                 },
                 enumerable: false,
                 configurable: true
@@ -160,9 +176,12 @@ var StreamStats;
             };
             CoordinatedReach.prototype.getValue = function (item, drnArea) {
                 try {
-                    if (!item.CoefficientA || !item.CoefficientB || !drnArea)
+                    if (item.CoefficientA || item.CoefficientA === 0 || item.CoefficientB || item.CoefficientB === 0 || drnArea) {
+                        return item.CoefficientA * Math.pow(drnArea, item.CoefficientB);
+                    }
+                    else {
                         return null;
-                    return item.CoefficientA * Math.pow(drnArea, item.CoefficientB);
+                    }
                 }
                 catch (e) {
                     return null;

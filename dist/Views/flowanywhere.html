@@ -1,0 +1,96 @@
+<div id="flowAnywhereModal">
+    <!-- Modal -->
+    <div class="modal-header">    
+        <button class="close"
+                ng-click="vm.close()">
+            &times;
+        </button>    
+        <h4 class="modal-title">Flow Anywhere Model</h4>
+        <small>The Flow Anywhere statistical method transfers same-day streamflow information from a reference streamgage to another location by using the daily mean streamflow
+            at the reference streamgage and the drainage-area ratio of the two locations. Please select a date range and reference gage to view the Flow Anywhere Method results in the report.
+        </small>
+    </div>
+    <div class="modal-body">
+        <div class="panel">
+            <!-- https://github.com/fragaria/angular-daterangepicker -->
+            <h4 class="panel-title">Select/Enter a Date Range<small style="color:red">&nbsp;&nbsp;(Required)</small></h4>
+            <input id="dateSimple" date-range-picker class="form-control date-picker" type="text" ng-model="vm.dateRange.dates" min="vm.dateRange.minDate" max="vm.dateRange.maxDate" options="vm.dateRangeOptions" />
+        </div>
+        <div class="panel">
+            <h4 class="panel-title">Select a Reference Gage<small style="color:red">&nbsp;&nbsp;(Required)</small></h4>
+            <span>
+                <div ng-show="vm.referenceGageList && vm.referenceGageList.length > 0" id="qppqTable">
+                    <table class="table table-striped">
+                        <thead>
+                            <th>Station Number</th>
+                            <th>Station Name</th>
+                            <th title="Indicates the earliest date from the NWIS period of record.">Start Date</th>
+                            <th title="Indicates the latest date from the NWIS period of record.">End Date</th>
+                            <th>NWIS Drainage Area (sq mi)</th>
+                            <th>Aggregated Region</th>
+                            <th></th>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="gage in vm.referenceGageList" ng-style="vm.getStyling(gage)">
+                                <div>
+                                    <td><a title="Show Gage Page" ng-click="vm.openGagePage(gage.StationID)">{{gage.StationID}}</a></td>
+                                    <td>{{gage.Name}}</td>
+                                    <td>{{gage.StartDate | date:'yyyy-MM-dd'}}</td>
+                                    <td>{{gage.EndDate | date:'yyyy-MM-dd'}}</td>
+                                    <td>{{gage.DrainageArea_sqMI}}</td>
+                                    <td>{{gage.AggregatedRegion}}</td>
+                                    <td>
+                                        <a ng-class="{linkDisabled: gage.StationID == vm.selectedReferenceGage.StationID}" ng-click="vm.selectGage(gage)">
+                                            Select Gage
+                                        </a>
+                                        &nbsp;
+                                    </td> 
+                                </div>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div ng-if="vm.referenceGageList.length == 0">
+                    No reference gages exist for this location.
+                </div>
+                <div ng-if="!vm.referenceGageList">
+                    Error: could not retrieve reference gages.
+                </div>
+            </span>
+        </div>
+        <div class="panel">
+            <h4 class="panel-title">Basin Characteristics</h4>
+            <small>Basin Characteristics can be manually edited in the "Build A Report" section in the sidebar.</small>
+            <span>
+                <div id="qppqTable">
+                    <table class="table table-striped">
+                        <thead>
+                            <th>Parameter Name</th>
+                            <th>Parameter Description</th>
+                            <th>Value</th>
+                            <th>Units</th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <div>
+                                    <td>Drainage Area</td>
+                                    <td>Area that drains to a point on a stream</td>
+                                    <td>
+                                        <span ng-if="vm.getDrainageArea() == 'N/A'" class="tableSpinner" >&nbsp;<i class="fa fa-spinner fa-2x fa-spin loadingSpinner"></i></span>
+                                        <span ng-if="vm.getDrainageArea() != 'N/A'">{{vm.getDrainageArea()}}</span></td>
+                                    <td>square miles</td>
+                                </div>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </span>
+        </div>
+    </div>
+    <div class="modal-footer  hidden-print">
+        <div class="btn-group">
+            <button class="btn-wim-default" ng-click="vm.close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Cancel</button>
+            <button ng-disabled="vm.isBusy" class="btn-wim-default" ng-click="vm.ok()"><i class="fa fa-close"></i>&nbsp;&nbsp;Ok</button>
+        </div>
+    </div>
+</div>

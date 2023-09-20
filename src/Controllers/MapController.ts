@@ -166,7 +166,6 @@ module StreamStats.Controllers {
         public regionLayer: Object = null;
         public drawControl: any;
         public toaster: any;
-        public angulartics: any;
         public nomnimalZoomLevel: string;
         public get selectedExplorationMethodType(): Services.ExplorationMethodType {
             if (this.explorationService.selectedMethod == null) return 0;
@@ -188,6 +187,7 @@ module StreamStats.Controllers {
         public measurestop: any;
         public selectedExplorationTool: any;
         public gageLegendFix = false;
+        public regionLegendFix = false;
         public nonsimplifiedBasin: any;
         public nonsimplifiedBasinStyle = {
             //https://www.base64-image.de/
@@ -205,12 +205,11 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$compile', 'toaster', '$analytics', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack', '$http'];
-        constructor(public $scope: IMapControllerScope, public $compile: IMapControllerCompile, toaster, $analytics, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, private _prosperServices: Services.IProsperService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService, private modalStack: ng.ui.bootstrap.IModalStackService, $http: ng.IHttpService,) {
+        static $inject = ['$scope', '$compile', 'toaster', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack', '$http'];
+        constructor(public $scope: IMapControllerScope, public $compile: IMapControllerCompile, toaster, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, private _prosperServices: Services.IProsperService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService, private modalStack: ng.ui.bootstrap.IModalStackService, $http: ng.IHttpService,) {
             $scope.vm = this;
             
             this.toaster = toaster;
-            this.angulartics = $analytics;
             this.searchService = search;
             this.$locationService = $location;
             this.regionServices = region;
@@ -228,6 +227,9 @@ module StreamStats.Controllers {
             this.init();
 
             //subscribe to Events
+            this.eventManager.SubscribeToEvent(Services.onAdditionalFeaturesLoaded, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>(() => {
+                this.onAdditionalFeaturesLoaded();
+            }));
             this.eventManager.SubscribeToEvent(Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>(() => {
                 this.onSelectedStudyAreaChanged();
             }));
@@ -257,6 +259,11 @@ module StreamStats.Controllers {
                 if (sender.selectedMethod.navigationID == 0) this.selectedExplorationTool = null;
             }));
             
+            $scope.$on('leafletDirectiveMap.mainMap.zoomend',(event, args) => {
+                if (this.regionServices.selectedRegion && this.center.zoom > 8 && this.regionServices.selectedRegion.RegionID == "ME") { // Updated legend text for MeanAugustBaseflow layer
+                    this.updateLegendText("MeanAugustBaseflow");
+                }
+            });
 
             $scope.$on('leafletDirectiveMap.mainMap.mousemove',(event, args) => {
                 var latlng = args.leafletEvent.latlng;
@@ -582,21 +589,27 @@ module StreamStats.Controllers {
                         querylayers.append('<h5>' + item.layerName + '</h5>');
                         this.queryContent.responseCount++;
                         //report ga event
-                        this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'queryPoints' });
+                        gtag('event', 'ExplorationTools', { 'Category': 'QueryPoints' });
     
                         //show only specified fields (if applicable)
                         if (this.layers.overlays[lyr].hasOwnProperty("queryProperties") && this.layers.overlays[lyr].queryProperties.hasOwnProperty(item.layerName)) {      
                             let queryProperties = this.layers.overlays[lyr].queryProperties[item.layerName];
                             Object.keys(queryProperties).map(k => {
                                 if (item.layerName == "Streamgages" && k == "FeatureURL") {
-    
                                     var siteNo = queryResult.properties[k].split('site_no=')[1];
-                                    var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm'
-                                    var SSgagepageNew = "vm.openGagePage('" + siteNo + "')";
-                                    var html = '<strong>NWIS page: </strong><a href="' + queryResult.properties[k] + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a ng-click="' + SSgagepageNew + '">link</a></br>';
-    
+                                    var SSgagepage = "vm.openGagePage('" + siteNo + "')";
+                                    var html = '</br><br><button ng-click="' + SSgagepage + '" type="button" class="btn-blue fullwidth">Open StreamStats Gage Page</button>';
                                     querylayers.append(html);
-                                    this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'streamgageQuery' });
+
+                                    //report ga event
+                                    gtag('event', 'ExplorationTools',{ 'Category': 'QueryStreamgage' });
+                                }
+                                else if (item.layerName == "Mean August Baseflow") {
+                                    if (queryProperties[k] == "Drainage Area out-of-bounds" || queryProperties[k] == "Mean July Precip out-of-bounds" || queryProperties[k] == "% Aquifer Area out-of-bounds" || queryProperties[k] == "Regulated stream/river") {
+                                        if (queryResult.properties[k] == 0) queryResult.properties[k] = "No"
+                                        else if (queryResult.properties[k] == 1) queryResult.properties[k] = "Yes"
+                                    }
+                                    querylayers.append('<strong>' + queryProperties[k] + ': </strong>' + queryResult.properties[k] + '</br>');
                                 }
                                 else {
                                     querylayers.append('<strong>' + queryProperties[k] + ': </strong>' + queryResult.properties[k] + '</br>');
@@ -648,7 +661,7 @@ module StreamStats.Controllers {
             });
 
             //report ga event
-            this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'elevationProfile' });
+            gtag('event', 'ExplorationTools',{ 'Category': 'ElevationProfile' });
 
             this.leafletData.getMap("mainMap").then((map: any) => {
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => {
@@ -744,7 +757,8 @@ module StreamStats.Controllers {
 
         private showLocation() {
 
-            this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'showLocation' });
+            //report ga event
+            gtag('event', 'ExplorationTools',{ 'Category': 'ShowLocation' });
 
             //get reference to location control
             var lc;
@@ -798,7 +812,8 @@ module StreamStats.Controllers {
             this.explorationService.measurementData = 'Click the map to begin\nDouble click to end the Drawing';
 
             //report ga event
-            this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'measurement' });
+            gtag('event', 'ExplorationTools',{ 'Category': 'Measurement' });
+
 
             this.leafletData.getMap("mainMap").then((map: any) => {
                 //console.log('got map: ', map);
@@ -898,7 +913,8 @@ module StreamStats.Controllers {
                             if (item[0] == 'ExcludePolys') queryString += item[1];
                         });
 
-                        this.angulartics.eventTrack('delineationClick', { category: 'Map', label: this.regionServices.selectedRegion.Name });
+                        //report ga event
+                        gtag('event', 'DelineationClick',{ 'Region': this.regionServices.selectedRegion.Name, 'Location': latlng });
 
                         //force map refresh
                         map.invalidateSize();
@@ -910,21 +926,29 @@ module StreamStats.Controllers {
                             this.toaster.clear();
                             this.toaster.pop("warning", "Selected State/Region does not have exlusion areas defined", "Delineating with no exclude polygon layer...", true, 0);
                             this.startDelineate(latlng, true);
-                            this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not advised (no point query)' });
+                            //report ga event
+                            gtag('event', 'ValidatePoint',{ 'Label': 'Not advised (no point query)' });
                             this.cursorStyle = 'pointer';
                             return;
                         }
-
+                        // Get name of exclude poly layer
+                        var layerName;
+                        for(var layer in maplayers.overlays) {
+                            for(var llayer in this.layers.overlays){
+                                if(llayer === layer && this.layers.overlays[llayer].layerArray !== undefined && this.layers.overlays[llayer].layerArray[0].layerName === 'ExcludePolys'){
+                                    layerName = layer;
+                                }
+                            }
+                        };
                         //do point validation query
-                        maplayers.overlays[selectedRegionLayerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run((error: any, results: any) => {
-
+                        maplayers.overlays[layerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run((error: any, results: any) => {
                             //console.log('exclusion area check: ', queryString, results); 
                             this.toaster.clear();
 
                             //if there are no exclusion area hits
                             if (results.features.length == 0) {
                                 //ga event
-                                this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'valid' });
+                                gtag('event', 'ValidatePoint',{ 'Label': 'Valid' });
 
                                 this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000)
                                 this.studyArea.checkingDelineatedPoint = false;
@@ -940,12 +964,13 @@ module StreamStats.Controllers {
                                 if (excludeCode == 1) {
                                     this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
                                     //ga event
-                                    this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not allowed' });
+                                    gtag('event', 'ValidatePoint',{ 'Label': 'Not allowed' });
                                 }
                                 else {
                                     this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
                                     this.startDelineate(latlng, true, popupMsg);
-                                    this.angulartics.eventTrack('validatePoint', { category: 'Map', label: 'not advised' });
+                                    //ga event
+                                    gtag('event', 'ValidatePoint',{ 'Label': 'Not advised' });
                                 }
                             }
 
@@ -988,7 +1013,9 @@ module StreamStats.Controllers {
 
                             else{
                                 this.addGeoJSON('adds', clipPolygon);
-                                this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'addArea' });
+                                //ga event
+                                gtag('event', 'BasinEditor',{ 'Type': 'Add Area' });
+
                                 this.studyArea.WatershedEditDecisionList.append.push(clipPolygon);
                             }
 
@@ -1002,7 +1029,9 @@ module StreamStats.Controllers {
 
                             else{
                                 this.addGeoJSON('removes', clipPolygon);
-                                this.angulartics.eventTrack('basinEditor', { category: 'Map', label: 'removeArea' });
+                                //ga event
+                                gtag('event', 'BasinEditor',{ 'Type': 'Remove Area' });
+
                                 this.studyArea.WatershedEditDecisionList.remove.push(clipPolygon);
                             }
 
@@ -1077,7 +1106,8 @@ module StreamStats.Controllers {
             return true;
         }
         private onExplorationMethodComplete(sender: any, e: Services.ExplorationServiceEventArgs) {
-            this.angulartics.eventTrack('explorationTools', { category: 'Map', label: 'networknav-' + this.explorationService.selectedMethod.navigationInfo.code });
+            //ga event
+            gtag('event', 'ExplorationTools',{ 'Category': 'networknav-' + this.explorationService.selectedMethod.navigationInfo.code });
 
             //console.log('in onexplorationmethodCOmplete:', this.explorationService.selectedMethod.navigationInfo.code)
             this.explorationService.explorationMethodBusy = false;
@@ -1119,7 +1149,7 @@ module StreamStats.Controllers {
         private onSelectedAreaOfInterestChanged(sender: any, e: WiM.Services.SearchAPIEventArgs) {
 
             //ga event
-            this.angulartics.eventTrack('Search', { category: 'Sidebar' });
+            gtag('event', 'Search', {  });
 
             this.paths = {};
             var AOI = e.selectedAreaOfInterest;
@@ -1165,6 +1195,17 @@ module StreamStats.Controllers {
             if (this.studyArea.zoomLevel15 && !this.imageryToggled && this.regionServices.selectedRegion.Applications.some(a => ['StormDrain', 'Localres'].indexOf(a) > -1)) this.toggleImageryLayer();
 
             this.regionServices.loadMapLayersByRegion(this.regionServices.selectedRegion.RegionID)
+        }
+
+        private onAdditionalFeaturesLoaded() {
+            if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.FeatureCollection) return;
+            this.studyArea.selectedStudyArea.FeatureCollection.features.forEach((layer) => {
+                var item = angular.fromJson(angular.toJson(layer));
+                if (item.id === 'longestflowpath3d' || item.id === 'longestflowpath') { 
+                    this.addGeoJSON(item.id, item.geometry);
+                }
+            });
+            this.toaster.pop('success', "Additional features have been downloaded", "Please continue", 5000);
         }
        
         private onSelectedStudyAreaChanged() {
@@ -1423,14 +1464,14 @@ module StreamStats.Controllers {
                     },
                     onEachFeature: function (feature, layer) {
                         var siteNo = feature.properties['Code'];
-                        var SSgagepage = 'https://streamstatsags.cr.usgs.gov/gagepages/html/' + siteNo + '.htm';
-                        var NWISpage = 'http://nwis.waterdata.usgs.gov/nwis/inventory/?site_no=' + siteNo;
+                        var NWISpage = 'https://waterdata.usgs.gov/monitoring-location/' + siteNo;
                         var gageButtonDiv = L.DomUtil.create('div', 'innerDiv');
 
                         gageButtonDiv.innerHTML = '<strong>Station ID: </strong>' + siteNo + '</br><strong>Station Name: </strong>' + feature.properties['Name'] + '</br><strong>Latitude: </strong>' + feature.geometry.coordinates[1] + '</br><strong>Longitude: </strong>' + feature.geometry.coordinates[0] + '</br><strong>Station Type</strong>: ' + feature.properties.StationType.name +
-                            '</br><strong>NWIS page: </strong><a href="' + NWISpage + ' "target="_blank">link</a></br><strong>StreamStats Gage page: </strong><a href="' + SSgagepage + '" target="_blank">link</a></br><strong>New StreamStats Gage Modal: </strong><a id="gagePageLink" class="' + siteNo + '">link</a><br>';
+                        '</br><br><button id="gagePageLink" type="button" class="btn-blue fullwidth">Open StreamStats Gage Page</button>';
 
                         layer.bindPopup(gageButtonDiv);
+
                         var styling = configuration.streamgageSymbology.filter(function (item) {
                             return item.label.toLowerCase() == feature.properties.StationType.name.toLowerCase();
                         })[0];
@@ -1456,16 +1497,22 @@ module StreamStats.Controllers {
                         })
 
                         layer.on('mouseover', function(e) {
-                            if (self.studyArea.doSelectMapGage) this.openPopup();
+                            if (self.studyArea.doSelectMapGage){
+                                this.openPopup();
+                            } 
                         });
 
                         layer.on('click', function(e) {
+                            //report ga event
+                            gtag('event', 'ExplorationTools',{ 'Category': 'QueryStreamgage' });
                             // need to select gage if that's the question
                             if (self.studyArea.doSelectMapGage) {
                                 self.studyArea.selectGage(feature);
                                 self.studyArea.doSelectMapGage = false;
                             }
-                            else this.openPopup();
+                            else {
+                                this.openPopup();
+                            } 
                         })
 
                     }
@@ -1501,12 +1548,16 @@ module StreamStats.Controllers {
                     }
             }
         }
+
         private onLayerChanged(sender: WiM.Directives.IwimLegendController, e: WiM.Directives.LegendLayerChangedEventArgs) {
 
             if (e.PropertyName === "visible") {
-                if (!e.Value)
+                if (!e.Value){
                     delete this.geojson[e.LayerName];
-                else {
+                    if(e.LayerName === "streamgages"){
+                        this.studyArea.streamgagesVisible = false;
+                    }
+                }else {
                     //get feature
                     var value: any = null;
 
@@ -1538,6 +1589,9 @@ module StreamStats.Controllers {
                     if (e.LayerName == 'streamgages' && this.center.zoom >= 8) {
                         // re-query streamgages on toggle
                         this.studyArea.getStreamgages(this.bounds.southWest.lng, this.bounds.northEast.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
+                    }else if(e.LayerName == 'streamgages' && this.center.zoom < 8){
+                        // Streamgages checked but not added to map at this zoom level
+                        this.studyArea.streamgagesVisible = true;
                     }
 
 
@@ -1557,7 +1611,9 @@ module StreamStats.Controllers {
                     this.toaster.pop("info", "Information", "User input is needed to continue", 5000);
                 }
 
-                this.studyArea.getStreamgages(this.bounds.southWest.lng, this.bounds.northEast.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
+                if(this.studyArea.streamgagesVisible){
+                    this.studyArea.getStreamgages(this.bounds.southWest.lng, this.bounds.northEast.lng, this.bounds.southWest.lat, this.bounds.northEast.lat);
+                }
             }
 
             if (this.center.zoom < 8 && oldValue !== newValue) {
@@ -1578,6 +1634,30 @@ module StreamStats.Controllers {
             }
 
         }
+
+        private updateLegendText(LayerName){
+            if(LayerName == "MeanAugustBaseflow") { // Update MeanAugustBaseflow legend
+                this.leafletData.getLayers("mainMap").then((maplayers: any) => { 
+                    if (this.center.zoom == 9 || this.center.zoom == 10 || this.center.zoom == 11) { // County Scale View
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.60 - 1.34 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.45 - 0.60 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.30 - 0.45 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.30 cfs/mi^2";
+                    } else if (this.center.zoom == 12 || this.center.zoom == 13 || this.center.zoom == 14) { // Town Scale View
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.50 - 1.34 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.40 - 0.50 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.20 - 0.44 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.20 cfs/mi^2";
+                    } else if (this.center.zoom == 15 || this.center.zoom == 16) { // Neighborhood Scale View 
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[0].label = "0.35 - 1.34 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[1].label = "0.25 - 0.35 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[2].label = "0.15 - 0.25 cfs/mi^2";
+                        this.layers.overlays['MeanAugustBaseflow_region'].layerArray[0].legend[3].label = "0.09 - 0.15 cfs/mi^2";
+                    }
+                });
+            }
+        }
+
         private updateLegend() {
             // patch fix for streamgages legend
             if (!this.gageLegendFix) {
@@ -1645,24 +1725,42 @@ module StreamStats.Controllers {
 
             if (this.regionServices.regionMapLayerList.length < 1) return;
 
-            var layerList = [];
+            var layerList = []; // Map layers for selected Region
+            var visibleList = []; // Visibility of map layers for selected Region
+            var self = this;
             var roots = this.regionServices.regionMapLayerList.map(function (layer) {
                 layerList.push(layer[1])
+                if (self.regionServices.selectedRegion.Applications.indexOf("StormDrain") > -1 && layer[0] == 'StreamGrid') {
+                    // StreamGrid should not be visible by default for StormDrain applications
+                    visibleList.push(false);
+                } else {
+                    visibleList.push(true);
+                }
+                
             });
-            var visible = true;
-            if (regionId == 'MRB') visible = false;
 
-            this.layers.overlays[regionId + "_region"] = new Layer(regionId + " Map layers", configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'],
-                "agsDynamic", visible, {
-                    "opacity": 1,
-                    "layers": layerList,
-                    "format": "png8",
-                    "f": "image"
-                });
+            layerList.forEach((layer, index) => {
+                this.layers.overlays[regionId + "_region" + layer] = 
+                {
+                    name: String(layer),
+                    group: regionId + " Map layers",
+                    url: configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['SSStateLayers'],
+                    type: 'agsDynamic',
+                    visible:  visibleList[index],
+                    layerOptions: {
+                        opacity: 1,
+                        layers: [layer],
+                        format: "png8",
+                        f: "image"
+                    },
+                }
+            });
 
             //bring streamgages (all national layers) to front
-            this.leafletData.getLayers("mainMap").then((maplayers: any) => { 
-                maplayers.overlays[regionId + "_region"].bringToBack();
+            this.leafletData.getLayers("mainMap").then((maplayers: any) => {
+                layerList.forEach(layer => {
+                    maplayers.overlays[regionId + "_region" + layer].bringToBack();
+                });
                 maplayers.overlays.SSLayer.bringToFront();
             });
             

@@ -117,11 +117,15 @@ module StreamStats.Controllers {
             this.init();
         }
         public Print(): void {
+            //ga event
+            gtag('event', 'Download', { 'Category': 'Prosper', "Type": 'Print' });
             window.print();
         }
         
         public DownloadCSV() {            
-     
+            //ga event
+            gtag('event', 'Download', { 'Category': 'Prosper', "Type": 'CSV' });
+
             var filename = 'prosper.csv';
             var csvFile = 'StreamStats PROSPER Report\n\n' +
                 '\nLatitude,' + this.Location.lat.toFixed(5) + '\nLongitude,' + this.Location.lng.toFixed(5) +
@@ -154,6 +158,8 @@ module StreamStats.Controllers {
         }
 
         public Query(): void {
+            gtag('event', 'ExplorationTools', { 'Category': 'QueryProsper' });
+
             this._prosperServices.CanQuery = true;
             this.modalInstance.dismiss();
 

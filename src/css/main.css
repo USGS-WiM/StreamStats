@@ -1358,7 +1358,80 @@ div.leaflet-top > .elevation {
     padding: 0 !important;
 }
 
+/* 
+Batch processor modal
+*/
+.bp-input:required:invalid {
+    border: 2px solid #FBEC5D;
+}
 
+.bp-select:required:invalid {
+    border: 2px solid #FBEC5D;
+}
+
+.bp-submit-success {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px 18px;
+    margin: 10px 0;
+    font-size: 9pt;
+    letter-spacing: 0.8px;
+    border: 1px solid #d3d3d3;
+    color: #FFFFFF;
+    border-radius: 3px;
+    font-weight: 400;
+    background-color: green;
+    text-align: center;
+}
+
+.bp-attach-true {
+    border: 2px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.bp-attach-true:hover {
+    filter: brightness(75%);
+}
+
+.bp-attach-false {
+    border: 2px solid #FBEC5D;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.bp-attach-false:hover {
+    filter: brightness(75%);
+}
+
+.bp-status-email {
+    display: flex;
+}
+
+.bp-status-email>div {
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+}
+
+.bp-status-250 {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px 18px;
+    margin: 10px 0;
+    font-size: 10pt;
+    letter-spacing: 0.8px;
+    border: 1px solid #d3d3d3;
+    color: #FFFFFF;
+    border-radius: 3px;
+    font-weight: 400;
+    background-color: #ff9200;
+    text-align: center;                                 
+}
 /*
     Report
     Report
@@ -1385,6 +1458,29 @@ div.leaflet-top > .elevation {
     padding: 0 0 0 3px !important;
 }
 
+.collapsible {
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+}
+
+.collapsible-content {
+    padding: 0 18px;
+    display: block;
+    overflow: hidden;
+    background-color: #e0e3e6;
+}
+
+.expand-report {
+    display: block;
+    margin-left: auto;
+    margin-right: 0px;
+}
+
 #reportDropdown {
     overflow: auto;
 }
@@ -1396,7 +1492,7 @@ div.leaflet-top > .elevation {
     display: block;
 }
 
-.culvert-tooltip {
+.culvert-tooltip, .report-tooltip {
     opacity: 0.75;
     background-color: #000;
     border-radius: 3px;
@@ -1816,6 +1912,25 @@ input[name=distanceValue] {
 }
 
 #statGroupSelect dropdown-menu {
+    padding-left: 0px !important;
+}
+
+#statGroupCitationSelect {
+    margin: 0px;
+    padding: 0px;
+    display: inline-block;
+}
+
+#statGroupCitationSelect button {
+    background-color:#e0e3e6;
+}
+
+#statGroupCitationSelect ul, #statGroupCitationSelect ul li {
+    padding: 0px;
+    padding-left: 0px !important;
+}
+
+#statGroupCitationSelect dropdown-menu {
     padding-left: 0px !important;
 }
 
