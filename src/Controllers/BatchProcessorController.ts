@@ -950,7 +950,7 @@ module StreamStats.Controllers {
                   };
                   paramRaw.push(param);
                 } catch (e) {
-                  alert(e);
+                  console.log(e);
                 }
               });
             }
@@ -1016,7 +1016,7 @@ module StreamStats.Controllers {
 
                 batchStatusMessages.push(status);
               } catch (e) {
-                alert(e);
+                console.log(e)
               }
             });
 
@@ -1088,10 +1088,9 @@ module StreamStats.Controllers {
                 };
                 batchStatusMessages.push(status);
               } catch (e) {
-                alert(e);
+                console.log(e)
               }
             });
-
             return batchStatusMessages;
           },
           (error) => {}

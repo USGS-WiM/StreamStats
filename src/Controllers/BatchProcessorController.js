@@ -570,7 +570,7 @@ var StreamStats;
                                 paramRaw.push(param);
                             }
                             catch (e) {
-                                alert(e);
+                                console.log(e);
                             }
                         });
                     }
@@ -607,7 +607,7 @@ var StreamStats;
                             batchStatusMessages.push(status_1);
                         }
                         catch (e) {
-                            alert(e);
+                            console.log(e);
                         }
                     });
                     return batchStatusMessages;
@@ -668,7 +668,7 @@ var StreamStats;
                             batchStatusMessages.push(status_2);
                         }
                         catch (e) {
-                            alert(e);
+                            console.log(e);
                         }
                     });
                     return batchStatusMessages;
