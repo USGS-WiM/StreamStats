@@ -241,7 +241,14 @@
                                 <input type="checkbox" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" id="toggleFloodStats" name="toggleFloodStats" ng-model="vm.showFloodStats" ng-change="vm.toggleFloodStats()" checked>
                                 <label for="toggleFloodStats" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" > Show Flood Statistics:</label>
                                 <select id="gageFloodStatsSelect" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0 " style="width:31%; text-align-last:center; margin-top: 5px;" name="gageFloodStatsSelect" ng-model="vm.selectedFloodFreqStats" ng-options="floodFreqStat.name for floodFreqStat in vm.allFloodFreqStats" ng-change="vm.chooseFloodStats()" ng-disabled="vm.showFloodStats == false"></select><br> 
-                                    <div class="collapsible" ng-click="vm.peakDataSourcesCollapsed = !vm.peakDataSourcesCollapsed"><i ng-class="!vm.peakDataSourcesCollapsed ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i>&nbsp;&nbsp;Data Sources</div>
+                                <br> Data: 
+                                <a ng-if="vm.formattedPeakDates.length > 0" href="https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no={{vm.gage.code}}">NWIS Annual Peak Flow Statistics</a>, 
+                                <a ng-if="vm.formattedDailyFlow.length > 0" href="https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites={{vm.gage.code}}&parameterCd=00060&statCd=00003&startDT=1900-01-01">NWIS Daily Flow Statistics</a>,
+                                <a ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0 " href="https://test.streamstats.usgs.gov/gagestatsservices/stations/{{vm.gage.code}}">Flood Frequency Statistics</a>,
+                                <a ng-if="vm.formattedInstFlow.length > 0" href="https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites={{vm.gage.code}}&parameterCd=00060&startDT=1900-01-01">NWIS Instantaneous Flow Statistics</a>,
+                                <a ng-if="vm.formattedP90to100.length > 0" href="https://waterservices.usgs.gov/nwis/stat/?format=rdb,1.0&indent=on&sites={{vm.gage.code}}&statReportType=daily&statTypeCd=all&parameterCd=00060">NWIS Percentile Mean Flow</a>,
+                                <a ng-if="vm.NWSforecast !== undefined" href="">National Weather Service</a>
+                                <!-- <div class="collapsible" ng-click="vm.peakDataSourcesCollapsed = !vm.peakDataSourcesCollapsed"><i ng-class="!vm.peakDataSourcesCollapsed ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i>&nbsp;&nbsp;Data Sources</div>
                                             <div class="panel panel-default" ng-show="!vm.peakDataSourcesCollapsed">
                                                 <div class="panel-heading">Annual Flow Plot Data Sources</div>
                                                 <div class="panel-body">
@@ -276,7 +283,7 @@
                                                 </div>
                                                 </div>
                                             </div>
-                            </div>
+                                </div> -->
                         </div>
                     </center>
                     <center>
@@ -285,7 +292,9 @@
                         </div>
                         <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.heatChartConfig">
                             <highchart id="chart2" config="vm.heatChartConfig"></highchart>
-                            <div class="collapsible" ng-if="vm.formattedDailyFlow.length > 0" ng-click="vm.dailyDataSourcesCollapsed = !vm.dailyDataSourcesCollapsed"><i ng-class="!vm.dailyDataSourcesCollapsed ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i>&nbsp;&nbsp;Data Sources</div>
+                            <br> Data: 
+                            <a ng-if="vm.formattedDailyFlow.length > 0" href="https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites={{vm.gage.code}}&parameterCd=00060&statCd=00003&startDT=1900-01-01">NWIS Daily Flow Statistics</a>
+                            <!-- <div class="collapsible" ng-if="vm.formattedDailyFlow.length > 0" ng-click="vm.dailyDataSourcesCollapsed = !vm.dailyDataSourcesCollapsed"><i ng-class="!vm.dailyDataSourcesCollapsed ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i>&nbsp;&nbsp;Data Sources</div>
                                             <div class="panel panel-default" ng-show="!vm.dailyDataSourcesCollapsed">
                                                 <div class="panel-heading">Daily Flow Plot Data Sources</div>
                                                 <div class="panel-body">
@@ -299,8 +308,8 @@
                                                     </table>
                                                 </div>
                                                 </div>
-                                            </div>
-                        </div>
+                                            </div> -->
+                            </div>
                     </center> 
                     <center>
                         <div ng-if="!vm.dischargeChartConfig" class="panel panel-default reportSpinner">
@@ -320,47 +329,51 @@
                             <!-- Start Sliders -->
                             <div class="slider-container">
                                 <div class="slider-wrapper">
-                                  <span class="slider-text">Plot USGS Measurements Between Months</span>
-                                  <rzslider class="rzSlider" rz-slider-model="vm.startMonth" rz-slider-high="vm.endMonth" rz-slider-options="vm.monthSliderOptions"></rzslider>
-                                  <span id="months2show"></span>
+                                    <span class="slider-text">Plot USGS Measurements Between Months</span>
+                                    <rzslider class="rzSlider" rz-slider-model="vm.startMonth" rz-slider-high="vm.endMonth" rz-slider-options="vm.monthSliderOptions"></rzslider>
+                                    <span id="months2show"></span>
                                 </div>
                                 <div class="slider-wrapper">
-                                  <span class="slider-text">Plot USGS Measurements Between Years</span>
-                                  <rzslider class="rzSlider" rz-slider-model="vm.startYear" rz-slider-high="vm.endYear" rz-slider-options="vm.yearSliderOptions"></rzslider>
-                                  <span id="years2show"></span>
+                                    <span class="slider-text">Plot USGS Measurements Between Years</span>
+                                    <rzslider class="rzSlider" rz-slider-model="vm.startYear" rz-slider-high="vm.endYear" rz-slider-options="vm.yearSliderOptions"></rzslider>
+                                    <span id="years2show"></span>
                                 </div>
-                              </div>
-                              
+                            </div>
+                            
                             <!-- End Sliders -->
 
                             <!-- Start Legend -->
                             <div ng-show="vm.USGSMeasuredAgeQualityData === 'age'" class="ageQualityLegend" ng-style="{'left': vm.logScaleDischarge ? '222px' : '680px', 'bottom': vm.logScaleDischarge ? '200px' : '220px'}">
                                 <div class="ageQualityLegend-item">
-                                  <span style="color: red;">Most Recent Measurement</span>
+                                    <span style="color: red;">Most Recent Measurement</span>
                             </div>
                             <div class="ageQualityLegend-item">
-                                  <span style="color: orange;">Measurements in the Last Year</span>
+                                <span style="color: orange;">Measurements in the Last Year</span>
                             </div>
                             <div class="ageQualityLegend-item">
-                                  <span style="color: #0000cdcc;">Newer -&nbsp</span><span style="color: #0000cd4d;">Older Measurements</span>
+                                <span style="color: #0000cdcc;">Newer -&nbsp</span><span style="color: #0000cd4d;">Older Measurements</span>
                                 </div>
                             </div>
-                              
+                            
                             <div ng-show="vm.USGSMeasuredAgeQualityData === 'quality'" class="ageQualityLegend" ng-style="{'left': vm.logScaleDischarge ? '222px' : '680px', 'bottom': vm.logScaleDischarge ? '200px' : '220px'}">
                                 <div class="ageQualityLegend-item">
-                                  <span style="color:#2ED017;">Excellent - Good</span>
+                                    <span style="color:#2ED017;">Excellent - Good</span>
                             </div>
                             <div class="ageQualityLegend-item">
-                                  <span style="color:#E7F317;">Fair</span>
+                                <span style="color:#E7F317;">Fair</span>
                             </div>
                             <div class="ageQualityLegend-item">
-                                  <span style="color: #FFA200;">Poor</span>
+                                <span style="color: #FFA200;">Poor</span>
                             </div>
                             </div>
                             <!-- End Legend -->
 
                             <highchart id="chart3" config="vm.dischargeChartConfig"></highchart>
-                            <div class="collapsible" ng-click="vm.stageDischargeDataSourcesCollapsed = !vm.stageDischargeDataSourcesCollapsed"><i ng-class="!vm.stageDischargeDataSourcesCollapsed ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i>&nbsp;&nbsp;Data Sources</div>
+                            <br> Data: 
+                            <a ng-if="vm.dischargeObj.length > 5" href="https://waterdata.usgs.gov/nwisweb/get_ratings?site_no={{vm.gage.code}}&file_type=exsa">NWIS Rating Curve</a>,
+                            <a ng-if="vm.error === false" href="https://waterdata.usgs.gov/nwis/measurements?site_no={{vm.gage.code}}&agency_cd=USGS&format=rdb_expanded">NWIS Measured</a>,
+                            <a ng-if="vm.formattedDischargePeakDates.length > 0" href="https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no={{vm.gage.code}}">NWIS Peak Discharge</a>
+                            <!-- <div class="collapsible" ng-click="vm.stageDischargeDataSourcesCollapsed = !vm.stageDischargeDataSourcesCollapsed"><i ng-class="!vm.stageDischargeDataSourcesCollapsed ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i>&nbsp;&nbsp;Data Sources</div>
                                             <div class="panel panel-default" ng-show="!vm.stageDischargeDataSourcesCollapsed">
                                                 <div class="panel-heading">Stage vs. Discharge Plot Data Sources</div>
                                                 <div class="panel-body">
@@ -382,7 +395,7 @@
                                                     </table>
                                                 </div>
                                                 </div>
-                                            </div>
+                                            </div> -->
                         </div>
 
                         </center> 
