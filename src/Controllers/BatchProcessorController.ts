@@ -950,7 +950,7 @@ module StreamStats.Controllers {
                   };
                   paramRaw.push(param);
                 } catch (e) {
-                  alert(e);
+                  console.log(e);
                 }
               });
             }
@@ -1016,7 +1016,7 @@ module StreamStats.Controllers {
 
                 batchStatusMessages.push(status);
               } catch (e) {
-                alert(e);
+                console.log(e)
               }
             });
 
@@ -1088,10 +1088,9 @@ module StreamStats.Controllers {
                 };
                 batchStatusMessages.push(status);
               } catch (e) {
-                alert(e);
+                console.log(e)
               }
             });
-
             return batchStatusMessages;
           },
           (error) => {}
@@ -1289,23 +1288,17 @@ module StreamStats.Controllers {
     private init(): void {
       this.getRegions();
       // Get selected tab
-      if (
-        this.modalService.modalOptions &&
-        this.modalService.modalOptions.tabName
-      ) {
-        if (
-          this.modalService.modalOptions.tabName == "batchStatus" &&
-          this.modalService.modalOptions.urlParams
-        ) {
-          this.selectBatchProcessorTab(this.modalService.modalOptions.tabName);
-          this.batchStatusEmail = this.modalService.modalOptions.urlParams;
-          this.getBatchStatusList(this.batchStatusEmail);
-          this.retrievingBatchStatus = true;
-        }
-        if (this.manageQueue) {
-          this.selectBatchProcessorTab("manageQueue")
+      if (this.modalService.modalOptions && this.modalService.modalOptions.tabName) {
+        if (this.modalService.modalOptions.tabName == "batchStatus") {
+          this.selectBatchProcessorTab("batchStatus");
+          if  (this.modalService.modalOptions.urlParams) {
+            this.batchStatusEmail = this.modalService.modalOptions.urlParams;
+            this.retrievingBatchStatus = true;
+          }
         } else if (this.modalService.modalOptions.tabName == "manageQueue") {
-            this.selectBatchProcessorTab("submitBatch")
+          this.selectBatchProcessorTab("submitBatch")
+        } else if (this.modalService.modalOptions.tabName == "streamGrid"){
+          this.selectBatchProcessorTab("streamGrid")
         }
       } else if (this.manageQueue) {
         this.selectBatchProcessorTab("manageQueue")
