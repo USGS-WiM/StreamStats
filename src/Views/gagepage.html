@@ -240,50 +240,22 @@
                                 <button ng-click="vm.resetZoom()">Reset Zoom</button><br>
                                 <input type="checkbox" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" id="toggleFloodStats" name="toggleFloodStats" ng-model="vm.showFloodStats" ng-change="vm.toggleFloodStats()" checked>
                                 <label for="toggleFloodStats" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" > Show Flood Statistics:</label>
-                                <select id="gageFloodStatsSelect" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0 " style="width:31%; text-align-last:center; margin-top: 5px;" name="gageFloodStatsSelect" ng-model="vm.selectedFloodFreqStats" ng-options="floodFreqStat.name for floodFreqStat in vm.allFloodFreqStats" ng-change="vm.chooseFloodStats()" ng-disabled="vm.showFloodStats == false"></select><br> 
-                                <br> Data: 
-                                <a ng-if="vm.formattedPeakDates.length > 0" href="https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no={{vm.gage.code}}">NWIS Annual Peak Flow Statistics</a>, 
-                                <a ng-if="vm.formattedDailyFlow.length > 0" href="https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites={{vm.gage.code}}&parameterCd=00060&statCd=00003&startDT=1900-01-01">NWIS Daily Flow Statistics</a>,
-                                <a ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0 " href="https://test.streamstats.usgs.gov/gagestatsservices/stations/{{vm.gage.code}}">Flood Frequency Statistics</a>,
-                                <a ng-if="vm.formattedInstFlow.length > 0" href="https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites={{vm.gage.code}}&parameterCd=00060&startDT=1900-01-01">NWIS Instantaneous Flow Statistics</a>,
-                                <a ng-if="vm.formattedP90to100.length > 0" href="https://waterservices.usgs.gov/nwis/stat/?format=rdb,1.0&indent=on&sites={{vm.gage.code}}&statReportType=daily&statTypeCd=all&parameterCd=00060">NWIS Percentile Mean Flow</a>,
-                                <a ng-if="vm.NWSforecast !== undefined" href="">National Weather Service</a>
-                                <!-- <div class="collapsible" ng-click="vm.peakDataSourcesCollapsed = !vm.peakDataSourcesCollapsed"><i ng-class="!vm.peakDataSourcesCollapsed ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i>&nbsp;&nbsp;Data Sources</div>
-                                            <div class="panel panel-default" ng-show="!vm.peakDataSourcesCollapsed">
-                                                <div class="panel-heading">Annual Flow Plot Data Sources</div>
-                                                <div class="panel-body">
-                                                    <table class="table table-striped">
-                                                        <tbody>
-                                                            <tr ng-if="vm.formattedPeakDates.length > 0">
-                                                                <th scope="row">Annual Peak Flow</th>
-                                                                <td><a href="https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no={{vm.gage.code}}">NWIS Annual Peak Flow Statistics</a></td>
-                                                            </tr>
-                                                            <tr ng-if="vm.formattedDailyFlow.length > 0">
-                                                                <th scope="row">Daily Flow</th>
-                                                                <td><a href="https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites={{vm.gage.code}}&parameterCd=00060&statCd=00003&startDT=1900-01-01">NWIS Daily Flow Statistics</a></td> 
-                                                            </tr>
-                                                            <tr ng-if="vm.formattedInstFlow.length > 0">
-                                                                <th scope="row">Instantaneous Flow</th>
-                                                                <td><a href="https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites={{vm.gage.code}}&parameterCd=00060&startDT=1900-01-01">NWIS Instantaneous Flow Statistics</a></td> 
-                                                            </tr>
-                                                            <tr ng-if="vm.NWSforecast !== undefined">
-                                                                <th scope="row">NWS Forecast</th>
-                                                                <td><a href="">National Weather Service</a></td>
-                                                            </tr>
-                                                            <tr ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0 ">
-                                                                <th scope="row">Flood Statistics</th>
-                                                                <td><a href="https://test.streamstats.usgs.gov/gagestatsservices/stations/{{vm.gage.code}}">Flood Frequency</a></td>
-                                                            </tr>
-                                                            <tr ng-if="vm.formattedP90to100.length > 0">
-                                                                <th scope="row">Daily Percentile Streamflow</th>
-                                                                <td><a href="https://waterservices.usgs.gov/nwis/stat/?format=rdb,1.0&indent=on&sites={{vm.gage.code}}&statReportType=daily&statTypeCd=all&parameterCd=00060">NWIS Percentile Mean Flow</a></td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                                </div>
-                                            </div>
-                                </div> -->
+                                <select id="gageFloodStatsSelect" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0 " style="width:31%; text-align-last:center; margin-top: 5px;" name="gageFloodStatsSelect" ng-model="vm.selectedFloodFreqStats" ng-options="floodFreqStat.name for floodFreqStat in vm.allFloodFreqStats" ng-change="vm.chooseFloodStats()" ng-disabled="vm.showFloodStats == false"></select>
+                                <div class="data-sources">
+                                    Data: 
+                                    <a ng-if="vm.formattedPeakDates.length > 0" href="https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no={{vm.gage.code}}">NWIS Annual Peak Streamflow,</a>
+                                    <text ng-if="vm.formattedPeakDates.length === 0">NWIS Annual Peak Streamflow (Not Available),</text>
+                                    <a ng-if="vm.formattedDailyFlow.length > 0" href="https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites={{vm.gage.code}}&parameterCd=00060&statCd=00003&startDT=1900-01-01">NWIS Mean Daily Streamflow,</a>
+                                    <text ng-if="vm.formattedDailyFlow.length === 0">NWIS Mean Daily Streamflow (Not Available),</text>
+                                    <a ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0 " href="https://test.streamstats.usgs.gov/gagestatsservices/stations/{{vm.gage.code}}">USGS Flood Frequency Statistics,</a>
+                                    <text ng-if="vm.formattedFloodFreq.length === 0 && vm.formattedAltFloodFreq.length === 0 ">USGS Flood Frequency Statistics (Not Available),</text>
+                                    <a ng-if="vm.formattedInstFlow.length > 0" href="https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites={{vm.gage.code}}&parameterCd=00060&startDT=1900-01-01">NWIS Instantaneous Streamflow,</a>
+                                    <text ng-if="vm.formattedInstFlow.length === 0">NWIS Instantaneous Streamflow (Not Available),</text>
+                                    <a ng-if="vm.formattedP90to100.length > 0" href="https://waterservices.usgs.gov/nwis/stat/?format=rdb,1.0&indent=on&sites={{vm.gage.code}}&statReportType=daily&statTypeCd=all&parameterCd=00060">NWIS Mean Daily Percentile Streamflow,</a>
+                                    <text ng-if="vm.formattedP90to100.length === 0">NWIS Mean Daily Percentile Streamflow (Not Available),</text>
+                                    <a ng-if="vm.NWSforecast !== undefined" href="https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage={{vm.crossWalk[vm.gage.code]}}">NWS Forecasted Streamflow</a>
+                                    <text ng-if="vm.NWSforecast === undefined">NWS Forecasted Streamflow (Not Available)</text>
+                                </div>
                         </div>
                     </center>
                     <center>
@@ -292,24 +264,12 @@
                         </div>
                         <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.heatChartConfig">
                             <highchart id="chart2" config="vm.heatChartConfig"></highchart>
-                            <br> Data: 
-                            <a ng-if="vm.formattedDailyFlow.length > 0" href="https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites={{vm.gage.code}}&parameterCd=00060&statCd=00003&startDT=1900-01-01">NWIS Daily Flow Statistics</a>
-                            <!-- <div class="collapsible" ng-if="vm.formattedDailyFlow.length > 0" ng-click="vm.dailyDataSourcesCollapsed = !vm.dailyDataSourcesCollapsed"><i ng-class="!vm.dailyDataSourcesCollapsed ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i>&nbsp;&nbsp;Data Sources</div>
-                                            <div class="panel panel-default" ng-show="!vm.dailyDataSourcesCollapsed">
-                                                <div class="panel-heading">Daily Flow Plot Data Sources</div>
-                                                <div class="panel-body">
-                                                    <table class="table table-striped">
-                                                        <tbody>
-                                                            <tr>
-                                                                <th scope="row">Daily Flow</th>
-                                                                <td><a href="https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites={{vm.gage.code}}&parameterCd=00060&statCd=00003&startDT=1900-01-01">NWIS Daily Flow Statistics</a></td> 
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                                </div>
-                                            </div> -->
+                            <div class="data-sources">
+                                Data: 
+                                <a ng-if="vm.formattedDailyFlow.length > 0" href="https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites={{vm.gage.code}}&parameterCd=00060&statCd=00003&startDT=1900-01-01">NWIS Mean Daily Streamflow</a>
+                                <text ng-if="vm.formattedDailyFlow.length === 0">NWIS Mean Daily Streamflow (Not Available)</a>
                             </div>
+                        </div>
                     </center> 
                     <center>
                         <div ng-if="!vm.dischargeChartConfig" class="panel panel-default reportSpinner">
@@ -369,33 +329,15 @@
                             <!-- End Legend -->
 
                             <highchart id="chart3" config="vm.dischargeChartConfig"></highchart>
-                            <br> Data: 
-                            <a ng-if="vm.dischargeObj.length > 5" href="https://waterdata.usgs.gov/nwisweb/get_ratings?site_no={{vm.gage.code}}&file_type=exsa">NWIS Rating Curve</a>,
-                            <a ng-if="vm.error === false" href="https://waterdata.usgs.gov/nwis/measurements?site_no={{vm.gage.code}}&agency_cd=USGS&format=rdb_expanded">NWIS Measured</a>,
-                            <a ng-if="vm.formattedDischargePeakDates.length > 0" href="https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no={{vm.gage.code}}">NWIS Peak Discharge</a>
-                            <!-- <div class="collapsible" ng-click="vm.stageDischargeDataSourcesCollapsed = !vm.stageDischargeDataSourcesCollapsed"><i ng-class="!vm.stageDischargeDataSourcesCollapsed ? 'fa fa-chevron-down': 'fa fa-chevron-right'"></i>&nbsp;&nbsp;Data Sources</div>
-                                            <div class="panel panel-default" ng-show="!vm.stageDischargeDataSourcesCollapsed">
-                                                <div class="panel-heading">Stage vs. Discharge Plot Data Sources</div>
-                                                <div class="panel-body">
-                                                    <table class="table table-striped">
-                                                        <tbody>
-                                                            <tr ng-if="vm.dischargeObj.length > 5">
-                                                                <th scope="row">USGS Rating Curve</th>
-                                                                <td><a href="https://waterdata.usgs.gov/nwisweb/get_ratings?site_no={{vm.gage.code}}&file_type=exsa">NWIS Rating Curve</a></td>
-                                                            </tr>
-                                                            <tr ng-if="vm.error === false">
-                                                                <th scope="row">USGS Measured</th>
-                                                                <td><a href="https://waterdata.usgs.gov/nwis/measurements?site_no={{vm.gage.code}}&agency_cd=USGS&format=rdb_expanded">NWIS Measurements</a></td> 
-                                                            </tr>
-                                                            <tr ng-if="vm..formattedDischargePeakDates.length > 0">
-                                                                <th scope="row">Peak Discharge</th>
-                                                                <td><a href="https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no={{vm.gage.code}}">NWIS Measurements</a></td> 
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                                </div>
-                                            </div> -->
+                            <div class="data-sources">
+                                Data: 
+                                <a ng-if="vm.dischargeObj.length > 5" href="https://waterdata.usgs.gov/nwisweb/get_ratings?site_no={{vm.gage.code}}&file_type=exsa">NWIS Rating Curve,</a>
+                                <text ng-if="5 > vm.dischargeObj.length">NWIS Rating Curve (Not Available),</text>
+                                <a ng-if="vm.error === false" href="https://waterdata.usgs.gov/nwis/measurements?site_no={{vm.gage.code}}&agency_cd=USGS&format=rdb_expanded">USGS Measured River Stage,</a>
+                                <text ng-if="vm.error === true">USGS Measured River Stage (Not Available),</text>
+                                <a ng-if="vm.formattedDischargePeakDates.length > 0" href="https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no={{vm.gage.code}}">NWIS Annual Peak Streamflow</a>
+                                <text ng-if="vm.formattedDischargePeakDates.length === 0">NWIS Annual Peak Streamflow (Not Available)</text>
+                            </div>
                         </div>
 
                         </center> 
