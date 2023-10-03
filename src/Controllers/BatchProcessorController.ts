@@ -1242,7 +1242,7 @@ module StreamStats.Controllers {
 
             response.data.forEach((item) => {
               let baseURL =
-                "https://s3.amazonaws.com/test.streamstats.usgs.gov/streamgrids/";
+                "https://s3.amazonaws.com/dev.streamstats.usgs.gov/streamgrids/";
               if (window.location.host === "streamstats.usgs.gov") {
                 baseURL =
                   "https://s3.amazonaws.com/streamstats.usgs.gov/streamgrids/";
