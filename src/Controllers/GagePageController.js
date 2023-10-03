@@ -3068,6 +3068,14 @@ var StreamStats;
                     floodSeries.hide();
                 }
             };
+            GagePageController.prototype.containsNegatives = function () {
+                if (this.dailyValuesOnly.some(function (v) { return v <= 0; })) {
+                    return true;
+                }
+                if (this.dailyValuesOnly.some(function (v) { return v > 0; })) {
+                    return false;
+                }
+            };
             GagePageController.prototype.toggleLogLinear = function () {
                 var chart = $('#chart1').highcharts();
                 if (this.logScale) {
