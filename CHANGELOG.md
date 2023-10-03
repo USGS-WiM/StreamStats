@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - USGS logo now includes "science for a changing world"
 - Disable BP button on test
 - Prediction Interval descriptions and capitalization
+- Streamgrid url to hit dev S3 bucket
 
 ### Deprecated
 
