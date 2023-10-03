@@ -3438,6 +3438,16 @@ public createDailyRasterPlot(): void {
             }
         }
         
+        //checks if there are any negative values
+        public containsNegatives() {
+            if (this.dailyValuesOnly.some(v => v <= 0)) {
+                return true
+            }
+            if (this.dailyValuesOnly.some(v => v > 0)) {
+                return false
+            }
+        }
+        
         //checkbox for change linear to log scale
         public logScale = false; 
         public toggleLogLinear () {
