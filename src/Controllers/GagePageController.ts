@@ -2244,7 +2244,7 @@ module StreamStats.Controllers {
                 },
                 legend: {
                     useHTML: true,
-                    symbolPadding: null,
+                    symbolPadding: 10,
                     symbolWidth: null,
                     symbolHeight: null,
                     squareSymbol: null,
