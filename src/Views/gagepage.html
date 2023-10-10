@@ -243,17 +243,17 @@
                                 <select id="gageFloodStatsSelect" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0 " style="width:31%; text-align-last:center; margin-top: 5px;" name="gageFloodStatsSelect" ng-model="vm.selectedFloodFreqStats" ng-options="floodFreqStat.name for floodFreqStat in vm.allFloodFreqStats" ng-change="vm.chooseFloodStats()" ng-disabled="vm.showFloodStats == false"></select>
                                 <div class="data-sources">
                                     Data: 
-                                    <a ng-if="vm.formattedPeakDates.length > 0" href="https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no={{vm.gage.code}}">NWIS Annual Peak Streamflow,</a>
+                                    <a ng-if="vm.formattedPeakDates.length > 0" href="{{vm.peakFlowURL}}">NWIS Annual Peak Streamflow,</a>
                                     <text ng-if="vm.formattedPeakDates.length === 0">NWIS Annual Peak Streamflow (Not Available),</text>
-                                    <a ng-if="vm.formattedDailyFlow.length > 0" href="https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites={{vm.gage.code}}&parameterCd=00060&statCd=00003&startDT=1900-01-01">NWIS Mean Daily Streamflow,</a>
+                                    <a ng-if="vm.formattedDailyFlow.length > 0" href="{{vm.dailyFlowURL}}">NWIS Mean Daily Streamflow,</a>
                                     <text ng-if="vm.formattedDailyFlow.length === 0">NWIS Mean Daily Streamflow (Not Available),</text>
-                                    <a ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0 " href="https://test.streamstats.usgs.gov/gagestatsservices/stations/{{vm.gage.code}}">USGS Flood Frequency Statistics,</a>
+                                    <a ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0 " href="{{vm.floodStatsURL}}">USGS Flood Frequency Statistics,</a>
                                     <text ng-if="vm.formattedFloodFreq.length === 0 && vm.formattedAltFloodFreq.length === 0 ">USGS Flood Frequency Statistics (Not Available),</text>
-                                    <a ng-if="vm.formattedInstFlow.length > 0" href="https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites={{vm.gage.code}}&parameterCd=00060&startDT=1900-01-01">NWIS Instantaneous Streamflow,</a>
+                                    <a ng-if="vm.formattedInstFlow.length > 0" href="{{vm.instFlowURL}}">NWIS Instantaneous Streamflow,</a>
                                     <text ng-if="vm.formattedInstFlow.length === 0">NWIS Instantaneous Streamflow (Not Available),</text>
-                                    <a ng-if="vm.formattedP90to100.length > 0" href="https://waterservices.usgs.gov/nwis/stat/?format=rdb,1.0&indent=on&sites={{vm.gage.code}}&statReportType=daily&statTypeCd=all&parameterCd=00060">NWIS Mean Daily Percentile Streamflow,</a>
+                                    <a ng-if="vm.formattedP90to100.length > 0" href="{{vm.percentileURL}}">NWIS Mean Daily Percentile Streamflow,</a>
                                     <text ng-if="vm.formattedP90to100.length === 0">NWIS Mean Daily Percentile Streamflow (Not Available),</text>
-                                    <a ng-if="vm.NWSforecast !== undefined" href="https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage={{vm.crossWalk[vm.gage.code]}}">NWS Forecasted Streamflow</a>
+                                    <a ng-if="vm.NWSforecast !== undefined" href="{{vm.forecastURL}}">NWS Forecasted Streamflow</a>
                                     <text ng-if="vm.NWSforecast === undefined">NWS Forecasted Streamflow (Not Available)</text>
                                 </div>
                         </div>
@@ -266,7 +266,7 @@
                             <highchart id="chart2" config="vm.heatChartConfig"></highchart>
                             <div class="data-sources">
                                 Data: 
-                                <a ng-if="vm.formattedDailyFlow.length > 0" href="https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites={{vm.gage.code}}&parameterCd=00060&statCd=00003&startDT=1900-01-01">NWIS Mean Daily Streamflow</a>
+                                <a ng-if="vm.formattedDailyFlow.length > 0" href="{{vm.dailyFlowURL}}">NWIS Mean Daily Streamflow</a>
                                 <text ng-if="vm.formattedDailyFlow.length === 0">NWIS Mean Daily Streamflow (Not Available)</a>
                             </div>
                         </div>
@@ -331,11 +331,11 @@
                             <highchart id="chart3" config="vm.dischargeChartConfig"></highchart>
                             <div class="data-sources">
                                 Data: 
-                                <a ng-if="vm.dischargeObj.length > 5" href="https://waterdata.usgs.gov/nwisweb/get_ratings?site_no={{vm.gage.code}}&file_type=exsa">NWIS Rating Curve,</a>
+                                <a ng-if="vm.dischargeObj.length > 5" href="{{vm.ratingURL}}">NWIS Rating Curve,</a>
                                 <text ng-if="5 > vm.dischargeObj.length">NWIS Rating Curve (Not Available),</text>
-                                <a ng-if="vm.error === false" href="https://waterdata.usgs.gov/nwis/measurements?site_no={{vm.gage.code}}&agency_cd=USGS&format=rdb_expanded">USGS Measured River Stage,</a>
+                                <a ng-if="vm.error === false" href="{{vm.measuredURL}}">USGS Measured River Stage,</a>
                                 <text ng-if="vm.error === true">USGS Measured River Stage (Not Available),</text>
-                                <a ng-if="vm.formattedDischargePeakDates.length > 0" href="https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no={{vm.gage.code}}">NWIS Annual Peak Streamflow</a>
+                                <a ng-if="vm.formattedDischargePeakDates.length > 0" href="{{vm.peakFlowURL}}">NWIS Annual Peak Streamflow</a>
                                 <text ng-if="vm.formattedDischargePeakDates.length === 0">NWIS Annual Peak Streamflow (Not Available)</text>
                             </div>
                         </div>
