@@ -130,6 +130,7 @@ var StreamStats;
                 _this_1.formattedWeightedSevenDayStats = [];
                 _this_1.formattedWeightedThirtyDayStats = [];
                 _this_1.allFloodFreqStats = [];
+                _this_1.allYears = [];
                 _this_1.formattedPeakDates = [];
                 _this_1.formattedPeakDatesOnYear = [];
                 _this_1.formattedEstPeakDatesOnYear = [];
@@ -139,9 +140,9 @@ var StreamStats;
                 _this_1.dailyDatesOnly = [];
                 _this_1.startAndEnd = [];
                 _this_1.formattedDailyHeat = [];
+                _this_1.dailyValuesOnly = [];
                 _this_1.formattedDailyPlusAvg = [];
                 _this_1.formattedDischargePeakDates = [];
-                _this_1.dailyValuesOnly = [];
                 _this_1.USGSMeasuredAgeQualityData = 'age';
                 _this_1.plotlines = true;
                 _this_1.showFloodStats = true;
@@ -155,6 +156,7 @@ var StreamStats;
                 _this_1.selectedStatisticGroups = [];
                 _this_1.selectedCitations = [];
                 _this_1.selectedFloodFreqStats = [];
+                _this_1.selectedYear = [];
                 _this_1.selectedStatGroupsChar = [];
                 _this_1.selectedCitationsChar = [];
                 _this_1.statCitationList = [];
@@ -1058,6 +1060,10 @@ var StreamStats;
                     }
                 }
                 this.startAndEnd.push(startDate, endDate);
+                var defaultYearPlusOne = this.defaultYear + 1;
+                while (defaultYearPlusOne >= this.startAndEnd[0].getUTCFullYear()) {
+                    this.allYears.push(defaultYearPlusOne -= 1);
+                }
                 var endYear = endDate.getUTCFullYear();
                 var endOfFinalYear = new Date(12 + '/' + 31 + '/' + endYear);
                 if (this.oneDayStats) {
@@ -1802,6 +1808,7 @@ var StreamStats;
                         };
                     });
                     this.selectedFloodFreqStats = this.allFloodFreqStats[0];
+                    this.selectedYear = this.allYears[0];
                     this.createAnnualFlowPlot();
                     this.createDailyRasterPlot();
                     this.createDischargePlot();
@@ -2602,6 +2609,9 @@ var StreamStats;
                     });
                     floodSeries.show();
                 }
+            };
+            GagePageController.prototype.choosePeakYear = function () {
+                var chart = $('#chart1').highcharts();
             };
             GagePageController.prototype.stageDischargeAgeColor = function (date) {
                 var days = (new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24);

@@ -193,6 +193,7 @@ module StreamStats.Controllers {
         public annualFlowPlot: any;
         public peakValues: any;
         public selectedFloodFreqStats;
+        public selectedYear;
         public dischargeObj = undefined; // Stage vs. Discharge Plot
         public measuredObj = undefined; // Stage vs. Discharge Plot
         public floodFreq = undefined;
@@ -236,6 +237,7 @@ module StreamStats.Controllers {
         public formattedWeightedSevenDayStats = [];
         public formattedWeightedThirtyDayStats = [];
         public allFloodFreqStats = [];
+        public allYears = [];
         public formattedPeakDates = [];
         public formattedPeakDatesOnYear = [];
         public formattedEstPeakDatesOnYear = [];
@@ -247,9 +249,10 @@ module StreamStats.Controllers {
         public extremes;
         public defaultYear;
         public formattedDailyHeat = [];
-        public formattedDailyPlusAvg = [];
-        public formattedDischargePeakDates = []; // Stage vs. Discharge Plot
         public dailyValuesOnly = [];
+        public formattedDailyPlusAvg = [];
+        // Stage vs. Discharge Plot
+        public formattedDischargePeakDates = []; 
         public USGSMeasuredAgeQualityData = 'age';
         public sectionCollapsed: Array<any>;
         public peakDataSourcesCollapsed; // for Annual Peak plot data sources collapsible 
@@ -320,6 +323,7 @@ module StreamStats.Controllers {
             this.selectedStatisticGroups = [];
             this.selectedCitations = [];
             this.selectedFloodFreqStats = [];
+            this.selectedYear = [];
             this.selectedStatGroupsChar = [];
             this.selectedCitationsChar = [];
             this.statCitationList = [];
@@ -1386,6 +1390,10 @@ module StreamStats.Controllers {
                     }
                 }
             this.startAndEnd.push(startDate, endDate);
+            let defaultYearPlusOne = this.defaultYear + 1; //adding a year to the current year for looping purposes below (want to include the current year too)
+            while (defaultYearPlusOne >= this.startAndEnd[0].getUTCFullYear()) {
+                this.allYears.push(defaultYearPlusOne -= 1)
+            }
             let endYear = endDate.getUTCFullYear();
             let endOfFinalYear = new Date(12 + '/' + 31 + '/' + endYear)            
             if (this.oneDayStats) {
@@ -2162,6 +2170,7 @@ module StreamStats.Controllers {
                 }
             });
             this.selectedFloodFreqStats = this.allFloodFreqStats[0];
+            this.selectedYear = this.allYears[0];
             this.createAnnualFlowPlot();
             this.createDailyRasterPlot();
             this.createDischargePlot();
@@ -2982,6 +2991,12 @@ public chooseFloodStats() {
     }
 }
 
+//dropdown for choosing year to plot peaks
+public choosePeakYear() {
+    let chart = $('#chart1').highcharts();
+
+}
+
 public stageDischargeAgeColor(date): string {
     let days = (new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24)
         if (days <= 31) {
@@ -3036,7 +3051,6 @@ public createDischargePlot(): void {
             this.updateChart();
         },
     };
-
     let measuredDataMax = Math.max.apply(Math, this.measuredObj
         .filter(obj => typeof obj.y === 'number' && !isNaN(obj.y))
         .map(obj => obj.y)
