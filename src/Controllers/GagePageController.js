@@ -2617,6 +2617,7 @@ var StreamStats;
                 var max = (new Date(12 + '/' + 31 + '/' + this.selectedYear)).getTime();
                 console.log(this.selectedYear);
                 var formattedSelectedPeaks = [];
+                var formattedEstSelectedPeaks = [];
                 if (this.selectedYear === this.selectedYear) {
                     if (this.peakDates) {
                         this.peakDates.forEach(function (peakOnYear) {
@@ -2628,9 +2629,54 @@ var StreamStats;
                             }
                         });
                     }
+                    if (this.estPeakDates) {
+                        this.estPeakDates.forEach(function (estPeakOnYear) {
+                            var adjustedDate = new Date(estPeakOnYear.peak_dt);
+                            adjustedDate.setUTCFullYear(_this_1.selectedYear);
+                            var selectedDate = new Date(adjustedDate.toUTCString());
+                            formattedEstSelectedPeaks.push({ x: selectedDate, y: estPeakOnYear.peak_va, realDate: new Date(estPeakOnYear.peak_dt) });
+                        });
+                    }
                     chart.series[0].update({ data: formattedSelectedPeaks });
+                    chart.series[1].update({ data: formattedEstSelectedPeaks });
                     chart.yAxis[0].setExtremes();
                     chart.xAxis[0].setExtremes(min, max);
+                    chart.series[0].update({ tooltip: {
+                            headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on One Year: ' + this.selectedYear,
+                            pointFormatter: function () {
+                                if (this.formattedPeakDatesOnYear !== null) {
+                                    var waterYear = this.realDate.getUTCFullYear();
+                                    if (this.realDate.getUTCMonth() > 8) {
+                                        waterYear += 1;
+                                    }
+                                    ;
+                                    var UTCday = this.realDate.getUTCDate();
+                                    var year = this.realDate.getUTCFullYear();
+                                    var month = this.realDate.getUTCMonth();
+                                    month += 1;
+                                    var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                                    return '<br>Date: <b>' + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear;
+                                }
+                            }
+                        } });
+                    chart.series[1].update({ tooltip: {
+                            headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on One Year: ' + this.selectedYear,
+                            pointFormatter: function () {
+                                if (this.formattedEstPeakDatesOnYear !== null) {
+                                    var waterYear = this.realDate.getUTCFullYear();
+                                    if (this.realDate.getUTCMonth() > 8) {
+                                        waterYear += 1;
+                                    }
+                                    ;
+                                    var UTCday = this.realDate.getUTCDate();
+                                    var year = this.realDate.getUTCFullYear();
+                                    var month = this.realDate.getUTCMonth();
+                                    month += 1;
+                                    var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                                    return '<br>Date (estimated): <b>' + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear;
+                                }
+                            }
+                        } });
                 }
             };
             GagePageController.prototype.stageDischargeAgeColor = function (date) {

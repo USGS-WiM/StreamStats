@@ -2997,7 +2997,8 @@ public choosePeakYear() {
     let min = (new Date(1 +'/' + 1 + '/' + this.selectedYear)).getTime()
     let max = (new Date(12 +'/' + 31 + '/' + this.selectedYear)).getTime()
     console.log(this.selectedYear)
-    let formattedSelectedPeaks = [];
+    let formattedSelectedPeaks = []; //new data array for peak streamflow plotted on the year selected
+    let formattedEstSelectedPeaks = []; //new data array for Estimated peak streamflow plotted on the year selected
     if (this.selectedYear === this.selectedYear) {
         if (this.peakDates) {
             this.peakDates.forEach(peakOnYear => {
@@ -3009,9 +3010,52 @@ public choosePeakYear() {
                     }
             });
         }
+        if (this.estPeakDates) {
+            this.estPeakDates.forEach(estPeakOnYear => {
+                let adjustedDate = new Date(estPeakOnYear.peak_dt);
+                adjustedDate.setUTCFullYear(this.selectedYear);
+                let selectedDate = new Date(adjustedDate.toUTCString())
+                formattedEstSelectedPeaks.push({x: selectedDate, y: estPeakOnYear.peak_va, realDate: new Date(estPeakOnYear.peak_dt)})
+            });
+        }
         chart.series[0].update({data: formattedSelectedPeaks});
+        chart.series[1].update({data: formattedEstSelectedPeaks});
         chart.yAxis[0].setExtremes();
         chart.xAxis[0].setExtremes(min, max)
+        chart.series[0].update( {tooltip: {
+            headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on One Year: ' + this.selectedYear,
+            pointFormatter: function(){
+                if (this.formattedPeakDatesOnYear !== null){
+                    let waterYear = this.realDate.getUTCFullYear();
+                    if (this.realDate.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                        waterYear += 1; // adding a year to dates that fall into the next water year
+                    };
+                    let UTCday = this.realDate.getUTCDate();
+                    let year = this.realDate.getUTCFullYear();
+                    let month = this.realDate.getUTCMonth();
+                        month += 1; // adding a month to the UTC months (which are zero-indexed)
+                    let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                    return '<br>Date: <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                }
+            }
+        }})
+        chart.series[1].update({tooltip: {
+            headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on One Year: ' + this.selectedYear,
+            pointFormatter: function(){
+                if (this.formattedEstPeakDatesOnYear !== null){
+                    let waterYear = this.realDate.getUTCFullYear();
+                    if (this.realDate.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                        waterYear += 1; // adding a year to dates that fall into the next water year
+                    };
+                    let UTCday = this.realDate.getUTCDate();
+                    let year = this.realDate.getUTCFullYear();
+                    let month = this.realDate.getUTCMonth();
+                        month += 1; // adding a month to the UTC months (which are zero-indexed)
+                    let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                    return '<br>Date (estimated): <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                }
+            }
+        }})
     }
 }
 
