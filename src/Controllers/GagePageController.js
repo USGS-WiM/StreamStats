@@ -1935,7 +1935,7 @@ var StreamStats;
                             name: 'Annual Peak Streamflow',
                             showInNavigator: false,
                             tooltip: {
-                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Latest Year',
+                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on One Year: ' + this.selectedYear,
                                 pointFormatter: function () {
                                     if (this.formattedPeakDatesOnYear !== null) {
                                         var waterYear = this.realDate.getUTCFullYear();
@@ -1971,7 +1971,7 @@ var StreamStats;
                             name: 'Annual Peak Streamflow (Date Estimated)',
                             showInNavigator: false,
                             tooltip: {
-                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Latest Year',
+                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on One Year: ' + this.selectedYear,
                                 pointFormatter: function () {
                                     if (this.formattedEstPeakDatesOnYear !== null) {
                                         var waterYear = this.realDate.getUTCFullYear();
@@ -2611,7 +2611,27 @@ var StreamStats;
                 }
             };
             GagePageController.prototype.choosePeakYear = function () {
+                var _this_1 = this;
                 var chart = $('#chart1').highcharts();
+                var min = (new Date(1 + '/' + 1 + '/' + this.selectedYear)).getTime();
+                var max = (new Date(12 + '/' + 31 + '/' + this.selectedYear)).getTime();
+                console.log(this.selectedYear);
+                var formattedSelectedPeaks = [];
+                if (this.selectedYear === this.selectedYear) {
+                    if (this.peakDates) {
+                        this.peakDates.forEach(function (peakOnYear) {
+                            var adjustedDate = new Date(peakOnYear.peak_dt);
+                            adjustedDate.setUTCFullYear(_this_1.selectedYear);
+                            var selectedDate = new Date(adjustedDate.toUTCString());
+                            if (!isNaN(peakOnYear.peak_va)) {
+                                formattedSelectedPeaks.push({ x: selectedDate, y: peakOnYear.peak_va, realDate: new Date(peakOnYear.peak_dt) });
+                            }
+                        });
+                    }
+                    chart.series[0].update({ data: formattedSelectedPeaks });
+                    chart.yAxis[0].setExtremes();
+                    chart.xAxis[0].setExtremes(min, max);
+                }
             };
             GagePageController.prototype.stageDischargeAgeColor = function (date) {
                 var days = (new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24);
@@ -3113,7 +3133,7 @@ var StreamStats;
                         chart.series[1].update({ data: _this_1.formattedEstPeakDatesOnYear });
                         chart.xAxis[0].setExtremes(oneYearMin, max);
                         chart.series[0].update({ tooltip: {
-                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Latest Year',
+                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on One Year: ' + _this_1.selectedYear,
                                 pointFormatter: function () {
                                     if (this.formattedPeakDatesOnYear !== null) {
                                         var waterYear = this.realDate.getUTCFullYear();
@@ -3131,7 +3151,7 @@ var StreamStats;
                                 }
                             } });
                         chart.series[1].update({ tooltip: {
-                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Latest Year',
+                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on One Year: ' + _this_1.selectedYear,
                                 pointFormatter: function () {
                                     if (this.formattedEstPeakDatesOnYear !== null) {
                                         var waterYear = this.realDate.getUTCFullYear();
