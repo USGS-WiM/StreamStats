@@ -160,6 +160,9 @@ var StreamStats;
                 _this_1.statCitationList = [];
                 _this_1.charCitationList = [];
                 _this_1.showPreferred = false;
+                _this_1.peakDataSourcesCollapsed = true;
+                _this_1.dailyDataSourcesCollapsed = true;
+                _this_1.stageDischargeDataSourcesCollapsed = true;
                 _this_1.print = function () {
                     gtag('event', 'Download', { 'Category': 'GagePage', "Type": 'Print' });
                     window.print();
@@ -451,6 +454,7 @@ var StreamStats;
             GagePageController.prototype.getPeakInfo = function () {
                 var _this_1 = this;
                 var url = 'https://nwis.waterdata.usgs.gov/usa/nwis/peak/?format=rdb&site_no=' + this.gage.code;
+                this.peakFlowURL = url;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var peakValues = [];
@@ -493,6 +497,7 @@ var StreamStats;
             GagePageController.prototype.getFloodFreq = function () {
                 var _this_1 = this;
                 var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.gage.code;
+                this.floodStatsURL = url;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var data = response.data;
@@ -594,6 +599,7 @@ var StreamStats;
                     .toISOString()
                     .split("T")[0];
                 var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01&endDT=' + twoWeeksAgo;
+                this.dailyFlowURL = url;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var data = response.data.value.timeSeries;
@@ -623,6 +629,7 @@ var StreamStats;
                     .toISOString()
                     .split("T")[0];
                 var url = 'https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&startDT=' + twoWeeksAgo;
+                this.instFlowURL = url;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var data = response.data.value.timeSeries;
@@ -647,6 +654,7 @@ var StreamStats;
             GagePageController.prototype.getRatingCurve = function () {
                 var _this_1 = this;
                 var url = 'https://waterdata.usgs.gov/nwisweb/get_ratings?site_no=' + this.gage.code + '&file_type=exsa';
+                this.ratingURL = url;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.dischargeObj = [];
                 this.Execute(request).then(function (response) {
@@ -694,6 +702,7 @@ var StreamStats;
                     var NWScode = self.crossWalk[nwisCode];
                     if (NWScode !== undefined) {
                         var url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + NWScode;
+                        self.forecastURL = url;
                         var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
                         self.Execute(request).then(function (response) {
                             var xmlDocument = new DOMParser().parseFromString(response.data, "text/xml");
@@ -750,6 +759,7 @@ var StreamStats;
             GagePageController.prototype.getShadedDailyStats = function () {
                 var _this_1 = this;
                 var url = 'https://waterservices.usgs.gov/nwis/stat/?format=rdb,1.0&indent=on&sites=' + this.gage.code + '&statReportType=daily&statTypeCd=all&parameterCd=00060';
+                this.percentileURL = url;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var meanPercentileStats = [];
@@ -787,6 +797,7 @@ var StreamStats;
             GagePageController.prototype.getUSGSMeasured = function () {
                 var _this_1 = this;
                 var url = 'https://waterdata.usgs.gov/nwis/measurements?site_no=' + this.gage.code + '&agency_cd=USGS&format=rdb_expanded';
+                this.measuredURL = url;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.measuredObj = [];
                 this.Execute(request).then(function (response) {
@@ -1856,7 +1867,7 @@ var StreamStats;
                         }
                     },
                     title: {
-                        text: 'Annual Peak Streamflow',
+                        text: 'Annual Peak Streamflow: ' + this.gage.code,
                         align: 'center'
                     },
                     time: {
@@ -2135,10 +2146,10 @@ var StreamStats;
                             },
                             showInLegend: false
                         }, {
-                            name: 'Daily Mean Streamflow',
+                            name: 'Mean Daily Streamflow',
                             showInNavigator: true,
                             tooltip: {
-                                headerFormat: '<b>Daily Mean Streamflow</b>',
+                                headerFormat: '<b>Mean Daily Streamflow</b>',
                                 pointFormatter: function () {
                                     if (this.formattedDailyFlow !== null) {
                                         var UTCday = this.x.getUTCDate();
@@ -2675,7 +2686,7 @@ var StreamStats;
                         }
                     },
                     title: {
-                        text: 'Stage vs. Discharge',
+                        text: 'Stage vs. Discharge: ' + this.gage.code,
                         align: 'center'
                     },
                     subtitle: {
@@ -2957,7 +2968,7 @@ var StreamStats;
                         }
                     },
                     title: {
-                        text: 'Daily Streamflow',
+                        text: 'Daily Streamflow: ' + this.gage.code,
                         align: 'center'
                     },
                     subtitle: {
