@@ -416,7 +416,7 @@ configuration.regions = [
 
                 }
             }, 
-		"Applications": ["StormDrain"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/mystic-river-basin-streamstats"
+		"Applications": ["StormDrain"], "regionEnabled": true, "ScenariosAvailable": false, "URL": "https://www.usgs.gov/streamstats/mystic-river-basin-streamstats"
     },
     { "RegionID": "MS", "Name": "Mississippi", "Bounds": [[30.194935, -91.643682], [35.005041, -88.090468]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/mississippi-streamstats" },
     {
