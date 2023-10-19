@@ -3,8 +3,8 @@ configuration.version = "4.17.0";
 configuration.environment = 'development';
 configuration.showWarningModal = false;
 configuration.warningModalMessage = "Due to heavy demand, StreamStats is currently experiencing system interruptions. If you receive errors, please try back again later.<br><br>Thank you for your patience."
-configuration.showBPWarning = false;
-configuration.warningBPMessage = "Due to heavy demand, StreamStats is currently experiencing system interruptions. If you receive errors, please try back again later.<br><br>Thank you for your patience."
+configuration.showBPWarning = true;
+configuration.warningBPMessage = "Within the next few months, StreamStats will end support for the current Batch Processor (<a href='https://streamstatsags.cr.usgs.gov/ss_bp/' target='_blank'>https://streamstatsags.cr.usgs.gov/ss_bp/</a>) and replace it with the Batch Processor in this window (<a href='https://streamstats.usgs.gov/ss?BP=submitBatch' target='_blank'>https://streamstats.usgs.gov/ss?BP=submitBatch</a>). Complete the form below to submit a batch to the preview version of the new Batch Processor. Please note that the preview version may have errors or delays. Please email any issues or feedback to <b>streamstats@usgs.gov</b>."
 configuration.manageBPQueue = false;
 if (window.location.host === 'test.streamstats.usgs.gov') {
     configuration.showBPButton = false;
@@ -395,7 +395,7 @@ configuration.regions = [
 
                 }
             },
-        "Applications": ["StormDrain"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/missouri-st-louis-streamstats"
+        "Applications": ["StormDrain"], "regionEnabled": true, "ScenariosAvailable": false, "URL": "https://www.usgs.gov/streamstats/missouri-st-louis-streamstats"
     },
     { "RegionID": "MP", "Name": "Northern Mariana Islands", "Bounds": [[14.105276, 144.89859], [20.556385, 145.870788]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": null },
     { 
@@ -416,7 +416,7 @@ configuration.regions = [
 
                 }
             }, 
-		"Applications": ["StormDrain"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/mystic-river-basin-streamstats"
+		"Applications": ["StormDrain"], "regionEnabled": true, "ScenariosAvailable": false, "URL": "https://www.usgs.gov/streamstats/mystic-river-basin-streamstats"
     },
     { "RegionID": "MS", "Name": "Mississippi", "Bounds": [[30.194935, -91.643682], [35.005041, -88.090468]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/mississippi-streamstats" },
     {

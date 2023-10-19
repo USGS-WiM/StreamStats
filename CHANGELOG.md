@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - Batch Processor
+- Batch Processor modal includes "Preview Version" and a warning message
 
 ### Changed
 
