@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [v4.18.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.18.0) - 2023-10-20
+
+### Added
+
 - Batch Processor
 - Batch Processor modal includes "Preview Version" and a warning message
 
@@ -22,16 +36,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Set MRB enableScenarios to false
 - Set MO_STL enableScenarios to false
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - Updated status map in About modal
 - Bugs with BP url parameters
-
-### Security
 
 ## [v4.17.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.17.0) - 2023-08-30
 
