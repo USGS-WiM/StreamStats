@@ -1040,13 +1040,11 @@ module StreamStats.Controllers {
       } else {
         // manage queue tab
         if (this.selectedQueue == "Production Queue") { // Production Queue
-          url = configuration.baseurls["BatchProcessorServices"];
-          this.queueURL = configuration.baseurls["BatchProcessorServices"];
-        } else { // development queue
-          url =
-            configuration.baseurls["BatchProcessorServices"] +
-            configuration.queryparams["SSBatchProcessorGetBatch"];
-            this.queueURL = configuration.baseurls["BatchProcessorServices"];
+          url = "https://streamstats.usgs.gov/batchprocessor" + configuration.queryparams["SSBatchProcessorGetBatch"];
+          this.queueURL = "https://streamstats.usgs.gov/batchprocessor";
+        } else { // Development Queue
+          url = "https://dev.streamstats.usgs.gov/batchprocessor" + configuration.queryparams["SSBatchProcessorGetBatch"];
+          this.queueURL = "https://dev.streamstats.usgs.gov/batchprocessor";
         }
       }
       var request: WiM.Services.Helpers.RequestInfo =
