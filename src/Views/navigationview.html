@@ -1,7 +1,7 @@
 ﻿    <div class="container">
         <button class="mobile-nav-toggle" ui-toggle="uiSidebarLeft"></button>
         <a href="http://usgs.gov" class="nav-branding">
-            <img src="https://wim.usgs.gov/website-assets/usgs-logo.png" />
+            <img style="height:47px" src="./images/usgs-logo.png" />
         </a>
         <span class="nav-title" ng-show="vm.environment == 'production'">
             StreamStats
@@ -10,6 +10,7 @@
             StreamStats [Development Version: Not for public consumption]
         </span>
         <div class="nav-links">
+            <a ng-if="vm.showBatchButton" ng-click="vm.openBatchProcessor()"><span><i class="ion-cloud"></i><span class="nav-link-text">Batch Processor</span></span></a>
             <a ng-click="vm.openReport()"><span><i class="ion-ios-book"></i><span class="nav-link-text">Report</span></span></a>
             <a ng-click="vm.openAbout()"><span><i class="ion-information-circled"></i><span class="nav-link-text">About</span></span></a>
             <a ng-click="vm.openHelp()"><span><i class="ion-help"></i><span class="nav-link-text">Help</span></span></a>

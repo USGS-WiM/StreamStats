@@ -19,6 +19,28 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Security
 
+## [v4.18.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.18.0) - 2023-10-20
+
+### Added
+
+- Batch Processor
+- Batch Processor modal includes "Preview Version" and a warning message
+
+### Changed
+
+- Manage Queue tab now toggled by manageBPQueue boolean variable in appConfig
+- USGS logo now includes "science for a changing world"
+- Disable BP button on test
+- Prediction Interval descriptions and capitalization
+- Streamgrid url to hit dev S3 bucket
+- Set MRB enableScenarios to false
+- Set MO_STL enableScenarios to false
+
+### Fixed
+
+- Updated status map in About modal
+- Bugs with BP url parameters
+
 ## [v4.17.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.17.0) - 2023-08-30
 
 ### Added

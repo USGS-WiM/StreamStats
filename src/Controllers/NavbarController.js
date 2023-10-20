@@ -29,11 +29,41 @@ var StreamStats;
                 _this.environment = configuration.environment;
                 _this.AppVersion = configuration.version;
                 _this.cloud = configuration.cloud;
+                _this.showBatchButton = configuration.showBPButton;
+                _this.checkURLParams();
                 if (configuration.showWarningModal) {
                     _this.openWarningMessage();
                 }
                 return _this;
             }
+            NavbarController.prototype.checkURLParams = function () {
+                var queryString = window.location.search;
+                var urlParams = new URLSearchParams(queryString);
+                var BP = urlParams.get('BP');
+                if (BP) {
+                    if (BP == 'submitBatch') {
+                        this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "submitBatch" });
+                    }
+                    if (BP == 'batchStatus') {
+                        var email = urlParams.get('email');
+                        if (email) {
+                            this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "batchStatus", "urlParams": email });
+                        }
+                        else {
+                            this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "batchStatus" });
+                        }
+                    }
+                    if (BP == 'streamGrid') {
+                        this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "streamGrid" });
+                    }
+                    if (BP == 'manageQueue') {
+                        this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "manageQueue" });
+                    }
+                }
+            };
+            NavbarController.prototype.openBatchProcessor = function () {
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor);
+            };
             NavbarController.prototype.openReport = function () {
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_report);
             };

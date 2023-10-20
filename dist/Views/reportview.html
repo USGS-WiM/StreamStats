@@ -138,7 +138,7 @@
                                 </div>
 
                                 <h3>{{statisticsGroup.name}} Flow Report&nbsp;&nbsp;<span ng-bind="vm.GetRegressionRegionHeader(regressionRegion)"></span></h3>
-                                <span ng-show="regressionRegion.results[0].intervalBounds || regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0">PIl: Prediction Interval-Lower, PIu: Prediction Interval-Upper, ASEp: Average Standard Error of Prediction, SE: Standard Error (other -- see report)</span>
+                                <span ng-show="regressionRegion.results[0].intervalBounds || regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0">PIL: Lower 90% Prediction Interval, PIU: Upper 90% Prediction Interval, ASEp: Average Standard Error of Prediction, SE: Standard Error (other -- see report)</span>
                                 <table id="{{vm.camelize(statisticsGroup.name + regressionRegion.name + 'ScenarioFlowTable')}}" class="scenarioFlowTable table table-condensed">
                                     <thead class="flow-table">
                                         <tr>
@@ -146,8 +146,8 @@
                                             <th>Value</th>
                                             <th ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation">Unregulated Value</th>
                                             <th>Unit</th>
-                                            <th ng-if="regressionRegion.results[0].intervalBounds && regressionRegion.results[0].intervalBounds.lower">PIl</th>
-                                            <th ng-if="regressionRegion.results[0].intervalBounds && regressionRegion.results[0].intervalBounds.upper">PIu</th>
+                                            <th ng-if="regressionRegion.results[0].intervalBounds && regressionRegion.results[0].intervalBounds.lower">PIL</th>
+                                            <th ng-if="regressionRegion.results[0].intervalBounds && regressionRegion.results[0].intervalBounds.upper">PIU</th>
                                             <th ng-if="regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0" ng-repeat="error in regressionRegion.results[0].errors" ng-bind="error.code"></th>
                                             <th ng-if="regressionRegion.results[0].equivalentYears > 0">Equiv. Yrs.</th>
                                         </tr>
@@ -425,7 +425,7 @@
                                 <div ng-repeat="message in vm.nssService.equationWeightingDisclaimers track by $index">
                                     <div class="wim-alert-warning">{{message}}</div>
                                 </div>
-                                <span>PIl: Prediction Interval-Lower, PIu: Prediction Interval-Upper, ASEp: Average Standard Error of Prediction</span>
+                                <span>PIL: Lower 90% Prediction Interval, PIU: Upper 90% Prediction Interval, ASEp: Average Standard Error of Prediction</span>
                                 <div ng-repeat="rr in vm.nssService.equationWeightingResults">
                                     <h3>{{rr.RR}}</h3>
                                     <table id="channelWidthWeightingTable" class="scenarioFlowTable table table-condensed">
@@ -434,8 +434,8 @@
                                                 <th>Statistic</th>
                                                 <th>Value</th>
                                                 <th>Unit</th>
-                                                <th>PIl</th>
-                                                <th>PIu</th>
+                                                <th>PIL</th>
+                                                <th>PIU</th>
                                                 <th>SEP</th>
                                             </tr>
                                         </thead>
