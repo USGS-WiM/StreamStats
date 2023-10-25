@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- Batch Processor formatting for small screens
+
 ### Security
 
 ## [v4.18.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.18.0) - 2023-10-20
