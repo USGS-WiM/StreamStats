@@ -94,6 +94,8 @@ module StreamStats.Controllers {
     region: string;
     pointsRequested: number;
     pointsSuccessful: number;
+    pointsPartiallySuccessful: number;
+    pointsFailed: number;
     uploadFileName: string;
   }
 
@@ -113,6 +115,8 @@ module StreamStats.Controllers {
     public region: string;
     public pointsRequested: number;
     public pointsSuccessful: number;
+    public pointsPartiallySuccessful: number;
+    public pointsFailed: number;
     public uploadFileName: string;
   }
 
@@ -1082,6 +1086,8 @@ module StreamStats.Controllers {
                   region: batch.Region,
                   pointsRequested: batch.NumberPoints,
                   pointsSuccessful: batch.NumberPointsSuccessful,
+                  pointsPartiallySuccessful: batch.NumberPointsPartiallySuccessful,
+                  pointsFailed: batch.NumberPointsFailed,
                   uploadFileName: batch.GeometryFilename,
                 };
                 batchStatusMessages.push(status);
