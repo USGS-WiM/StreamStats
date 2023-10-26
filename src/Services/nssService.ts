@@ -826,8 +826,14 @@ module StreamStats.Services {
         public getFlowStatsList(rcode: string): ng.IPromise<any> {
             
             if (!rcode) return;
+
+            var headers = {
+                "Content-Type": "application/json",
+                "X-Is-StreamStats": true
+            };
+
             var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupParameterLookup'].format(rcode, "", "");
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
 
             // console.log(request)
             return this.Execute(request).then(
