@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Removed
 
+- Text about deleting a batch in the Batch Status tab
+
 ### Fixed
 
 - Batch Processor formatting for small screens
