@@ -661,6 +661,8 @@ var StreamStats;
                                 region: batch.Region,
                                 pointsRequested: batch.NumberPoints,
                                 pointsSuccessful: batch.NumberPointsSuccessful,
+                                pointsPartiallySuccessful: batch.NumberPointsPartiallySuccessful,
+                                pointsFailed: batch.NumberPointsFailed,
                                 uploadFileName: batch.GeometryFilename,
                             };
                             batchStatusMessages.push(status_2);
