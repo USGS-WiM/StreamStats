@@ -15,6 +15,7 @@
     <!-- Warning Message -->
     <div id="warningMessageContent" ng-if="!vm.showWarning">
         <div class="wim-warning" ng-bind-html="vm.convertUnsafe(vm.warningMessage)" style="overflow-x:auto"></div>
+
     </div>
 
     <!-- Start batch processor tabs -->
@@ -298,6 +299,8 @@
                                     <th style="text-align: center;"><small>State/ Region</small></th>
                                     <th style="text-align: center;"><small>Number Points Requested</small></th>
                                     <th style="text-align: center;"><small>Number Points Successful</small></th>
+                                    <th style="text-align: center;"><small>Number Points Partially Successful</small></th>
+                                    <th style="text-align: center;"><small>Number Points Failed</small></th>
                                     <!-- <th style="text-align: center;"><small>Delete?</small></th> -->
                                 </tr>
                             </thead>
@@ -314,6 +317,12 @@
                                     <td style="text-align: center;"><span>{{batch.pointsRequested}}</span></td>
                                     <td style="text-align: center;">
                                         <span ng-if="batch.pointsSuccessful != null">{{batch.pointsSuccessful}}</span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span ng-if="batch.pointsPartiallySuccessful != null">{{batch.pointsPartiallySuccessful}}</span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span ng-if="batch.pointsFailed != null">{{batch.pointsFailed}}</span>
                                     </td>
                                     <!-- <td style="text-align: center;">
                                         <i ng-if="batch.status!=2" ng-click="vm.trashBatch(batch.batchID, batch.deleteCode, batchStatusEmail)"
@@ -408,6 +417,8 @@
                                     <th style="text-align: center;"><small>State/ Region</small></th>
                                     <th style="text-align: center;"><small>Number Points Requested</small></th>
                                     <th style="text-align: center;"><small>Number Points Successful</small></th>
+                                    <th style="text-align: center;"><small>Number Points Partially Successful</small></th>
+                                    <th style="text-align: center;"><small>Number Points Failed</small></th>
                                     <th style="text-align: center;"><small>Pause / Unpause?</small></th>
                                     <th style="text-align: center;"><small>Delete?</small></th>
                                 </tr>
@@ -434,7 +445,14 @@
                                     <td style="text-align: center;"><span>{{batch.region}}</span></td>
                                     <td style="text-align: center;"><span>{{batch.pointsRequested}}</span></td>
                                     <td style="text-align: center;"><span
-                                            ng-if="batch.pointsSuccessful != null">{{batch.pointsSuccessful}}</span></td>
+                                        ng-if="batch.pointsSuccessful != null">{{batch.pointsSuccessful}}</span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span ng-if="batch.pointsPartiallySuccessful != null">{{batch.pointsPartiallySuccessful}}</span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span ng-if="batch.pointsFailed != null">{{batch.pointsFailed}}</span>
+                                    </td>
                                     <td style="text-align: center;">
                                         <i ng-if="batch.status==9" ng-click="vm.submitUnpauseBatch(batch.batchID)"
                                             class="fa fa-play-circle-o" style="cursor: pointer"></i>
