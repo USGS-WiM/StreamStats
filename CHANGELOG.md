@@ -15,13 +15,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Removed
 
+### Fixed
+
+### Security
+
+## [v4.18.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.18.1) - 2023-10-27
+
+### Added
+
+- header to available basin characteristics request in the Batch Processor
+
+### Removed
+
 - Text about deleting a batch in the Batch Status tab
+- Text about National basin characteristics
 
 ### Fixed
 
 - Batch Processor formatting for small screens
-
-### Security
 
 ## [v4.18.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.18.0) - 2023-10-20
 
