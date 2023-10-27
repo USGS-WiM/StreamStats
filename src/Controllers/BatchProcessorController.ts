@@ -94,6 +94,8 @@ module StreamStats.Controllers {
     region: string;
     pointsRequested: number;
     pointsSuccessful: number;
+    pointsPartiallySuccessful: number;
+    pointsFailed: number;
     uploadFileName: string;
   }
 
@@ -113,6 +115,8 @@ module StreamStats.Controllers {
     public region: string;
     public pointsRequested: number;
     public pointsSuccessful: number;
+    public pointsPartiallySuccessful: number;
+    public pointsFailed: number;
     public uploadFileName: string;
   }
 
@@ -1040,13 +1044,11 @@ module StreamStats.Controllers {
       } else {
         // manage queue tab
         if (this.selectedQueue == "Production Queue") { // Production Queue
-          url = configuration.baseurls["BatchProcessorServices"];
-          this.queueURL = configuration.baseurls["BatchProcessorServices"];
-        } else { // development queue
-          url =
-            configuration.baseurls["BatchProcessorServices"] +
-            configuration.queryparams["SSBatchProcessorGetBatch"];
-            this.queueURL = configuration.baseurls["BatchProcessorServices"];
+          url = "https://streamstats.usgs.gov/batchprocessor" + configuration.queryparams["SSBatchProcessorGetBatch"];
+          this.queueURL = "https://streamstats.usgs.gov/batchprocessor";
+        } else { // Development Queue
+          url = "https://dev.streamstats.usgs.gov/batchprocessor" + configuration.queryparams["SSBatchProcessorGetBatch"];
+          this.queueURL = "https://dev.streamstats.usgs.gov/batchprocessor";
         }
       }
       var request: WiM.Services.Helpers.RequestInfo =
@@ -1084,6 +1086,8 @@ module StreamStats.Controllers {
                   region: batch.Region,
                   pointsRequested: batch.NumberPoints,
                   pointsSuccessful: batch.NumberPointsSuccessful,
+                  pointsPartiallySuccessful: batch.NumberPointsPartiallySuccessful,
+                  pointsFailed: batch.NumberPointsFailed,
                   uploadFileName: batch.GeometryFilename,
                 };
                 batchStatusMessages.push(status);

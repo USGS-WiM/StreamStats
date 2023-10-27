@@ -625,14 +625,12 @@ var StreamStats;
                 }
                 else {
                     if (this.selectedQueue == "Production Queue") {
-                        url = configuration.baseurls["BatchProcessorServices"];
-                        this.queueURL = configuration.baseurls["BatchProcessorServices"];
+                        url = "https://streamstats.usgs.gov/batchprocessor" + configuration.queryparams["SSBatchProcessorGetBatch"];
+                        this.queueURL = "https://streamstats.usgs.gov/batchprocessor";
                     }
                     else {
-                        url =
-                            configuration.baseurls["BatchProcessorServices"] +
-                                configuration.queryparams["SSBatchProcessorGetBatch"];
-                        this.queueURL = configuration.baseurls["BatchProcessorServices"];
+                        url = "https://dev.streamstats.usgs.gov/batchprocessor" + configuration.queryparams["SSBatchProcessorGetBatch"];
+                        this.queueURL = "https://dev.streamstats.usgs.gov/batchprocessor";
                     }
                 }
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
@@ -663,6 +661,8 @@ var StreamStats;
                                 region: batch.Region,
                                 pointsRequested: batch.NumberPoints,
                                 pointsSuccessful: batch.NumberPointsSuccessful,
+                                pointsPartiallySuccessful: batch.NumberPointsPartiallySuccessful,
+                                pointsFailed: batch.NumberPointsFailed,
                                 uploadFileName: batch.GeometryFilename,
                             };
                             batchStatusMessages.push(status_2);
