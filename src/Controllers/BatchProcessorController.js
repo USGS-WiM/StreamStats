@@ -588,7 +588,7 @@ var StreamStats;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 return this.Execute(request)
                     .then(function (response) {
-                    return response.data["description"];
+                    return response.data["description"].split("Last Modified: ")[1];
                 }, function (error) {
                 })
                     .finally(function () { });

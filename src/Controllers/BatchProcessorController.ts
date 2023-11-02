@@ -981,7 +981,7 @@ module StreamStats.Controllers {
       return this.Execute(request)
         .then(
           (response: any) => {
-            return response.data["description"]
+            return response.data["description"].split("Last Modified: ")[1]
           },
           (error) => {
             // console.log(error)
