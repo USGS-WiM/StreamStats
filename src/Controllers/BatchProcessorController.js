@@ -100,8 +100,8 @@ var StreamStats;
                 var queryParams = new URLSearchParams(window.location.search);
                 queryParams.set("BP", tabname);
                 if (tabname == "streamGrid") {
-                    this.loadStreamGrids();
                     this.retrievingStreamGrids = true;
+                    this.loadStreamGrids();
                     queryParams.delete("email");
                 }
                 else if (tabname == "manageQueue") {
@@ -127,8 +127,9 @@ var StreamStats;
                 var url = configuration.baseurls["BatchProcessorServices"] +
                     configuration.queryparams["Regions"];
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                var self = this;
                 this.Execute(request).then(function (response) {
-                    _this.regionList = response.data;
+                    self.regionList = response.data;
                     _this.regionListSpinner = false;
                 });
             };
@@ -542,10 +543,19 @@ var StreamStats;
             };
             BatchProcessorController.prototype.loadStreamGrids = function () {
                 var _this = this;
-                this.getStreamGrids().then(function (response) {
-                    _this.streamGridList = response;
-                    _this.retrievingStreamGrids = false;
+                this.streamGridList = [];
+                var baseURL = "https://dev.streamstats.usgs.gov/streamgrids/";
+                if (window.location.host === "streamstats.usgs.gov") {
+                    baseURL = "https://streamstats.usgs.gov/streamgrids/";
+                }
+                this.regionList.forEach(function (region) {
+                    _this.streamGridList.push({
+                        region: region["Name"],
+                        downloadURL: baseURL + region["Code"].toLowerCase() + "/streamgrid.tif",
+                        lastModified: null
+                    });
                 });
+                this.retrievingStreamGrids = false;
             };
             BatchProcessorController.prototype.loadParametersByRegionBP = function (rcode) {
                 if (!rcode)
@@ -744,40 +754,6 @@ var StreamStats;
                 }, function (error) {
                     return error;
                 })
-                    .finally(function () { });
-            };
-            BatchProcessorController.prototype.getStreamGrids = function () {
-                var _this = this;
-                var url = configuration.baseurls["BatchProcessorServices"] +
-                    configuration.queryparams["SSBatchProcessorStreamGrids"];
-                var request = new WiM.Services.Helpers.RequestInfo(url, true);
-                return this.Execute(request)
-                    .then(function (response) {
-                    var streamGrids = [];
-                    response.data.forEach(function (item) {
-                        var baseURL = "https://s3.amazonaws.com/dev.streamstats.usgs.gov/streamgrids/";
-                        if (window.location.host === "streamstats.usgs.gov") {
-                            baseURL =
-                                "https://s3.amazonaws.com/streamstats.usgs.gov/streamgrids/";
-                        }
-                        try {
-                            var streamGrid = {
-                                region: _this.regionList.filter(function (region) {
-                                    return region.Code == item.RegionCode;
-                                })[0]["Name"],
-                                regionCode: item.RegionCode,
-                                fileName: item.FileName,
-                                downloadURL: baseURL + item.FileName,
-                                lastModified: item.LastModified,
-                            };
-                            streamGrids.push(streamGrid);
-                        }
-                        catch (e) {
-                            console.log(e);
-                        }
-                    });
-                    return streamGrids;
-                }, function (error) { })
                     .finally(function () { });
             };
             BatchProcessorController.prototype.collapseSection = function (e, type) {

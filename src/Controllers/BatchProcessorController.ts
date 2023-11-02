@@ -52,16 +52,12 @@ module StreamStats.Controllers {
 
   interface IStreamGrid {
     region: string;
-    regionCode: string;
-    fileName: string;
     downloadURL: string;
     lastModified: Date;
   }
 
   class StreamGrid implements IStreamGrid {
     public region: string;
-    public regionCode: string;
-    public fileName: string;
     public downloadURL: string;
     public lastModified: Date;
   }
@@ -282,8 +278,8 @@ module StreamStats.Controllers {
       queryParams.set("BP", tabname);
 
       if (tabname == "streamGrid") {
-        this.loadStreamGrids();
         this.retrievingStreamGrids = true;
+        this.loadStreamGrids();
         queryParams.delete("email");
       } else if (tabname == "manageQueue") {
         this.getManageQueueList();
@@ -310,9 +306,11 @@ module StreamStats.Controllers {
         configuration.queryparams["Regions"];
       var request: WiM.Services.Helpers.RequestInfo =
         new WiM.Services.Helpers.RequestInfo(url, true);
+      var self = this;
 
       this.Execute(request).then((response: any) => {
-        this.regionList = response.data;
+        self.regionList = response.data;
+        // console.log(self.regionList);
         this.regionListSpinner = false;
       });
     }
@@ -917,10 +915,22 @@ module StreamStats.Controllers {
     }
 
     public loadStreamGrids(): void {
-      this.getStreamGrids().then((response) => {
-        this.streamGridList = response;
-        this.retrievingStreamGrids = false;
+      this.streamGridList = [];
+
+      let baseURL = "https://dev.streamstats.usgs.gov/streamgrids/";
+      if (window.location.host === "streamstats.usgs.gov") {
+        baseURL = "https://streamstats.usgs.gov/streamgrids/";
+      }
+
+      this.regionList.forEach((region) => {
+        this.streamGridList.push({
+          region: region["Name"],
+          downloadURL: baseURL + region["Code"].toLowerCase() + "/streamgrid.tif",
+          lastModified: null
+        })
       });
+
+      this.retrievingStreamGrids = false;
     }
 
     // Service methods
@@ -1227,49 +1237,6 @@ module StreamStats.Controllers {
           (error) => {
             return error;
           }
-        )
-        .finally(() => {});
-    }
-
-    // load stream grids
-    public getStreamGrids(): ng.IPromise<any> {
-      var url =
-        configuration.baseurls["BatchProcessorServices"] +
-        configuration.queryparams["SSBatchProcessorStreamGrids"];
-      var request: WiM.Services.Helpers.RequestInfo =
-        new WiM.Services.Helpers.RequestInfo(url, true);
-
-      return this.Execute(request)
-        .then(
-          (response: any) => {
-            var streamGrids = [];
-
-            response.data.forEach((item) => {
-              let baseURL =
-                "https://s3.amazonaws.com/dev.streamstats.usgs.gov/streamgrids/";
-              if (window.location.host === "streamstats.usgs.gov") {
-                baseURL =
-                  "https://s3.amazonaws.com/streamstats.usgs.gov/streamgrids/";
-              }
-
-              try {
-                let streamGrid: StreamGrid = {
-                  region: this.regionList.filter((region) => {
-                    return region.Code == item.RegionCode;
-                  })[0]["Name"],
-                  regionCode: item.RegionCode,
-                  fileName: item.FileName,
-                  downloadURL: baseURL + item.FileName,
-                  lastModified: item.LastModified,
-                };
-                streamGrids.push(streamGrid);
-              } catch (e) {
-                console.log(e);
-              }
-            });
-            return streamGrids;
-          },
-          (error) => {}
         )
         .finally(() => {});
     }
