@@ -914,6 +914,7 @@ module StreamStats.Controllers {
         .finally(() => {});
     }
 
+    // Load list of stream grids for the "Download Stream Grids" tab
     public loadStreamGrids(): void {
       this.streamGridList = [];
 
@@ -940,6 +941,7 @@ module StreamStats.Controllers {
 
     // Service methods
 
+    // get a dictionary that relates region codes to that region's stateServices stream grid map layer ID 
     public getStateMapServicesIDs(): ng.IPromise<any> {
 
       var url = configuration.baseurls.StreamStatsMapServices + configuration.queryparams["SSStateLayers"] + "?f=json"
@@ -968,6 +970,7 @@ module StreamStats.Controllers {
         .finally(() => {});
     }
 
+    // get the last modified date for a stateServices stream grid map layer, as defined in the "Description" metadata field
     public getStreamGridLastModifiedDate(layerID: number): ng.IPromise<any> {
 
       var url = configuration.baseurls.StreamStatsMapServices + configuration.queryparams["SSStateLayers"] + "/" + layerID + "/info/metadata?f=json"
