@@ -922,18 +922,71 @@ module StreamStats.Controllers {
         baseURL = "https://streamstats.usgs.gov/streamgrids/";
       }
 
-      this.regionList.forEach((region) => {
-        this.streamGridList.push({
-          region: region["Name"],
-          downloadURL: baseURL + region["Code"].toLowerCase() + "/streamgrid.tif",
-          lastModified: null
-        })
+      this.getStateMapServicesIDs().then((response) => {
+        let layerDictionary = response;
+        this.regionList.forEach((region) => {
+          this.getStreamGridLastModifiedDate(layerDictionary[region["Code"]]).then((response) => {
+            let lastModifiedDate = response;
+            this.streamGridList.push({
+              region: region["Name"],
+              downloadURL: baseURL + region["Code"].toLowerCase() + "/streamgrid.tif",
+              lastModified: lastModifiedDate
+            })
+          });
+        });
       });
-
       this.retrievingStreamGrids = false;
-    }
+    } 
 
     // Service methods
+
+    public getStateMapServicesIDs(): ng.IPromise<any> {
+
+      var url = configuration.baseurls.StreamStatsMapServices + configuration.queryparams["SSStateLayers"] + "?f=json"
+
+      var request: WiM.Services.Helpers.RequestInfo =
+        new WiM.Services.Helpers.RequestInfo(url, true);
+
+      return this.Execute(request)
+        .then(
+          (response: any) => {
+            var layers = response.data.layers
+            let layerDictionary = {}
+            let regionCodes = this.regionList.map(region => region["Code"])
+            layers.forEach((layer) => {
+              if (regionCodes.indexOf(layer["name"]) != -1) {
+                let subLayers = layer["subLayerIds"]
+                layerDictionary[layer["name"]] = layers.filter((layer) => subLayers.indexOf(layer["id"]) != -1 && layer["name"] == "StreamGrid")[0]["id"];
+              }
+            });
+            return layerDictionary
+          },
+          (error) => {
+            // console.log(error)
+          }
+        )
+        .finally(() => {});
+    }
+
+    public getStreamGridLastModifiedDate(layerID: number): ng.IPromise<any> {
+
+      var url = configuration.baseurls.StreamStatsMapServices + configuration.queryparams["SSStateLayers"] + "/" + layerID + "/info/metadata?f=json"
+
+      var request: WiM.Services.Helpers.RequestInfo =
+        new WiM.Services.Helpers.RequestInfo(url, true);
+
+      return this.Execute(request)
+        .then(
+          (response: any) => {
+            return response.data["description"]
+          },
+          (error) => {
+            // console.log(error)
+          }
+        )
+        .finally(() => {});
+    }
+
     // get basin characteristics list for region and nation
     public loadParametersByRegionBP(rcode: string): ng.IPromise<any> {
       if (!rcode) return;

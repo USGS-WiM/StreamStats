@@ -548,14 +548,50 @@ var StreamStats;
                 if (window.location.host === "streamstats.usgs.gov") {
                     baseURL = "https://streamstats.usgs.gov/streamgrids/";
                 }
-                this.regionList.forEach(function (region) {
-                    _this.streamGridList.push({
-                        region: region["Name"],
-                        downloadURL: baseURL + region["Code"].toLowerCase() + "/streamgrid.tif",
-                        lastModified: null
+                this.getStateMapServicesIDs().then(function (response) {
+                    var layerDictionary = response;
+                    _this.regionList.forEach(function (region) {
+                        _this.getStreamGridLastModifiedDate(layerDictionary[region["Code"]]).then(function (response) {
+                            var lastModifiedDate = response;
+                            _this.streamGridList.push({
+                                region: region["Name"],
+                                downloadURL: baseURL + region["Code"].toLowerCase() + "/streamgrid.tif",
+                                lastModified: lastModifiedDate
+                            });
+                        });
                     });
                 });
                 this.retrievingStreamGrids = false;
+            };
+            BatchProcessorController.prototype.getStateMapServicesIDs = function () {
+                var _this = this;
+                var url = configuration.baseurls.StreamStatsMapServices + configuration.queryparams["SSStateLayers"] + "?f=json";
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                return this.Execute(request)
+                    .then(function (response) {
+                    var layers = response.data.layers;
+                    var layerDictionary = {};
+                    var regionCodes = _this.regionList.map(function (region) { return region["Code"]; });
+                    layers.forEach(function (layer) {
+                        if (regionCodes.indexOf(layer["name"]) != -1) {
+                            var subLayers_1 = layer["subLayerIds"];
+                            layerDictionary[layer["name"]] = layers.filter(function (layer) { return subLayers_1.indexOf(layer["id"]) != -1 && layer["name"] == "StreamGrid"; })[0]["id"];
+                        }
+                    });
+                    return layerDictionary;
+                }, function (error) {
+                })
+                    .finally(function () { });
+            };
+            BatchProcessorController.prototype.getStreamGridLastModifiedDate = function (layerID) {
+                var url = configuration.baseurls.StreamStatsMapServices + configuration.queryparams["SSStateLayers"] + "/" + layerID + "/info/metadata?f=json";
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                return this.Execute(request)
+                    .then(function (response) {
+                    return response.data["description"];
+                }, function (error) {
+                })
+                    .finally(function () { });
             };
             BatchProcessorController.prototype.loadParametersByRegionBP = function (rcode) {
                 if (!rcode)
