@@ -43,7 +43,7 @@ var StreamStats;
             ExplorationToolsModalController.prototype.downloadCSV = function () {
                 gtag('event', 'Download', { 'Category': 'ElevationProfile', "Type": 'CSV' });
                 var filename = 'elevation-profile.csv';
-                var csvFile = 'long,lat,elevation(feet),distance(mi)\r\n';
+                var csvFile = 'lat,long,elevation(feet),distance(mi)\r\n';
                 this.explorationService.coordinateList.forEach(function (value) {
                     csvFile += value.join(',') + '\r\n';
                 });
