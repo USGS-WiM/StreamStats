@@ -52,16 +52,12 @@ module StreamStats.Controllers {
 
   interface IStreamGrid {
     region: string;
-    regionCode: string;
-    fileName: string;
     downloadURL: string;
     lastModified: Date;
   }
 
   class StreamGrid implements IStreamGrid {
     public region: string;
-    public regionCode: string;
-    public fileName: string;
     public downloadURL: string;
     public lastModified: Date;
   }
@@ -282,8 +278,8 @@ module StreamStats.Controllers {
       queryParams.set("BP", tabname);
 
       if (tabname == "streamGrid") {
-        this.loadStreamGrids();
         this.retrievingStreamGrids = true;
+        this.loadStreamGrids();
         queryParams.delete("email");
       } else if (tabname == "manageQueue") {
         this.getManageQueueList();
@@ -310,9 +306,11 @@ module StreamStats.Controllers {
         configuration.queryparams["Regions"];
       var request: WiM.Services.Helpers.RequestInfo =
         new WiM.Services.Helpers.RequestInfo(url, true);
+      var self = this;
 
       this.Execute(request).then((response: any) => {
-        this.regionList = response.data;
+        self.regionList = response.data;
+        // console.log(self.regionList);
         this.regionListSpinner = false;
       });
     }
@@ -916,14 +914,82 @@ module StreamStats.Controllers {
         .finally(() => {});
     }
 
+    // Load list of stream grids for the "Download Stream Grids" tab
     public loadStreamGrids(): void {
-      this.getStreamGrids().then((response) => {
-        this.streamGridList = response;
-        this.retrievingStreamGrids = false;
+      this.streamGridList = [];
+
+      let baseURL = "https://dev.streamstats.usgs.gov/streamgrids/";
+      if (window.location.host === "streamstats.usgs.gov") {
+        baseURL = "https://streamstats.usgs.gov/streamgrids/";
+      }
+
+      this.getStateMapServicesIDs().then((response) => {
+        let layerDictionary = response;
+        this.regionList.forEach((region) => {
+          this.getStreamGridLastModifiedDate(layerDictionary[region["Code"]]).then((response) => {
+            let lastModifiedDate = response;
+            this.streamGridList.push({
+              region: region["Name"],
+              downloadURL: baseURL + region["Code"].toLowerCase() + "/streamgrid." + (region["Code"].toLowerCase()  == "drb" ? "zip" : "tif"),
+              lastModified: lastModifiedDate
+            })
+          });
+        });
       });
-    }
+      this.retrievingStreamGrids = false;
+    } 
 
     // Service methods
+
+    // get a dictionary that relates region codes to that region's stateServices stream grid map layer ID 
+    public getStateMapServicesIDs(): ng.IPromise<any> {
+
+      var url = configuration.baseurls.StreamStatsMapServices + configuration.queryparams["SSStateLayers"] + "?f=json"
+
+      var request: WiM.Services.Helpers.RequestInfo =
+        new WiM.Services.Helpers.RequestInfo(url, true);
+
+      return this.Execute(request)
+        .then(
+          (response: any) => {
+            var layers = response.data.layers
+            let layerDictionary = {}
+            let regionCodes = this.regionList.map(region => region["Code"])
+            layers.forEach((layer) => {
+              if (regionCodes.indexOf(layer["name"]) != -1) {
+                let subLayers = layer["subLayerIds"]
+                layerDictionary[layer["name"]] = layers.filter((layer) => subLayers.indexOf(layer["id"]) != -1 && layer["name"] == "StreamGrid")[0]["id"];
+              }
+            });
+            return layerDictionary
+          },
+          (error) => {
+            // console.log(error)
+          }
+        )
+        .finally(() => {});
+    }
+
+    // get the last modified date for a stateServices stream grid map layer, as defined in the "Description" metadata field
+    public getStreamGridLastModifiedDate(layerID: number): ng.IPromise<any> {
+
+      var url = configuration.baseurls.StreamStatsMapServices + configuration.queryparams["SSStateLayers"] + "/" + layerID + "/info/metadata?f=json"
+
+      var request: WiM.Services.Helpers.RequestInfo =
+        new WiM.Services.Helpers.RequestInfo(url, true);
+
+      return this.Execute(request)
+        .then(
+          (response: any) => {
+            return response.data["description"].split("Last Modified: ")[1]
+          },
+          (error) => {
+            // console.log(error)
+          }
+        )
+        .finally(() => {});
+    }
+
     // get basin characteristics list for region and nation
     public loadParametersByRegionBP(rcode: string): ng.IPromise<any> {
       if (!rcode) return;
@@ -1227,49 +1293,6 @@ module StreamStats.Controllers {
           (error) => {
             return error;
           }
-        )
-        .finally(() => {});
-    }
-
-    // load stream grids
-    public getStreamGrids(): ng.IPromise<any> {
-      var url =
-        configuration.baseurls["BatchProcessorServices"] +
-        configuration.queryparams["SSBatchProcessorStreamGrids"];
-      var request: WiM.Services.Helpers.RequestInfo =
-        new WiM.Services.Helpers.RequestInfo(url, true);
-
-      return this.Execute(request)
-        .then(
-          (response: any) => {
-            var streamGrids = [];
-
-            response.data.forEach((item) => {
-              let baseURL =
-                "https://s3.amazonaws.com/dev.streamstats.usgs.gov/streamgrids/";
-              if (window.location.host === "streamstats.usgs.gov") {
-                baseURL =
-                  "https://s3.amazonaws.com/streamstats.usgs.gov/streamgrids/";
-              }
-
-              try {
-                let streamGrid: StreamGrid = {
-                  region: this.regionList.filter((region) => {
-                    return region.Code == item.RegionCode;
-                  })[0]["Name"],
-                  regionCode: item.RegionCode,
-                  fileName: item.FileName,
-                  downloadURL: baseURL + item.FileName,
-                  lastModified: item.LastModified,
-                };
-                streamGrids.push(streamGrid);
-              } catch (e) {
-                console.log(e);
-              }
-            });
-            return streamGrids;
-          },
-          (error) => {}
         )
         .finally(() => {});
     }
