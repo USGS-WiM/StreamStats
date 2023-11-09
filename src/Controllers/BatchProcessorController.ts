@@ -124,6 +124,7 @@ module StreamStats.Controllers {
     public email: string;
     public idField: string;
     public attachment: any;
+    public ignoreExcludePolys: boolean;
   }
 
   class BatchProcessorController
@@ -140,6 +141,7 @@ module StreamStats.Controllers {
     public displayMessage: string;
     public toaster: any;
     public manageQueue: boolean;
+    public devBP: boolean;
 
     // Regions
     public regionList: Array<any>;
@@ -195,6 +197,7 @@ module StreamStats.Controllers {
     public canReorder;
 
     // collapsing sections
+    public basinDelineationCollapsed;
     public basinCharCollapsed;
     public flowStatsCollapsed;
 
@@ -259,6 +262,7 @@ module StreamStats.Controllers {
       this.selectedQueue = "Production Queue";
       this.isRefreshing = false;
       this.canReorder = false;
+      this.basinDelineationCollapsed = false;
       this.basinCharCollapsed = false;
       this.flowStatsCollapsed = false;
       this.init();
@@ -685,6 +689,7 @@ module StreamStats.Controllers {
         this.submitBatchData.attachment,
         this.submitBatchData.attachment.name
       );
+      formdata.append("ignoreExcludePolys",this.submitBatchData.ignoreExcludePolys.toString());
 
       // create headers
       var headers = {
@@ -1278,10 +1283,12 @@ module StreamStats.Controllers {
       var content = e.currentTarget.nextElementSibling;
       if (content.style.display === "none") {
           content.style.display = "block";
+          if(type === "basinDelineation") this.basinDelineationCollapsed = false;
           if(type === "flowStatistics") this.flowStatsCollapsed = false;
           if(type === "basinCharacteristics") this.basinCharCollapsed = false;
       } else {
           content.style.display = "none";
+          if(type === "basinDelineation") this.basinDelineationCollapsed = true;
           if(type === "flowStatistics") this.flowStatsCollapsed = true;
           if(type === "basinCharacteristics") this.basinCharCollapsed = true;
       }
@@ -1314,6 +1321,13 @@ module StreamStats.Controllers {
       // get warning message 
       if (configuration.showBPWarning) {
         this.warningMessage = configuration.warningBPMessage;
+      }
+
+      // determine if this is the Dev BP
+      if (configuration.environment == 'production') {
+        this.devBP = false;
+      } else {
+        this.devBP = true;
       }
     }
 
