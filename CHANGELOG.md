@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- Note about Batch Processor output projection
+
 ### Changed
 
 - Batch Processor streamgrids retrieved from different endpoints
@@ -18,6 +20,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Removed
 
 ### Fixed
+
+- Latitude and Longitude columns swapped in the Elevation profile CSV export
 
 ### Security
 
