@@ -1145,9 +1145,9 @@ module StreamStats.Controllers {
                       return item.id == batch.StatusID;
                     }
                   )[0].description,
-                  timeSubmitted: batch.TimeSubmitted,
-                  timeStarted: batch.TimeStarted,
-                  timeCompleted: batch.TimeCompleted,
+                  timeSubmitted: new Date(new Date(batch.TimeSubmitted + "Z").toString()),
+                  timeStarted: new Date(new Date(batch.TimeStarted + "Z").toString()),
+                  timeCompleted: new Date(new Date(batch.TimeCompleted + "Z").toString()),
                   resultsURL: batch.ResultsURL,
                   region: batch.Region,
                   pointsRequested: batch.NumberPoints,
