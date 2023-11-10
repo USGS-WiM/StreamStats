@@ -265,7 +265,9 @@
                 <!-- Button to fetch batch status -->
                 <div>
                     <button type="submit"
-                        ng-click="vm.getBatchStatusList(vm.batchStatusEmail); vm.retrievingBatchStatus = true;" onclick="gtag('event', 'BatchProcessor', { 'Category': 'Check Status' });">
+                        ng-disabled="vm.batchStatusEmail == undefined"
+                        ng-click="vm.getBatchStatusList(vm.batchStatusEmail); vm.retrievingBatchStatus = true;" 
+                        onclick="gtag('event', 'BatchProcessor', { 'Category': 'Check Status' });">
                         <i class="fa fa-share"></i>
                         <span>&nbsp;&nbsp;Check Status</span>
                     </button>
