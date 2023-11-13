@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - Note about Batch Processor output projection
+- appConfig files for dev and test machines
 
 ### Changed
 
