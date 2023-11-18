@@ -39,7 +39,6 @@ if (window.location.host === 'streamstats.usgs.gov') {
 		configuration.baseurls.FlowAnywhereRegressionServices = 'https://streamstats.usgs.gov/regressionservices',
         configuration.baseurls.BatchProcessorServices = 'https://streamstats.usgs.gov/batchprocessor',
         configuration.baseurls.PourPointServices = 'https://streamstats.usgs.gov/batchprocessor',
-        
         configuration.environment = 'production';
 }
 
