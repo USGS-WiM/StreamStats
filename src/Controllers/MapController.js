@@ -1,3 +1,18 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var StreamStats;
 (function (StreamStats) {
     var Controllers;
@@ -40,30 +55,31 @@ var StreamStats;
             }
             return MapDefault;
         }());
-        var MapController = (function () {
+        var MapController = (function (_super) {
+            __extends(MapController, _super);
             function MapController($scope, $compile, toaster, $location, $stateParams, leafletBoundsHelper, leafletData, search, region, studyArea, StatisticsGroup, exploration, _prosperServices, eventManager, modal, modalStack, $http) {
-                var _this = this;
-                this.$scope = $scope;
-                this.$compile = $compile;
-                this._prosperServices = _prosperServices;
-                this.modal = modal;
-                this.modalStack = modalStack;
-                this.center = null;
-                this.layers = null;
-                this.mapDefaults = null;
-                this.mapPoint = null;
-                this.bounds = null;
-                this.markers = null;
-                this.paths = null;
-                this.geojson = null;
-                this.events = null;
-                this.layercontrol = null;
-                this.regionLayer = null;
-                this._prosperIsActive = false;
-                this.explorationToolsExpanded = false;
-                this.gageLegendFix = false;
-                this.regionLegendFix = false;
-                this.nonsimplifiedBasinStyle = {
+                var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
+                _this.$scope = $scope;
+                _this.$compile = $compile;
+                _this._prosperServices = _prosperServices;
+                _this.modal = modal;
+                _this.modalStack = modalStack;
+                _this.center = null;
+                _this.layers = null;
+                _this.mapDefaults = null;
+                _this.mapPoint = null;
+                _this.bounds = null;
+                _this.markers = null;
+                _this.paths = null;
+                _this.geojson = null;
+                _this.events = null;
+                _this.layercontrol = null;
+                _this.regionLayer = null;
+                _this._prosperIsActive = false;
+                _this.explorationToolsExpanded = false;
+                _this.gageLegendFix = false;
+                _this.regionLegendFix = false;
+                _this.nonsimplifiedBasinStyle = {
                     displayName: "Non-Simplified Basin",
                     imagesrc: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANkAAADJCAYAAACuaJftAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKsSURBVHhe7dwxbsJAEEBRkyPQU3L/A1HScwWCFEuRkEDB7I+t5L2Grei+lmEs7643E5D5mD+BiMggJjKIiQxiIoOYyCD2a3/hXw7H+QTbsz+f5tN4bjKIiQxiIoPYsJnMzMV/8soM5yaDmMggJjKILZ7JzGDw7dmM5iaDmMggJjKIiQxiIoOYyCAmMoj9eE9mLwaP2ZPBikQGMZFBzLOLMICZDFYkMoiJDGIig5jIICYyiIkMYvZksID3LsKGiAxiIoOYmQwG8OwirEhkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnEvOMDFvDeRdgQkUFMZBAzkz3wym9ueMZNBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQ211v5vNbLofjfPob9ufTfIL3uMkgJjKIiQxiIoOYyCAmMoiJDGLD9mT3Ru/N7vdW9ffDKG4yiIkMYiKDWDaTAV/cZBATGcREBjGRQUxkEBMZxEQGMZFBTGSQmqZPLJhZUkx8RY8AAAAASUVORK5CYII=",
                     fillColor: "red",
@@ -72,47 +88,47 @@ var StreamStats;
                     color: 'red',
                     fillOpacity: 0.5
                 };
-                this.imageryToggled = false;
-                $scope.vm = this;
-                this.toaster = toaster;
-                this.searchService = search;
-                this.$locationService = $location;
-                this.regionServices = region;
-                this.leafletBoundsHelperService = leafletBoundsHelper;
-                this.leafletData = leafletData;
-                this.studyArea = studyArea;
-                this.nssService = StatisticsGroup;
-                this.explorationService = exploration;
-                this.eventManager = eventManager;
-                this.cursorStyle = 'pointer';
-                this.environment = configuration.environment;
-                this.selectedExplorationTool = null;
-                this.init();
-                this.eventManager.SubscribeToEvent(StreamStats.Services.onAdditionalFeaturesLoaded, new WiM.Event.EventHandler(function () {
+                _this.imageryToggled = false;
+                $scope.vm = _this;
+                _this.toaster = toaster;
+                _this.searchService = search;
+                _this.$locationService = $location;
+                _this.regionServices = region;
+                _this.leafletBoundsHelperService = leafletBoundsHelper;
+                _this.leafletData = leafletData;
+                _this.studyArea = studyArea;
+                _this.nssService = StatisticsGroup;
+                _this.explorationService = exploration;
+                _this.eventManager = eventManager;
+                _this.cursorStyle = 'pointer';
+                _this.environment = configuration.environment;
+                _this.selectedExplorationTool = null;
+                _this.init();
+                _this.eventManager.SubscribeToEvent(StreamStats.Services.onAdditionalFeaturesLoaded, new WiM.Event.EventHandler(function () {
                     _this.onAdditionalFeaturesLoaded();
                 }));
-                this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler(function () {
+                _this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler(function () {
                     _this.onSelectedStudyAreaChanged();
                 }));
-                this.eventManager.SubscribeToEvent(WiM.Directives.onLayerChanged, new WiM.Event.EventHandler(function (sender, e) {
+                _this.eventManager.SubscribeToEvent(WiM.Directives.onLayerChanged, new WiM.Event.EventHandler(function (sender, e) {
                     _this.onLayerChanged(sender, e);
                 }));
-                this.eventManager.SubscribeToEvent(WiM.Services.onSelectedAreaOfInterestChanged, new WiM.Event.EventHandler(function (sender, e) {
+                _this.eventManager.SubscribeToEvent(WiM.Services.onSelectedAreaOfInterestChanged, new WiM.Event.EventHandler(function (sender, e) {
                     _this.onSelectedAreaOfInterestChanged(sender, e);
                 }));
-                this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedRegionChanged, new WiM.Event.EventHandler(function () {
+                _this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedRegionChanged, new WiM.Event.EventHandler(function () {
                     _this.onSelectedRegionChanged();
                 }));
-                this.eventManager.SubscribeToEvent(StreamStats.Services.onEditClick, new WiM.Event.EventHandler(function (sender, e) {
+                _this.eventManager.SubscribeToEvent(StreamStats.Services.onEditClick, new WiM.Event.EventHandler(function (sender, e) {
                     _this.basinEditor();
                 }));
-                this.eventManager.SubscribeToEvent(StreamStats.Services.onStudyAreaReset, new WiM.Event.EventHandler(function () {
+                _this.eventManager.SubscribeToEvent(StreamStats.Services.onStudyAreaReset, new WiM.Event.EventHandler(function () {
                     _this.removeGeoJson();
                 }));
-                this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedMethodExecuteComplete, new WiM.Event.EventHandler(function (sender, e) {
+                _this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedMethodExecuteComplete, new WiM.Event.EventHandler(function (sender, e) {
                     _this.onExplorationMethodComplete(sender, e);
                 }));
-                this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectExplorationMethod, new WiM.Event.EventHandler(function (sender, e) {
+                _this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectExplorationMethod, new WiM.Event.EventHandler(function (sender, e) {
                     if (sender.selectedMethod.navigationID != 0)
                         _this.onSelectExplorationMethod(sender, e);
                     if (sender.selectedMethod.navigationID == 0)
@@ -208,12 +224,12 @@ var StreamStats;
                 });
                 $scope.$on('$locationChangeStart', function () { return _this.updateRegion(); });
                 if ($stateParams.rcode) {
-                    this.regionServices.loadParametersByRegion();
-                    this.setBoundsByRegion($stateParams.rcode);
+                    _this.regionServices.loadParametersByRegion();
+                    _this.setBoundsByRegion($stateParams.rcode);
                 }
                 if ($stateParams.rcode && $stateParams.workspaceID) {
-                    this.regionServices.loadParametersByRegion();
-                    this.studyArea.loadWatershed($stateParams.rcode, $stateParams.workspaceID);
+                    _this.regionServices.loadParametersByRegion();
+                    _this.studyArea.loadWatershed($stateParams.rcode, $stateParams.workspaceID);
                 }
                 $scope.$watch(function () { return _this.studyArea.regressionRegionQueryComplete; }, function (newval, oldval) {
                     if (newval && _this.studyArea.selectedStudyArea.RegressionRegions)
@@ -226,6 +242,7 @@ var StreamStats;
                         _this.addGeoJSON('streamgages', newval);
                     }
                 });
+                return _this;
             }
             Object.defineProperty(MapController.prototype, "selectedExplorationMethodType", {
                 get: function () {
@@ -628,54 +645,36 @@ var StreamStats;
                                 draggable: true
                             };
                             _this.studyArea.doDelineateFlag = false;
-                            var queryString = 'visible:';
-                            _this.regionServices.regionMapLayerList.forEach(function (item) {
-                                if (item[0] == 'ExcludePolys')
-                                    queryString += item[1];
-                            });
                             gtag('event', 'DelineationClick', { 'Region': _this.regionServices.selectedRegion.Name, 'Location': latlng });
                             map.invalidateSize();
-                            var selectedRegionLayerName = _this.regionServices.selectedRegion.RegionID + "_region";
-                            if (queryString === 'visible:') {
-                                _this.toaster.clear();
-                                _this.toaster.pop("warning", "Selected State/Region does not have exlusion areas defined", "Delineating with no exclude polygon layer...", true, 0);
-                                _this.startDelineate(latlng, true);
-                                gtag('event', 'ValidatePoint', { 'Label': 'Not advised (no point query)' });
+                            _this.queryExcludePolygons(_this.regionServices.selectedRegion.RegionID, latlng.lat, latlng.lng).then(function (response) {
                                 _this.cursorStyle = 'pointer';
-                                return;
-                            }
-                            var layerName;
-                            for (var layer in maplayers.overlays) {
-                                for (var llayer in _this.layers.overlays) {
-                                    if (llayer === layer && _this.layers.overlays[llayer].layerArray !== undefined && _this.layers.overlays[llayer].layerArray[0].layerName === 'ExcludePolys') {
-                                        layerName = layer;
-                                    }
-                                }
-                            }
-                            ;
-                            maplayers.overlays[layerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run(function (error, results) {
                                 _this.toaster.clear();
-                                if (results.features.length == 0) {
-                                    gtag('event', 'ValidatePoint', { 'Label': 'Valid' });
-                                    _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
+                                var result = response.data.response[0];
+                                if (result.inExclude == false) {
                                     _this.studyArea.checkingDelineatedPoint = false;
+                                    if (result.message && result.message.text != null) {
+                                        _this.toaster.pop("warning", "Selected State/Region does not have exlusion areas defined", "Delineating with no exclude polygon layer...", true, 0);
+                                        gtag('event', 'ValidatePoint', { 'Label': 'Not advised (no point query)' });
+                                    }
+                                    else {
+                                        _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
+                                        gtag('event', 'ValidatePoint', { 'Label': 'Valid' });
+                                    }
                                     _this.startDelineate(latlng, false);
                                 }
-                                else {
+                                else if (result.inExclude == true) {
                                     _this.studyArea.checkingDelineatedPoint = false;
-                                    var excludeCode = results.features[0].properties.ExcludeCod;
-                                    var popupMsg = results.features[0].properties.ExcludeRea;
-                                    if (excludeCode == 1) {
-                                        _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
+                                    if (result.type == 1) {
+                                        _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", result.message.text, 0);
                                         gtag('event', 'ValidatePoint', { 'Label': 'Not allowed' });
                                     }
                                     else {
-                                        _this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
-                                        _this.startDelineate(latlng, true, popupMsg);
+                                        _this.toaster.pop("warning", "Warning", result.message.text, true, 0);
                                         gtag('event', 'ValidatePoint', { 'Label': 'Not advised' });
+                                        _this.startDelineate(latlng, true, result.message.text);
                                     }
                                 }
-                                _this.cursorStyle = 'pointer';
                             });
                         }
                     });
@@ -1318,6 +1317,26 @@ var StreamStats;
                 }
                 return layeridList;
             };
+            MapController.prototype.queryExcludePolygons = function (region, lat, lng) {
+                var excludePolygonQuery = {
+                    "region": region,
+                    "points": [
+                        {
+                            "lat": lat,
+                            "long": lng
+                        }
+                    ]
+                };
+                var url = configuration.baseurls.PourPointServices + configuration.queryparams["PourPointServicesExcludePolygon"];
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(excludePolygonQuery));
+                return this.Execute(request)
+                    .then(function (response) {
+                    return response;
+                }, function (error) {
+                    return error;
+                })
+                    .finally(function () { });
+            };
             MapController.prototype.startDelineate = function (latlng, isInExclusionArea, excludeReason) {
                 var studyArea = new StreamStats.Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
                 this.studyArea.AddStudyArea(studyArea);
@@ -1327,7 +1346,7 @@ var StreamStats;
             };
             MapController.$inject = ['$scope', '$compile', 'toaster', '$location', '$stateParams', 'leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack', '$http'];
             return MapController;
-        }());
+        }(WiM.Services.HTTPServiceBase));
         angular.module('StreamStats.Controllers')
             .controller('StreamStats.Controllers.MapController', MapController);
     })(Controllers = StreamStats.Controllers || (StreamStats.Controllers = {}));
