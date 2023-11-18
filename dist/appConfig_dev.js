@@ -54,7 +54,7 @@ configuration.queryparams =
     'SSdelineation': '/streamstatsservices/watershed.{0}?rcode={1}&xlocation={2}&ylocation={3}&crs={4}&simplify=false&includeparameters=false&includeflowtypes=false&includefeatures=true',
     'SSstormwaterDelineation': '/stormwaterservices/watershed?rcode={0}&xlocation={1}&ylocation={2}&simplify=false&surfacecontributiononly={3}',
     'SSwatershedByWorkspace': '/streamstatsservices/watershed.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=false&includeparameters=false&includeflowtypes=false&includefeatures=true',
-    'SSeditBasin': '/streamstatsservices/watershed/edit.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
+    'SSeditBasin': '/streamstatsservices/watershed/edit.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=false&includeparameters=false&includeflowtypes=false&includefeatures=true',
     'SSAvailableParams': '/streamstatsservices/parameters.json?rcode={0}',
     'SSComputeParams': '/streamstatsservices/parameters.json?rcode={0}&workspaceID={1}&includeparameters={2}',
     'SSavailableFeatures': '/streamstatsservices/features.json?workspaceID={0}',
