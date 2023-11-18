@@ -911,20 +911,6 @@ module StreamStats.Controllers {
                         //force map refresh
                         map.invalidateSize();
 
-                        // use pourpoint services to query exclusion polygons
-                        // var excludePolygonQuery = {
-                        //     "region": this.regionServices.selectedRegion.RegionID,
-                        //     "points": [
-                        //         {
-                        //         "lat": latlng.lat,
-                        //         "long": latlng.lng
-                        //         }
-                        //     ]
-                        // }
-                        
-                        // var url = configuration.baseurls.PourPointServices + configuration.queryparams["PourPointServicesExcludePolygon"]
-                        // var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", excludePolygonQuery);
-                        
                         this.queryExcludePolygons(this.regionServices.selectedRegion.RegionID, latlng.lat, latlng.lng).then((response) => {
                             
                             this.cursorStyle = 'pointer';
