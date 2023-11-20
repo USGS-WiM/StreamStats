@@ -141,7 +141,7 @@ module StreamStats.Controllers {
     public displayMessage: string;
     public toaster: any;
     public manageQueue: boolean;
-    public devBP: boolean;
+    public environment: string;
 
     // Regions
     public regionList: Array<any>;
@@ -235,6 +235,8 @@ module StreamStats.Controllers {
       this.nssService = nssService;
       this.toaster = toaster;
       this.manageQueue = configuration.manageBPQueue;
+      this.environment = configuration.environment;
+      console.log(this.environment);
       this.cbFlowStats = false;
       this.cbBasinChar = false;
       this.selectedFlowStatsList = [];
@@ -1321,13 +1323,6 @@ module StreamStats.Controllers {
       // get warning message 
       if (configuration.showBPWarning) {
         this.warningMessage = configuration.warningBPMessage;
-      }
-
-      // determine if this is the Dev BP
-      if (configuration.environment == 'production') {
-        this.devBP = false;
-      } else {
-        this.devBP = true;
       }
     }
 

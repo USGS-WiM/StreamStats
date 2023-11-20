@@ -56,6 +56,8 @@ var StreamStats;
                 _this.nssService = nssService;
                 _this.toaster = toaster;
                 _this.manageQueue = configuration.manageBPQueue;
+                _this.environment = configuration.environment;
+                console.log(_this.environment);
                 _this.cbFlowStats = false;
                 _this.cbBasinChar = false;
                 _this.selectedFlowStatsList = [];
@@ -829,12 +831,6 @@ var StreamStats;
                 });
                 if (configuration.showBPWarning) {
                     this.warningMessage = configuration.warningBPMessage;
-                }
-                if (configuration.environment == 'production') {
-                    this.devBP = false;
-                }
-                else {
-                    this.devBP = true;
                 }
             };
             BatchProcessorController.prototype.checkArrayForObj = function (arr, obj) {
