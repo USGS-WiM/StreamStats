@@ -674,8 +674,16 @@ var StreamStats;
                                     else if (result.inExclude == true) {
                                         _this.studyArea.checkingDelineatedPoint = false;
                                         if (result.type == 1) {
-                                            _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", result.message.text, 0);
-                                            gtag('event', 'ValidatePoint', { 'Label': 'Not allowed' });
+                                            if (_this.studyArea.ignoreExclusionPolygons) {
+                                                _this.toaster.pop("warning", "Delineation and flow statistic computation not allowed here", result.message.text, 0);
+                                                _this.toaster.pop("success", "Ignoring exclusion areas", "Delineating your basin now...", 5000);
+                                                gtag('event', 'ValidatePoint', { 'Label': 'Invalid (exclusion polygons ignored)' });
+                                                _this.startDelineate(latlng, true, result.message.text);
+                                            }
+                                            else {
+                                                _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", result.message.text, 0);
+                                                gtag('event', 'ValidatePoint', { 'Label': 'Not allowed' });
+                                            }
                                         }
                                         else {
                                             _this.toaster.pop("warning", "Warning", result.message.text, true, 0);

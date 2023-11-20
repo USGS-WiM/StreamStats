@@ -944,8 +944,16 @@ module StreamStats.Controllers {
                                     this.studyArea.checkingDelineatedPoint = false;
                                     if (result.type == 1) { // If point is in a hard exclusion polygon (no delineation allowed)
                                         // Prohibit delineation
-                                        this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", result.message.text, 0);
-                                        gtag('event', 'ValidatePoint',{ 'Label': 'Not allowed' });
+                                        if (this.studyArea.ignoreExclusionPolygons) { // If user has selected to ignore exclusion polygons (not an option on Production)
+                                            this.toaster.pop("warning", "Delineation and flow statistic computation not allowed here", result.message.text, 0); // Warn the user
+                                            this.toaster.pop("success", "Ignoring exclusion areas", "Delineating your basin now...", 5000) // Proceed with delineation
+                                            gtag('event', 'ValidatePoint',{ 'Label': 'Invalid (exclusion polygons ignored)' });
+                                            this.startDelineate(latlng, true, result.message.text);
+                                        } else { // If exclusion polygons are being considered
+                                            // Prohibit delineation
+                                            this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", result.message.text, 0);
+                                            gtag('event', 'ValidatePoint',{ 'Label': 'Not allowed' });
+                                        }
                                     } else { // If point is in a soft exclusion polygon (delineation allowed)
                                         // Warn the user
                                         this.toaster.pop("warning", "Warning", result.message.text, true, 0);
