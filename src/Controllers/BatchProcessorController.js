@@ -700,9 +700,9 @@ var StreamStats;
                                 statusDescription: _this.batchStatusMessageList.filter(function (item) {
                                     return item.id == batch.StatusID;
                                 })[0].description,
-                                timeSubmitted: batch.TimeSubmitted,
-                                timeStarted: batch.TimeStarted,
-                                timeCompleted: batch.TimeCompleted,
+                                timeSubmitted: batch.TimeSubmitted == null ? null : new Date(new Date(batch.TimeSubmitted + "Z").toString()),
+                                timeStarted: batch.TimeStarted == null ? null : new Date(new Date(batch.TimeStarted + "Z").toString()),
+                                timeCompleted: batch.TimeCompleted == null ? null : new Date(new Date(batch.TimeCompleted + "Z").toString()),
                                 resultsURL: batch.ResultsURL,
                                 region: batch.Region,
                                 pointsRequested: batch.NumberPoints,

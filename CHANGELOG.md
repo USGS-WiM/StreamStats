@@ -11,10 +11,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Note about Batch Processor output projection
 - appConfig files for dev and test machines
+- Instructions about shapefile structure to Batch Processor Submit Batch tab
 
 ### Changed
 
 - Batch Processor streamgrids retrieved from different endpoints
+- Batch Processor times displayed in local time instead of UTC
 - Use SS Pourpoint ssExcludePolygon service instead of directly using state map services
 
 ### Deprecated
