@@ -21,6 +21,7 @@ var StreamStats;
                 this.leafletData = leafletData;
                 this.multipleParameterSelectorAdd = true;
                 this.explorationService = exploration;
+                this.environment = configuration.environment;
                 StatisticsGroup.onSelectedStatisticsGroupChanged.subscribe(this._onSelectedStatisticsGroupChangedHandler);
                 $scope.$watch(function () { return _this.regionService.selectedRegion; }, function (newval, oldval) {
                     if (newval == null)

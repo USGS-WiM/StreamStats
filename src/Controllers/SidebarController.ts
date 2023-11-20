@@ -85,6 +85,7 @@ module StreamStats.Controllers {
         }
         private scenarioHasExtensions: Boolean;
         private extensionsConfigured: Boolean;
+        public environment: string;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -105,6 +106,7 @@ module StreamStats.Controllers {
             this.leafletData = leafletData;
             this.multipleParameterSelectorAdd = true;
             this.explorationService = exploration;
+            this.environment = configuration.environment;
             
             StatisticsGroup.onSelectedStatisticsGroupChanged.subscribe(this._onSelectedStatisticsGroupChangedHandler);
             

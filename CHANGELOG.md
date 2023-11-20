@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Note about Batch Processor output projection
 - appConfig files for dev and test machines
 - Instructions about shapefile structure to Batch Processor Submit Batch tab
+- Checkbox option to ignore exclusion polygons on non-Production servers
 - Allow option to run Dev Batch Processor points that are in exclusion polygons
 
 ### Changed
