@@ -684,6 +684,13 @@ var StreamStats;
                                         }
                                     }
                                 }
+                            }, function (error) {
+                                _this.studyArea.checkingDelineatedPoint = false;
+                                _this.toaster.pop('error', "There was an error checking exclusion polygons", "HTTP request error", 0);
+                                _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
+                                gtag('event', 'ValidatePoint', { 'Label': 'Not advised (no point query)' });
+                                _this.startDelineate(latlng, false);
+                            }).finally(function () {
                             });
                         }
                     });

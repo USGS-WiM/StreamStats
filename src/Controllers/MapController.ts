@@ -955,8 +955,16 @@ module StreamStats.Controllers {
                                     // TODO in future issue: add more types of exlusion polygons
                                 }
                             }
+                        }, (error) => { // If there was an error in processing the request
+                            this.studyArea.checkingDelineatedPoint = false;
+                            this.toaster.pop('error', "There was an error checking exclusion polygons", "HTTP request error", 0);  // Warn the user
+                            this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000) // Delineate anyway
+                            gtag('event', 'ValidatePoint',{ 'Label': 'Not advised (no point query)' });
+                            this.startDelineate(latlng, false);
+                        }).finally(() => {  
+
                         });
-                    }
+                    
                 });
             });
         }
