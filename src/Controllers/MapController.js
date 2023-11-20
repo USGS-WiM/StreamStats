@@ -650,29 +650,38 @@ var StreamStats;
                             _this.queryExcludePolygons(_this.regionServices.selectedRegion.RegionID, latlng.lat, latlng.lng).then(function (response) {
                                 _this.cursorStyle = 'pointer';
                                 _this.toaster.clear();
-                                var result = response.data.response[0];
-                                if (result.inExclude == false) {
+                                if (response.status != 200) {
                                     _this.studyArea.checkingDelineatedPoint = false;
-                                    if (result.message && result.message.text != null) {
-                                        _this.toaster.pop("warning", "Selected State/Region does not have exlusion areas defined", "Delineating with no exclude polygon layer...", true, 0);
-                                        gtag('event', 'ValidatePoint', { 'Label': 'Not advised (no point query)' });
-                                    }
-                                    else {
-                                        _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
-                                        gtag('event', 'ValidatePoint', { 'Label': 'Valid' });
-                                    }
+                                    _this.toaster.pop('error', "There was an error checking exclusion polygons", "HTTP request error", 0);
+                                    _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
+                                    gtag('event', 'ValidatePoint', { 'Label': 'Not advised (no point query)' });
                                     _this.startDelineate(latlng, false);
                                 }
-                                else if (result.inExclude == true) {
-                                    _this.studyArea.checkingDelineatedPoint = false;
-                                    if (result.type == 1) {
-                                        _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", result.message.text, 0);
-                                        gtag('event', 'ValidatePoint', { 'Label': 'Not allowed' });
+                                else {
+                                    var result = response.data.response[0];
+                                    if (result.inExclude == false) {
+                                        _this.studyArea.checkingDelineatedPoint = false;
+                                        if (result.message && result.message.text != null) {
+                                            _this.toaster.pop("warning", "Selected State/Region does not have exlusion areas defined", "Delineating with no exclude polygon layer...", true, 0);
+                                            gtag('event', 'ValidatePoint', { 'Label': 'Not advised (no point query)' });
+                                        }
+                                        else {
+                                            _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
+                                            gtag('event', 'ValidatePoint', { 'Label': 'Valid' });
+                                        }
+                                        _this.startDelineate(latlng, false);
                                     }
-                                    else {
-                                        _this.toaster.pop("warning", "Warning", result.message.text, true, 0);
-                                        gtag('event', 'ValidatePoint', { 'Label': 'Not advised' });
-                                        _this.startDelineate(latlng, true, result.message.text);
+                                    else if (result.inExclude == true) {
+                                        _this.studyArea.checkingDelineatedPoint = false;
+                                        if (result.type == 1) {
+                                            _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", result.message.text, 0);
+                                            gtag('event', 'ValidatePoint', { 'Label': 'Not allowed' });
+                                        }
+                                        else {
+                                            _this.toaster.pop("warning", "Warning", result.message.text, true, 0);
+                                            gtag('event', 'ValidatePoint', { 'Label': 'Not advised' });
+                                            _this.startDelineate(latlng, true, result.message.text);
+                                        }
                                     }
                                 }
                             });

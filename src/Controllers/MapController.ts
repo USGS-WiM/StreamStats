@@ -912,38 +912,49 @@ module StreamStats.Controllers {
                         map.invalidateSize();
 
                         this.queryExcludePolygons(this.regionServices.selectedRegion.RegionID, latlng.lat, latlng.lng).then((response) => {
-                            
+
                             this.cursorStyle = 'pointer';
                             this.toaster.clear();
-                            var result = response.data.response[0]
-                            
-                            if (result.inExclude == false) { // If point is not in exclusion polygon
-                                // Proceed with delineation
+
+                            if (response.status != 200) { // If there was an error in processing the request
+
                                 this.studyArea.checkingDelineatedPoint = false;
-                                if (result.message && result.message.text != null) { // If there is a warning message (occurs if there is no exclusion polygon for this state/region)
-                                    // Warn the user
-                                    this.toaster.pop("warning", "Selected State/Region does not have exlusion areas defined", "Delineating with no exclude polygon layer...", true, 0);
-                                    gtag('event', 'ValidatePoint',{ 'Label': 'Not advised (no point query)' });
-                                } else { // If there are no warning messages; there was an exclusion polygon layer, and the pourpoint was valid 
-                                    this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000)
-                                    gtag('event', 'ValidatePoint',{ 'Label': 'Valid' });
-                                }
+                                this.toaster.pop('error', "There was an error checking exclusion polygons", "HTTP request error", 0);  // Warn the user
+                                this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000) // Delineate anyway
+                                gtag('event', 'ValidatePoint',{ 'Label': 'Not advised (no point query)' });
                                 this.startDelineate(latlng, false);
-                            } else if (result.inExclude == true) { // If point is in exclusion polygon
-                                this.studyArea.checkingDelineatedPoint = false;
-                                if (result.type == 1) { // If point is in a hard exclusion polygon (no delineation allowed)
-                                    // Prohibit delineation
-                                    this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", result.message.text, 0);
-                                    gtag('event', 'ValidatePoint',{ 'Label': 'Not allowed' });
-                                } else { // If point is in a soft exclusion polygon (delineation allowed)
-                                    // Warn the user
-                                    this.toaster.pop("warning", "Warning", result.message.text, true, 0);
-                                    gtag('event', 'ValidatePoint',{ 'Label': 'Not advised' });
-                                    this.startDelineate(latlng, true, result.message.text);
-                                }
-                                // TODO in future issue: add more types of exlusion polygons
-                            }
+
+                            } else { // If the request returned successfully (status = 200)
+
+                                var result = response.data.response[0]
                             
+                                if (result.inExclude == false) { // If point is not in exclusion polygon
+                                    // Proceed with delineation
+                                    this.studyArea.checkingDelineatedPoint = false;
+                                    if (result.message && result.message.text != null) { // If there is a warning message (occurs if there is no exclusion polygon for this state/region)
+                                        // Warn the user
+                                        this.toaster.pop("warning", "Selected State/Region does not have exlusion areas defined", "Delineating with no exclude polygon layer...", true, 0);
+                                        gtag('event', 'ValidatePoint',{ 'Label': 'Not advised (no point query)' });
+                                    } else { // If there are no warning messages; there was an exclusion polygon layer, and the pourpoint was valid 
+                                        this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000)
+                                        gtag('event', 'ValidatePoint',{ 'Label': 'Valid' });
+                                    }
+                                    this.startDelineate(latlng, false);
+                                } else if (result.inExclude == true) { // If point is in exclusion polygon
+                                    this.studyArea.checkingDelineatedPoint = false;
+                                    if (result.type == 1) { // If point is in a hard exclusion polygon (no delineation allowed)
+                                        // Prohibit delineation
+                                        this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", result.message.text, 0);
+                                        gtag('event', 'ValidatePoint',{ 'Label': 'Not allowed' });
+                                    } else { // If point is in a soft exclusion polygon (delineation allowed)
+                                        // Warn the user
+                                        this.toaster.pop("warning", "Warning", result.message.text, true, 0);
+                                        gtag('event', 'ValidatePoint',{ 'Label': 'Not advised' });
+                                        this.startDelineate(latlng, true, result.message.text);
+                                    }
+                                    // TODO in future issue: add more types of exlusion polygons
+                                }
+                            }
                         });
                     }
                 });
