@@ -964,6 +964,7 @@ module StreamStats.Controllers {
                         }).finally(() => {  
 
                         });
+                    }
                     
                 });
             });
