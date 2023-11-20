@@ -4,7 +4,7 @@ configuration.environment = 'development';
 configuration.showWarningModal = false;
 configuration.warningModalMessage = "Due to heavy demand, StreamStats is currently experiencing system interruptions. If you receive errors, please try back again later.<br><br>Thank you for your patience."
 configuration.showBPWarning = true;
-configuration.warningBPMessage = "Within the next few months, StreamStats will end support for the current Batch Processor (<a href='https://streamstatsags.cr.usgs.gov/ss_bp/' target='_blank'>https://streamstatsags.cr.usgs.gov/ss_bp/</a>) and replace it with the Batch Processor in this window (<a href='https://streamstats.usgs.gov/ss/?BP=submitBatch' target='_blank'>https://streamstats.usgs.gov/ss/?BP=submitBatch</a>). Complete the form below to submit a batch to the preview version of the new Batch Processor. Please note that the preview version may have errors or delays. Please email any issues or feedback to <b>streamstats@usgs.gov</b>."
+configuration.warningBPMessage = "On January 5, 2024, StreamStats will end support for the current Batch Processor (<a href='https://streamstatsags.cr.usgs.gov/ss_bp/' target='_blank'>https://streamstatsags.cr.usgs.gov/ss_bp/</a>) and replace it with the Batch Processor in this window (<a href='https://streamstats.usgs.gov/ss/?BP=submitBatch' target='_blank'>https://streamstats.usgs.gov/ss/?BP=submitBatch</a>). Complete the form below to submit a batch to the preview version of the new Batch Processor. Please note that the preview version may have errors or delays. Please email any issues or feedback to <b>streamstats@usgs.gov</b>."
 configuration.manageBPQueue = false;
 if (window.location.host === 'test.streamstats.usgs.gov') {
     configuration.showBPButton = false;
@@ -24,7 +24,8 @@ configuration.baseurls =
         'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices',
         'WeightingServices': 'https://streamstats.usgs.gov/channelweightingservices',
         'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices',
-        'BatchProcessorServices': 'https://dev.streamstats.usgs.gov/batchprocessor' // Will need to change this if running locally and want to use production data
+        'BatchProcessorServices': 'https://dev.streamstats.usgs.gov/batchprocessor', // Will need to change this if running locally and want to use production data
+        'PourPointServices': 'https://test.streamstats.usgs.gov/pourpoint'
     };
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
@@ -37,6 +38,7 @@ if (window.location.host === 'streamstats.usgs.gov') {
         configuration.baseurls.GageStatsServices = 'https://streamstats.usgs.gov/gagestatsservices',
 		configuration.baseurls.FlowAnywhereRegressionServices = 'https://streamstats.usgs.gov/regressionservices',
         configuration.baseurls.BatchProcessorServices = 'https://streamstats.usgs.gov/batchprocessor',
+        configuration.baseurls.PourPointServices = 'https://streamstats.usgs.gov/pourpoint',
         configuration.environment = 'production';
 }
 
@@ -102,7 +104,8 @@ configuration.queryparams =
         'GageStatsServicesBounds': '/stations/Bounds?xmin={0}&xmax={1}&ymin={2}&ymax={3}&geojson=true',
         'FlowAnywhereEstimates': '/models/FLA/estimate?state={0}',
         'FlowAnywhereGages': '/arcgis/rest/services/IowaStreamEst/FlowAnywhere/MapServer/1/query?geometry={0},{1}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.da_pub_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
-        'Regions': '/regions/'
+        'Regions': '/regions/',
+        'PourPointServicesExcludePolygon': '/ssExcludePolygon/'
     };
 
 configuration.basemaps =

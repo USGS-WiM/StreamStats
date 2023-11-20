@@ -9,9 +9,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- Note about Batch Processor output projection
+- appConfig files for dev and test machines
+- Instructions about shapefile structure to Batch Processor Submit Batch tab
 - Allow option to run Dev Batch Processor points that are in exclusion polygons
 
 ### Changed
+
+- Batch Processor streamgrids retrieved from different endpoints
+- Batch Processor times displayed in local time instead of UTC
+- Use SS Pourpoint ssExcludePolygon service instead of directly using state map services
 
 ### Deprecated
 
@@ -20,6 +27,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 
 - Latitude and Longitude columns swapped in the Elevation profile CSV export
+- Email address required for Batch Processor Batch Status tab
 
 ### Security
 
