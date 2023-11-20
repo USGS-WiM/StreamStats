@@ -13,6 +13,42 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 var StreamStats;
 (function (StreamStats) {
     var Services;
@@ -191,63 +227,145 @@ var StreamStats;
                 this.eventManager.RaiseEvent(Services.onStudyAreaReset, this, WiM.Event.EventArgs.Empty);
             };
             StudyAreaService.prototype.loadStudyBoundary = function () {
+                return __awaiter(this, void 0, void 0, function () {
+                    var regionID, url, url, request, _i, _a, point, url, request, delineations, i, test;
+                    var _this = this;
+                    return __generator(this, function (_b) {
+                        switch (_b.label) {
+                            case 0:
+                                this.toaster.pop("wait", "Delineating Basin", "Please wait...", 0);
+                                this.canUpdate = false;
+                                regionID = this.selectedStudyArea.RegionID;
+                                if (!(this.selectedStudyArea.Pourpoint.length == 1)) return [3, 1];
+                                url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, this.selectedStudyArea.Pourpoint[0].Longitude.toString(), this.selectedStudyArea.Pourpoint[0].Latitude.toString(), this.selectedStudyArea.Pourpoint[0].crs.toString());
+                                if (this.regionService.selectedRegion.Applications.indexOf('StormDrain') > -1) {
+                                    url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(regionID, this.selectedStudyArea.Pourpoint[0].Longitude.toString(), this.selectedStudyArea.Pourpoint[0].Latitude.toString(), this.surfacecontributionsonly);
+                                }
+                                request = new WiM.Services.Helpers.RequestInfo(url, true);
+                                request.withCredentials = true;
+                                this.Execute(request).then(function (response) {
+                                    if (_this.regionService.selectedRegion.Applications.indexOf('StormDrain') > -1) {
+                                        if (response.data.layers && response.data.layers.features && response.data.layers.features[1].geometry.coordinates.length > 0) {
+                                            _this.selectedStudyArea.Disclaimers['isStormDrain'] = true;
+                                            var fc = response.data.hasOwnProperty("layers") ? response.data["layers"] : null;
+                                            if (fc)
+                                                fc.features.forEach(function (f) { return f.id = f.id.toString().toLowerCase(); });
+                                            _this.selectedStudyArea.FeatureCollection = fc;
+                                            _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
+                                            _this.selectedStudyArea.Date = new Date();
+                                            _this.toaster.clear();
+                                            _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
+                                            _this.canUpdate = true;
+                                        }
+                                        else {
+                                            _this.clearStudyArea();
+                                            _this.toaster.clear();
+                                            _this.toaster.pop("error", "A watershed was not returned from the delineation request", "Please retry", 0);
+                                        }
+                                    }
+                                    else if (response.data.hasOwnProperty("featurecollection") && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
+                                        _this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
+                                        _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
+                                        _this.selectedStudyArea.FeatureCollection = {
+                                            type: "FeatureCollection",
+                                            features: _this.reconfigureWatershedResponse(response.data.featurecollection),
+                                            bbox: response.data.featurecollection.filter(function (f) { return f.name == "globalwatershed"; })[0].feature.features[0].bbox
+                                        };
+                                        _this.snappedPourPoint = response.data.featurecollection.filter(function (f) { return f.name == "globalwatershedpoint"; })[0].feature.features[0].geometry.coordinates;
+                                        _this.selectedStudyArea.Date = new Date();
+                                        _this.toaster.clear();
+                                        _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
+                                        _this.canUpdate = true;
+                                        if (_this.regionService.selectedRegion.Applications.indexOf("HydrologicFeatures") != -1) {
+                                            _this.queryHydrologicFeatures();
+                                        }
+                                    }
+                                    else {
+                                        _this.clearStudyArea();
+                                        _this.toaster.clear();
+                                        _this.toaster.pop("error", "A watershed was not returned from the delineation request", "Please retry", 0);
+                                    }
+                                    _this.selectedStudyArea.FeatureCollection.features.forEach(function (f) { return f.properties = {}; });
+                                }, function (error) {
+                                    _this.clearStudyArea();
+                                    _this.toaster.clear();
+                                    _this.toaster.pop("error", "There was an HTTP error with the delineation request", "Please retry", 0);
+                                }).finally(function () {
+                                });
+                                return [3, 8];
+                            case 1:
+                                _i = 0, _a = this.selectedStudyArea.Pourpoint;
+                                _b.label = 2;
+                            case 2:
+                                if (!(_i < _a.length)) return [3, 7];
+                                point = _a[_i];
+                                console.log(point);
+                                url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, point.Longitude.toString(), point.Latitude.toString(), point.crs.toString());
+                                request = new WiM.Services.Helpers.RequestInfo(url, true);
+                                request.withCredentials = true;
+                                delineations = [];
+                                i = 0;
+                                _b.label = 3;
+                            case 3:
+                                if (!(i < 3)) return [3, 6];
+                                console.log('Try' + i);
+                                return [4, this.executeRequest(request).then(function (response) {
+                                        return (response);
+                                    })];
+                            case 4:
+                                test = _b.sent();
+                                if (test) {
+                                    delineations.push(test);
+                                    return [3, 6];
+                                }
+                                _b.label = 5;
+                            case 5:
+                                i++;
+                                return [3, 3];
+                            case 6:
+                                _i++;
+                                return [3, 2];
+                            case 7:
+                                ;
+                                if (delineations.length == this.selectedStudyArea.Pourpoint.length) {
+                                    console.log('can continue');
+                                    this.selectedStudyArea.FeatureCollection = null;
+                                    this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
+                                }
+                                else {
+                                    console.log('didnt delineate all points.');
+                                    this.toaster.clear();
+                                    this.toaster.pop("error", "A watershed was not returned from the delineation request", "Please retry", 0);
+                                }
+                                _b.label = 8;
+                            case 8: return [2];
+                        }
+                    });
+                });
+            };
+            StudyAreaService.prototype.executeRequest = function (request) {
                 var _this = this;
-                this.toaster.pop("wait", "Delineating Basin", "Please wait...", 0);
-                this.canUpdate = false;
-                var regionID = this.selectedStudyArea.RegionID;
-                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString());
-                if (this.regionService.selectedRegion.Applications.indexOf('StormDrain') > -1) {
-                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.surfacecontributionsonly);
-                }
-                var request = new WiM.Services.Helpers.RequestInfo(url, true);
-                request.withCredentials = true;
-                this.Execute(request).then(function (response) {
-                    if (_this.regionService.selectedRegion.Applications.indexOf('StormDrain') > -1) {
-                        if (response.data.layers && response.data.layers.features && response.data.layers.features[1].geometry.coordinates.length > 0) {
-                            _this.selectedStudyArea.Disclaimers['isStormDrain'] = true;
-                            var fc = response.data.hasOwnProperty("layers") ? response.data["layers"] : null;
-                            if (fc)
-                                fc.features.forEach(function (f) { return f.id = f.id.toString().toLowerCase(); });
-                            _this.selectedStudyArea.FeatureCollection = fc;
-                            _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
-                            _this.selectedStudyArea.Date = new Date();
-                            _this.toaster.clear();
-                            _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
-                            _this.canUpdate = true;
-                        }
-                        else {
-                            _this.clearStudyArea();
-                            _this.toaster.clear();
-                            _this.toaster.pop("error", "A watershed was not returned from the delineation request", "Please retry", 0);
-                        }
-                    }
-                    else if (response.data.hasOwnProperty("featurecollection") && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
+                return this.Execute(request).then(function (response) {
+                    console.log(response);
+                    if (response.data.hasOwnProperty("featurecollection") && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
+                        console.log('success');
                         _this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
                         _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
-                        _this.selectedStudyArea.FeatureCollection = {
+                        var watershed = {
                             type: "FeatureCollection",
                             features: _this.reconfigureWatershedResponse(response.data.featurecollection),
                             bbox: response.data.featurecollection.filter(function (f) { return f.name == "globalwatershed"; })[0].feature.features[0].bbox
                         };
-                        _this.snappedPourPoint = response.data.featurecollection.filter(function (f) { return f.name == "globalwatershedpoint"; })[0].feature.features[0].geometry.coordinates;
-                        _this.selectedStudyArea.Date = new Date();
-                        _this.toaster.clear();
-                        _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
-                        _this.canUpdate = true;
-                        if (_this.regionService.selectedRegion.Applications.indexOf("HydrologicFeatures") != -1) {
-                            _this.queryHydrologicFeatures();
-                        }
+                        return watershed;
                     }
                     else {
-                        _this.clearStudyArea();
-                        _this.toaster.clear();
-                        _this.toaster.pop("error", "A watershed was not returned from the delineation request", "Please retry", 0);
+                        return;
                     }
-                    _this.selectedStudyArea.FeatureCollection.features.forEach(function (f) { return f.properties = {}; });
                 }, function (error) {
                     _this.clearStudyArea();
                     _this.toaster.clear();
                     _this.toaster.pop("error", "There was an HTTP error with the delineation request", "Please retry", 0);
+                    return;
                 }).finally(function () {
                 });
             };
@@ -269,7 +387,7 @@ var StreamStats;
                             bbox: response.data.featurecollection.filter(function (f) { return f.name == "globalwatershed"; })[0].feature.features[0].bbox
                         };
                         var pointFeature = response.data.featurecollection.filter(function (f) { return f.name == "globalwatershedpoint"; })[0].feature.features[0];
-                        _this.selectedStudyArea.Pourpoint = new WiM.Models.Point(pointFeature.bbox[1], pointFeature.bbox[0], pointFeature.crs.properties.code);
+                        _this.selectedStudyArea.Pourpoint[0] = new WiM.Models.Point(pointFeature.bbox[1], pointFeature.bbox[0], pointFeature.crs.properties.code);
                     }, function (error) {
                         _this.toaster.clear();
                         _this.toaster.pop("error", "Error Delineating Basin", "Please retry", 0);
@@ -287,7 +405,7 @@ var StreamStats;
                 var _this = this;
                 this.toaster.pop("wait", "Loading Edited Basin", "Please wait...", 0);
                 this.canUpdate = false;
-                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSeditBasin'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, this.selectedStudyArea.Pourpoint.crs.toString());
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSeditBasin'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, this.selectedStudyArea.Pourpoint[0].crs.toString());
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.PUT, 'json', angular.toJson(this.WatershedEditDecisionList), {});
                 request.withCredentials = true;
                 this.Execute(request).then(function (response) {
@@ -361,7 +479,6 @@ var StreamStats;
                 };
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
                 return this.Execute(request).then(function (response) {
-                    console.log(response.data.response);
                     return _this.checkExcludePolygon(response.data.response);
                 }, function (error) {
                 }).finally(function () {
@@ -379,7 +496,6 @@ var StreamStats;
                 };
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
                 return this.Execute(request).then(function (response) {
-                    console.log(response.data.response);
                     return (response.data.response);
                 }, function (error) {
                 }).finally(function () {
@@ -387,7 +503,7 @@ var StreamStats;
             };
             StudyAreaService.prototype.loadAllIndexGages = function () {
                 var _this = this;
-                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['KrigService'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude, this.selectedStudyArea.Pourpoint.Latitude, this.selectedStudyArea.Pourpoint.crs, '300');
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['KrigService'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint[0].Longitude, this.selectedStudyArea.Pourpoint[0].Latitude, this.selectedStudyArea.Pourpoint[0].crs, '300');
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     _this.allIndexGages = response.data;
@@ -559,7 +675,7 @@ var StreamStats;
                 });
                 var outFields = "eqWithStrID.Stream_Name,eqWithStrID.StreamID_ID,eqWithStrID.BASIN_NAME,eqWithStrID.BEGIN_DA,eqWithStrID.END_DA,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
                 var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['coordinatedReachQueryService']
-                    .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint.crs, outFields);
+                    .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint[0].crs, outFields);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     if (response.data.error) {
@@ -851,7 +967,7 @@ var StreamStats;
             };
             StudyAreaService.prototype.GetKriggedReferenceGages = function () {
                 var _this = this;
-                var url = configuration.queryparams['KrigService'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude, this.selectedStudyArea.Pourpoint.Latitude, this.selectedStudyArea.Pourpoint.crs, '5');
+                var url = configuration.queryparams['KrigService'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint[0].Longitude, this.selectedStudyArea.Pourpoint[0].Latitude, this.selectedStudyArea.Pourpoint[0].crs, '5');
                 if (!this.selectedStudyAreaExtensions)
                     return;
                 var sid = this.selectedStudyAreaExtensions.reduce(function (acc, val) { return acc.concat(val.parameters); }, []).filter(function (f) { return (f.code).toLowerCase() == "sid"; });
@@ -982,7 +1098,7 @@ var StreamStats;
                     angular.forEach(paramList, function (value, index) {
                         if (val.code.toUpperCase().trim() === value.code.toUpperCase().trim()) {
                             if (val.value != undefined && val.code.toUpperCase().trim() == 'DRNAREA' && value.value != val.value) {
-                                var latLong = self.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + ',' + self.selectedStudyArea.Pourpoint.Longitude.toFixed(5);
+                                var latLong = self.selectedStudyArea.Pourpoint[0].Latitude.toFixed(5) + ',' + self.selectedStudyArea.Pourpoint[0].Longitude.toFixed(5);
                                 var daValue = val.value;
                                 if (val.unit.toLowerCase().trim() == 'square kilometers')
                                     daValue = daValue / 2.59;

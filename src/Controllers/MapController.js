@@ -198,10 +198,12 @@ var StreamStats;
                         _this.measurement();
                 });
                 $scope.$watch(function () { return _this.studyArea.delineateByLine; }, function (newval, oldval) {
-                    if (newval == true)
-                        _this.drawDelineationLine();
-                    else
-                        _this.drawControl.disable();
+                    if (newval) {
+                        if (newval == true)
+                            _this.drawDelineationLine();
+                        else
+                            _this.drawControl.disable();
+                    }
                 });
                 $scope.$watch(function () { return _this.regionServices.regionMapLayerListLoaded; }, function (newval, oldval) {
                     if (newval) {
@@ -704,6 +706,21 @@ var StreamStats;
                                         }
                                     }
                                 });
+                                _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
+                                _this.markers = {};
+                                var ssPoints = [];
+                                points.forEach(function (point, index) {
+                                    _this.markers[index] = {
+                                        lat: point.point.lat,
+                                        lng: point.point.long,
+                                        message: '<strong>Latitude: </strong>' + point.point.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + point.point.long.toFixed(5),
+                                        focus: true,
+                                        draggable: true
+                                    };
+                                    var latlng = new WiM.Models.Point(point.point.lat, point.point.long, '4326');
+                                    ssPoints.push(latlng);
+                                });
+                                _this.startDelineate(ssPoints, false);
                             });
                         }
                     });
@@ -741,7 +758,8 @@ var StreamStats;
                             if (queryString === 'visible:') {
                                 _this.toaster.clear();
                                 _this.toaster.pop("warning", "Selected State/Region does not have exlusion areas defined", "Delineating with no exclude polygon layer...", true, 0);
-                                _this.startDelineate(latlng, true);
+                                var point = [new WiM.Models.Point(latlng.lat, latlng.lng, '4326')];
+                                _this.startDelineate(point, true);
                                 gtag('event', 'ValidatePoint', { 'Label': 'Not advised (no point query)' });
                                 _this.cursorStyle = 'pointer';
                                 return;
@@ -761,7 +779,8 @@ var StreamStats;
                                     gtag('event', 'ValidatePoint', { 'Label': 'Valid' });
                                     _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
                                     _this.studyArea.checkingDelineatedPoint = false;
-                                    _this.startDelineate(latlng, false);
+                                    var point = [new WiM.Models.Point(latlng.lat, latlng.lng, '4326')];
+                                    _this.startDelineate(point, false);
                                 }
                                 else {
                                     _this.studyArea.checkingDelineatedPoint = false;
@@ -773,7 +792,8 @@ var StreamStats;
                                     }
                                     else {
                                         _this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
-                                        _this.startDelineate(latlng, true, popupMsg);
+                                        var point = [new WiM.Models.Point(latlng.lat, latlng.lng, '4326')];
+                                        _this.startDelineate(point, true, popupMsg);
                                         gtag('event', 'ValidatePoint', { 'Label': 'Not advised' });
                                     }
                                 }
@@ -927,6 +947,7 @@ var StreamStats;
             };
             MapController.prototype.onSelectedStudyAreaChanged = function () {
                 var _this = this;
+                console.log('onSelectedStudyAreaChanged');
                 var bbox;
                 if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.FeatureCollection)
                     return;
@@ -978,6 +999,7 @@ var StreamStats;
             };
             MapController.prototype.addGeoJSON = function (LayerName, feature) {
                 if (LayerName == 'globalwatershed') {
+                    console.log(feature);
                     var verticies = feature.geometry.coordinates.reduce(function (count, row) { return count + row.length; }, 0);
                     var data = this.studyArea.simplify(angular.copy(feature));
                     var data_verticies = data.geometry.coordinates.reduce(function (count, row) { return count + row.length; }, 0);
@@ -1006,8 +1028,9 @@ var StreamStats;
                     };
                 }
                 else if (LayerName == 'globalwatershedpoint') {
-                    var lat = this.studyArea.selectedStudyArea.Pourpoint.Latitude;
-                    var lng = this.studyArea.selectedStudyArea.Pourpoint.Longitude;
+                    console.log(feature);
+                    var lat = this.studyArea.selectedStudyArea.Pourpoint[0].Latitude;
+                    var lng = this.studyArea.selectedStudyArea.Pourpoint[0].Longitude;
                     var rcode = this.studyArea.selectedStudyArea.RegionID;
                     var workspaceID = this.studyArea.selectedStudyArea.WorkspaceID;
                     this.geojson[LayerName] = {
@@ -1419,8 +1442,8 @@ var StreamStats;
                 }
                 return layeridList;
             };
-            MapController.prototype.startDelineate = function (latlng, isInExclusionArea, excludeReason) {
-                var studyArea = new StreamStats.Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
+            MapController.prototype.startDelineate = function (points, isInExclusionArea, excludeReason) {
+                var studyArea = new StreamStats.Models.StudyArea(this.regionServices.selectedRegion.RegionID, points);
                 this.studyArea.AddStudyArea(studyArea);
                 this.studyArea.loadStudyBoundary();
                 if (isInExclusionArea && excludeReason)

@@ -361,8 +361,10 @@ module StreamStats.Controllers {
             });
 
             $scope.$watch(() => this.studyArea.delineateByLine,(newval, oldval) => {
-                if (newval == true) this.drawDelineationLine()
-                else this.drawControl.disable();
+                if (newval) {
+                    if (newval == true) this.drawDelineationLine()
+                    else this.drawControl.disable();
+                }
             });
 
             $scope.$watch(() => this.regionServices.regionMapLayerListLoaded,(newval, oldval) => {
@@ -998,9 +1000,27 @@ module StreamStats.Controllers {
                                     }
                                 }
                             });
-                            // TODO: send points to multipoint delineate function 
-                        })
+                            this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000)
+                            this.markers = {}
+                            var ssPoints: Array<WiM.Models.Point> = []
 
+                            points.forEach((point, index) => {
+                                //put pourpoints on the map
+                                this.markers[index] = {
+                                    lat: point.point.lat,
+                                    lng: point.point.long,
+                                    message: '<strong>Latitude: </strong>' + point.point.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + point.point.long.toFixed(5),
+                                    focus: true,
+                                    draggable: true
+                                }
+
+                                var latlng = new WiM.Models.Point(point.point.lat, point.point.long, '4326')
+                                ssPoints.push(latlng)
+                            })
+
+                            // TODO send exclude message if necessary  
+                            this.startDelineate(ssPoints, false);
+                        })
                     }
                 });
             });
@@ -1055,7 +1075,8 @@ module StreamStats.Controllers {
                         if (queryString === 'visible:') {
                             this.toaster.clear();
                             this.toaster.pop("warning", "Selected State/Region does not have exlusion areas defined", "Delineating with no exclude polygon layer...", true, 0);
-                            this.startDelineate(latlng, true);
+                            var point = [new WiM.Models.Point(latlng.lat, latlng.lng, '4326')]
+                            this.startDelineate(point, true);
                             //report ga event
                             gtag('event', 'ValidatePoint',{ 'Label': 'Not advised (no point query)' });
                             this.cursorStyle = 'pointer';
@@ -1082,8 +1103,8 @@ module StreamStats.Controllers {
 
                                 this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000)
                                 this.studyArea.checkingDelineatedPoint = false;
-
-                                this.startDelineate(latlng, false);
+                                var point = [new WiM.Models.Point(latlng.lat, latlng.lng, '4326')]
+                                this.startDelineate(point, false);
                             }
 
                             //otherwise parse exclude Codes
@@ -1098,7 +1119,8 @@ module StreamStats.Controllers {
                                 }
                                 else {
                                     this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
-                                    this.startDelineate(latlng, true, popupMsg);
+                                    var point = [new WiM.Models.Point(latlng.lat, latlng.lng, '4326')]
+                                    this.startDelineate(point, true, popupMsg);
                                     //ga event
                                     gtag('event', 'ValidatePoint',{ 'Label': 'Not advised' });
                                 }
@@ -1339,6 +1361,7 @@ module StreamStats.Controllers {
         }
        
         private onSelectedStudyAreaChanged() {
+            console.log('onSelectedStudyAreaChanged')
             var bbox: GeoJSON.BBox;
             //console.log('in onselectedstudyareachange1', this.studyArea.selectedStudyArea.Features)
 
@@ -1413,6 +1436,7 @@ module StreamStats.Controllers {
 
         private addGeoJSON(LayerName: string, feature: any) {
             if (LayerName == 'globalwatershed') {
+                console.log(feature)
                 var verticies = feature.geometry.coordinates.reduce((count, row) => count + row.length, 0);
                 var data = this.studyArea.simplify(angular.copy(feature));
                 var data_verticies = data.geometry.coordinates.reduce((count, row) => count + row.length, 0);
@@ -1443,8 +1467,9 @@ module StreamStats.Controllers {
                 };
             }
             else if (LayerName == 'globalwatershedpoint') {
-                var lat = this.studyArea.selectedStudyArea.Pourpoint.Latitude;
-                var lng = this.studyArea.selectedStudyArea.Pourpoint.Longitude;
+                console.log(feature)
+                var lat = this.studyArea.selectedStudyArea.Pourpoint[0].Latitude;
+                var lng = this.studyArea.selectedStudyArea.Pourpoint[0].Longitude;
                 var rcode = this.studyArea.selectedStudyArea.RegionID;
                 var workspaceID = this.studyArea.selectedStudyArea.WorkspaceID;
 
@@ -1929,11 +1954,10 @@ module StreamStats.Controllers {
             }//next variable
             return layeridList;
         }
-        private startDelineate(latlng: any, isInExclusionArea?: boolean, excludeReason?: string) {
-            //console.log('in startDelineate', latlng);
-
-
-            var studyArea: Models.IStudyArea = new Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
+        private startDelineate(points: any, isInExclusionArea?: boolean, excludeReason?: string) {
+            //console.log('in startDelineate', points);
+            
+            var studyArea: Models.IStudyArea = new Models.StudyArea(this.regionServices.selectedRegion.RegionID, points);
             this.studyArea.AddStudyArea(studyArea);
             this.studyArea.loadStudyBoundary();
             
@@ -1941,6 +1965,7 @@ module StreamStats.Controllers {
             //add disclaimer here
             if (isInExclusionArea && excludeReason) this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area. ' + excludeReason;
         }
+
     }//end class
 
     angular.module('StreamStats.Controllers')
