@@ -188,6 +188,7 @@ module StreamStats.Controllers {
     public selectedQueue: string;
     public queueURL: string;
     public isRefreshing: boolean;
+    public isStartingNextBatch: boolean;
     public canReorder;
 
     // collapsing sections
@@ -254,6 +255,7 @@ module StreamStats.Controllers {
       this.queues = ["Production Queue", "Development Queue"];
       this.selectedQueue = "Production Queue";
       this.isRefreshing = false;
+      this.isStartingNextBatch = false;
       this.canReorder = false;
       this.basinCharCollapsed = false;
       this.flowStatsCollapsed = false;
@@ -641,6 +643,19 @@ module StreamStats.Controllers {
           this.canReorder = false;
         }
       });
+    }
+
+    // refresh a batch (deletes all results for that batch)
+    public refreshBatch( batchID: number) {
+      let text = "Are you sure you want to refresh Batch ID " + batchID + "? All results for this batch will be deleted.";
+      if (confirm(text) == true) {
+        this.refreshBatchResults(batchID);
+      }
+    }
+
+     // start a new worker
+    public startNextBatch() {
+      this.startWorker();
     }
 
     // soft delete a batch
@@ -1164,6 +1179,69 @@ module StreamStats.Controllers {
             return batchStatusMessages;
           },
           (error) => {}
+        )
+        .finally(() => {});
+    }
+
+    // soft delete a batch
+    public refreshBatchResults(batchID: number): ng.IPromise<any> {
+      var url = this.queueURL + configuration.queryparams["SSBatchProcessorRefreshBatch"].format(batchID);
+
+      var request: WiM.Services.Helpers.RequestInfo =
+        new WiM.Services.Helpers.RequestInfo(
+          url,
+          true,
+          WiM.Services.Helpers.methodType.GET
+        );
+
+      return this.Execute(request)
+        .then(
+          (response: any) => {
+            let text = "Batch ID " + batchID + " was refreshed.";
+            alert(text);
+            // Refresh the list of batches
+            this.isRefreshing = true; 
+            this.getManageQueueList();
+            this.retrievingManageQueue = true;
+          },
+          (error) => {
+            let text =
+              "Error refreshing batch ID " +
+              batchID +
+              ". Please try again later or click the Help menu button to submit a Support Request.";
+            alert(text);
+          }
+        )
+        .finally(() => {});
+    }
+    
+    // kick off a worker on the server
+    public startWorker(): ng.IPromise<any> {
+      var url = this.queueURL + configuration.queryparams["SSBatchProcessorStartWorker"];
+
+      var request: WiM.Services.Helpers.RequestInfo =
+        new WiM.Services.Helpers.RequestInfo(
+          url,
+          true,
+          WiM.Services.Helpers.methodType.GET
+        );
+
+      return this.Execute(request)
+        .then(
+          (response: any) => {
+            let text = "Worker was started on the server. The next batch will start running, if the server has capacity.";
+            alert(text);
+            // Refresh the list of batches
+            this.isRefreshing = true; 
+            this.getManageQueueList();
+            this.retrievingManageQueue = true;
+            this.isStartingNextBatch = false;
+          },
+          (error) => {
+            let text =
+              "Error. Please try again later or click the Help menu button to submit a Support Request.";
+            alert(text);
+          }
         )
         .finally(() => {});
     }
