@@ -120,6 +120,7 @@ module StreamStats.Controllers {
     public email: string;
     public idField: string;
     public attachment: any;
+    public ignoreExcludePolys: boolean;
   }
 
   class BatchProcessorController
@@ -136,6 +137,7 @@ module StreamStats.Controllers {
     public displayMessage: string;
     public toaster: any;
     public manageQueue: boolean;
+    public environment: string;
 
     // Regions
     public regionList: Array<any>;
@@ -192,6 +194,7 @@ module StreamStats.Controllers {
     public canReorder;
 
     // collapsing sections
+    public basinDelineationCollapsed;
     public basinCharCollapsed;
     public flowStatsCollapsed;
 
@@ -229,6 +232,8 @@ module StreamStats.Controllers {
       this.nssService = nssService;
       this.toaster = toaster;
       this.manageQueue = configuration.manageBPQueue;
+      this.environment = configuration.environment;
+      console.log(this.environment);
       this.cbFlowStats = false;
       this.cbBasinChar = false;
       this.selectedFlowStatsList = [];
@@ -257,6 +262,7 @@ module StreamStats.Controllers {
       this.isRefreshing = false;
       this.isStartingNextBatch = false;
       this.canReorder = false;
+      this.basinDelineationCollapsed = false;
       this.basinCharCollapsed = false;
       this.flowStatsCollapsed = false;
       this.init();
@@ -698,6 +704,7 @@ module StreamStats.Controllers {
         this.submitBatchData.attachment,
         this.submitBatchData.attachment.name
       );
+      formdata.append("ignoreExcludePolys",this.submitBatchData.ignoreExcludePolys.toString());
 
       // create headers
       var headers = {
@@ -1379,10 +1386,12 @@ module StreamStats.Controllers {
       var content = e.currentTarget.nextElementSibling;
       if (content.style.display === "none") {
           content.style.display = "block";
+          if(type === "basinDelineation") this.basinDelineationCollapsed = false;
           if(type === "flowStatistics") this.flowStatsCollapsed = false;
           if(type === "basinCharacteristics") this.basinCharCollapsed = false;
       } else {
           content.style.display = "none";
+          if(type === "basinDelineation") this.basinDelineationCollapsed = true;
           if(type === "flowStatistics") this.flowStatsCollapsed = true;
           if(type === "basinCharacteristics") this.basinCharCollapsed = true;
       }

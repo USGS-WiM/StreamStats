@@ -56,6 +56,8 @@ var StreamStats;
                 _this.nssService = nssService;
                 _this.toaster = toaster;
                 _this.manageQueue = configuration.manageBPQueue;
+                _this.environment = configuration.environment;
+                console.log(_this.environment);
                 _this.cbFlowStats = false;
                 _this.cbBasinChar = false;
                 _this.selectedFlowStatsList = [];
@@ -84,6 +86,7 @@ var StreamStats;
                 _this.isRefreshing = false;
                 _this.isStartingNextBatch = false;
                 _this.canReorder = false;
+                _this.basinDelineationCollapsed = false;
                 _this.basinCharCollapsed = false;
                 _this.flowStatsCollapsed = false;
                 _this.init();
@@ -408,6 +411,7 @@ var StreamStats;
                 formdata.append("email", this.submitBatchData.email.toString());
                 formdata.append("IDField", this.submitBatchData.idField.toString());
                 formdata.append("geometryFile", this.submitBatchData.attachment, this.submitBatchData.attachment.name);
+                formdata.append("ignoreExcludePolys", this.submitBatchData.ignoreExcludePolys.toString());
                 var headers = {
                     "Content-Type": undefined,
                 };
@@ -843,6 +847,8 @@ var StreamStats;
                 var content = e.currentTarget.nextElementSibling;
                 if (content.style.display === "none") {
                     content.style.display = "block";
+                    if (type === "basinDelineation")
+                        this.basinDelineationCollapsed = false;
                     if (type === "flowStatistics")
                         this.flowStatsCollapsed = false;
                     if (type === "basinCharacteristics")
@@ -850,6 +856,8 @@ var StreamStats;
                 }
                 else {
                     content.style.display = "none";
+                    if (type === "basinDelineation")
+                        this.basinDelineationCollapsed = true;
                     if (type === "flowStatistics")
                         this.flowStatsCollapsed = true;
                     if (type === "basinCharacteristics")
