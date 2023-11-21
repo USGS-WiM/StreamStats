@@ -47,7 +47,7 @@ var StreamStats;
             __extends(BatchProcessorController, _super);
             function BatchProcessorController($scope, $http, modalService, nssService, modal, toaster, $sce) {
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
-                _this.displayWarning = false;
+                _this.displayError = false;
                 $scope.vm = _this;
                 _this.sce = $sce;
                 _this.modalInstance = modal;
@@ -90,6 +90,7 @@ var StreamStats;
                 _this.flowStatsCollapsed = false;
                 _this.init();
                 _this.selectBatchProcessorTab(_this.selectedBatchProcessorTabName);
+                _this.displayWarning = configuration.showBPWarning;
                 return _this;
             }
             BatchProcessorController.prototype.Close = function () {
@@ -131,9 +132,12 @@ var StreamStats;
                     configuration.queryparams["Regions"];
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 var self = this;
-                this.Execute(request).then(function (response) {
+                this.Execute(request)
+                    .then(function (response) {
                     self.regionList = response.data;
                     _this.regionListSpinner = false;
+                }, function (error) {
+                    _this.displayError = true;
                 });
             };
             BatchProcessorController.prototype.getFlowStatsAndParams = function (rcode) {

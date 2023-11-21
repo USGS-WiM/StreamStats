@@ -198,9 +198,10 @@ module StreamStats.Controllers {
     public flowStatsCollapsed;
 
     // warning message
-    public displayWarning = false;
+    public displayWarning;
     public warningMessage: string;
     public sce: any;
+    public displayError = false;
 
     //Constructor
     //-+-+-+-+-+-+-+-+-+-+-+-
@@ -265,6 +266,7 @@ module StreamStats.Controllers {
       this.flowStatsCollapsed = false;
       this.init();
       this.selectBatchProcessorTab(this.selectedBatchProcessorTabName);
+      this.displayWarning = configuration.showBPWarning;
     }
 
     //Methods
@@ -314,10 +316,14 @@ module StreamStats.Controllers {
         new WiM.Services.Helpers.RequestInfo(url, true);
       var self = this;
 
-      this.Execute(request).then((response: any) => {
+      this.Execute(request)
+      .then((response: any) => {
         self.regionList = response.data;
         // console.log(self.regionList);
         this.regionListSpinner = false;
+      },(error) => {
+        // console.log(error)
+        this.displayError = true;
       });
     }
 
