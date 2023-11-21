@@ -559,7 +559,7 @@ var StreamStats;
                             var lastModifiedDate = response;
                             _this.streamGridList.push({
                                 region: region["Name"],
-                                downloadURL: baseURL + region["Code"].toLowerCase() + "/streamgrid." + (region["Code"].toLowerCase() == "drb" ? "zip" : "tif"),
+                                downloadURL: baseURL + region["Code"].toLowerCase() + "/streamgrid.zip",
                                 lastModified: lastModifiedDate
                             });
                         });
