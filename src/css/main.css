@@ -671,6 +671,10 @@ div.leaflet-top > .elevation {
 
     .wim-warning {
        background-color: #fdb81e !important;
+    }
+
+    .wim-error {
+        background-color: #FF2B00 !important;
      }
 
 /*
