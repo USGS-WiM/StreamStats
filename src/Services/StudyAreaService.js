@@ -228,7 +228,7 @@ var StreamStats;
             };
             StudyAreaService.prototype.loadStudyBoundary = function () {
                 return __awaiter(this, void 0, void 0, function () {
-                    var regionID, url, url, request, _i, _a, point, url, request, delineations, i, test;
+                    var regionID, url, url, request, delineations, features, index, _i, _a, point, url, request, i, result;
                     var _this = this;
                     return __generator(this, function (_b) {
                         switch (_b.label) {
@@ -294,6 +294,9 @@ var StreamStats;
                                 });
                                 return [3, 8];
                             case 1:
+                                delineations = [];
+                                features = [];
+                                index = 0;
                                 _i = 0, _a = this.selectedStudyArea.Pourpoint;
                                 _b.label = 2;
                             case 2:
@@ -301,9 +304,9 @@ var StreamStats;
                                 point = _a[_i];
                                 console.log(point);
                                 url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, point.Longitude.toString(), point.Latitude.toString(), point.crs.toString());
+                                index = index + 1;
                                 request = new WiM.Services.Helpers.RequestInfo(url, true);
                                 request.withCredentials = true;
-                                delineations = [];
                                 i = 0;
                                 _b.label = 3;
                             case 3:
@@ -313,9 +316,13 @@ var StreamStats;
                                         return (response);
                                     })];
                             case 4:
-                                test = _b.sent();
-                                if (test) {
-                                    delineations.push(test);
+                                result = _b.sent();
+                                if (result) {
+                                    result.features.forEach(function (feature) {
+                                        feature['id'] = feature['id'] + String(index);
+                                        features.push(feature);
+                                    });
+                                    delineations.push(result);
                                     return [3, 6];
                                 }
                                 _b.label = 5;
@@ -328,12 +335,18 @@ var StreamStats;
                             case 7:
                                 ;
                                 if (delineations.length == this.selectedStudyArea.Pourpoint.length) {
-                                    console.log('can continue');
-                                    this.selectedStudyArea.FeatureCollection = null;
+                                    this.selectedStudyArea.FeatureCollection = {
+                                        type: "FeatureCollection",
+                                        features: features,
+                                        bbox: null
+                                    };
+                                    this.selectedStudyArea.Date = new Date();
+                                    this.selectedStudyArea.FeatureCollection.features.forEach(function (f) { return f.properties = {}; });
+                                    this.toaster.clear();
                                     this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
+                                    this.canUpdate = true;
                                 }
                                 else {
-                                    console.log('didnt delineate all points.');
                                     this.toaster.clear();
                                     this.toaster.pop("error", "A watershed was not returned from the delineation request", "Please retry", 0);
                                 }
@@ -346,9 +359,7 @@ var StreamStats;
             StudyAreaService.prototype.executeRequest = function (request) {
                 var _this = this;
                 return this.Execute(request).then(function (response) {
-                    console.log(response);
                     if (response.data.hasOwnProperty("featurecollection") && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
-                        console.log('success');
                         _this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
                         _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                         var watershed = {

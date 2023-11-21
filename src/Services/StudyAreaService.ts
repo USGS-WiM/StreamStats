@@ -387,39 +387,54 @@ module StreamStats.Services {
                         
                 });
             } else { // need to loop through points and combine watersheds                
+                var delineations = []
+                var features = []
+                var index = 0;
 
                 for (const point of this.selectedStudyArea.Pourpoint) {
                     console.log(point)
                     var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, point.Longitude.toString(),
                     point.Latitude.toString(), point.crs.toString());
+                    index = index + 1; 
 
                     var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
                     request.withCredentials = true;
-                    var delineations = []
 
                     for (let i = 0; i < 3; i++) {
                         console.log( 'Try' + i)
-                        var test = await this.executeRequest(request).then((response) => {
+                        var result = await this.executeRequest(request).then((response) => {
                             return (response)
                         })
-                        if (test) {
-                            delineations.push(test)
+                        if (result) {
+                            result.features.forEach((feature) => {
+                                feature['id'] = feature['id'] + String(index)
+                                features.push(feature)
+                            })
+                            delineations.push(result)
                             break
                         } 
                     }
-                    
-
                 };
 
                 if (delineations.length == this.selectedStudyArea.Pourpoint.length) {
-                    console.log('can continue')
                     //reconfigure response
-                    this.selectedStudyArea.FeatureCollection = null // TODO set this
-                    //this.selectedStudyArea.FeatureCollection.features.forEach(f => f.properties = {});
+                    this.selectedStudyArea.FeatureCollection = {
+                        type: "FeatureCollection",
+                        features: features,
+                        bbox: null
+                    };
+                    
+                    this.selectedStudyArea.Date = new Date();
+                    this.selectedStudyArea.FeatureCollection.features.forEach(f => f.properties = {});
+                    this.toaster.clear()
                     this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
+                    this.canUpdate = true;
 
+                    // TODO: Not sure if we need this
+                    // if (this.regionService.selectedRegion.Applications.indexOf("HydrologicFeatures") != -1) {
+                    //     this.queryHydrologicFeatures();
+                    // }
                 } else {
-                    console.log('didnt delineate all points.')
                     this.toaster.clear();
                     this.toaster.pop("error", "A watershed was not returned from the delineation request", "Please retry", 0);
                 }
@@ -433,10 +448,7 @@ module StreamStats.Services {
 
             return this.Execute(request).then(
                 (response: any) => {  
-                    console.log(response)
-
                     if (response.data.hasOwnProperty("featurecollection") && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
-                        console.log('success')
                         this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
                         this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
 
@@ -446,30 +458,11 @@ module StreamStats.Services {
                             features: this.reconfigureWatershedResponse(response.data.featurecollection),
                             bbox: response.data.featurecollection.filter(f=>f.name == "globalwatershed")[0].feature.features[0].bbox
                         };
-
-                        //this.snappedPourPoint = response.data.featurecollection.filter(f=>f.name == "globalwatershedpoint")[0].feature.features[0].geometry.coordinates;
-                        
-                        //this.selectedStudyArea.Date = new Date();
-
-                        // this.toaster.clear();
-                        // this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
-                        // this.canUpdate = true;
-                        // if (this.regionService.selectedRegion.Applications.indexOf("HydrologicFeatures") != -1) {
-                        //     this.queryHydrologicFeatures();
-                        // }
                         return watershed
                     }
                     else {
-                        //this.clearStudyArea();
-                        //this.toaster.clear();
-                        //this.toaster.pop("error", "A watershed was not returned from the delineation request", "Please retry", 0);
                         return 
                     }
-
-                    //clear properties
-                    //this.selectedStudyArea.FeatureCollection.features.forEach(f => f.properties = {});
-
-                    //sm when complete
                 },(error) => {
                     //sm when error
                     this.clearStudyArea();
