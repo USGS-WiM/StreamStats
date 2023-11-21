@@ -1185,7 +1185,7 @@ module StreamStats.Controllers {
 
     // soft delete a batch
     public refreshBatchResults(batchID: number): ng.IPromise<any> {
-      var url = this.queueURL + configuration.queryparams["SSBatchProcessorRefreshBatch"].format(batchID);
+      var url = this.queueURL + configuration.queryparams["SSBatchProcessorRefreshBatch"].format(batchID, "true");
 
       var request: WiM.Services.Helpers.RequestInfo =
         new WiM.Services.Helpers.RequestInfo(

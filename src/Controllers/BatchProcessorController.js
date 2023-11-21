@@ -733,7 +733,7 @@ var StreamStats;
             };
             BatchProcessorController.prototype.refreshBatchResults = function (batchID) {
                 var _this = this;
-                var url = this.queueURL + configuration.queryparams["SSBatchProcessorRefreshBatch"].format(batchID);
+                var url = this.queueURL + configuration.queryparams["SSBatchProcessorRefreshBatch"].format(batchID, "true");
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET);
                 return this.Execute(request)
                     .then(function (response) {
