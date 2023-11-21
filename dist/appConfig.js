@@ -73,6 +73,7 @@ configuration.queryparams =
         'SSBatchProcessorStatusMessages': '/status/',
         'SSBatchProcessorStreamGrids': '/streamgrids/',
         'SSBatchProcessorSubmitBatch': '/batch',
+        'SSBatchProcessorRefreshBatch': '/batch/{}/refresh?deleteCurrentData={}',
         'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
         'NLCDQueryService': '/LandCover/USGS_EROS_LandCover_NLCD/MapServer/4',
         'regulationService': '/arcgis/rest/services/regulations/{0}/MapServer/exts/RegulationRESTSOE/Regulation',
