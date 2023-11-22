@@ -12,10 +12,17 @@
 <!-- Start modal body-->
 <div class="modal-body">
 
-    <!-- Warning Message -->
-    <div id="warningMessageContent" ng-if="!vm.showWarning">
-        <div class="wim-warning" ng-bind-html="vm.convertUnsafe(vm.warningMessage)" style="overflow-x:auto"></div>
+    <!-- Error Message -->
+    <div ng-if="vm.displayError">
+        <div class="wim-error" style="overflow-x:auto; padding:5px;">
+            <b>Some Batch Processor features are currently unavailable. Please check back soon. Contact streamstats@usgs.gov for support.</b>
+        </div>
+        <br>
+    </div>
 
+    <!-- Warning Message -->
+    <div id="warningMessageContent" ng-if="vm.displayWarning">
+        <div class="wim-warning" ng-bind-html="vm.convertUnsafe(vm.warningMessage)" style="overflow-x:auto; padding:5px;"></div>
     </div>
 
     <!-- Start batch processor tabs -->
