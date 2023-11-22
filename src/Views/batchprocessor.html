@@ -408,12 +408,14 @@
                 <b>How to Edit the Batch Queue</b>
                 <ul>
                     <li>To change the order of batches, edit the values in the <i>Order</i> column and click the "Reorder Order" button. Batches will proceed in the queue in numerical order.</li>
-                    <li>To delete a batch, click the trash can icon in the <i>Delete?</i> column.</li>
                     <li>To pause a batch, click the pause button in the <i>Pause / Unpause?</i> column. The batch will
                         automatically be unpaused (returned to the queue) when all the batches currently in the queue
                         have completed. The IDs of the batches required to be completed for the batch to be unpaused are listed in the "Pause List" column.</li>
                     <li>To manually unpause a batch, click the play button in the <i>Pause / Unpause?</i> column. The batch will
                         be added to the bottom of the current queue.</li>
+                    <li>If the server goes down in the middle of a batch, or a completed batch needs to be re-run: to restart a batch, click the refresh icon in the <i>Refresh?</i> column. The batch results will be deleted. When ready to start the next batch in the queue, click the "Start Next Batch" button at the bottom of the page, which will start the next batch, if the server has capacity.</li>
+                    <li>To delete a batch, click the trash can icon in the <i>Delete?</i> column.</li>
+                    <li>If there are batches in the queue but no batches currently running, the server may have experienced errors and needs a new "worker" started. Click the "Start Next Batch" button to kick off a worker. The next batch will be started, if the server has capacity.</li>
                 </ul>
             </div>
             <!-- End instructions -->
@@ -445,6 +447,7 @@
                                     <th style="text-align: center;"><small>Number Points Partially Successful</small></th>
                                     <th style="text-align: center;"><small>Number Points Failed</small></th>
                                     <th style="text-align: center;"><small>Pause / Unpause?</small></th>
+                                    <th style="text-align: center;"><small>Refresh?</small></th>
                                     <th style="text-align: center;"><small>Delete?</small></th>
                                 </tr>
                             </thead>
@@ -481,6 +484,9 @@
                                         <i ng-if="batch.status==1" ng-click="vm.submitPauseBatch(batch.batchID)"
                                                 class="fa fa-pause-circle-o" style="cursor: pointer"></i>
                                     </td>
+                                    <td style="text-align: center;">
+                                        <i ng-click="vm.refreshBatch(batch.batchID)"
+                                            class="fa fa-refresh" style="cursor: pointer"></i></td>
                                     <td style="text-align: center;">
                                         <i ng-if="batch.status!=2" ng-click="vm.trashBatch(batch.batchID, batch.deleteCode, batchStatusEmail)"
                                             class="fa fa-trash" style="cursor: pointer"></i></td>
@@ -557,6 +563,14 @@
                     <i ng-if="vm.isRefreshing == false" class="fa fa-refresh"></i>
                     <i ng-if="vm.isRefreshing == true" class="fa fa-refresh fa-spin"></i>
                     <span>&nbsp;Refresh</span>
+                </button>
+
+                <!-- Button to Start Next Batch --> 
+                <button ng-if="vm.selectedBatchProcessorTabName==='manageQueue' && !vm.editingQueue"
+                    type="submit" class="btn-wim-default" style="margin-right: 10px;" ng-click="vm.isStartingNextBatch=true; vm.startNextBatch();">
+                    <i ng-if="vm.isStartingNextBatch == false" class="fa fa-play-circle-o "></i>
+                    <i ng-if="vm.isStartingNextBatch == true" class="fa fa-refresh fa-spin"></i>
+                    <span>&nbsp;Start Next Batch</span>
                 </button>
 
                 <!-- Button to close modal -->
