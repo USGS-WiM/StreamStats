@@ -47,7 +47,7 @@ var StreamStats;
             __extends(BatchProcessorController, _super);
             function BatchProcessorController($scope, $http, modalService, nssService, modal, toaster, $sce) {
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
-                _this.displayWarning = false;
+                _this.displayError = false;
                 $scope.vm = _this;
                 _this.sce = $sce;
                 _this.modalInstance = modal;
@@ -84,12 +84,14 @@ var StreamStats;
                 _this.queues = ["Production Queue", "Development Queue"];
                 _this.selectedQueue = "Production Queue";
                 _this.isRefreshing = false;
+                _this.isStartingNextBatch = false;
                 _this.canReorder = false;
                 _this.basinDelineationCollapsed = false;
                 _this.basinCharCollapsed = false;
                 _this.flowStatsCollapsed = false;
                 _this.init();
                 _this.selectBatchProcessorTab(_this.selectedBatchProcessorTabName);
+                _this.displayWarning = configuration.showBPWarning;
                 return _this;
             }
             BatchProcessorController.prototype.Close = function () {
@@ -131,9 +133,12 @@ var StreamStats;
                     configuration.queryparams["Regions"];
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 var self = this;
-                this.Execute(request).then(function (response) {
+                this.Execute(request)
+                    .then(function (response) {
                     self.regionList = response.data;
                     _this.regionListSpinner = false;
+                }, function (error) {
+                    _this.displayError = true;
                 });
             };
             BatchProcessorController.prototype.getFlowStatsAndParams = function (rcode) {
@@ -378,6 +383,15 @@ var StreamStats;
                         _this.canReorder = false;
                     }
                 });
+            };
+            BatchProcessorController.prototype.refreshBatch = function (batchID) {
+                var text = "Are you sure you want to refresh Batch ID " + batchID + "? All results for this batch will be deleted.";
+                if (confirm(text) == true) {
+                    this.refreshBatchResults(batchID);
+                }
+            };
+            BatchProcessorController.prototype.startNextBatch = function () {
+                this.startWorker();
             };
             BatchProcessorController.prototype.trashBatch = function (batchID, deleteCode, batchStatusEmail) {
                 var text = "Are you sure you want to delete Batch ID " + batchID + "?";
@@ -723,6 +737,43 @@ var StreamStats;
                     });
                     return batchStatusMessages;
                 }, function (error) { })
+                    .finally(function () { });
+            };
+            BatchProcessorController.prototype.refreshBatchResults = function (batchID) {
+                var _this = this;
+                var url = this.queueURL + configuration.queryparams["SSBatchProcessorRefreshBatch"].format(batchID, "true");
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET);
+                return this.Execute(request)
+                    .then(function (response) {
+                    var text = "Batch ID " + batchID + " was refreshed.";
+                    alert(text);
+                    _this.isRefreshing = true;
+                    _this.getManageQueueList();
+                    _this.retrievingManageQueue = true;
+                }, function (error) {
+                    var text = "Error refreshing batch ID " +
+                        batchID +
+                        ". Please try again later or click the Help menu button to submit a Support Request.";
+                    alert(text);
+                })
+                    .finally(function () { });
+            };
+            BatchProcessorController.prototype.startWorker = function () {
+                var _this = this;
+                var url = this.queueURL + configuration.queryparams["SSBatchProcessorStartWorker"];
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET);
+                return this.Execute(request)
+                    .then(function (response) {
+                    var text = "Worker was started on the server. The next batch will start running, if the server has capacity.";
+                    alert(text);
+                    _this.isRefreshing = true;
+                    _this.getManageQueueList();
+                    _this.retrievingManageQueue = true;
+                    _this.isStartingNextBatch = false;
+                }, function (error) {
+                    var text = "Error. Please try again later or click the Help menu button to submit a Support Request.";
+                    alert(text);
+                })
                     .finally(function () { });
             };
             BatchProcessorController.prototype.deleteBatch = function (batchID, deleteCode, batchStatusEmail) {
