@@ -12,10 +12,17 @@
 <!-- Start modal body-->
 <div class="modal-body">
 
-    <!-- Warning Message -->
-    <div id="warningMessageContent" ng-if="!vm.showWarning">
-        <div class="wim-warning" ng-bind-html="vm.convertUnsafe(vm.warningMessage)" style="overflow-x:auto"></div>
+    <!-- Error Message -->
+    <div ng-if="vm.displayError">
+        <div class="wim-error" style="overflow-x:auto; padding:5px;">
+            <b>Some Batch Processor features are currently unavailable. Please check back soon. Contact streamstats@usgs.gov for support.</b>
+        </div>
+        <br>
+    </div>
 
+    <!-- Warning Message -->
+    <div id="warningMessageContent" ng-if="vm.displayWarning">
+        <div class="wim-warning" ng-bind-html="vm.convertUnsafe(vm.warningMessage)" style="overflow-x:auto; padding:5px;"></div>
     </div>
 
     <!-- Start batch processor tabs -->
@@ -362,7 +369,7 @@
         <div id="streamGrid" ng-if="vm.selectedBatchProcessorTabName==='streamGrid'">
             <!-- Start instructions -->
             <div>
-                Batch points should be coincident with the stream grid used by StreamStats for delineation. Please use the links below to download the stream grid for each State/Region. 
+                Batch points should be coincident with the stream grid used by StreamStats for delineation. Basin delineation may be disabled for batch points located within exclusion areas. Please use the links below to download the stream grid and exclusion areas for each State/Region. 
             </div><br>
             <!-- End instructions -->
             <!-- Start stream grid table -->
