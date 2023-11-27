@@ -267,7 +267,6 @@ module StreamStats.Controllers {
       this.basinCharCollapsed = false;
       this.flowStatsCollapsed = false;
       this.init();
-      this.selectBatchProcessorTab(this.selectedBatchProcessorTabName);
       this.displayWarning = configuration.showBPWarning;
     }
 
@@ -316,12 +315,10 @@ module StreamStats.Controllers {
         configuration.queryparams["Regions"];
       var request: WiM.Services.Helpers.RequestInfo =
         new WiM.Services.Helpers.RequestInfo(url, true);
-      var self = this;
 
       this.Execute(request)
       .then((response: any) => {
-        self.regionList = response.data;
-        // console.log(self.regionList);
+        this.regionList = response.data;
         this.regionListSpinner = false;
       },(error) => {
         // console.log(error)
@@ -950,28 +947,28 @@ module StreamStats.Controllers {
       if (window.location.host === "streamstats.usgs.gov") {
         baseURL = "https://streamstats.usgs.gov/streamgrids/";
       }
-
-      this.getStateMapServicesIDs().then((response) => {
-        let layerDictionary = response;
-        this.regionList.forEach((region) => {
-          this.getStreamGridLastModifiedDate(layerDictionary[region["Code"]]).then((response) => {
-            let lastModifiedDate = response;
-            this.streamGridList.push({
-              region: region["Name"],
-              downloadURL: baseURL + region["Code"].toLowerCase() + "/streamgrid." + (region["Code"].toLowerCase()  == "drb" ? "zip" : "tif"),
-              lastModified: lastModifiedDate
-            })
+      setTimeout(() => {
+        this.getStateMapServicesIDs().then((response) => {
+          let layerDictionary = response;
+          this.regionList.forEach((region) => {
+            this.getStreamGridLastModifiedDate(layerDictionary[region["Code"]]).then((response) => {
+              let lastModifiedDate = response;
+              this.streamGridList.push({
+                region: region["Name"],
+                downloadURL: baseURL + region["Code"].toLowerCase() + "/streamgrid." + (region["Code"].toLowerCase()  == "drb" ? "zip" : "tif"),
+                lastModified: lastModifiedDate
+              })
+            });
           });
         });
-      });
-      this.retrievingStreamGrids = false;
+        this.retrievingStreamGrids = false;
+      },1000)
     } 
 
     // Service methods
 
     // get a dictionary that relates region codes to that region's stateServices stream grid map layer ID 
     public getStateMapServicesIDs(): ng.IPromise<any> {
-
       var url = configuration.baseurls.StreamStatsMapServices + configuration.queryparams["SSStateLayers"] + "?f=json"
 
       var request: WiM.Services.Helpers.RequestInfo =
@@ -1408,20 +1405,24 @@ module StreamStats.Controllers {
     private init(): void {
       this.getRegions();
       // Get selected tab
+      if (this.manageQueue) {
+        this.selectBatchProcessorTab("manageQueue")
+      }
+
       if (this.modalService.modalOptions && this.modalService.modalOptions.tabName) {
         if (this.modalService.modalOptions.tabName == "batchStatus") {
-          this.selectBatchProcessorTab("batchStatus");
           if  (this.modalService.modalOptions.urlParams) {
             this.batchStatusEmail = this.modalService.modalOptions.urlParams;
             this.retrievingBatchStatus = true;
           }
+          this.selectBatchProcessorTab("batchStatus");
         } else if (this.modalService.modalOptions.tabName == "manageQueue") {
           this.selectBatchProcessorTab("submitBatch")
         } else if (this.modalService.modalOptions.tabName == "streamGrid"){
           this.selectBatchProcessorTab("streamGrid")
         }
-      } else if (this.manageQueue) {
-        this.selectBatchProcessorTab("manageQueue")
+      } else {
+        this.selectBatchProcessorTab(this.selectedBatchProcessorTabName);
       }
       this.retrieveBatchStatusMessages().then((response) => {
         this.batchStatusMessageList = response;

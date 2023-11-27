@@ -90,7 +90,6 @@ var StreamStats;
                 _this.basinCharCollapsed = false;
                 _this.flowStatsCollapsed = false;
                 _this.init();
-                _this.selectBatchProcessorTab(_this.selectedBatchProcessorTabName);
                 _this.displayWarning = configuration.showBPWarning;
                 return _this;
             }
@@ -132,10 +131,9 @@ var StreamStats;
                 var url = configuration.baseurls["BatchProcessorServices"] +
                     configuration.queryparams["Regions"];
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
-                var self = this;
                 this.Execute(request)
                     .then(function (response) {
-                    self.regionList = response.data;
+                    _this.regionList = response.data;
                     _this.regionListSpinner = false;
                 }, function (error) {
                     _this.displayError = true;
@@ -566,20 +564,22 @@ var StreamStats;
                 if (window.location.host === "streamstats.usgs.gov") {
                     baseURL = "https://streamstats.usgs.gov/streamgrids/";
                 }
-                this.getStateMapServicesIDs().then(function (response) {
-                    var layerDictionary = response;
-                    _this.regionList.forEach(function (region) {
-                        _this.getStreamGridLastModifiedDate(layerDictionary[region["Code"]]).then(function (response) {
-                            var lastModifiedDate = response;
-                            _this.streamGridList.push({
-                                region: region["Name"],
-                                downloadURL: baseURL + region["Code"].toLowerCase() + "/streamgrid." + (region["Code"].toLowerCase() == "drb" ? "zip" : "tif"),
-                                lastModified: lastModifiedDate
+                setTimeout(function () {
+                    _this.getStateMapServicesIDs().then(function (response) {
+                        var layerDictionary = response;
+                        _this.regionList.forEach(function (region) {
+                            _this.getStreamGridLastModifiedDate(layerDictionary[region["Code"]]).then(function (response) {
+                                var lastModifiedDate = response;
+                                _this.streamGridList.push({
+                                    region: region["Name"],
+                                    downloadURL: baseURL + region["Code"].toLowerCase() + "/streamgrid." + (region["Code"].toLowerCase() == "drb" ? "zip" : "tif"),
+                                    lastModified: lastModifiedDate
+                                });
                             });
                         });
                     });
-                });
-                this.retrievingStreamGrids = false;
+                    _this.retrievingStreamGrids = false;
+                }, 1000);
             };
             BatchProcessorController.prototype.getStateMapServicesIDs = function () {
                 var _this = this;
@@ -871,13 +871,16 @@ var StreamStats;
             BatchProcessorController.prototype.init = function () {
                 var _this = this;
                 this.getRegions();
+                if (this.manageQueue) {
+                    this.selectBatchProcessorTab("manageQueue");
+                }
                 if (this.modalService.modalOptions && this.modalService.modalOptions.tabName) {
                     if (this.modalService.modalOptions.tabName == "batchStatus") {
-                        this.selectBatchProcessorTab("batchStatus");
                         if (this.modalService.modalOptions.urlParams) {
                             this.batchStatusEmail = this.modalService.modalOptions.urlParams;
                             this.retrievingBatchStatus = true;
                         }
+                        this.selectBatchProcessorTab("batchStatus");
                     }
                     else if (this.modalService.modalOptions.tabName == "manageQueue") {
                         this.selectBatchProcessorTab("submitBatch");
@@ -886,8 +889,8 @@ var StreamStats;
                         this.selectBatchProcessorTab("streamGrid");
                     }
                 }
-                else if (this.manageQueue) {
-                    this.selectBatchProcessorTab("manageQueue");
+                else {
+                    this.selectBatchProcessorTab(this.selectedBatchProcessorTabName);
                 }
                 this.retrieveBatchStatusMessages().then(function (response) {
                     _this.batchStatusMessageList = response;
