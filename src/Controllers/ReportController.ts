@@ -839,7 +839,7 @@ module StreamStats.Controllers {
                 map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
             });
         }
-        private addGeoJSON(LayerName: string|number, feature: any) {
+        private addGeoJSON(LayerName: string, feature: any) {
             if (LayerName == 'globalwatershed') {
                 this.layers.overlays[LayerName] =
                     {
@@ -857,10 +857,35 @@ module StreamStats.Controllers {
                             }
                         }
                     };
+            }   
+            else if (LayerName.includes('globalwatershedpoint')) {
+                this.layers.overlays[LayerName] = {
+                    name: 'Subbasin Boundary ' + LayerName.replace(/[^0-9]/g, ''),
+                    type: 'geoJSONShape',
+                    data: feature,
+                    visible: true,
+                }
             }
             else if (LayerName == 'globalwatershedpoint') {
                 this.layers.overlays[LayerName] = {
                     name: 'Basin Clicked Point',
+                    type: 'geoJSONShape',
+                    data: feature,
+                    visible: false,
+                    layerOptions: {
+                        style: {
+                            fillColor: "red",
+                            weight: 2,
+                            opacity: 1,
+                            color: 'white',
+                            fillOpacity: 0.5
+                        }
+                    }
+                }
+            } 
+            else if (LayerName.includes('globalwatershedpoint')) {
+                this.layers.overlays[LayerName] = {
+                    name: 'Basin Delineation Point ' + LayerName.replace(/[^0-9]/g, ''),
                     type: 'geoJSONShape',
                     data: feature,
                     visible: true,
