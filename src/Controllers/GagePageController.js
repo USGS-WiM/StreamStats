@@ -2742,7 +2742,7 @@ var StreamStats;
                 var self = this;
                 this.dischargeChartConfig = {
                     chart: {
-                        height: 450,
+                        height: 550,
                         width: 800,
                         zooming: {
                             type: 'xy'
@@ -3033,7 +3033,7 @@ var StreamStats;
                 }
                 this.heatChartConfig = {
                     chart: {
-                        height: 450,
+                        height: 550,
                         width: 800,
                         zooming: {
                             type: 'xy'
