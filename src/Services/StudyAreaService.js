@@ -228,7 +228,7 @@ var StreamStats;
             };
             StudyAreaService.prototype.loadStudyBoundary = function () {
                 return __awaiter(this, void 0, void 0, function () {
-                    var regionID, url, url, request, delineations, features, index, _i, _a, point, url, request, i, result, featuresToMerge, _b, _c, feature, featuresCollectionToMerge, dissolvedFeatures;
+                    var regionID, url, url, request, delineations, features, index, _i, _a, point, url, request, i, result, featuresToMerge, _b, _c, feature, featuresCollectionToMerge, dissolvedFeatures, bbox;
                     var _this = this;
                     return __generator(this, function (_d) {
                         switch (_d.label) {
@@ -350,6 +350,8 @@ var StreamStats;
                                     dissolvedFeatures = turf.dissolve(featuresCollectionToMerge);
                                     dissolvedFeatures.features[0]['id'] = 'globalwatershed';
                                     this.selectedStudyArea.FeatureCollection.features.push(dissolvedFeatures.features[0]);
+                                    bbox = turf.bbox(dissolvedFeatures);
+                                    this.selectedStudyArea.FeatureCollection['bbox'] = bbox;
                                     this.selectedStudyArea.Date = new Date();
                                     this.toaster.clear();
                                     this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);

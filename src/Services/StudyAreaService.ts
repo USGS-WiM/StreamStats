@@ -437,6 +437,8 @@ module StreamStats.Services {
                     // console.log(dissolvedFeatures)
                     dissolvedFeatures.features[0]['id'] = 'globalwatershed'
                     this.selectedStudyArea.FeatureCollection.features.push(dissolvedFeatures.features[0]);
+                    var bbox = turf.bbox(dissolvedFeatures);
+                    this.selectedStudyArea.FeatureCollection['bbox'] = bbox;
                     // var studyArea = this.simplify(angular.fromJson(angular.toJson(dissolved.features[0])));
                     // console.log(this.selectedStudyArea.FeatureCollection);
                     
