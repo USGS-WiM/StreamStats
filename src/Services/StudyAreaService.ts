@@ -765,47 +765,6 @@ module StreamStats.Services {
             var finalResponse = []
             
             if (this.selectedStudyArea.Pourpoint.length > 1) {
-                console.log(this.selectedStudyArea.FeatureCollection.features[2].properties);
-                for (const feature of this.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase().includes("globalwatershed") && f.geometry.type == 'Polygon' && /\d/.test(<string>(f.id))})) {
-                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, feature.properties.WorkspaceID,
-                        requestParameterList.join(','));
-                    var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
-                    request.withCredentials = true;
-                    for (let i = 0; i < 3; i++) {
-                        console.log( 'Try' + i)
-                        var result = await this.executeBasinCharacteristicsRequest(request).then((response) => {
-                            return (response)
-                        })
-                        if (result) {
-                            // console.log(result);
-                            feature.properties.parameters = result;
-                            finalResponse = structuredClone(result)
-                            finalResponse.forEach(function(p){ p.value = null });
-                            basinCharacteristicResponses.push(result);
-                            // delineations.push(result)
-                            break
-                        } 
-                    }
-                }
-                // Combine all the repsonses into a single list
-                var basinCharacteristics = basinCharacteristicResponses.reduce(function(a,b){ return a.concat(b) }, []);
-
-                // Store all the values for each parameter in this dictionary
-                let parametersCombined = {};
-                basinCharacteristics.forEach(parameter => {
-                    // If parametersCombined doesn't already contain the parameter code
-                    if (parametersCombined.hasOwnProperty(parameter.code)) {
-                        parametersCombined[parameter.code].push(parameter.value);
-                    } else {
-                        parametersCombined[parameter.code] = [parameter.value];
-                    }
-                });
-                // console.log(parametersCombined);
-
-                // Iterate through parametersCombined and combine the parameters to compute a single value
-                var parameterResults = {}
-
-                // Define the mathematical method to be used for each basin characteristic
                 var computationDictionary = {
                     "BSLDEM30FT": "areaWeightedMean",
                     "CSL10_85fm": "CSL10_85fm",
@@ -847,6 +806,59 @@ module StreamStats.Services {
                     "STORAGE": "areaWeightedMean"
                 }
 
+                // Make sure dependent basin characteristics are requested
+                requestParameterList.forEach(parameterCode => {
+                    if (parameterCode == 'CSL10_85fm' && requestParameterList.indexOf('LFPLENGTH') == -1) {
+                        requestParameterList.push('LFPLENGTH');
+                    } else if (computationDictionary[parameterCode] == "areaWeightedMean" && requestParameterList.indexOf('DRNAREA') == -1) {
+                        requestParameterList.push('DRNAREA');
+                    }
+                })
+
+                console.log(requestParameterList);
+                console.log(this.selectedStudyArea.FeatureCollection.features[2].properties);
+                for (const feature of this.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase().includes("globalwatershed") && f.geometry.type == 'Polygon' && /\d/.test(<string>(f.id))})) {
+                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, feature.properties.WorkspaceID,
+                        requestParameterList.join(','));
+                    var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+                    request.withCredentials = true;
+                    for (let i = 0; i < 3; i++) {
+                        console.log( 'Try' + i)
+                        var result = await this.executeBasinCharacteristicsRequest(request).then((response) => {
+                            return (response)
+                        })
+                        if (result) {
+                            // console.log(result);
+                            feature.properties.parameters = result;
+                            finalResponse = structuredClone(result)
+                            finalResponse.forEach(function(p){ p.value = null });
+                            basinCharacteristicResponses.push(result);
+                            // delineations.push(result)
+                            break
+                        } 
+                    }
+                }
+                // Combine all the repsonses into a single list
+                var basinCharacteristics = basinCharacteristicResponses.reduce(function(a,b){ return a.concat(b) }, []);
+
+                // Store all the values for each parameter in this dictionary
+                let parametersCombined = {};
+                basinCharacteristics.forEach(parameter => {
+                    // If parametersCombined doesn't already contain the parameter code
+                    if (parametersCombined.hasOwnProperty(parameter.code)) {
+                        parametersCombined[parameter.code].push(parameter.value);
+                    } else {
+                        parametersCombined[parameter.code] = [parameter.value];
+                    }
+                });
+                // console.log(parametersCombined);
+
+                // Iterate through parametersCombined and combine the parameters to compute a single value
+                var parameterResults = {}
+
+                // Define the mathematical method to be used for each basin characteristic
+                
+
                 for (var parameterCode in parametersCombined) {
                     // TODO make sure the length ofis equal to the number of delineations before combining
                     // TODO make sure dependent BCs were requested and computed
@@ -854,28 +866,44 @@ module StreamStats.Services {
                     console.log(parametersCombined[parameterCode]);
                     console.log(computationDictionary[parameterCode]);
 
-                    var isNull= parametersCombined[parameterCode].some(ele=>(ele.deptName===null))
+                    var isNull = false;
+
+                    parametersCombined[parameterCode].forEach(value => {
+                        console.log(value);
+                        if (value == null) {
+                            isNull = true;
+                            console.log(isNull);
+                        }
+                    });
+
+                    // var isNull= parametersCombined[parameterCode].some(parameter => (parameter === null))
 
                     if (isNull == false) {
                         // TODO check if dependent BCs are null
 
-                        switch(computationDictionary[parameterCode]) {
-                            case "areaWeightedMean":
-                                value = this.computeAreaWeightedMean(parametersCombined[parameterCode], parametersCombined["DRNAREA"]);
-                                break;
-                            case "sum":
-                                value = this.computeSum(parametersCombined[parameterCode]);
-                                break;  
-                            case "max":
-                                value = this.computeMax(parametersCombined[parameterCode]);
-                                break;  
-                            case "min":
-                                value = this.computeMin(parametersCombined[parameterCode]);
-                                break;    
-                            case "CSL10_85fm":
-                                value = this.computeCSL10_85fm(parametersCombined[parameterCode], parametersCombined["LFPLENGTH"]);
-                                break;
+                        try {
+                            switch(computationDictionary[parameterCode]) {
+                                case "areaWeightedMean":
+                                    value = this.computeAreaWeightedMean(parametersCombined[parameterCode], parametersCombined["DRNAREA"]);
+                                    break;
+                                case "sum":
+                                    value = this.computeSum(parametersCombined[parameterCode]);
+                                    break;  
+                                case "max":
+                                    value = this.computeMax(parametersCombined[parameterCode]);
+                                    break;  
+                                case "min":
+                                    value = this.computeMin(parametersCombined[parameterCode]);
+                                    break;    
+                                case "CSL10_85fm":
+                                    value = this.computeCSL10_85fm(parametersCombined[parameterCode], parametersCombined["LFPLENGTH"]);
+                                    break;
+                            }
+                        } catch (error) {
+                            console.log(error);
+                            value = null;
                         }
+
                     } else {
                         value = null;
                     }
@@ -887,8 +915,9 @@ module StreamStats.Services {
                 console.log(parameterResults);
                 finalResponse.forEach(parameter => {
                     parameter["value"] = parameterResults[parameter["code"]]
-                    parameter["loaded"] = parameter["code"] == null ? false : true;
+                    parameter["loaded"] = Number.isNaN(parameter["code"]) ? false : true;
                 })
+                console.log(finalResponse);
                 this.toaster.clear();
                 this.parametersLoading = false;
                 this.loadParameterResults(finalResponse);

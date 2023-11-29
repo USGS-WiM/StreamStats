@@ -302,7 +302,7 @@ var StreamStats;
                             case 2:
                                 if (!(_i < _a.length)) return [3, 7];
                                 point = _a[_i];
-                                console.log(point);
+                                // console.log(point);
                                 url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, point.Longitude.toString(), point.Latitude.toString(), point.crs.toString());
                                 index = index + 1;
                                 request = new WiM.Services.Helpers.RequestInfo(url, true);
@@ -581,7 +581,7 @@ var StreamStats;
             };
             StudyAreaService.prototype.loadParameters = function () {
                 return __awaiter(this, void 0, void 0, function () {
-                    var argState, requestParameterList, saEvent, basinCharacteristicResponses, finalResponse, _i, _a, feature, url, request, i, result, basinCharacteristics, parametersCombined_1, parameterResults, computationDictionary, parameterCode, value, isNull, saEvent, url, request;
+                    var argState, requestParameterList, saEvent, basinCharacteristicResponses, finalResponse, computationDictionary, _i, _a, feature, url, request, i, result, basinCharacteristics, parametersCombined_1, parameterResults, parameterCode, value, isNull, saEvent, url, request;
                     var _this = this;
                     return __generator(this, function (_b) {
                         switch (_b.label) {
@@ -610,6 +610,55 @@ var StreamStats;
                                 basinCharacteristicResponses = [];
                                 finalResponse = [];
                                 if (!(this.selectedStudyArea.Pourpoint.length > 1)) return [3, 7];
+                                computationDictionary = {
+                                    "BSLDEM30FT": "areaWeightedMean",
+                                    "CSL10_85fm": "CSL10_85fm",
+                                    "DRNAREA": "sum",
+                                    "ELEV": "areaWeightedMean",
+                                    "ELEVMAX": "max",
+                                    "I24H100Y": "max",
+                                    "I24H10Y": "max",
+                                    "I24H25Y": "max",
+                                    "I24H2Y": "max",
+                                    "I24H50Y": "max",
+                                    "LC01DEV": "areaWeightedMean",
+                                    "LC01FOREST": "areaWeightedMean",
+                                    "LC01IMP": "areaWeightedMean",
+                                    "LC06DEV": "areaWeightedMean",
+                                    "LC06FOREST": "areaWeightedMean",
+                                    "LC06IMP": "areaWeightedMean",
+                                    "LC11DEV": "areaWeightedMean",
+                                    "LC11FOREST": "areaWeightedMean",
+                                    "LC11IMP": "areaWeightedMean",
+                                    "LC16DEV": "areaWeightedMean",
+                                    "LC16FOREST": "areaWeightedMean",
+                                    "LC16IMP": "areaWeightedMean",
+                                    "LC16STOR": "areaWeightedMean",
+                                    "LC19IMP": "areaWeightedMean",
+                                    "LFPLENGTH": "max",
+                                    "MINBELEV": "min",
+                                    "PCTREG1": "areaWeightedMean",
+                                    "PCTREG2": "areaWeightedMean",
+                                    "PCTREG3": "areaWeightedMean",
+                                    "PCTREG4": "areaWeightedMean",
+                                    "PCTREG5": "areaWeightedMean",
+                                    "PRECIP": "areaWeightedMean",
+                                    "RCN": "areaWeightedMean",
+                                    "SSURGOA": "areaWeightedMean",
+                                    "SSURGOB": "areaWeightedMean",
+                                    "SSURGOC": "areaWeightedMean",
+                                    "SSURGOD": "areaWeightedMean",
+                                    "STORAGE": "areaWeightedMean"
+                                };
+                                requestParameterList.forEach(function (parameterCode) {
+                                    if (parameterCode == 'CSL10_85fm' && requestParameterList.indexOf('LFPLENGTH') == -1) {
+                                        requestParameterList.push('LFPLENGTH');
+                                    }
+                                    else if (computationDictionary[parameterCode] == "areaWeightedMean" && requestParameterList.indexOf('DRNAREA') == -1) {
+                                        requestParameterList.push('DRNAREA');
+                                    }
+                                });
+                                console.log(requestParameterList);
                                 console.log(this.selectedStudyArea.FeatureCollection.features[2].properties);
                                 _i = 0, _a = this.selectedStudyArea.FeatureCollection.features.filter(function (f) { return (f.id).toLowerCase().includes("globalwatershed") && f.geometry.type == 'Polygon' && /\d/.test((f.id)); });
                                 _b.label = 1;
@@ -655,68 +704,41 @@ var StreamStats;
                                     }
                                 });
                                 parameterResults = {};
-                                computationDictionary = {
-                                    "BSLDEM30FT": "areaWeightedMean",
-                                    "CSL10_85fm": "CSL10_85fm",
-                                    "DRNAREA": "sum",
-                                    "ELEV": "areaWeightedMean",
-                                    "ELEVMAX": "max",
-                                    "I24H100Y": "max",
-                                    "I24H10Y": "max",
-                                    "I24H25Y": "max",
-                                    "I24H2Y": "max",
-                                    "I24H50Y": "max",
-                                    "LC01DEV": "areaWeightedMean",
-                                    "LC01FOREST": "areaWeightedMean",
-                                    "LC01IMP": "areaWeightedMean",
-                                    "LC06DEV": "areaWeightedMean",
-                                    "LC06FOREST": "areaWeightedMean",
-                                    "LC06IMP": "areaWeightedMean",
-                                    "LC11DEV": "areaWeightedMean",
-                                    "LC11FOREST": "areaWeightedMean",
-                                    "LC11IMP": "areaWeightedMean",
-                                    "LC16DEV": "areaWeightedMean",
-                                    "LC16FOREST": "areaWeightedMean",
-                                    "LC16IMP": "areaWeightedMean",
-                                    "LC16STOR": "areaWeightedMean",
-                                    "LC19IMP": "areaWeightedMean",
-                                    "LFPLENGTH": "max",
-                                    "MINBELEV": "min",
-                                    "PCTREG1": "areaWeightedMean",
-                                    "PCTREG2": "areaWeightedMean",
-                                    "PCTREG3": "areaWeightedMean",
-                                    "PCTREG4": "areaWeightedMean",
-                                    "PCTREG5": "areaWeightedMean",
-                                    "PRECIP": "areaWeightedMean",
-                                    "RCN": "areaWeightedMean",
-                                    "SSURGOA": "areaWeightedMean",
-                                    "SSURGOB": "areaWeightedMean",
-                                    "SSURGOC": "areaWeightedMean",
-                                    "SSURGOD": "areaWeightedMean",
-                                    "STORAGE": "areaWeightedMean"
-                                };
                                 for (parameterCode in parametersCombined_1) {
                                     value = null;
                                     console.log(parametersCombined_1[parameterCode]);
                                     console.log(computationDictionary[parameterCode]);
-                                    isNull = parametersCombined_1[parameterCode].some(function (ele) { return (ele.deptName === null); });
+                                    isNull = false;
+                                    parametersCombined_1[parameterCode].forEach(function (value) {
+                                        console.log(value);
+                                        if (value == null) {
+                                            isNull = true;
+                                            console.log(isNull);
+                                        }
+                                    });
                                     if (isNull == false) {
-                                        switch (computationDictionary[parameterCode]) {
-                                            case "areaWeightedMean":
-                                                value = this.computeAreaWeightedMean(parametersCombined_1[parameterCode], parametersCombined_1["DRNAREA"]);
-                                                break;
-                                            case "sum":
-                                                value = this.computeSum(parametersCombined_1[parameterCode]);
-                                                break;
-                                            case "max":
-                                                value = this.computeMax(parametersCombined_1[parameterCode]);
-                                                break;
-                                            case "min":
-                                                value = this.computeMin(parametersCombined_1[parameterCode]);
-                                                break;
-                                            case "CSL10_85fm":
-                                                value = this.computeCSL10_85fm(parametersCombined_1[parameterCode], parametersCombined_1["LFPLENGTH"]);
-                                                break;
+                                        try {
+                                            switch (computationDictionary[parameterCode]) {
+                                                case "areaWeightedMean":
+                                                    value = this.computeAreaWeightedMean(parametersCombined_1[parameterCode], parametersCombined_1["DRNAREA"]);
+                                                    break;
+                                                case "sum":
+                                                    value = this.computeSum(parametersCombined_1[parameterCode]);
+                                                    break;
+                                                case "max":
+                                                    value = this.computeMax(parametersCombined_1[parameterCode]);
+                                                    break;
+                                                case "min":
+                                                    value = this.computeMin(parametersCombined_1[parameterCode]);
+                                                    break;
+                                                case "CSL10_85fm":
+                                                    value = this.computeCSL10_85fm(parametersCombined_1[parameterCode], parametersCombined_1["LFPLENGTH"]);
+                                                    break;
+                                            }
+                                        }
+                                        catch (error) {
+                                            console.log(error);
+                                            value = null;
                                         }
                                     }
                                     else {
@@ -728,8 +750,9 @@ var StreamStats;
                                 console.log(parameterResults);
                                 finalResponse.forEach(function (parameter) {
                                     parameter["value"] = parameterResults[parameter["code"]];
-                                    parameter["loaded"] = parameter["code"] == null ? false : true;
+                                    parameter["loaded"] = Number.isNaN(parameter["code"]) ? false : true;
                                 });
+                                console.log(finalResponse);
                                 this.toaster.clear();
                                 this.parametersLoading = false;
                                 this.loadParameterResults(finalResponse);
