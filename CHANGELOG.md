@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Error message in Batch Processor is Batch Processor services aren't working
 - "Start Next Batch" button to Batch Processor Manage Queue tab
 - Ability to refresh batches in Batch Processor Manage Queue tab
+- Mystic River Basin region
 
 ### Changed
 
