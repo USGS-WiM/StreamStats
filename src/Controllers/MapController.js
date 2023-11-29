@@ -722,6 +722,9 @@ var StreamStats;
                                     ssPoints.push(latlng);
                                 });
                                 _this.startDelineate(ssPoints, false, null, lineClickPoints);
+                            }, function (error) {
+                                _this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
+                            }).finally(function () {
                             });
                         }
                     });

@@ -1024,7 +1024,13 @@ module StreamStats.Controllers {
 
                             // TODO send exclude message if necessary  
                             this.startDelineate(ssPoints, false, null, lineClickPoints);
-                        })
+                        }, (error) => {
+                            this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
+                            // var x = error;
+                            //sm when error                    
+                        }).finally(() => {
+                            // this.CanContinue = true;
+                        });
                     }
                 });
             });

@@ -435,7 +435,7 @@ module StreamStats.Services {
                     var featuresCollectionToMerge = turf.featureCollection(featuresToMerge);
                     var dissolvedFeatures = turf.dissolve(featuresCollectionToMerge);
                     // console.log(dissolvedFeatures)
-                    dissolvedFeatures.features[0]['id'] = 'globalwatershed'
+                    dissolvedFeatures.features[0]['id'] = 'globalwatershed';
                     this.selectedStudyArea.FeatureCollection.features.push(dissolvedFeatures.features[0]);
                     var bbox = turf.bbox(dissolvedFeatures);
                     this.selectedStudyArea.FeatureCollection['bbox'] = bbox;
@@ -685,7 +685,12 @@ module StreamStats.Services {
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
             
             return this.Execute(request).then((response: any) => {
+                if (response.data.response.line.length == 0) {
+                    this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
+                    throw new Error;
+                } else {
                     return this.checkExcludePolygon(response.data.response)
+                }
                 },(error) => {
                 }).finally(() => { 
             });
