@@ -302,7 +302,7 @@ var StreamStats;
                             case 2:
                                 if (!(_i < _a.length)) return [3, 7];
                                 point = _a[_i];
-                                // console.log(point);
+                                console.log(point);
                                 url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, point.Longitude.toString(), point.Latitude.toString(), point.crs.toString());
                                 index = index + 1;
                                 request = new WiM.Services.Helpers.RequestInfo(url, true);
@@ -581,7 +581,7 @@ var StreamStats;
             };
             StudyAreaService.prototype.loadParameters = function () {
                 return __awaiter(this, void 0, void 0, function () {
-                    var argState, requestParameterList, saEvent, basinCharacteristicResponses, finalResponse, computationDictionary, _i, _a, feature, url, request, i, result, basinCharacteristics, parametersCombined_1, parameterResults, parameterCode, value, isNull, saEvent, url, request;
+                    var argState, requestParameterList, saEvent, basinCharacteristicResponses, finalResponse, computationDictionary, _i, _a, feature, url, request, i, result, basinCharacteristics, parametersCombined_1, parameterResults, parameterCode, value, isNull, paramErrors, saEvent, url, request;
                     var _this = this;
                     return __generator(this, function (_b) {
                         switch (_b.label) {
@@ -682,6 +682,7 @@ var StreamStats;
                                     feature.properties.parameters = result;
                                     finalResponse = structuredClone(result);
                                     finalResponse.forEach(function (p) { p.value = null; });
+                                    finalResponse.forEach(function (p) { p.loaded = false; });
                                     basinCharacteristicResponses.push(result);
                                     return [3, 5];
                                 }
@@ -748,10 +749,18 @@ var StreamStats;
                                 }
                                 ;
                                 console.log(parameterResults);
+                                paramErrors = false;
                                 finalResponse.forEach(function (parameter) {
                                     parameter["value"] = parameterResults[parameter["code"]];
-                                    parameter["loaded"] = Number.isNaN(parameter["code"]) ? false : true;
+                                    parameter["loaded"] = parameterResults[parameter["code"]] == null ? false : true;
+                                    if (parameterResults[parameter["code"]] == null) {
+                                        paramErrors = true;
+                                    }
                                 });
+                                if (paramErrors) {
+                                    this.showModifyBasinCharacterstics = true;
+                                    this.toaster.pop('error', "One or more basin characteristics failed to compute", "Click the 'Calculate Missing Parameters' button or manually enter parameter values to continue", 0);
+                                }
                                 console.log(finalResponse);
                                 this.toaster.clear();
                                 this.parametersLoading = false;
@@ -1294,7 +1303,9 @@ var StreamStats;
                     else {
                         tolerance = 0.01;
                     }
-                    this.toaster.pop('warning', "Displaying simplified Basin.", "See FAQ for more information.", 0);
+                    if (this.selectedStudyArea.Pourpoint.length == 1) {
+                        this.toaster.pop('warning', "Displaying simplified Basin.", "See FAQ for more information.", 0);
+                    }
                     return turf.simplify(feature, { tolerance: tolerance, highQuality: false, mutate: true });
                 }
                 catch (e) {

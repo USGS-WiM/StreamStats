@@ -832,6 +832,7 @@ module StreamStats.Services {
                             feature.properties.parameters = result;
                             finalResponse = structuredClone(result)
                             finalResponse.forEach(function(p){ p.value = null });
+                            finalResponse.forEach(function(p){ p.loaded = false });
                             basinCharacteristicResponses.push(result);
                             // delineations.push(result)
                             break
@@ -913,10 +914,19 @@ module StreamStats.Services {
 
                 // Results
                 console.log(parameterResults);
+                var paramErrors = false;
                 finalResponse.forEach(parameter => {
                     parameter["value"] = parameterResults[parameter["code"]]
-                    parameter["loaded"] = Number.isNaN(parameter["code"]) ? false : true;
+                    parameter["loaded"] = parameterResults[parameter["code"]] == null ? false : true;
+                    if (parameterResults[parameter["code"]] == null) {
+                        paramErrors = true;
+                    }
                 })
+                //if there is an issue, pop open 
+                if (paramErrors) {
+                    this.showModifyBasinCharacterstics = true;
+                    this.toaster.pop('error', "One or more basin characteristics failed to compute", "Click the 'Calculate Missing Parameters' button or manually enter parameter values to continue", 0);
+                }
                 console.log(finalResponse);
                 this.toaster.clear();
                 this.parametersLoading = false;
@@ -1640,8 +1650,9 @@ module StreamStats.Services {
                     tolerance = 0.01
                 }
 
-                // TODO: don't show this message when querying NSS regression regions and doing line delineation
-                this.toaster.pop('warning', "Displaying simplified Basin.", "See FAQ for more information.", 0);
+                if (this.selectedStudyArea.Pourpoint.length == 1) {
+                    this.toaster.pop('warning', "Displaying simplified Basin.", "See FAQ for more information.", 0);
+                }
                 return turf.simplify(feature, { tolerance: tolerance, highQuality: false, mutate: true })
 
             } catch (e) {
