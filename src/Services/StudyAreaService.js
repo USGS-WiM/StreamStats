@@ -224,6 +224,8 @@ var StreamStats;
                 this.zoomLevel15 = true;
                 this.regressionRegionQueryComplete = false;
                 this.regressionRegionQueryLoading = false;
+                this.delineateByPoint = false;
+                this.delineateByLine = false;
                 this.eventManager.RaiseEvent(Services.onStudyAreaReset, this, WiM.Event.EventArgs.Empty);
             };
             StudyAreaService.prototype.loadStudyBoundary = function () {
