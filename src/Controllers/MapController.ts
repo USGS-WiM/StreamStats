@@ -1382,6 +1382,11 @@ module StreamStats.Controllers {
                 var name = item.id.toLowerCase();
                 this.addGeoJSON(name, item);
                 this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(name, "geojson", this.geojson[name].style));
+                
+                // Remove subbasins from map
+                if (name.includes('globalwatershed') && /\d/.test(name) && !name.includes('point')) {
+                    this.removeGeoJson(name);
+                } 
             });
             //zoom to bounding box
             if (this.studyArea.selectedStudyArea.FeatureCollection['bbox']) {
@@ -1429,9 +1434,8 @@ module StreamStats.Controllers {
                 this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs('nonsimplifiedbasin', "geojson"));
                 this.nonsimplifiedBasin = undefined;
             }
-
             for (var k in this.geojson) {
-                if (typeof this.geojson[k] !== 'function' && (k != 'streamgages' || k == layerName)) {
+                if (typeof this.geojson[k] !== 'function' && ((k != 'streamgages' && !k.includes('globalwatershedpoint')) || k == layerName)) {
                     delete this.geojson[k];
                     this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs(k, "geojson")); 
                 }
@@ -1485,7 +1489,19 @@ module StreamStats.Controllers {
                         fillOpacity: 0.5
                     }
                 }
+
+                var subBasinStyle = {
+                    //https://www.base64-image.de/
+                    displayName: "Subbasin Boundary " + LayerName.replace(/[^0-9]/g, ''),
+                    imagesrc: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANkAAADJCAYAAACuaJftAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKsSURBVHhe7dwxbsJAEEBRkyPQU3L/A1HScwWCFEuRkEDB7I+t5L2Grei+lmEs7643E5D5mD+BiMggJjKIiQxiIoOYyCD2a3/hXw7H+QTbsz+f5tN4bjKIiQxiIoPYsJnMzMV/8soM5yaDmMggJjKILZ7JzGDw7dmM5iaDmMggJjKIiQxiIoOYyCAmMoj9eE9mLwaP2ZPBikQGMZFBzLOLMICZDFYkMoiJDGIig5jIICYyiIkMYvZksID3LsKGiAxiIoOYmQwG8OwirEhkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnEvOMDFvDeRdgQkUFMZBAzkz3wym9ueMZNBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQ211v5vNbLofjfPob9ufTfIL3uMkgJjKIiQxiIoOYyCAmMoiJDGLD9mT3Ru/N7vdW9ffDKG4yiIkMYiKDWDaTAV/cZBATGcREBjGRQUxkEBMZxEQGMZFBTGSQmqZPLJhZUkx8RY8AAAAASUVORK5CYII=",
+                    fillColor: "red",
+                    weight: 2,
+                    opacity: 1,
+                    color: 'red',
+                    fillOpacity: 0.5
+                }
                 // TODO: turn this layer off by default
+                this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(LayerName, "geojson", subBasinStyle, false));
             }
             else if (LayerName.includes('globalwatershed') && /\d/.test(LayerName) == false) {
                 console.log(feature)
@@ -1514,7 +1530,7 @@ module StreamStats.Controllers {
                 // add non-simplified basin but default to off (ignore if doing delineation by line)
                 if (this.studyArea.selectedStudyArea.Pourpoint.length == 1 && verticies != data_verticies) {
                     this.nonsimplifiedBasin = feature;
-                    this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs('nonsimplifiedbasin', "geojson", this.nonsimplifiedBasinStyle, true));
+                    this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs('nonsimplifiedbasin', "geojson", this.nonsimplifiedBasinStyle, false));
                 }
             }
             else if (LayerName == 'regulatedwatershed') {
@@ -1734,6 +1750,10 @@ module StreamStats.Controllers {
                     // if nonsimplified basin
                     if (e.LayerName == 'nonsimplifiedbasin') {
                         this.addGeoJSON('nonsimplifiedbasin', this.nonsimplifiedBasin)
+                    }
+                    // if subbasin
+                    if (e.LayerName.includes('globalwatershed') && /\d/.test(e.LayerName)) {
+                        this.addGeoJSON(e.LayerName, this.studyArea.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == e.LayerName})[0]) //here
                     }
 
 

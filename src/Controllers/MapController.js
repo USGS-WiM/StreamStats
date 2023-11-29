@@ -959,6 +959,9 @@ var StreamStats;
                     var name = item.id.toLowerCase();
                     _this.addGeoJSON(name, item);
                     _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(name, "geojson", _this.geojson[name].style));
+                    if (name.includes('globalwatershed') && /\d/.test(name) && !name.includes('point')) {
+                        _this.removeGeoJson(name);
+                    }
                 });
                 if (this.studyArea.selectedStudyArea.FeatureCollection['bbox']) {
                     bbox = this.studyArea.selectedStudyArea.FeatureCollection['bbox'];
@@ -992,7 +995,7 @@ var StreamStats;
                     this.nonsimplifiedBasin = undefined;
                 }
                 for (var k in this.geojson) {
-                    if (typeof this.geojson[k] !== 'function' && (k != 'streamgages' || k == layerName)) {
+                    if (typeof this.geojson[k] !== 'function' && ((k != 'streamgages' && !k.includes('globalwatershedpoint')) || k == layerName)) {
                         delete this.geojson[k];
                         this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs(k, "geojson"));
                     }
@@ -1041,6 +1044,16 @@ var StreamStats;
                                 fillOpacity: 0.5
                             }
                         };
+                    var subBasinStyle = {
+                        displayName: "Subbasin Boundary " + LayerName.replace(/[^0-9]/g, ''),
+                        imagesrc: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANkAAADJCAYAAACuaJftAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKsSURBVHhe7dwxbsJAEEBRkyPQU3L/A1HScwWCFEuRkEDB7I+t5L2Grei+lmEs7643E5D5mD+BiMggJjKIiQxiIoOYyCD2a3/hXw7H+QTbsz+f5tN4bjKIiQxiIoPYsJnMzMV/8soM5yaDmMggJjKILZ7JzGDw7dmM5iaDmMggJjKIiQxiIoOYyCAmMoj9eE9mLwaP2ZPBikQGMZFBzLOLMICZDFYkMoiJDGIig5jIICYyiIkMYvZksID3LsKGiAxiIoOYmQwG8OwirEhkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnEvOMDFvDeRdgQkUFMZBAzkz3wym9ueMZNBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQ211v5vNbLofjfPob9ufTfIL3uMkgJjKIiQxiIoOYyCAmMoiJDGLD9mT3Ru/N7vdW9ffDKG4yiIkMYiKDWDaTAV/cZBATGcREBjGRQUxkEBMZxEQGMZFBTGSQmqZPLJhZUkx8RY8AAAAASUVORK5CYII=",
+                        fillColor: "red",
+                        weight: 2,
+                        opacity: 1,
+                        color: 'red',
+                        fillOpacity: 0.5
+                    };
+                    this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(LayerName, "geojson", subBasinStyle, false));
                 }
                 else if (LayerName.includes('globalwatershed') && /\d/.test(LayerName) == false) {
                     console.log(feature);
@@ -1067,7 +1080,7 @@ var StreamStats;
                         };
                     if (this.studyArea.selectedStudyArea.Pourpoint.length == 1 && verticies != data_verticies) {
                         this.nonsimplifiedBasin = feature;
-                        this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs('nonsimplifiedbasin', "geojson", this.nonsimplifiedBasinStyle, true));
+                        this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs('nonsimplifiedbasin', "geojson", this.nonsimplifiedBasinStyle, false));
                     }
                 }
                 else if (LayerName == 'regulatedwatershed') {
@@ -1257,6 +1270,9 @@ var StreamStats;
                         }
                         if (e.LayerName == 'nonsimplifiedbasin') {
                             this.addGeoJSON('nonsimplifiedbasin', this.nonsimplifiedBasin);
+                        }
+                        if (e.LayerName.includes('globalwatershed') && /\d/.test(e.LayerName)) {
+                            this.addGeoJSON(e.LayerName, this.studyArea.selectedStudyArea.FeatureCollection.features.filter(function (f) { return (f.id).toLowerCase() == e.LayerName; })[0]);
                         }
                         if (this.explorationService.networkNavResults) {
                             for (var i = 0; i < this.explorationService.networkNavResults.length; i++) {
