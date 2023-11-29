@@ -1452,7 +1452,10 @@ module StreamStats.Controllers {
                             popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
                         });
                         layer.bindPopup(popupContent);
-                        layer.closePopup();
+                        if (/\d/.test(LayerName)){
+                            // Close the popups for delineation by line
+                            layer.closePopup();
+                        }
                     },
                     style: {
                         displayName: "Basin Clicked Point " + LayerName.replace(/[^0-9]/g, ''),
