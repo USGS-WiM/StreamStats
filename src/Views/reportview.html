@@ -24,7 +24,7 @@
                         <div class="col-md-7"><strong>Region ID:</strong></div>
                         <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.RegionID}}</div>
                     </div>
-                    <div class="row">
+                    <div class="row" ng-if="vm.studyAreaService.selectedStudyArea.Pourpoint.length == 1">
                         <div class="col-md-7"><strong>Workspace ID:</strong></div>
                         <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.WorkspaceID}}</div>
                     </div>
