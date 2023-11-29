@@ -247,6 +247,7 @@ module StreamStats.Controllers {
         public dailyDatesOnly = [];
         public startAndEnd = []; 
         public extremes;
+        public longerThanYear = false;
         public defaultYear;
         public formattedDailyHeat = [];
         public dailyValuesOnly = [];
@@ -2236,6 +2237,7 @@ module StreamStats.Controllers {
                     events: {
                         load: function () {
                             self.updateShadedStats();
+                            self.updatePeaksAfterZoom();
                         }
                     }
                 },
@@ -2284,6 +2286,7 @@ module StreamStats.Controllers {
                         afterSetExtremes: function() {
                             //console.log('the x axis has been resized')
                             self.updateShadedStats();
+                            self.updatePeaksAfterZoom();
                         }
                     },
                     gridLineWidth: 0,
@@ -3722,7 +3725,7 @@ public createDailyRasterPlot(): void {
         
         public updateShadedStats () {
             let chart = $('#chart1').highcharts();
-            let extremes = chart.xAxis[0].getExtremes()
+            let extremes = chart.xAxis[0].getExtremes();
             let min = new Date(extremes.min)
             let max = new Date(extremes.max)
             var minDateString = new Date(min.getTime() - (min.getTimezoneOffset() * 60000 ))
@@ -3813,6 +3816,60 @@ public createDailyRasterPlot(): void {
                 chart.series[2].hide();
             }
         }
+
+        public updatePeaksAfterZoom() {
+            let chart = $('#chart1').highcharts();
+            let extremes = chart.xAxis[0].getExtremes();
+            let min = new Date(extremes.min)
+            let max = new Date(extremes.max)
+            var minDateString = new Date(min.getTime() - (min.getTimezoneOffset() * 60000 ))
+                .toISOString()
+                .split("T")[0];
+            var maxDateString = new Date(max.getTime() - (min.getTimezoneOffset() * 60000 ))
+                    .toISOString()
+                            .split("T")[0];
+            let minAndMax = {
+                min: minDateString,
+                max: maxDateString
+            }
+            this.extremes = minAndMax;
+            let maxYear = max.getFullYear();
+            let minYear = min.getFullYear();
+            
+            function inMonths(d1, d2) {
+                var d1Y = d1.getFullYear();
+                var d2Y = d2.getFullYear();
+                var d1M = d1.getMonth();
+                var d2M = d2.getMonth();
+                return (d2M+12*d2Y)-(d1M+12*d1Y);
+            }
+            function generateYearsBetween(startYear = 2000, endYear) {
+                const endDate = endYear || new Date().getFullYear();
+                let years = [];
+            
+                for (var i = startYear; i <= endDate; i++) {
+                    years.push(startYear);
+                    startYear++;
+                }
+                return years;
+            }
+            if ((inMonths(min, max)) > 12) {
+                console.log('more than a year')
+                chart.series[0].update({ data: this.formattedPeakDates });
+                chart.series[1].update({ data: this.formattedEstPeakDates});
+                this.longerThanYear = true;
+                console.log(this.longerThanYear)
+                //update tooltip
+            } else {
+                console.log('less than or equal to a year')
+                this.longerThanYear = false;
+                console.log(this.longerThanYear)
+
+                // update peak data to peaks on year, but we want the date to be whatever year is currently displayed
+
+            }
+        }
+
             
         // try to dynamic legend of discharge plot
         public logScaleDischarge = false; // starts with it unchecked
@@ -3826,6 +3883,7 @@ public createDailyRasterPlot(): void {
             } else {
                 chart.xAxis[0].update({ type: 'linear' });
                 chart.yAxis[0].update({ type: 'linear' });
+                this.peaksOnYear = false
             }
         }
 

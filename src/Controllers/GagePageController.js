@@ -139,6 +139,7 @@ var StreamStats;
                 _this_1.formattedInstFlow = [];
                 _this_1.dailyDatesOnly = [];
                 _this_1.startAndEnd = [];
+                _this_1.longerThanYear = false;
                 _this_1.formattedDailyHeat = [];
                 _this_1.dailyValuesOnly = [];
                 _this_1.formattedDailyPlusAvg = [];
@@ -1866,6 +1867,7 @@ var StreamStats;
                         events: {
                             load: function () {
                                 self.updateShadedStats();
+                                self.updatePeaksAfterZoom();
                             }
                         }
                     },
@@ -1908,6 +1910,7 @@ var StreamStats;
                         events: {
                             afterSetExtremes: function () {
                                 self.updateShadedStats();
+                                self.updatePeaksAfterZoom();
                             }
                         },
                         gridLineWidth: 0,
@@ -3417,6 +3420,54 @@ var StreamStats;
                     chart.series[2].hide();
                 }
             };
+            GagePageController.prototype.updatePeaksAfterZoom = function () {
+                var chart = $('#chart1').highcharts();
+                var extremes = chart.xAxis[0].getExtremes();
+                var min = new Date(extremes.min);
+                var max = new Date(extremes.max);
+                var minDateString = new Date(min.getTime() - (min.getTimezoneOffset() * 60000))
+                    .toISOString()
+                    .split("T")[0];
+                var maxDateString = new Date(max.getTime() - (min.getTimezoneOffset() * 60000))
+                    .toISOString()
+                    .split("T")[0];
+                var minAndMax = {
+                    min: minDateString,
+                    max: maxDateString
+                };
+                this.extremes = minAndMax;
+                var maxYear = max.getFullYear();
+                var minYear = min.getFullYear();
+                function inMonths(d1, d2) {
+                    var d1Y = d1.getFullYear();
+                    var d2Y = d2.getFullYear();
+                    var d1M = d1.getMonth();
+                    var d2M = d2.getMonth();
+                    return (d2M + 12 * d2Y) - (d1M + 12 * d1Y);
+                }
+                function generateYearsBetween(startYear, endYear) {
+                    if (startYear === void 0) { startYear = 2000; }
+                    var endDate = endYear || new Date().getFullYear();
+                    var years = [];
+                    for (var i = startYear; i <= endDate; i++) {
+                        years.push(startYear);
+                        startYear++;
+                    }
+                    return years;
+                }
+                if ((inMonths(min, max)) > 12) {
+                    console.log('more than a year');
+                    chart.series[0].update({ data: this.formattedPeakDates });
+                    chart.series[1].update({ data: this.formattedEstPeakDates });
+                    this.longerThanYear = true;
+                    console.log(this.longerThanYear);
+                }
+                else {
+                    console.log('less than or equal to a year');
+                    this.longerThanYear = false;
+                    console.log(this.longerThanYear);
+                }
+            };
             GagePageController.prototype.toggleLogLinearDischarge = function () {
                 var chart = $('#chart3').highcharts();
                 if (this.logScaleDischarge) {
@@ -3426,6 +3477,7 @@ var StreamStats;
                 else {
                     chart.xAxis[0].update({ type: 'linear' });
                     chart.yAxis[0].update({ type: 'linear' });
+                    this.peaksOnYear = false;
                 }
             };
             GagePageController.prototype.toggleDischargeData = function (dataType) {
