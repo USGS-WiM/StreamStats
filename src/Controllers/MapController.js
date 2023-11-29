@@ -1012,9 +1012,6 @@ var StreamStats;
                                 popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
                             });
                             layer.bindPopup(popupContent);
-                            if (/\d/.test(LayerName)) {
-                                layer.closePopup();
-                            }
                         },
                         style: {
                             displayName: "Basin Clicked Point " + LayerName.replace(/[^0-9]/g, ''),

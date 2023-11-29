@@ -1020,6 +1020,8 @@ module StreamStats.Controllers {
                                 ssPoints.push(latlng)
                             })
 
+                            // TODO close the popup for each point
+
                             // TODO send exclude message if necessary  
                             this.startDelineate(ssPoints, false, null, lineClickPoints);
                         })
@@ -1452,10 +1454,6 @@ module StreamStats.Controllers {
                             popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
                         });
                         layer.bindPopup(popupContent);
-                        if (/\d/.test(LayerName)){
-                            // Close the popups for delineation by line
-                            layer.closePopup();
-                        }
                     },
                     style: {
                         displayName: "Basin Clicked Point " + LayerName.replace(/[^0-9]/g, ''),
