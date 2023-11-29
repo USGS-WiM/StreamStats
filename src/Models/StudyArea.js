@@ -6,6 +6,7 @@ var StreamStats;
             function StudyArea(region, point) {
                 this.RegionID = region;
                 this.Pourpoint = point;
+                this.LinePoints = null;
                 this.CoordinatedReach = null;
                 this.defaultNHDStream = null;
                 this.NHDStream = null;
