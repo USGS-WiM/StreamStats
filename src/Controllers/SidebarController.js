@@ -140,7 +140,7 @@ var StreamStats;
                             _this.studyAreaService.doDelineateFlag = !_this.studyAreaService.doDelineateFlag;
                         }
                         else {
-                            _this.toaster.pop("success", "Delineate", "Select two points to create a line to delineate from");
+                            _this.toaster.pop("success", "Delineate", "select a start and end point to delineate from a line");
                             _this.studyAreaService.delineateByLine = !_this.studyAreaService.delineateByLine;
                             _this.studyAreaService.doDelineateFlag = !_this.studyAreaService.doDelineateFlag;
                         }

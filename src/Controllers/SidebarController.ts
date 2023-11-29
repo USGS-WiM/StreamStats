@@ -227,7 +227,7 @@ module StreamStats.Controllers {
                         this.toaster.pop(
                           "success",
                           "Delineate",
-                          "Select two points to create a line to delineate from"
+                          "select a start and end point to delineate from a line"
                         );
                         this.studyAreaService.delineateByLine = !this.studyAreaService.delineateByLine;
                         this.studyAreaService.doDelineateFlag = !this.studyAreaService.doDelineateFlag;
