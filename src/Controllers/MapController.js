@@ -951,7 +951,6 @@ var StreamStats;
             };
             MapController.prototype.onSelectedStudyAreaChanged = function () {
                 var _this = this;
-                console.log('onSelectedStudyAreaChanged');
                 var bbox;
                 if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.FeatureCollection)
                     return;
@@ -1033,7 +1032,6 @@ var StreamStats;
                     };
                 }
                 else if (LayerName.includes('globalwatershed') && /\d/.test(LayerName)) {
-                    console.log(feature.properties);
                     this.geojson[LayerName] =
                         {
                             data: feature,
@@ -1487,7 +1485,6 @@ var StreamStats;
                 this.studyArea.AddStudyArea(studyArea);
                 this.studyArea.loadStudyBoundary();
                 this.studyArea.selectedStudyArea.LinePoints = lineClickPoints;
-                console.log(this.studyArea.selectedStudyArea);
                 if (isInExclusionArea && excludeReason)
                     this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area. ' + excludeReason;
             };

@@ -1371,7 +1371,7 @@ module StreamStats.Controllers {
         }
        
         private onSelectedStudyAreaChanged() {
-            console.log('onSelectedStudyAreaChanged')
+            // console.log('onSelectedStudyAreaChanged')
             var bbox: GeoJSON.BBox;
             //console.log('in onselectedstudyareachange1', this.studyArea.selectedStudyArea.Features)
 
@@ -1480,7 +1480,7 @@ module StreamStats.Controllers {
             } 
             // Subwatersheds for delineation by line
             else if (LayerName.includes('globalwatershed') && /\d/.test(LayerName))  {
-                console.log(feature.properties);
+                // console.log(feature.properties);
                 this.geojson[LayerName] =
                 {
                     data: feature,
@@ -2018,7 +2018,7 @@ module StreamStats.Controllers {
 
             //add disclaimer here
             this.studyArea.selectedStudyArea.LinePoints = lineClickPoints;
-            console.log(this.studyArea.selectedStudyArea);
+            // console.log(this.studyArea.selectedStudyArea);
             if (isInExclusionArea && excludeReason) this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area. ' + excludeReason;
         }
 
