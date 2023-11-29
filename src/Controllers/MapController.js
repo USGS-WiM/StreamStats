@@ -1000,7 +1000,6 @@ var StreamStats;
             };
             MapController.prototype.addGeoJSON = function (LayerName, feature) {
                 if (LayerName.includes('globalwatershedpoint')) {
-                    console.log(feature);
                     var lat = this.studyArea.selectedStudyArea.Pourpoint[0].Latitude;
                     var lng = this.studyArea.selectedStudyArea.Pourpoint[0].Longitude;
                     var rcode = this.studyArea.selectedStudyArea.RegionID;
@@ -1013,6 +1012,7 @@ var StreamStats;
                                 popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
                             });
                             layer.bindPopup(popupContent);
+                            layer.closePopup();
                         },
                         style: {
                             displayName: "Basin Clicked Point " + LayerName.replace(/[^0-9]/g, ''),
