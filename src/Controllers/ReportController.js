@@ -678,14 +678,6 @@ var StreamStats;
                             }
                         };
                 }
-                else if (LayerName.includes('globalwatershedpoint')) {
-                    this.layers.overlays[LayerName] = {
-                        name: 'Subbasin Boundary ' + LayerName.replace(/[^0-9]/g, ''),
-                        type: 'geoJSONShape',
-                        data: feature,
-                        visible: true,
-                    };
-                }
                 else if (LayerName == 'globalwatershedpoint') {
                     this.layers.overlays[LayerName] = {
                         name: 'Basin Clicked Point',
@@ -705,7 +697,15 @@ var StreamStats;
                 }
                 else if (LayerName.includes('globalwatershedpoint')) {
                     this.layers.overlays[LayerName] = {
-                        name: 'Basin Delineation Point ' + LayerName.replace(/[^0-9]/g, ''),
+                        name: 'Subbasin Delineation Point ' + LayerName.replace(/[^0-9]/g, ''),
+                        type: 'geoJSONShape',
+                        data: feature,
+                        visible: true,
+                    };
+                }
+                else if (LayerName.includes('globalwatershed')) {
+                    this.layers.overlays[LayerName] = {
+                        name: 'Subbasin Boundary ' + LayerName.replace(/[^0-9]/g, ''),
                         type: 'geoJSONShape',
                         data: feature,
                         visible: true,
