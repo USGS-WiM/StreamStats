@@ -583,7 +583,7 @@ var StreamStats;
             };
             StudyAreaService.prototype.loadParameters = function () {
                 return __awaiter(this, void 0, void 0, function () {
-                    var argState, requestParameterList, saEvent, basinCharacteristicResponses, finalResponse, computationDictionary, _i, _a, feature, url, request, i, result, basinCharacteristics, parametersCombined_1, parameterResults, parameterCode, value, isNull, paramErrors, saEvent, url, request;
+                    var argState, requestParameterList, saEvent, basinCharacteristicResponses, finalResponse, computationDictionary, roundingDictionary, _i, _a, feature, url, request, i, result, basinCharacteristics, parametersCombined_1, parameterResults, parameterCode, value, isNull, paramErrors, saEvent, url, request;
                     var _this = this;
                     return __generator(this, function (_b) {
                         switch (_b.label) {
@@ -651,6 +651,46 @@ var StreamStats;
                                     "SSURGOC": "areaWeightedMean",
                                     "SSURGOD": "areaWeightedMean",
                                     "STORAGE": "areaWeightedMean"
+                                };
+                                roundingDictionary = {
+                                    "BSLDEM30FT": 1,
+                                    "CSL10_85fm": 2,
+                                    "DRNAREA": 1,
+                                    "ELEV": 1,
+                                    "ELEVMAX": 1,
+                                    "I24H100Y": 1,
+                                    "I24H10Y": 1,
+                                    "I24H25Y": 1,
+                                    "I24H2Y": 1,
+                                    "I24H50Y": 1,
+                                    "LC01DEV": 1,
+                                    "LC01FOREST": 1,
+                                    "LC01IMP": 2,
+                                    "LC06DEV": 1,
+                                    "LC06FOREST": 1,
+                                    "LC06IMP": 2,
+                                    "LC11DEV": 1,
+                                    "LC11FOREST": 1,
+                                    "LC11IMP": 2,
+                                    "LC16DEV": 1,
+                                    "LC16FOREST": 1,
+                                    "LC16IMP": 1,
+                                    "LC16STOR": 1,
+                                    "LC19IMP": 1,
+                                    "LFPLENGTH": 3,
+                                    "MINBELEV": 1,
+                                    "PCTREG1": 1,
+                                    "PCTREG2": 1,
+                                    "PCTREG3": 1,
+                                    "PCTREG4": 1,
+                                    "PCTREG5": 1,
+                                    "PRECIP": 1,
+                                    "RCN": 2,
+                                    "SSURGOA": 1,
+                                    "SSURGOB": 1,
+                                    "SSURGOC": 1,
+                                    "SSURGOD": 1,
+                                    "STORAGE": 1
                                 };
                                 requestParameterList.forEach(function (parameterCode) {
                                     if (parameterCode == 'CSL10_85fm' && requestParameterList.indexOf('LFPLENGTH') == -1) {
@@ -738,6 +778,7 @@ var StreamStats;
                                                     value = this.computeCSL10_85fm(parametersCombined_1[parameterCode], parametersCombined_1["LFPLENGTH"]);
                                                     break;
                                             }
+                                            value = Number(value.toFixed(roundingDictionary[parameterCode]));
                                         }
                                         catch (error) {
                                             console.log(error);
