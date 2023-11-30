@@ -951,31 +951,27 @@ var StreamStats;
                         if (parseFloat(instObj.value) !== -999999) {
                             if (_this_1.formattedDailyFlow.length !== 0) {
                                 var index = _this_1.formattedDailyFlow.length - 1;
-                                var finalDate = _this_1.formattedDailyFlow[index].x;
+                                var finalDate_1 = _this_1.formattedDailyFlow[index].x;
                                 var stringDate = instObj.dateTime.split('.')[0];
                                 var instDate = new Date(stringDate);
-                                if (instDate > finalDate) {
+                                if (instDate > finalDate_1) {
                                     _this_1.formattedInstFlow.push({ x: instDate, y: parseFloat(instObj.value) });
                                 }
                             }
                         }
                     });
                 }
-                var finalPeakorDailyDate = new Date('January 1, 1800');
-                if (this.formattedPeakDates.length > 0) {
-                    var finalPeakIndex = this.formattedPeakDates.length - 1;
-                    if (this.formattedPeakDates[finalPeakIndex].x > finalPeakorDailyDate) {
-                        finalPeakorDailyDate = this.formattedPeakDates[finalPeakIndex].x;
-                    }
-                }
+                var finalDate;
                 if (this.formattedDailyFlow.length > 0) {
                     var finalDailyIndex = this.formattedDailyFlow.length - 1;
-                    if (this.formattedDailyFlow[finalDailyIndex].x > finalPeakorDailyDate) {
-                        finalPeakorDailyDate = this.formattedDailyFlow[finalDailyIndex].x;
-                    }
+                    finalDate = this.formattedDailyFlow[finalDailyIndex].x;
+                }
+                else {
+                    finalDate = new Date();
                 }
                 var finalIndex = this.formattedDailyFlow.length - 1;
-                var finalYear = (finalPeakorDailyDate).getUTCFullYear();
+                var defaultYear = finalDate.getUTCFullYear();
+                this.defaultYear = defaultYear;
                 function dateRange(startDate, endDate, steps) {
                     if (steps === void 0) { steps = 1; }
                     var dateArray = [];
@@ -1007,7 +1003,7 @@ var StreamStats;
                 if (this.peakDates) {
                     this.peakDates.forEach(function (peakOnYear) {
                         var adjustedDate = new Date(peakOnYear.peak_dt);
-                        adjustedDate.setUTCFullYear(finalYear);
+                        adjustedDate.setUTCFullYear(_this_1.defaultYear);
                         var currentYear = new Date(adjustedDate.toUTCString());
                         if (!isNaN(peakOnYear.peak_va)) {
                             _this_1.formattedPeakDatesOnYear.push({ x: currentYear, y: peakOnYear.peak_va, realDate: new Date(peakOnYear.peak_dt) });
@@ -1017,7 +1013,7 @@ var StreamStats;
                 if (this.estPeakDates) {
                     this.estPeakDates.forEach(function (estPeakOnYear) {
                         var adjustedDate = new Date(estPeakOnYear.peak_dt);
-                        adjustedDate.setUTCFullYear(finalYear);
+                        adjustedDate.setUTCFullYear(_this_1.defaultYear);
                         var currentYear = new Date(adjustedDate.toUTCString());
                         _this_1.formattedEstPeakDatesOnYear.push({ x: currentYear, y: estPeakOnYear.peak_va, realDate: new Date(estPeakOnYear.peak_dt) });
                     });

@@ -245,6 +245,7 @@ module StreamStats.Controllers {
         public dailyDatesOnly = [];
         public startAndEnd = []; 
         public extremes;
+        public defaultYear;
         public formattedDailyHeat = [];
         public formattedDailyPlusAvg = [];
         public formattedDischargePeakDates = []; // Stage vs. Discharge Plot
@@ -1281,22 +1282,17 @@ module StreamStats.Controllers {
                 }
             })
             }
-            //checking for the latest year between the peaks and the daily flow
-            let finalPeakorDailyDate = new Date('January 1, 1800') // assign way in past
-            if (this.formattedPeakDates.length > 0) {
-                var finalPeakIndex = this.formattedPeakDates.length-1;
-                if (this.formattedPeakDates[finalPeakIndex].x > finalPeakorDailyDate) {
-                    finalPeakorDailyDate = this.formattedPeakDates[finalPeakIndex].x
-                }
-            }
+            let finalDate;
             if (this.formattedDailyFlow.length > 0) {
                 var finalDailyIndex = this.formattedDailyFlow.length-1;
-                if (this.formattedDailyFlow[finalDailyIndex].x > finalPeakorDailyDate) {
-                    finalPeakorDailyDate = this.formattedDailyFlow[finalDailyIndex].x
-                }
+                finalDate = this.formattedDailyFlow[finalDailyIndex].x
+            }  else {
+                finalDate = new Date();
             }
             var finalIndex = this.formattedDailyFlow.length-1;
-            var finalYear = (finalPeakorDailyDate).getUTCFullYear(); //currently using the final daily flow point as latest year, but sometimes gage has more recent peaks
+            var defaultYear = finalDate.getUTCFullYear();
+            this.defaultYear = defaultYear;
+            //var finalYear = (finalPeakorDailyDate).getUTCFullYear(); //currently using the final daily flow point as latest year, but sometimes gage has more recent peaks
             //return an array with a date each day between first recording and last
             function dateRange(startDate, endDate, steps = 1) {
                 const dateArray = [];
@@ -1334,7 +1330,7 @@ module StreamStats.Controllers {
             if (this.peakDates) {
                 this.peakDates.forEach(peakOnYear => {
                     let adjustedDate = new Date(peakOnYear.peak_dt);
-                    adjustedDate.setUTCFullYear(finalYear);
+                    adjustedDate.setUTCFullYear(this.defaultYear);
                     let currentYear = new Date(adjustedDate.toUTCString())
                     if (!isNaN(peakOnYear.peak_va)) {
                         this.formattedPeakDatesOnYear.push({x: currentYear, y: peakOnYear.peak_va, realDate: new Date(peakOnYear.peak_dt)})
@@ -1344,7 +1340,7 @@ module StreamStats.Controllers {
             if (this.estPeakDates) {
                 this.estPeakDates.forEach(estPeakOnYear => {
                     let adjustedDate = new Date(estPeakOnYear.peak_dt);
-                    adjustedDate.setUTCFullYear(finalYear);
+                    adjustedDate.setUTCFullYear(this.defaultYear);
                     let currentYear = new Date(adjustedDate.toUTCString())
                     this.formattedEstPeakDatesOnYear.push({x: currentYear, y: estPeakOnYear.peak_va, realDate: new Date(estPeakOnYear.peak_dt)})
                 });
