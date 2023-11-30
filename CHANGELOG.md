@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Latitude and Longitude columns swapped in the Elevation profile CSV export
 - Email address required for Batch Processor Batch Status tab
+- Stream Grids tab sometimes shows repeated regions
 
 ### Security
 
