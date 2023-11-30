@@ -3446,6 +3446,42 @@ var StreamStats;
                 if ((inMonths(min, max)) > 12) {
                     chart.series[0].update({ data: this.formattedPeakDates });
                     chart.series[1].update({ data: this.formattedEstPeakDates });
+                    chart.series[0].update({ tooltip: {
+                            headerFormat: '<b>Annual Peak Streamflow</b>',
+                            pointFormatter: function () {
+                                if (this.formattedPeakDates !== null) {
+                                    var waterYear = this.x.getUTCFullYear();
+                                    if (this.x.getUTCMonth() > 8) {
+                                        waterYear += 1;
+                                    }
+                                    ;
+                                    var UTCday = this.x.getUTCDate();
+                                    var year = this.x.getUTCFullYear();
+                                    var month = this.x.getUTCMonth();
+                                    month += 1;
+                                    var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                                    return '<br>Date: <b>' + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear;
+                                }
+                            }
+                        } });
+                    chart.series[1].update({ tooltip: {
+                            headerFormat: '<b>Annual Peak Streamflow</b>',
+                            pointFormatter: function () {
+                                if (this.formattedEstPeakDates !== null) {
+                                    var waterYear = this.x.getUTCFullYear();
+                                    if (this.x.getUTCMonth() > 8) {
+                                        waterYear += 1;
+                                    }
+                                    ;
+                                    var UTCday = this.x.getUTCDate();
+                                    var year = this.x.getUTCFullYear();
+                                    var month = this.x.getUTCMonth();
+                                    month += 1;
+                                    var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                                    return '<br>Date (estimated): <b>' + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear;
+                                }
+                            }
+                        } });
                     this.peaksOnYear = false;
                 }
                 else {
@@ -3472,6 +3508,42 @@ var StreamStats;
                         }
                         chart.series[0].update({ data: formattedSelectedPeaks_1 });
                         chart.series[1].update({ data: formattedEstSelectedPeaks_1 });
+                        chart.series[0].update({ tooltip: {
+                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on One Year: <b>' + this.selectedYear,
+                                pointFormatter: function () {
+                                    if (this.formattedPeakDatesOnYear !== null) {
+                                        var waterYear = this.realDate.getUTCFullYear();
+                                        if (this.realDate.getUTCMonth() > 8) {
+                                            waterYear += 1;
+                                        }
+                                        ;
+                                        var UTCday = this.realDate.getUTCDate();
+                                        var year = this.realDate.getUTCFullYear();
+                                        var month = this.realDate.getUTCMonth();
+                                        month += 1;
+                                        var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                                        return '</b><br>Date: <b>' + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear;
+                                    }
+                                }
+                            } });
+                        chart.series[1].update({ tooltip: {
+                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on One Year: <b>' + this.selectedYear,
+                                pointFormatter: function () {
+                                    if (this.formattedEstPeakDatesOnYear !== null) {
+                                        var waterYear = this.realDate.getUTCFullYear();
+                                        if (this.realDate.getUTCMonth() > 8) {
+                                            waterYear += 1;
+                                        }
+                                        ;
+                                        var UTCday = this.realDate.getUTCDate();
+                                        var year = this.realDate.getUTCFullYear();
+                                        var month = this.realDate.getUTCMonth();
+                                        month += 1;
+                                        var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                                        return '</b><br>Date (estimated): <b>' + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear;
+                                    }
+                                }
+                            } });
                     }
                 }
             };
