@@ -93,7 +93,7 @@
                                 <form style="padding: 5px 0;">
                                     <p class="p-info" ng-show="vm.studyAreaService.global">Basin editing is currently only available for small basins.</p>
 
-                                    <button type="button" class="btn-blue fullwidth" ng-click="vm.studyAreaService.showEditToolbar = !vm.studyAreaService.showEditToolbar" ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.regressionRegionQueryComplete || vm.regionService.selectedRegion.RegionID == 'OK' || vm.studyAreaService.global"><span class="fa fa-edit"></span>&nbsp;&nbsp;Edit Basin</button>
+                                    <button type="button" class="btn-blue fullwidth" ng-click="vm.studyAreaService.showEditToolbar = !vm.studyAreaService.showEditToolbar; vm.clickEditBasin();" ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.regressionRegionQueryComplete || vm.regionService.selectedRegion.RegionID == 'OK' || vm.studyAreaService.global"><span class="fa fa-edit"></span>&nbsp;&nbsp;Edit Basin</button>
                                 </form>
 
 

@@ -169,6 +169,7 @@ module StreamStats.Controllers {
         public drawControl: any;
         public toaster: any;
         public nomnimalZoomLevel: string;
+        public editedBasin: boolean = false;
         public get selectedExplorationMethodType(): Services.ExplorationMethodType {
             if (this.explorationService.selectedMethod == null) return 0;
             return this.explorationService.selectedMethod.navigationID;
@@ -243,6 +244,9 @@ module StreamStats.Controllers {
             }));
             this.eventManager.SubscribeToEvent(Services.onEditClick, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>((sender: any, e: Services.StudyAreaEventArgs) => {
                 this.basinEditor();
+            }));
+            this.eventManager.SubscribeToEvent(Services.onEditBasinStartClick, new WiM.Event.EventHandler<Services.StudyAreaEventArgs>((sender: any, e: Services.StudyAreaEventArgs) => {
+                this.enterBasinEditMode();
             }));
             
             this.eventManager.SubscribeToEvent(Services.onStudyAreaReset, new WiM.Event.EventHandler<WiM.Event.EventArgs>(() => {
@@ -1014,6 +1018,7 @@ module StreamStats.Controllers {
                                 gtag('event', 'BasinEditor',{ 'Type': 'Add Area' });
 
                                 this.studyArea.WatershedEditDecisionList.append.push(clipPolygon);
+                                this.editedBasin = true;
                             }
 
                         }
@@ -1030,6 +1035,7 @@ module StreamStats.Controllers {
                                 gtag('event', 'BasinEditor',{ 'Type': 'Remove Area' });
 
                                 this.studyArea.WatershedEditDecisionList.remove.push(clipPolygon);
+                                this.editedBasin = true;
                             }
 
                         }
@@ -1038,6 +1044,20 @@ module StreamStats.Controllers {
                     });
                 });
             });
+        }
+
+        private enterBasinEditMode() {
+            this.studyArea.selectedStudyArea.FeatureCollection['features'].forEach((layer) => {
+                var item = angular.fromJson(angular.toJson(layer));
+                var name = item.id.toLowerCase();
+                if (name == 'globalwatershed') {
+                    this.removeGeoJson(name);
+                } 
+            });
+            this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs('nonsimplifiedbasin', "geojson", this.nonsimplifiedBasinStyle, true));
+            this.addGeoJSON('nonsimplifiedbasin', this.nonsimplifiedBasin);
+            this.toaster.clear();
+            this.toaster.pop("info", "Entering Edit Basin mode", "Displaying non-simplified Basin.", 0);
         }
 
         private checkEditIntersects(editType, editPolygon){
@@ -1265,7 +1285,10 @@ module StreamStats.Controllers {
         private removeGeoJson(layerName: string = "") {
             // TODO: None of these are getting removed from the legend when this is run
             // remove non-simplified basin
-            if (this.geojson['nonsimplifiedbasin'] == undefined && this.nonsimplifiedBasin != undefined) {
+            if (layerName == 'globalwatershed') {
+                this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs('globalwatershed', "geojson"));
+            }
+            else if (this.geojson['nonsimplifiedbasin'] == undefined && this.nonsimplifiedBasin != undefined) {
                 this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs('nonsimplifiedbasin', "geojson"));
                 this.nonsimplifiedBasin = undefined;
             }
@@ -1280,25 +1303,38 @@ module StreamStats.Controllers {
 
         private addGeoJSON(LayerName: string, feature: any) {
             if (LayerName == 'globalwatershed') {
-                var verticies = feature.geometry.coordinates.reduce((count, row) => count + row.length, 0);
-                var data = this.studyArea.simplify(angular.copy(feature));
-                var data_verticies = data.geometry.coordinates.reduce((count, row) => count + row.length, 0);
-                this.geojson[LayerName] =
-                {
-                    data: data,
-                    style: {
-                        //https://www.base64-image.de/
-                        displayName: "Basin Boundary",
-                        imagesrc: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADCCAYAAAC/i6XiAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKOSURBVHhe7dxBjoJAEEBRcO/9D+oBlElYTEwmE7XlI763kS2Ln0qlsefrYgIyp/UXiIgQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGL7+GztMq8PEDi3CZiEEBMhxEQIsW12QjsfRzJ4hzQJISZCiIkQYu/ZCe2AfJMXd0STEGIihJgIISZCiIkQYiKEmAghNuac0Lkg38w5IXw2EUJMhBATIcRECDERQkyEEBMhxEQIMRFCTIQQ8+0oPMq9o3AsIoSYCCFmJ4RX+T8hfDYRQkyEEBMhxEQIMRFCTIQQEyHERAgxEUJMhBATIcRECDERQkyEEBMhxEQIMRFCTIQQc8cMPMq9o3AsIoSYCCFmJ4R7g3e+/5iEEBMhxEQIMTvhj413APjNJISYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIzdfF+jzOZV4fduo8/pXhWSYhxEQIMRFCTIQQEyHERAgxEULsPeeE9+pzQ+eC7JhJCDERQkyEENtmJwT+ZBJCTISQmqYb05tLRBeJJLsAAAAASUVORK5CYII=",
-                        fillColor: "yellow",
-                        weight: 2,
-                        opacity: 1,
-                        color: 'white',
-                        fillOpacity: 0.5
+                if (this.editedBasin) {
+                    var data = feature;
+                    this.geojson[LayerName] =
+                    {
+                        data: data,
+                        style: this.nonsimplifiedBasinStyle
+                    }
+                    
+                } else {
+                    var verticies = feature.geometry.coordinates.reduce((count, row) => count + row.length, 0);
+                    var data = this.studyArea.simplify(angular.copy(feature));
+                    var data_verticies = data.geometry.coordinates.reduce((count, row) => count + row.length, 0);
+                    this.geojson[LayerName] =
+                    {
+                        data: data,
+                        style: {
+                            //https://www.base64-image.de/
+                            displayName: "Basin Boundary",
+                            imagesrc: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADCCAYAAAC/i6XiAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKOSURBVHhe7dxBjoJAEEBRcO/9D+oBlElYTEwmE7XlI763kS2Ln0qlsefrYgIyp/UXiIgQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGL7+GztMq8PEDi3CZiEEBMhxEQIsW12QjsfRzJ4hzQJISZCiIkQYu/ZCe2AfJMXd0STEGIihJgIISZCiIkQYiKEmAghNuac0Lkg38w5IXw2EUJMhBATIcRECDERQkyEEBMhxEQIMRFCTIQQ8+0oPMq9o3AsIoSYCCFmJ4RX+T8hfDYRQkyEEBMhxEQIMRFCTIQQEyHERAgxEUJMhBATIcRECDERQkyEEBMhxEQIMRFCTIQQc8cMPMq9o3AsIoSYCCFmJ4R7g3e+/5iEEBMhxEQIMTvhj413APjNJISYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIzdfF+jzOZV4fduo8/pXhWSYhxEQIMRFCTIQQEyHERAgxEULsPeeE9+pzQ+eC7JhJCDERQkyEENtmJwT+ZBJCTISQmqYb05tLRBeJJLsAAAAASUVORK5CYII=",
+                            fillColor: "yellow",
+                            weight: 2,
+                            opacity: 1,
+                            color: 'white',
+                            fillOpacity: 0.5
+                        }
                     }
                 }
+
+
                 // add non-simplified basin but default to off
-                if (verticies != data_verticies) {
+                if (this.editedBasin == false && verticies != data_verticies) {
+                    console.log(feature);
                     this.nonsimplifiedBasin = feature;
                     this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs('nonsimplifiedbasin', "geojson", this.nonsimplifiedBasinStyle, false));
                 }

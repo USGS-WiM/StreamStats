@@ -47,6 +47,7 @@ module StreamStats.Services {
         WatershedEditDecisionList: Models.IEditDecisionList;
         clearStudyArea();
         zoomLevel15: boolean;
+        enterEditBasinInterface();
         loadEditedStudyBoundary();
         loadWatershed(rcode:string, workspaceID: string): void
         queryRegressionRegions();
@@ -84,6 +85,7 @@ module StreamStats.Services {
         extensionResultsChanged;
         additionalFeaturesLoaded: boolean;
         ignoreExclusionPolygons: boolean;
+        editedBasin: boolean;
 
     }
 
@@ -100,6 +102,7 @@ module StreamStats.Services {
     export var onSelectedStudyParametersLoaded: string = "onSelectedStudyParametersLoaded";
     export var onStudyAreaReset: string = "onStudyAreaReset";
     export var onEditClick: string = "onEditClick";
+    export var onEditBasinStartClick: string = "onEditBasinStartClick";
     export var onAdditionalFeaturesLoaded: string = "onAdditionalFeaturesLoaded";
     //export var onQ10Loaded: string = "onQ10Loaded";
     export var onRegressionLoaded: string = "onRegressionLoaded";
@@ -193,6 +196,7 @@ module StreamStats.Services {
         public extensionResultsChanged = 0;        
         public flowAnywhereData: any = null;
         public ignoreExclusionPolygons: boolean = false;
+        public editedBasin: boolean = false;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -219,6 +223,7 @@ module StreamStats.Services {
             }));
 
             eventManager.AddEvent<WiM.Event.EventArgs>(onEditClick);
+            eventManager.AddEvent<WiM.Event.EventArgs>(onEditBasinStartClick);
             this._studyAreaList = [];
 
             this.toaster = toaster;
@@ -425,7 +430,16 @@ module StreamStats.Services {
             }
         }
 
+        public enterEditBasinInterface() {
+
+            // okhere
+            this.eventManager.RaiseEvent(onEditBasinStartClick,this,WiM.Event.EventArgs.Empty)
+
+        }
+
         public loadEditedStudyBoundary() {
+
+            this.editedBasin = true;
 
             this.toaster.pop("wait", "Loading Edited Basin", "Please wait...", 0);
             this.canUpdate = false;
@@ -1178,7 +1192,9 @@ module StreamStats.Services {
                 else {
                     tolerance = 0.01
                 }
-                this.toaster.pop('warning', "Displaying simplified Basin.", "See FAQ for more information.", 0);
+                if (!this.editedBasin) {
+                    this.toaster.pop('warning', "Displaying simplified Basin.", "See FAQ for more information.", 0);
+                }
                 return turf.simplify(feature, { tolerance: tolerance, highQuality: false, mutate: true })
 
             } catch (e) {
