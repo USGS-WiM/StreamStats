@@ -139,7 +139,6 @@ var StreamStats;
                 _this_1.formattedInstFlow = [];
                 _this_1.dailyDatesOnly = [];
                 _this_1.startAndEnd = [];
-                _this_1.longerThanYear = false;
                 _this_1.formattedDailyHeat = [];
                 _this_1.dailyValuesOnly = [];
                 _this_1.formattedDailyPlusAvg = [];
@@ -2618,7 +2617,6 @@ var StreamStats;
                 var chart = $('#chart1').highcharts();
                 var min = (new Date(1 + '/' + 1 + '/' + this.selectedYear)).getTime();
                 var max = (new Date(12 + '/' + 31 + '/' + this.selectedYear)).getTime();
-                console.log(this.selectedYear);
                 var formattedSelectedPeaks = [];
                 var formattedEstSelectedPeaks = [];
                 if (this.selectedYear === this.selectedYear) {
@@ -3425,6 +3423,7 @@ var StreamStats;
                 var extremes = chart.xAxis[0].getExtremes();
                 var min = new Date(extremes.min);
                 var max = new Date(extremes.max);
+                console.log(min, max);
                 var minDateString = new Date(min.getTime() - (min.getTimezoneOffset() * 60000))
                     .toISOString()
                     .split("T")[0];
@@ -3456,16 +3455,13 @@ var StreamStats;
                     return years;
                 }
                 if ((inMonths(min, max)) > 12) {
-                    console.log('more than a year');
                     chart.series[0].update({ data: this.formattedPeakDates });
                     chart.series[1].update({ data: this.formattedEstPeakDates });
-                    this.longerThanYear = true;
-                    console.log(this.longerThanYear);
+                    this.peaksOnYear = false;
                 }
                 else {
                     console.log('less than or equal to a year');
-                    this.longerThanYear = false;
-                    console.log(this.longerThanYear);
+                    this.peaksOnYear = true;
                 }
             };
             GagePageController.prototype.toggleLogLinearDischarge = function () {

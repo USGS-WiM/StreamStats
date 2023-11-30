@@ -247,7 +247,6 @@ module StreamStats.Controllers {
         public dailyDatesOnly = [];
         public startAndEnd = []; 
         public extremes;
-        public longerThanYear = false;
         public defaultYear;
         public formattedDailyHeat = [];
         public dailyValuesOnly = [];
@@ -2999,7 +2998,7 @@ public choosePeakYear() {
     let chart = $('#chart1').highcharts();
     let min = (new Date(1 +'/' + 1 + '/' + this.selectedYear)).getTime()
     let max = (new Date(12 +'/' + 31 + '/' + this.selectedYear)).getTime()
-    console.log(this.selectedYear)
+    //console.log(this.selectedYear)
     let formattedSelectedPeaks = []; //new data array for peak streamflow plotted on the year selected
     let formattedEstSelectedPeaks = []; //new data array for Estimated peak streamflow plotted on the year selected
     if (this.selectedYear === this.selectedYear) {
@@ -3822,6 +3821,7 @@ public createDailyRasterPlot(): void {
             let extremes = chart.xAxis[0].getExtremes();
             let min = new Date(extremes.min)
             let max = new Date(extremes.max)
+            console.log(min, max)
             var minDateString = new Date(min.getTime() - (min.getTimezoneOffset() * 60000 ))
                 .toISOString()
                 .split("T")[0];
@@ -3853,18 +3853,14 @@ public createDailyRasterPlot(): void {
                 }
                 return years;
             }
-            if ((inMonths(min, max)) > 12) {
-                console.log('more than a year')
+            if ((inMonths(min, max)) > 12) { //more than a year
                 chart.series[0].update({ data: this.formattedPeakDates });
                 chart.series[1].update({ data: this.formattedEstPeakDates});
-                this.longerThanYear = true;
-                console.log(this.longerThanYear)
+                this.peaksOnYear = false;
                 //update tooltip
-            } else {
+            } else { //less than a year
                 console.log('less than or equal to a year')
-                this.longerThanYear = false;
-                console.log(this.longerThanYear)
-
+                this.peaksOnYear = true;
                 // update peak data to peaks on year, but we want the date to be whatever year is currently displayed
 
             }
