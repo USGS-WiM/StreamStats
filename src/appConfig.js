@@ -269,7 +269,7 @@ configuration.regions = [
     },
     { "RegionID": "CT", "Name": "Connecticut", "Bounds": [[40.998392, -73.725237], [42.047428, -71.788249]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/connecticut-streamstats" },
     { "RegionID": "DE", "Name": "Delaware", "Bounds": [[38.449602, -75.791094], [39.840119, -75.045623]], "Layers": {}, "Applications": ["Localres"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/delaware-streamstats" },
-    {"RegionID": "DC", "Name": "Washington, D.C. Stormwater", "Bounds": [[38.8522, -76.9742], [38.9171, -76.8800]], "Layers":
+    {"RegionID": "DC", "Name": "Washington, D.C. Stormwater", "Bounds": [[37.970255, -79.489865], [39.725461, -75.045623]], "Layers":
         {
             "StormDrainPipes": {
                 "name": "Stormdrain",
