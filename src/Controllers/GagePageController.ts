@@ -3568,8 +3568,10 @@ public createDailyRasterPlot(): void {
             setTimeout(() => {
         
                 let min = this.startAndEnd[0].getTime()
-                let oneYearMin = (new Date(1 +'/' + 1 + '/' + this.startAndEnd[1].getFullYear())).getTime()
-                let max = (new Date(12 +'/' + 31 + '/' + this.startAndEnd[1].getFullYear())).getTime()
+                let oneYearMin = (new Date(1 +'/' + 1 + '/' + this.selectedYear)).getTime()
+                let max = (new Date(12 +'/' + 31 + '/' + this.selectedYear)).getTime()
+                // let oneYearMin = (new Date(1 +'/' + 1 + '/' + this.startAndEnd[1].getFullYear())).getTime()
+                // let max = (new Date(12 +'/' + 31 + '/' + this.startAndEnd[1].getFullYear())).getTime()
                 if (this.peaksOnYear) {
                     chart.series[0].update({ data: this.formattedPeakDatesOnYear });
                     chart.series[1].update({ data: this.formattedEstPeakDatesOnYear});
@@ -3833,9 +3835,8 @@ public createDailyRasterPlot(): void {
                 max: maxDateString
             }
             this.extremes = minAndMax;
-            let maxYear = max.getFullYear();
-            let minYear = min.getFullYear();
-            
+            // let maxYear = max.getFullYear();
+            // let minYear = min.getFullYear();
             function inMonths(d1, d2) {
                 var d1Y = d1.getFullYear();
                 var d2Y = d2.getFullYear();
@@ -3843,26 +3844,40 @@ public createDailyRasterPlot(): void {
                 var d2M = d2.getMonth();
                 return (d2M+12*d2Y)-(d1M+12*d1Y);
             }
-            function generateYearsBetween(startYear = 2000, endYear) {
-                const endDate = endYear || new Date().getFullYear();
-                let years = [];
+            // function generateYearsBetween(startYear = 2000, endYear) {
+            //     const endDate = endYear || new Date().getFullYear();
+            //     let years = [];
             
-                for (var i = startYear; i <= endDate; i++) {
-                    years.push(startYear);
-                    startYear++;
-                }
-                return years;
-            }
+            //     for (var i = startYear; i <= endDate; i++) {
+            //         years.push(startYear);
+            //         startYear++;
+            //     }
+            //     return years;
+            // }
             if ((inMonths(min, max)) > 12) { //more than a year
                 chart.series[0].update({ data: this.formattedPeakDates });
                 chart.series[1].update({ data: this.formattedEstPeakDates});
                 this.peaksOnYear = false;
                 //update tooltip
             } else { //less than a year
-                console.log('less than or equal to a year')
                 this.peaksOnYear = true;
-                // update peak data to peaks on year, but we want the date to be whatever year is currently displayed
+                let year = max.getUTCFullYear();
+                console.log('year', year)
+                this.selectedYear = year;
+                let formattedSelectedPeaks = []; //new data array for peak streamflow plotted on the year that has been zoomed to
+                    if (this.peakDates) {
+                        this.peakDates.forEach(peakOnYear => {
+                            let adjustedDate = new Date(peakOnYear.peak_dt);
+                            adjustedDate.setUTCFullYear(year);
+                            let selectedDate = new Date(adjustedDate.toUTCString())
+                            if (!isNaN(peakOnYear.peak_va)) {
+                                formattedSelectedPeaks.push({x: selectedDate, y: peakOnYear.peak_va, realDate: new Date(peakOnYear.peak_dt)})
+                                }
+                        });
+                chart.series[0].update({data: formattedSelectedPeaks});
 
+                // update peak data to peaks on year, but we want the date to be whatever year is currently displayed
+                    }
             }
         }
 

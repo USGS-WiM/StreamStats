@@ -3173,8 +3173,8 @@ var StreamStats;
                 chart.showLoading('Loading...');
                 setTimeout(function () {
                     var min = _this_1.startAndEnd[0].getTime();
-                    var oneYearMin = (new Date(1 + '/' + 1 + '/' + _this_1.startAndEnd[1].getFullYear())).getTime();
-                    var max = (new Date(12 + '/' + 31 + '/' + _this_1.startAndEnd[1].getFullYear())).getTime();
+                    var oneYearMin = (new Date(1 + '/' + 1 + '/' + _this_1.selectedYear)).getTime();
+                    var max = (new Date(12 + '/' + 31 + '/' + _this_1.selectedYear)).getTime();
                     if (_this_1.peaksOnYear) {
                         chart.series[0].update({ data: _this_1.formattedPeakDatesOnYear });
                         chart.series[1].update({ data: _this_1.formattedEstPeakDatesOnYear });
@@ -3435,8 +3435,6 @@ var StreamStats;
                     max: maxDateString
                 };
                 this.extremes = minAndMax;
-                var maxYear = max.getFullYear();
-                var minYear = min.getFullYear();
                 function inMonths(d1, d2) {
                     var d1Y = d1.getFullYear();
                     var d2Y = d2.getFullYear();
@@ -3444,24 +3442,28 @@ var StreamStats;
                     var d2M = d2.getMonth();
                     return (d2M + 12 * d2Y) - (d1M + 12 * d1Y);
                 }
-                function generateYearsBetween(startYear, endYear) {
-                    if (startYear === void 0) { startYear = 2000; }
-                    var endDate = endYear || new Date().getFullYear();
-                    var years = [];
-                    for (var i = startYear; i <= endDate; i++) {
-                        years.push(startYear);
-                        startYear++;
-                    }
-                    return years;
-                }
                 if ((inMonths(min, max)) > 12) {
                     chart.series[0].update({ data: this.formattedPeakDates });
                     chart.series[1].update({ data: this.formattedEstPeakDates });
                     this.peaksOnYear = false;
                 }
                 else {
-                    console.log('less than or equal to a year');
                     this.peaksOnYear = true;
+                    var year_1 = max.getUTCFullYear();
+                    console.log('year', year_1);
+                    this.selectedYear = year_1;
+                    var formattedSelectedPeaks_1 = [];
+                    if (this.peakDates) {
+                        this.peakDates.forEach(function (peakOnYear) {
+                            var adjustedDate = new Date(peakOnYear.peak_dt);
+                            adjustedDate.setUTCFullYear(year_1);
+                            var selectedDate = new Date(adjustedDate.toUTCString());
+                            if (!isNaN(peakOnYear.peak_va)) {
+                                formattedSelectedPeaks_1.push({ x: selectedDate, y: peakOnYear.peak_va, realDate: new Date(peakOnYear.peak_dt) });
+                            }
+                        });
+                        chart.series[0].update({ data: formattedSelectedPeaks_1 });
+                    }
                 }
             };
             GagePageController.prototype.toggleLogLinearDischarge = function () {
