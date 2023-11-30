@@ -3419,6 +3419,7 @@ var StreamStats;
                 }
             };
             GagePageController.prototype.updatePeaksAfterZoom = function () {
+                var _this_1 = this;
                 var chart = $('#chart1').highcharts();
                 var extremes = chart.xAxis[0].getExtremes();
                 var min = new Date(extremes.min);
@@ -3449,20 +3450,28 @@ var StreamStats;
                 }
                 else {
                     this.peaksOnYear = true;
-                    var year_1 = max.getUTCFullYear();
-                    console.log('year', year_1);
-                    this.selectedYear = year_1;
+                    this.selectedYear = max.getUTCFullYear();
                     var formattedSelectedPeaks_1 = [];
+                    var formattedEstSelectedPeaks_1 = [];
                     if (this.peakDates) {
                         this.peakDates.forEach(function (peakOnYear) {
                             var adjustedDate = new Date(peakOnYear.peak_dt);
-                            adjustedDate.setUTCFullYear(year_1);
+                            adjustedDate.setUTCFullYear(_this_1.selectedYear);
                             var selectedDate = new Date(adjustedDate.toUTCString());
                             if (!isNaN(peakOnYear.peak_va)) {
                                 formattedSelectedPeaks_1.push({ x: selectedDate, y: peakOnYear.peak_va, realDate: new Date(peakOnYear.peak_dt) });
                             }
                         });
+                        if (this.estPeakDates) {
+                            this.estPeakDates.forEach(function (estPeakOnYear) {
+                                var adjustedDate = new Date(estPeakOnYear.peak_dt);
+                                adjustedDate.setUTCFullYear(_this_1.selectedYear);
+                                var selectedDate = new Date(adjustedDate.toUTCString());
+                                formattedEstSelectedPeaks_1.push({ x: selectedDate, y: estPeakOnYear.peak_va, realDate: new Date(estPeakOnYear.peak_dt) });
+                            });
+                        }
                         chart.series[0].update({ data: formattedSelectedPeaks_1 });
+                        chart.series[1].update({ data: formattedEstSelectedPeaks_1 });
                     }
                 }
             };
