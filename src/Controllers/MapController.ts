@@ -1334,7 +1334,6 @@ module StreamStats.Controllers {
 
                 // add non-simplified basin but default to off
                 if (this.editedBasin == false && verticies != data_verticies) {
-                    console.log(feature);
                     this.nonsimplifiedBasin = feature;
                     this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs('nonsimplifiedbasin', "geojson", this.nonsimplifiedBasinStyle, false));
                 }
