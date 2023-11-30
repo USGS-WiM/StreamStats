@@ -200,6 +200,8 @@ module StreamStats.Controllers {
             fillOpacity: 0.5
         }
         public imageryToggled = false;
+        public lineDelineationstart: any;
+        public lineDelineationstop: any;
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$compile', 'toaster', '$location', '$stateParams','leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack', '$http'];
@@ -287,6 +289,9 @@ module StreamStats.Controllers {
                     return;
                 }
 
+                // check if in delineate by line mode
+                if (this.studyArea.delineateByLine) return;
+
                 if (this.studyArea.doDelineateFlag) {
                     this.checkDelineatePoint(args.leafletEvent.latlng);
                     return;
@@ -353,6 +358,13 @@ module StreamStats.Controllers {
             $scope.$watch(() => this.explorationService.drawMeasurement,(newval, oldval) => {
                 //console.log('measurementListener ', newval, oldval);
                 if (newval) this.measurement();
+            });
+
+            $scope.$watch(() => this.studyArea.delineateByLine,(newval, oldval) => {
+                if (newval) {
+                    if (newval == true) this.drawDelineationLine()
+                    else this.drawControl.disable();
+                }
             });
 
             $scope.$watch(() => this.regionServices.regionMapLayerListLoaded,(newval, oldval) => {
@@ -813,7 +825,7 @@ module StreamStats.Controllers {
 
                      //remove listeners
                     if (this.measurestart) map.off("click", this.measurestart);
-                    if (this.measuremove) map.off("mousemove", this.measuremove);
+                    //if (this.measuremove) map.off("mousemove", this.measuremove);
                     if (this.measurestop) map.off("draw:created", this.measurestop);
                 });
             });
@@ -826,6 +838,53 @@ module StreamStats.Controllers {
 
             this.selectedExplorationTool = null;
             this.explorationService.explorationPointType = null;
+        }
+
+        private drawDelineationLine(){
+            this.leafletData.getMap("mainMap").then((map: any) => {
+                this.leafletData.getLayers("mainMap").then((maplayers: any) => {
+
+                    this.drawController({shapeOptions: { color: 'blue' }, metric: false }, true);
+
+                    var drawnItems = maplayers.overlays.draw;
+                    drawnItems.clearLayers();
+
+                    let coordinates = {
+                        point1: {
+                            lat: null,
+                            long: null
+                        },
+                        point2: {
+                            lat: null,
+                            long: null
+                        }
+                    }
+
+                    //listeners active during drawing              
+                    this.lineDelineationstart = (e) => {
+                        if (coordinates.point1.lat === null && coordinates.point1.long === null && coordinates.point2.lat === null && coordinates.point2.long === null) {
+                            coordinates.point1.lat = e.latlng.lat;
+                            coordinates.point1.long = e.latlng.lng;
+                        } else if (coordinates.point1.lat !== null && coordinates.point1.long !== null && coordinates.point2.lat === null && coordinates.point2.long === null) {
+                            coordinates.point2.lat = e.latlng.lat;
+                            coordinates.point2.long = e.latlng.lng;
+                            // We have enough points (2) to create a line
+                            const line = [
+                                [ coordinates.point1.lat, coordinates.point1.long ],
+                                [ coordinates.point2.lat, coordinates.point2.long ]
+                            ];
+                            L.polyline(line, {color: 'blue'}).addTo(map);
+                            //remove listeners
+                            map.off("click", this.lineDelineationstart);
+                            this.drawControl.disable();
+                            // console.log(this.studyArea.selectedStudyArea);
+                            var lineClickPoints = [new WiM.Models.Point(coordinates.point1.lat, coordinates.point1.long, '4326'), new WiM.Models.Point(coordinates.point2.lat, coordinates.point2.long, '4326')] //here
+                            this.checkDelineationLine(coordinates, lineClickPoints)
+                        } 
+                    };
+                    map.on("click", this.lineDelineationstart);
+                });
+            });
         }
 
         private measurement() {
@@ -898,6 +957,85 @@ module StreamStats.Controllers {
             });
         }
 
+        private checkDelineationLine(line, lineClickPoints){
+            //make sure were still at level 15 or greater
+            this.leafletData.getMap("mainMap").then((map: any) => {
+                this.leafletData.getLayers("mainMap").then((maplayers: any) => {
+                    if (map.getZoom() < 15) {
+                        this.toaster.pop("error", "Delineation not allowed at this zoom level", 'Please zoom in to level 15 or greater', 5000);
+                    }
+
+                    //good to go
+                    else {
+                        this.toaster.clear();
+                        this.studyArea.checkingDelineatedPoint = true;
+
+                        this.toaster.pop("info", "Information", "Validating your line...", true, 0);
+                        this.cursorStyle = 'wait';
+
+                        //turn off delineate flag
+                        this.studyArea.doDelineateFlag = false;
+
+                        //build list of layers to query before delineate
+                        var queryString = 'visible:'
+
+                        this.regionServices.regionMapLayerList.forEach((item) => {
+                            if (item[0] == 'ExcludePolys') queryString += item[1];
+                        });
+
+                        //report ga event
+                        gtag('event', 'DelineationLine',{ 'Region': this.regionServices.selectedRegion.Name, 'Location': line });
+
+                        //force map refresh
+                        map.invalidateSize();
+
+                        this.studyArea.lineIntersection(line).then((points) => {
+                            points.forEach(point => {
+                                if (point.inExclude == true) {
+                                    if (point.type == 1){ // TODO: need to find points to test this
+                                        // not able to delineate
+                                        this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", point.message, 0);
+                                        return // break out - dont delineate 
+                                    } else {
+                                        //able to delineate but not advised
+                                        this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", point.message, true, 0);
+                                    }
+                                }
+                            });
+                            this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000)
+                            this.markers = {}
+                            var ssPoints: Array<WiM.Models.Point> = []
+
+                            points.forEach((point, index) => {
+                                //put pourpoints on the map
+                                this.markers[index] = {
+                                    lat: point.point.lat,
+                                    lng: point.point.long,
+                                    message: '<strong>Latitude: </strong>' + point.point.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + point.point.long.toFixed(5),
+                                    focus: true,
+                                    draggable: true
+                                }
+
+                                var latlng = new WiM.Models.Point(point.point.lat, point.point.long, '4326')
+                                ssPoints.push(latlng)
+                            })
+
+                            // TODO close the popup for each point
+
+                            // TODO send exclude message if necessary  
+                            this.startDelineate(ssPoints, false, null, lineClickPoints);
+                        }, (error) => {
+                            this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
+                            // var x = error;
+                            //sm when error                    
+                        }).finally(() => {
+                            // this.CanContinue = true;
+                        });
+                    }
+                });
+            });
+        }
+
         private checkDelineatePoint(latlng) {
 
             //make sure were still at level 15 or greater
@@ -947,7 +1085,8 @@ module StreamStats.Controllers {
                         if (queryString === 'visible:') {
                             this.toaster.clear();
                             this.toaster.pop("warning", "Selected State/Region does not have exlusion areas defined", "Delineating with no exclude polygon layer...", true, 0);
-                            this.startDelineate(latlng, true);
+                            var point = [new WiM.Models.Point(latlng.lat, latlng.lng, '4326')]
+                            this.startDelineate(point, true);
                             //report ga event
                             gtag('event', 'ValidatePoint',{ 'Label': 'Not advised (no point query)' });
                             this.cursorStyle = 'pointer';
@@ -974,8 +1113,8 @@ module StreamStats.Controllers {
 
                                 this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000)
                                 this.studyArea.checkingDelineatedPoint = false;
-
-                                this.startDelineate(latlng, false);
+                                var point = [new WiM.Models.Point(latlng.lat, latlng.lng, '4326')]
+                                this.startDelineate(point, false);
                             }
 
                             //otherwise parse exclude Codes
@@ -990,7 +1129,8 @@ module StreamStats.Controllers {
                                 }
                                 else {
                                     this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
-                                    this.startDelineate(latlng, true, popupMsg);
+                                    var point = [new WiM.Models.Point(latlng.lat, latlng.lng, '4326')]
+                                    this.startDelineate(point, true, popupMsg);
                                     //ga event
                                     gtag('event', 'ValidatePoint',{ 'Label': 'Not advised' });
                                 }
@@ -1231,6 +1371,7 @@ module StreamStats.Controllers {
         }
        
         private onSelectedStudyAreaChanged() {
+            // console.log('onSelectedStudyAreaChanged')
             var bbox: GeoJSON.BBox;
             //console.log('in onselectedstudyareachange1', this.studyArea.selectedStudyArea.Features)
 
@@ -1247,6 +1388,11 @@ module StreamStats.Controllers {
                 var name = item.id.toLowerCase();
                 this.addGeoJSON(name, item);
                 this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(name, "geojson", this.geojson[name].style));
+                
+                // Remove subbasins from map
+                if (name.includes('globalwatershed') && /\d/.test(name) && !name.includes('point')) {
+                    this.removeGeoJson(name);
+                } 
             });
             //zoom to bounding box
             if (this.studyArea.selectedStudyArea.FeatureCollection['bbox']) {
@@ -1294,9 +1440,8 @@ module StreamStats.Controllers {
                 this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs('nonsimplifiedbasin', "geojson"));
                 this.nonsimplifiedBasin = undefined;
             }
-
             for (var k in this.geojson) {
-                if (typeof this.geojson[k] !== 'function' && (k != 'streamgages' || k == layerName)) {
+                if (typeof this.geojson[k] !== 'function' && ((k != 'streamgages' && !k.includes('globalwatershedpoint')) || k == layerName)) {
                     delete this.geojson[k];
                     this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs(k, "geojson")); 
                 }
@@ -1304,10 +1449,76 @@ module StreamStats.Controllers {
         }
 
         private addGeoJSON(LayerName: string, feature: any) {
-            if (LayerName == 'globalwatershed') {
-                var verticies = feature.geometry.coordinates.reduce((count, row) => count + row.length, 0);
-                var data = this.studyArea.simplify(angular.copy(feature));
-                var data_verticies = data.geometry.coordinates.reduce((count, row) => count + row.length, 0);
+            if (LayerName.includes('globalwatershedpoint')) {
+                // console.log(feature)
+                var lat = this.studyArea.selectedStudyArea.Pourpoint[0].Latitude;
+                var lng = this.studyArea.selectedStudyArea.Pourpoint[0].Longitude;
+                var rcode = this.studyArea.selectedStudyArea.RegionID;
+                var workspaceID = this.studyArea.selectedStudyArea.WorkspaceID;
+
+                this.geojson[LayerName] = {
+                    data: feature,
+                    onEachFeature: function (feature, layer) {
+                        var popupContent = '<strong>Latitude: </strong>' + lat + '</br><strong>Longitude: </strong>' + lng + '</br><strong>Region: </strong>' + rcode + '</br><strong>WorkspaceID: </strong>' + workspaceID + '</br>';
+                        angular.forEach(feature.properties, function (value, key) {
+                            popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
+                        });
+                        layer.bindPopup(popupContent);
+                    },
+                    style: {
+                        displayName: /\d/.test(LayerName) ? "Subbasin Delineation Point " + LayerName.replace(/[^0-9]/g, '') : "Basin Clicked Point",
+                        imagesrc: "data:image/png;base64,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",
+                        visible: true
+                    }
+                }
+            }
+            else if (LayerName == 'nonsimplifiedbasin') {
+                this.geojson[LayerName] = {
+                    data: feature,
+                    style: this.nonsimplifiedBasinStyle
+                };
+            } 
+            // Subwatersheds for delineation by line
+            else if (LayerName.includes('globalwatershed') && /\d/.test(LayerName))  {
+                // console.log(feature.properties);
+                this.geojson[LayerName] =
+                {
+                    data: feature,
+                    style: {
+                        //https://www.base64-image.de/
+                        displayName: "Subbasin Boundary " + LayerName.replace(/[^0-9]/g, ''),
+                        imagesrc: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANkAAADJCAYAAACuaJftAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKsSURBVHhe7dwxbsJAEEBRkyPQU3L/A1HScwWCFEuRkEDB7I+t5L2Grei+lmEs7643E5D5mD+BiMggJjKIiQxiIoOYyCD2a3/hXw7H+QTbsz+f5tN4bjKIiQxiIoPYsJnMzMV/8soM5yaDmMggJjKILZ7JzGDw7dmM5iaDmMggJjKIiQxiIoOYyCAmMoj9eE9mLwaP2ZPBikQGMZFBzLOLMICZDFYkMoiJDGIig5jIICYyiIkMYvZksID3LsKGiAxiIoOYmQwG8OwirEhkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnEvOMDFvDeRdgQkUFMZBAzkz3wym9ueMZNBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQ211v5vNbLofjfPob9ufTfIL3uMkgJjKIiQxiIoOYyCAmMoiJDGLD9mT3Ru/N7vdW9ffDKG4yiIkMYiKDWDaTAV/cZBATGcREBjGRQUxkEBMZxEQGMZFBTGSQmqZPLJhZUkx8RY8AAAAASUVORK5CYII=",
+                        fillColor: "red",
+                        weight: 2,
+                        opacity: 1,
+                        color: 'white',
+                        fillOpacity: 0.5
+                    }
+                }
+
+                var subBasinStyle = {
+                    //https://www.base64-image.de/
+                    displayName: "Subbasin Boundary " + LayerName.replace(/[^0-9]/g, ''),
+                    imagesrc: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANkAAADJCAYAAACuaJftAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKsSURBVHhe7dwxbsJAEEBRkyPQU3L/A1HScwWCFEuRkEDB7I+t5L2Grei+lmEs7643E5D5mD+BiMggJjKIiQxiIoOYyCD2a3/hXw7H+QTbsz+f5tN4bjKIiQxiIoPYsJnMzMV/8soM5yaDmMggJjKILZ7JzGDw7dmM5iaDmMggJjKIiQxiIoOYyCAmMoj9eE9mLwaP2ZPBikQGMZFBzLOLMICZDFYkMoiJDGIig5jIICYyiIkMYvZksID3LsKGiAxiIoOYmQwG8OwirEhkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnEvOMDFvDeRdgQkUFMZBAzkz3wym9ueMZNBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQExnERAYxkUFMZBATGcREBjGRQUxkEBMZxEQGMZFBTGQQ211v5vNbLofjfPob9ufTfIL3uMkgJjKIiQxiIoOYyCAmMoiJDGLD9mT3Ru/N7vdW9ffDKG4yiIkMYiKDWDaTAV/cZBATGcREBjGRQUxkEBMZxEQGMZFBTGSQmqZPLJhZUkx8RY8AAAAASUVORK5CYII=",
+                    fillColor: "red",
+                    weight: 2,
+                    opacity: 1,
+                    color: 'red',
+                    fillOpacity: 0.5
+                }
+                // TODO: turn this layer off by default
+                this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(LayerName, "geojson", subBasinStyle, false));
+            }
+            else if (LayerName.includes('globalwatershed') && /\d/.test(LayerName) == false) {
+                console.log(feature)
+                // Only try to simplify the watershed if we are not doing delineation by line
+                if (this.studyArea.selectedStudyArea.Pourpoint.length == 1) {
+                    var verticies = feature.geometry.coordinates.reduce((count, row) => count + row.length, 0);
+                    var data = this.studyArea.simplify(angular.copy(feature));
+                    var data_verticies = data.geometry.coordinates.reduce((count, row) => count + row.length, 0);
+                } else {
+                    var data = feature
+                }
                 this.geojson[LayerName] =
                 {
                     data: data,
@@ -1322,38 +1533,10 @@ module StreamStats.Controllers {
                         fillOpacity: 0.5
                     }
                 }
-                // add non-simplified basin but default to off
-                if (verticies != data_verticies) {
+                // add non-simplified basin but default to off (ignore if doing delineation by line)
+                if (this.studyArea.selectedStudyArea.Pourpoint.length == 1 && verticies != data_verticies) {
                     this.nonsimplifiedBasin = feature;
                     this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs('nonsimplifiedbasin', "geojson", this.nonsimplifiedBasinStyle, false));
-                }
-            }
-            else if (LayerName == 'nonsimplifiedbasin') {
-                this.geojson[LayerName] = {
-                    data: feature,
-                    style: this.nonsimplifiedBasinStyle
-                };
-            }
-            else if (LayerName == 'globalwatershedpoint') {
-                var lat = this.studyArea.selectedStudyArea.Pourpoint.Latitude;
-                var lng = this.studyArea.selectedStudyArea.Pourpoint.Longitude;
-                var rcode = this.studyArea.selectedStudyArea.RegionID;
-                var workspaceID = this.studyArea.selectedStudyArea.WorkspaceID;
-
-                this.geojson[LayerName] = {
-                    data: feature,
-                    onEachFeature: function (feature, layer) {
-                        var popupContent = '<strong>Latitude: </strong>' + lat + '</br><strong>Longitude: </strong>' + lng + '</br><strong>Region: </strong>' + rcode + '</br><strong>WorkspaceID: </strong>' + workspaceID + '</br>';
-                        angular.forEach(feature.properties, function (value, key) {
-                            popupContent += '<strong>' + key + ': </strong>' + value + '</br>';
-                        });
-                        layer.bindPopup(popupContent);
-                    },
-                    style: {
-                        displayName: "Basin Clicked Point",
-                        imagesrc: "data:image/png;base64,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",
-                        visible: true
-                    }
                 }
             }
             else if (LayerName == 'regulatedwatershed') {
@@ -1573,6 +1756,10 @@ module StreamStats.Controllers {
                     // if nonsimplified basin
                     if (e.LayerName == 'nonsimplifiedbasin') {
                         this.addGeoJSON('nonsimplifiedbasin', this.nonsimplifiedBasin)
+                    }
+                    // if subbasin
+                    if (e.LayerName.includes('globalwatershed') && /\d/.test(e.LayerName)) {
+                        this.addGeoJSON(e.LayerName, this.studyArea.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == e.LayerName})[0]) //here
                     }
 
 
@@ -1821,18 +2008,20 @@ module StreamStats.Controllers {
             }//next variable
             return layeridList;
         }
-        private startDelineate(latlng: any, isInExclusionArea?: boolean, excludeReason?: string) {
-            //console.log('in startDelineate', latlng);
-
-
-            var studyArea: Models.IStudyArea = new Models.StudyArea(this.regionServices.selectedRegion.RegionID, new WiM.Models.Point(latlng.lat, latlng.lng, '4326'));
+        private startDelineate(points: any, isInExclusionArea?: boolean, excludeReason?: string, lineClickPoints?: WiM.Models.IPoint[]) {
+            //console.log('in startDelineate', points);
+            
+            var studyArea: Models.IStudyArea = new Models.StudyArea(this.regionServices.selectedRegion.RegionID, points);
             this.studyArea.AddStudyArea(studyArea);
             this.studyArea.loadStudyBoundary();
             
 
             //add disclaimer here
+            this.studyArea.selectedStudyArea.LinePoints = lineClickPoints;
+            // console.log(this.studyArea.selectedStudyArea);
             if (isInExclusionArea && excludeReason) this.studyArea.selectedStudyArea.Disclaimers['isInExclusionArea'] = 'The delineation point is in an exclusion area. ' + excludeReason;
         }
+
     }//end class
 
     angular.module('StreamStats.Controllers')

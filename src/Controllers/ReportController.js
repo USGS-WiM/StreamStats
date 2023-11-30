@@ -204,7 +204,14 @@ var StreamStats;
                     });
                     return finalVal + '\n';
                 };
-                var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
+                var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase();
+                if (this.studyAreaService.selectedStudyArea.Pourpoint.length == 1) {
+                    csvFile += '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint[0].Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint[0].Longitude.toFixed(5);
+                }
+                else {
+                    csvFile += '\nDelineation Line Start Point Latitude,' + this.studyAreaService.selectedStudyArea.LinePoints[0].Latitude.toFixed(5) + '\nDelineation Line Start Point Longitude,' + this.studyAreaService.selectedStudyArea.LinePoints[0].Longitude.toFixed(5) + '\nDelineation Line End Point Latitude,' + this.studyAreaService.selectedStudyArea.LinePoints[1].Latitude.toFixed(5) + '\nDelineation Line End Point Longitude,' + this.studyAreaService.selectedStudyArea.LinePoints[1].Longitude.toFixed(5);
+                }
+                csvFile += '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
                 if (this.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID) {
                     csvFile += '\nNHD Stream GNIS ID,' + this.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID;
                 }
@@ -674,6 +681,31 @@ var StreamStats;
                 else if (LayerName == 'globalwatershedpoint') {
                     this.layers.overlays[LayerName] = {
                         name: 'Basin Clicked Point',
+                        type: 'geoJSONShape',
+                        data: feature,
+                        visible: false,
+                        layerOptions: {
+                            style: {
+                                fillColor: "red",
+                                weight: 2,
+                                opacity: 1,
+                                color: 'white',
+                                fillOpacity: 0.5
+                            }
+                        }
+                    };
+                }
+                else if (LayerName.includes('globalwatershedpoint')) {
+                    this.layers.overlays[LayerName] = {
+                        name: 'Subbasin Delineation Point ' + LayerName.replace(/[^0-9]/g, ''),
+                        type: 'geoJSONShape',
+                        data: feature,
+                        visible: true,
+                    };
+                }
+                else if (LayerName.includes('globalwatershed')) {
+                    this.layers.overlays[LayerName] = {
+                        name: 'Subbasin Boundary ' + LayerName.replace(/[^0-9]/g, ''),
                         type: 'geoJSONShape',
                         data: feature,
                         visible: true,

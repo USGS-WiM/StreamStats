@@ -13,6 +13,42 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 var StreamStats;
 (function (StreamStats) {
     var Services;
@@ -188,66 +224,209 @@ var StreamStats;
                 this.zoomLevel15 = true;
                 this.regressionRegionQueryComplete = false;
                 this.regressionRegionQueryLoading = false;
+                this.delineateByPoint = false;
+                this.delineateByLine = false;
                 this.eventManager.RaiseEvent(Services.onStudyAreaReset, this, WiM.Event.EventArgs.Empty);
             };
             StudyAreaService.prototype.loadStudyBoundary = function () {
+                return __awaiter(this, void 0, void 0, function () {
+                    var regionID, url, url, request, delineations, features, index, _i, _a, point, url, request, i, result, featuresToMerge, _b, _c, feature, featuresCollectionToMerge, dissolvedFeatures, bbox;
+                    var _this = this;
+                    return __generator(this, function (_d) {
+                        switch (_d.label) {
+                            case 0:
+                                this.toaster.pop("wait", "Delineating Basin", "Please wait...", 0);
+                                this.canUpdate = false;
+                                regionID = this.selectedStudyArea.RegionID;
+                                if (!(this.selectedStudyArea.Pourpoint.length == 1)) return [3, 1];
+                                url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, this.selectedStudyArea.Pourpoint[0].Longitude.toString(), this.selectedStudyArea.Pourpoint[0].Latitude.toString(), this.selectedStudyArea.Pourpoint[0].crs.toString());
+                                if (this.regionService.selectedRegion.Applications.indexOf('StormDrain') > -1) {
+                                    url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(regionID, this.selectedStudyArea.Pourpoint[0].Longitude.toString(), this.selectedStudyArea.Pourpoint[0].Latitude.toString(), this.surfacecontributionsonly);
+                                }
+                                request = new WiM.Services.Helpers.RequestInfo(url, true);
+                                request.withCredentials = true;
+                                this.Execute(request).then(function (response) {
+                                    if (_this.regionService.selectedRegion.Applications.indexOf('StormDrain') > -1) {
+                                        if (response.data.layers && response.data.layers.features && response.data.layers.features[1].geometry.coordinates.length > 0) {
+                                            _this.selectedStudyArea.Disclaimers['isStormDrain'] = true;
+                                            var fc = response.data.hasOwnProperty("layers") ? response.data["layers"] : null;
+                                            if (fc)
+                                                fc.features.forEach(function (f) { return f.id = f.id.toString().toLowerCase(); });
+                                            _this.selectedStudyArea.FeatureCollection = fc;
+                                            _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
+                                            _this.selectedStudyArea.Date = new Date();
+                                            _this.toaster.clear();
+                                            _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
+                                            _this.canUpdate = true;
+                                        }
+                                        else {
+                                            _this.clearStudyArea();
+                                            _this.toaster.clear();
+                                            _this.toaster.pop("error", "A watershed was not returned from the delineation request", "Please retry", 0);
+                                        }
+                                    }
+                                    else if (response.data.hasOwnProperty("featurecollection") && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
+                                        _this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
+                                        _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
+                                        _this.selectedStudyArea.FeatureCollection = {
+                                            type: "FeatureCollection",
+                                            features: _this.reconfigureWatershedResponse(response.data.featurecollection),
+                                            bbox: response.data.featurecollection.filter(function (f) { return f.name == "globalwatershed"; })[0].feature.features[0].bbox
+                                        };
+                                        _this.snappedPourPoint = response.data.featurecollection.filter(function (f) { return f.name == "globalwatershedpoint"; })[0].feature.features[0].geometry.coordinates;
+                                        _this.selectedStudyArea.Date = new Date();
+                                        _this.toaster.clear();
+                                        _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
+                                        _this.canUpdate = true;
+                                        if (_this.regionService.selectedRegion.Applications.indexOf("HydrologicFeatures") != -1) {
+                                            _this.queryHydrologicFeatures();
+                                        }
+                                    }
+                                    else {
+                                        _this.clearStudyArea();
+                                        _this.toaster.clear();
+                                        _this.toaster.pop("error", "A watershed was not returned from the delineation request", "Please retry", 0);
+                                    }
+                                    _this.selectedStudyArea.FeatureCollection.features.forEach(function (f) { return f.properties = {}; });
+                                }, function (error) {
+                                    _this.clearStudyArea();
+                                    _this.toaster.clear();
+                                    _this.toaster.pop("error", "There was an HTTP error with the delineation request", "Please retry", 0);
+                                }).finally(function () {
+                                });
+                                return [3, 8];
+                            case 1:
+                                delineations = [];
+                                features = [];
+                                index = 0;
+                                _i = 0, _a = this.selectedStudyArea.Pourpoint;
+                                _d.label = 2;
+                            case 2:
+                                if (!(_i < _a.length)) return [3, 7];
+                                point = _a[_i];
+                                console.log(point);
+                                url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, point.Longitude.toString(), point.Latitude.toString(), point.crs.toString());
+                                index = index + 1;
+                                request = new WiM.Services.Helpers.RequestInfo(url, true);
+                                request.withCredentials = true;
+                                i = 0;
+                                _d.label = 3;
+                            case 3:
+                                if (!(i < 3)) return [3, 6];
+                                console.log('Try' + i);
+                                return [4, this.executeDelineationRequest(request).then(function (response) {
+                                        return (response);
+                                    })];
+                            case 4:
+                                result = _d.sent();
+                                if (result) {
+                                    result.features.forEach(function (feature) {
+                                        feature['id'] = feature['id'] + String(index);
+                                        feature.properties.WorkspaceID = result.workspaceID;
+                                        features.push(feature);
+                                    });
+                                    delineations.push(result);
+                                    return [3, 6];
+                                }
+                                _d.label = 5;
+                            case 5:
+                                i++;
+                                return [3, 3];
+                            case 6:
+                                _i++;
+                                return [3, 2];
+                            case 7:
+                                ;
+                                if (delineations.length == this.selectedStudyArea.Pourpoint.length) {
+                                    this.selectedStudyArea.FeatureCollection = {
+                                        type: "FeatureCollection",
+                                        features: features,
+                                        bbox: null
+                                    };
+                                    featuresToMerge = [];
+                                    for (_b = 0, _c = this.selectedStudyArea.FeatureCollection.features.filter(function (f) { return (f.id).toLowerCase().includes("globalwatershed") && f.geometry.type == 'Polygon'; }); _b < _c.length; _b++) {
+                                        feature = _c[_b];
+                                        featuresToMerge.push(feature);
+                                    }
+                                    featuresCollectionToMerge = turf.featureCollection(featuresToMerge);
+                                    dissolvedFeatures = turf.dissolve(featuresCollectionToMerge);
+                                    dissolvedFeatures.features[0]['id'] = 'globalwatershed';
+                                    this.selectedStudyArea.FeatureCollection.features.push(dissolvedFeatures.features[0]);
+                                    bbox = turf.bbox(dissolvedFeatures);
+                                    this.selectedStudyArea.FeatureCollection['bbox'] = bbox;
+                                    this.selectedStudyArea.Date = new Date();
+                                    this.toaster.clear();
+                                    this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
+                                    this.canUpdate = true;
+                                }
+                                else {
+                                    this.toaster.clear();
+                                    this.toaster.pop("error", "A watershed was not returned from the delineation request", "Please retry", 0);
+                                }
+                                _d.label = 8;
+                            case 8: return [2];
+                        }
+                    });
+                });
+            };
+            StudyAreaService.prototype.executeDelineationRequest = function (request) {
                 var _this = this;
-                this.toaster.pop("wait", "Delineating Basin", "Please wait...", 0);
-                this.canUpdate = false;
-                var regionID = this.selectedStudyArea.RegionID;
-                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.selectedStudyArea.Pourpoint.crs.toString());
-                if (this.regionService.selectedRegion.Applications.indexOf('StormDrain') > -1) {
-                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSstormwaterDelineation'].format(regionID, this.selectedStudyArea.Pourpoint.Longitude.toString(), this.selectedStudyArea.Pourpoint.Latitude.toString(), this.surfacecontributionsonly);
-                }
-                var request = new WiM.Services.Helpers.RequestInfo(url, true);
-                request.withCredentials = true;
-                this.Execute(request).then(function (response) {
-                    if (_this.regionService.selectedRegion.Applications.indexOf('StormDrain') > -1) {
-                        if (response.data.layers && response.data.layers.features && response.data.layers.features[1].geometry.coordinates.length > 0) {
-                            _this.selectedStudyArea.Disclaimers['isStormDrain'] = true;
-                            var fc = response.data.hasOwnProperty("layers") ? response.data["layers"] : null;
-                            if (fc)
-                                fc.features.forEach(function (f) { return f.id = f.id.toString().toLowerCase(); });
-                            _this.selectedStudyArea.FeatureCollection = fc;
-                            _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
-                            _this.selectedStudyArea.Date = new Date();
-                            _this.toaster.clear();
-                            _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
-                            _this.canUpdate = true;
-                        }
-                        else {
-                            _this.clearStudyArea();
-                            _this.toaster.clear();
-                            _this.toaster.pop("error", "A watershed was not returned from the delineation request", "Please retry", 0);
-                        }
-                    }
-                    else if (response.data.hasOwnProperty("featurecollection") && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
+                return this.Execute(request).then(function (response) {
+                    if (response.data.hasOwnProperty("featurecollection") && response.data.featurecollection[1] && response.data.featurecollection[1].feature.features.length > 0) {
                         _this.selectedStudyArea.Server = response.headers()['usgswim-hostname'].toLowerCase();
                         _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
-                        _this.selectedStudyArea.FeatureCollection = {
+                        var watershed = {
                             type: "FeatureCollection",
                             features: _this.reconfigureWatershedResponse(response.data.featurecollection),
-                            bbox: response.data.featurecollection.filter(function (f) { return f.name == "globalwatershed"; })[0].feature.features[0].bbox
+                            bbox: response.data.featurecollection.filter(function (f) { return f.name == "globalwatershed"; })[0].feature.features[0].bbox,
+                            workspaceID: response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null
                         };
-                        _this.snappedPourPoint = response.data.featurecollection.filter(function (f) { return f.name == "globalwatershedpoint"; })[0].feature.features[0].geometry.coordinates;
-                        _this.selectedStudyArea.Date = new Date();
-                        _this.toaster.clear();
-                        _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
-                        _this.canUpdate = true;
-                        if (_this.regionService.selectedRegion.Applications.indexOf("HydrologicFeatures") != -1) {
-                            _this.queryHydrologicFeatures();
-                        }
+                        return watershed;
                     }
                     else {
-                        _this.clearStudyArea();
-                        _this.toaster.clear();
-                        _this.toaster.pop("error", "A watershed was not returned from the delineation request", "Please retry", 0);
+                        return;
                     }
-                    _this.selectedStudyArea.FeatureCollection.features.forEach(function (f) { return f.properties = {}; });
                 }, function (error) {
                     _this.clearStudyArea();
                     _this.toaster.clear();
                     _this.toaster.pop("error", "There was an HTTP error with the delineation request", "Please retry", 0);
+                    return;
+                }).finally(function () {
+                });
+            };
+            StudyAreaService.prototype.computeAreaWeightedMean = function (values, DRNAREAs) {
+                var numerator = 0;
+                values.forEach(function (value, index) {
+                    numerator = numerator + (value * DRNAREAs[index]);
+                });
+                var denominator = DRNAREAs.reduce(function (a, b) { return a + b; }, 0);
+                return (numerator / denominator);
+            };
+            StudyAreaService.prototype.computeSum = function (values) {
+                return values.reduce(function (a, b) { return a + b; }, 0);
+            };
+            StudyAreaService.prototype.computeMax = function (values) {
+                return Math.max.apply(Math, values);
+            };
+            StudyAreaService.prototype.computeMin = function (values) {
+                return Math.min.apply(Math, values);
+            };
+            StudyAreaService.prototype.computeCSL10_85fm = function (values, LFPLENGTHs) {
+                var maxLFPLENGTHIndex = LFPLENGTHs.indexOf(Math.max.apply(Math, LFPLENGTHs));
+                return values[maxLFPLENGTHIndex];
+            };
+            StudyAreaService.prototype.executeBasinCharacteristicsRequest = function (request) {
+                var _this = this;
+                return this.Execute(request).then(function (response) {
+                    if (response.data.parameters && response.data.parameters.length > 0) {
+                        return response.data.parameters;
+                    }
+                    else {
+                        return;
+                    }
+                }, function (error) {
+                    _this.toaster.clear();
+                    _this.toaster.pop("error", "There was an HTTP error calculating basin characteristics", "Please retry", 0);
                 }).finally(function () {
                 });
             };
@@ -269,7 +448,7 @@ var StreamStats;
                             bbox: response.data.featurecollection.filter(function (f) { return f.name == "globalwatershed"; })[0].feature.features[0].bbox
                         };
                         var pointFeature = response.data.featurecollection.filter(function (f) { return f.name == "globalwatershedpoint"; })[0].feature.features[0];
-                        _this.selectedStudyArea.Pourpoint = new WiM.Models.Point(pointFeature.bbox[1], pointFeature.bbox[0], pointFeature.crs.properties.code);
+                        _this.selectedStudyArea.Pourpoint[0] = new WiM.Models.Point(pointFeature.bbox[1], pointFeature.bbox[0], pointFeature.crs.properties.code);
                     }, function (error) {
                         _this.toaster.clear();
                         _this.toaster.pop("error", "Error Delineating Basin", "Please retry", 0);
@@ -287,7 +466,7 @@ var StreamStats;
                 var _this = this;
                 this.toaster.pop("wait", "Loading Edited Basin", "Please wait...", 0);
                 this.canUpdate = false;
-                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSeditBasin'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, this.selectedStudyArea.Pourpoint.crs.toString());
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSeditBasin'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, this.selectedStudyArea.Pourpoint[0].crs.toString());
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.PUT, 'json', angular.toJson(this.WatershedEditDecisionList), {});
                 request.withCredentials = true;
                 this.Execute(request).then(function (response) {
@@ -347,9 +526,51 @@ var StreamStats;
                 }).finally(function () {
                 });
             };
+            StudyAreaService.prototype.lineIntersection = function (line) {
+                var _this = this;
+                var data = {
+                    'region': 'SC',
+                    'startPoint': line.point1,
+                    'endPoint': line.point2
+                };
+                var url = configuration.baseurls['PourPointServices'] + configuration.queryparams['lineIntersection'];
+                var headers = {
+                    "Content-Type": "application/json",
+                    "X-warning": true
+                };
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
+                return this.Execute(request).then(function (response) {
+                    if (response.data.response.line.length == 0) {
+                        _this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
+                        throw new Error;
+                    }
+                    else {
+                        return _this.checkExcludePolygon(response.data.response);
+                    }
+                }, function (error) {
+                }).finally(function () {
+                });
+            };
+            StudyAreaService.prototype.checkExcludePolygon = function (points) {
+                var data = {
+                    'region': 'SC',
+                    'points': points["line"]
+                };
+                var url = configuration.baseurls['PourPointServices'] + configuration.queryparams['checkExcludePolygons'];
+                var headers = {
+                    "Content-Type": "application/json",
+                    "X-warning": true
+                };
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
+                return this.Execute(request).then(function (response) {
+                    return (response.data.response);
+                }, function (error) {
+                }).finally(function () {
+                });
+            };
             StudyAreaService.prototype.loadAllIndexGages = function () {
                 var _this = this;
-                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['KrigService'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude, this.selectedStudyArea.Pourpoint.Latitude, this.selectedStudyArea.Pourpoint.crs, '300');
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['KrigService'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint[0].Longitude, this.selectedStudyArea.Pourpoint[0].Latitude, this.selectedStudyArea.Pourpoint[0].crs, '300');
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     _this.allIndexGages = response.data;
@@ -361,64 +582,278 @@ var StreamStats;
                 });
             };
             StudyAreaService.prototype.loadParameters = function () {
-                var _this = this;
-                this.parametersLoading = true;
-                var argState = { "isLoaded": false };
-                var requestParameterList = [];
-                this.toaster.clear();
-                this.toaster.pop('wait', "Calculating Selected Basin Characteristics", "Please wait...", 0);
-                this.eventManager.RaiseEvent(Services.onSelectedStudyParametersLoaded, this, StudyAreaEventArgs.Empty);
-                if (!this.selectedStudyArea || !this.selectedStudyArea.WorkspaceID || !this.selectedStudyArea.RegionID) {
-                    alert('No Study Area');
-                    return;
-                }
-                requestParameterList = this.studyAreaParameterList.filter(function (param) { return (!param.value || param.value < 0); }).map(function (param) { return param.code; });
-                if (requestParameterList.length == 0 && this.regionService.selectedRegion.Applications.indexOf('FDCTM') > -1)
-                    requestParameterList.push('drnarea');
-                if (requestParameterList.length < 1) {
-                    var saEvent = new StudyAreaEventArgs();
-                    saEvent.parameterLoaded = true;
-                    this.eventManager.RaiseEvent(Services.onSelectedStudyParametersLoaded, this, saEvent);
-                    this.toaster.clear();
-                    this.parametersLoading = false;
-                    return;
-                }
-                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, requestParameterList.join(','));
-                var request = new WiM.Services.Helpers.RequestInfo(url, true);
-                request.withCredentials = true;
-                this.Execute(request).then(function (response) {
-                    if (response.data.parameters && response.data.parameters.length > 0) {
-                        _this.toaster.clear();
-                        var paramErrors = false;
-                        angular.forEach(response.data.parameters, function (parameter, index) {
-                            if (!parameter.hasOwnProperty('value') || parameter.value == -999) {
-                                paramErrors = true;
-                                console.error('Parameter failed to compute: ', parameter.code);
-                                parameter.loaded = false;
-                            }
-                            else {
-                                parameter.loaded = true;
-                            }
-                        });
-                        if (paramErrors) {
-                            _this.showModifyBasinCharacterstics = true;
-                            _this.toaster.pop('error', "One or more basin characteristics failed to compute", "Click the 'Calculate Missing Parameters' button or manually enter parameter values to continue", 0);
+                return __awaiter(this, void 0, void 0, function () {
+                    var argState, requestParameterList, saEvent, basinCharacteristicResponses, finalResponse, computationDictionary, roundingDictionary, _i, _a, feature, url, request, i, result, basinCharacteristics, parametersCombined_1, parameterResults, parameterCode, value, isNull, paramErrors, saEvent, url, request;
+                    var _this = this;
+                    return __generator(this, function (_b) {
+                        switch (_b.label) {
+                            case 0:
+                                this.parametersLoading = true;
+                                argState = { "isLoaded": false };
+                                requestParameterList = [];
+                                this.toaster.clear();
+                                this.toaster.pop('wait', "Calculating Selected Basin Characteristics", "Please wait...", 0);
+                                this.eventManager.RaiseEvent(Services.onSelectedStudyParametersLoaded, this, StudyAreaEventArgs.Empty);
+                                if (!this.selectedStudyArea || !this.selectedStudyArea.WorkspaceID || !this.selectedStudyArea.RegionID) {
+                                    alert('No Study Area');
+                                    return [2];
+                                }
+                                requestParameterList = this.studyAreaParameterList.filter(function (param) { return (!param.value || param.value < 0); }).map(function (param) { return param.code; });
+                                if (requestParameterList.length == 0 && this.regionService.selectedRegion.Applications.indexOf('FDCTM') > -1)
+                                    requestParameterList.push('drnarea');
+                                if (requestParameterList.length < 1) {
+                                    saEvent = new StudyAreaEventArgs();
+                                    saEvent.parameterLoaded = true;
+                                    this.eventManager.RaiseEvent(Services.onSelectedStudyParametersLoaded, this, saEvent);
+                                    this.toaster.clear();
+                                    this.parametersLoading = false;
+                                    return [2];
+                                }
+                                basinCharacteristicResponses = [];
+                                finalResponse = [];
+                                if (!(this.selectedStudyArea.Pourpoint.length > 1)) return [3, 7];
+                                computationDictionary = {
+                                    "BSLDEM30FT": "areaWeightedMean",
+                                    "CSL10_85fm": "CSL10_85fm",
+                                    "DRNAREA": "sum",
+                                    "ELEV": "areaWeightedMean",
+                                    "ELEVMAX": "max",
+                                    "I24H100Y": "max",
+                                    "I24H10Y": "max",
+                                    "I24H25Y": "max",
+                                    "I24H2Y": "max",
+                                    "I24H50Y": "max",
+                                    "LC01DEV": "areaWeightedMean",
+                                    "LC01FOREST": "areaWeightedMean",
+                                    "LC01IMP": "areaWeightedMean",
+                                    "LC06DEV": "areaWeightedMean",
+                                    "LC06FOREST": "areaWeightedMean",
+                                    "LC06IMP": "areaWeightedMean",
+                                    "LC11DEV": "areaWeightedMean",
+                                    "LC11FOREST": "areaWeightedMean",
+                                    "LC11IMP": "areaWeightedMean",
+                                    "LC16DEV": "areaWeightedMean",
+                                    "LC16FOREST": "areaWeightedMean",
+                                    "LC16IMP": "areaWeightedMean",
+                                    "LC16STOR": "areaWeightedMean",
+                                    "LC19IMP": "areaWeightedMean",
+                                    "LFPLENGTH": "max",
+                                    "MINBELEV": "min",
+                                    "PCTREG1": "areaWeightedMean",
+                                    "PCTREG2": "areaWeightedMean",
+                                    "PCTREG3": "areaWeightedMean",
+                                    "PCTREG4": "areaWeightedMean",
+                                    "PCTREG5": "areaWeightedMean",
+                                    "PRECIP": "areaWeightedMean",
+                                    "RCN": "areaWeightedMean",
+                                    "SSURGOA": "areaWeightedMean",
+                                    "SSURGOB": "areaWeightedMean",
+                                    "SSURGOC": "areaWeightedMean",
+                                    "SSURGOD": "areaWeightedMean",
+                                    "STORAGE": "areaWeightedMean"
+                                };
+                                roundingDictionary = {
+                                    "BSLDEM30FT": 1,
+                                    "CSL10_85fm": 2,
+                                    "DRNAREA": 1,
+                                    "ELEV": 1,
+                                    "ELEVMAX": 1,
+                                    "I24H100Y": 1,
+                                    "I24H10Y": 1,
+                                    "I24H25Y": 1,
+                                    "I24H2Y": 1,
+                                    "I24H50Y": 1,
+                                    "LC01DEV": 1,
+                                    "LC01FOREST": 1,
+                                    "LC01IMP": 2,
+                                    "LC06DEV": 1,
+                                    "LC06FOREST": 1,
+                                    "LC06IMP": 2,
+                                    "LC11DEV": 1,
+                                    "LC11FOREST": 1,
+                                    "LC11IMP": 2,
+                                    "LC16DEV": 1,
+                                    "LC16FOREST": 1,
+                                    "LC16IMP": 1,
+                                    "LC16STOR": 1,
+                                    "LC19IMP": 1,
+                                    "LFPLENGTH": 3,
+                                    "MINBELEV": 1,
+                                    "PCTREG1": 1,
+                                    "PCTREG2": 1,
+                                    "PCTREG3": 1,
+                                    "PCTREG4": 1,
+                                    "PCTREG5": 1,
+                                    "PRECIP": 1,
+                                    "RCN": 2,
+                                    "SSURGOA": 1,
+                                    "SSURGOB": 1,
+                                    "SSURGOC": 1,
+                                    "SSURGOD": 1,
+                                    "STORAGE": 1
+                                };
+                                requestParameterList.forEach(function (parameterCode) {
+                                    if (parameterCode == 'CSL10_85fm' && requestParameterList.indexOf('LFPLENGTH') == -1) {
+                                        requestParameterList.push('LFPLENGTH');
+                                    }
+                                    else if (computationDictionary[parameterCode] == "areaWeightedMean" && requestParameterList.indexOf('DRNAREA') == -1) {
+                                        requestParameterList.push('DRNAREA');
+                                    }
+                                });
+                                console.log(requestParameterList);
+                                console.log(this.selectedStudyArea.FeatureCollection.features[2].properties);
+                                _i = 0, _a = this.selectedStudyArea.FeatureCollection.features.filter(function (f) { return (f.id).toLowerCase().includes("globalwatershed") && f.geometry.type == 'Polygon' && /\d/.test((f.id)); });
+                                _b.label = 1;
+                            case 1:
+                                if (!(_i < _a.length)) return [3, 6];
+                                feature = _a[_i];
+                                url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, feature.properties.WorkspaceID, requestParameterList.join(','));
+                                request = new WiM.Services.Helpers.RequestInfo(url, true);
+                                request.withCredentials = true;
+                                i = 0;
+                                _b.label = 2;
+                            case 2:
+                                if (!(i < 3)) return [3, 5];
+                                console.log('Try' + i);
+                                return [4, this.executeBasinCharacteristicsRequest(request).then(function (response) {
+                                        return (response);
+                                    })];
+                            case 3:
+                                result = _b.sent();
+                                if (result) {
+                                    feature.properties.parameters = result;
+                                    finalResponse = structuredClone(result);
+                                    finalResponse.forEach(function (p) { p.value = null; });
+                                    finalResponse.forEach(function (p) { p.loaded = false; });
+                                    basinCharacteristicResponses.push(result);
+                                    return [3, 5];
+                                }
+                                _b.label = 4;
+                            case 4:
+                                i++;
+                                return [3, 2];
+                            case 5:
+                                _i++;
+                                return [3, 1];
+                            case 6:
+                                basinCharacteristics = basinCharacteristicResponses.reduce(function (a, b) { return a.concat(b); }, []);
+                                parametersCombined_1 = {};
+                                basinCharacteristics.forEach(function (parameter) {
+                                    if (parametersCombined_1.hasOwnProperty(parameter.code)) {
+                                        parametersCombined_1[parameter.code].push(parameter.value);
+                                    }
+                                    else {
+                                        parametersCombined_1[parameter.code] = [parameter.value];
+                                    }
+                                });
+                                parameterResults = {};
+                                for (parameterCode in parametersCombined_1) {
+                                    value = null;
+                                    console.log(parametersCombined_1[parameterCode]);
+                                    console.log(computationDictionary[parameterCode]);
+                                    isNull = false;
+                                    parametersCombined_1[parameterCode].forEach(function (value) {
+                                        console.log(value);
+                                        if (value == null) {
+                                            isNull = true;
+                                            console.log(isNull);
+                                        }
+                                    });
+                                    if (isNull == false) {
+                                        try {
+                                            switch (computationDictionary[parameterCode]) {
+                                                case "areaWeightedMean":
+                                                    value = this.computeAreaWeightedMean(parametersCombined_1[parameterCode], parametersCombined_1["DRNAREA"]);
+                                                    break;
+                                                case "sum":
+                                                    value = this.computeSum(parametersCombined_1[parameterCode]);
+                                                    break;
+                                                case "max":
+                                                    value = this.computeMax(parametersCombined_1[parameterCode]);
+                                                    break;
+                                                case "min":
+                                                    value = this.computeMin(parametersCombined_1[parameterCode]);
+                                                    break;
+                                                case "CSL10_85fm":
+                                                    value = this.computeCSL10_85fm(parametersCombined_1[parameterCode], parametersCombined_1["LFPLENGTH"]);
+                                                    break;
+                                            }
+                                            value = Number(value.toFixed(roundingDictionary[parameterCode]));
+                                        }
+                                        catch (error) {
+                                            console.log(error);
+                                            value = null;
+                                        }
+                                    }
+                                    else {
+                                        value = null;
+                                    }
+                                    parameterResults[parameterCode] = value;
+                                }
+                                ;
+                                console.log(parameterResults);
+                                paramErrors = false;
+                                finalResponse.forEach(function (parameter) {
+                                    parameter["value"] = parameterResults[parameter["code"]];
+                                    parameter["loaded"] = parameterResults[parameter["code"]] == null ? false : true;
+                                    if (parameterResults[parameter["code"]] == null) {
+                                        paramErrors = true;
+                                    }
+                                });
+                                if (paramErrors) {
+                                    this.showModifyBasinCharacterstics = true;
+                                    this.toaster.pop('error', "One or more basin characteristics failed to compute", "Click the 'Calculate Missing Parameters' button or manually enter parameter values to continue", 0);
+                                }
+                                console.log(finalResponse);
+                                this.toaster.clear();
+                                this.parametersLoading = false;
+                                this.loadParameterResults(finalResponse);
+                                saEvent = new StudyAreaEventArgs();
+                                saEvent.parameterLoaded = true;
+                                this.eventManager.RaiseEvent(Services.onSelectedStudyParametersLoaded, this, saEvent);
+                                return [3, 8];
+                            case 7:
+                                url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, requestParameterList.join(','));
+                                request = new WiM.Services.Helpers.RequestInfo(url, true);
+                                request.withCredentials = true;
+                                this.Execute(request).then(function (response) {
+                                    if (response.data.parameters && response.data.parameters.length > 0) {
+                                        _this.toaster.clear();
+                                        var paramErrors = false;
+                                        angular.forEach(response.data.parameters, function (parameter, index) {
+                                            if (!parameter.hasOwnProperty('value') || parameter.value == -999) {
+                                                paramErrors = true;
+                                                console.error('Parameter failed to compute: ', parameter.code);
+                                                parameter.loaded = false;
+                                            }
+                                            else {
+                                                parameter.loaded = true;
+                                            }
+                                        });
+                                        if (paramErrors) {
+                                            _this.showModifyBasinCharacterstics = true;
+                                            _this.toaster.pop('error', "One or more basin characteristics failed to compute", "Click the 'Calculate Missing Parameters' button or manually enter parameter values to continue", 0);
+                                        }
+                                        var results = response.data.parameters;
+                                        _this.loadParameterResults(results);
+                                        _this.getAdditionalFeatureList();
+                                        if (_this.selectedStudyArea.Disclaimers['isRegulated']) {
+                                            _this.loadRegulatedParameterResults(_this.regulationCheckResults.parameters);
+                                        }
+                                        var saEvent = new StudyAreaEventArgs();
+                                        saEvent.parameterLoaded = true;
+                                        _this.eventManager.RaiseEvent(Services.onSelectedStudyParametersLoaded, _this, saEvent);
+                                    }
+                                }, function (error) {
+                                    _this.toaster.clear();
+                                    _this.toaster.pop("error", "There was an HTTP error calculating basin characteristics", "Please retry", 0);
+                                }).finally(function () {
+                                    _this.parametersLoading = false;
+                                });
+                                _b.label = 8;
+                            case 8: return [2];
                         }
-                        var results = response.data.parameters;
-                        _this.loadParameterResults(results);
-                        _this.getAdditionalFeatureList();
-                        if (_this.selectedStudyArea.Disclaimers['isRegulated']) {
-                            _this.loadRegulatedParameterResults(_this.regulationCheckResults.parameters);
-                        }
-                        var saEvent = new StudyAreaEventArgs();
-                        saEvent.parameterLoaded = true;
-                        _this.eventManager.RaiseEvent(Services.onSelectedStudyParametersLoaded, _this, saEvent);
-                    }
-                }, function (error) {
-                    _this.toaster.clear();
-                    _this.toaster.pop("error", "There was an HTTP error calculating basin characteristics", "Please retry", 0);
-                }).finally(function () {
-                    _this.parametersLoading = false;
+                    });
                 });
             };
             StudyAreaService.prototype.getAdditionalFeatureList = function () {
@@ -521,7 +956,7 @@ var StreamStats;
                 });
                 var outFields = "eqWithStrID.Stream_Name,eqWithStrID.StreamID_ID,eqWithStrID.BASIN_NAME,eqWithStrID.BEGIN_DA,eqWithStrID.END_DA,eqWithStrID.DVA_EQ_ID,eqWithStrID.a10,eqWithStrID.b10,eqWithStrID.a25,eqWithStrID.b25,eqWithStrID.a50,eqWithStrID.b50,eqWithStrID.a100,eqWithStrID.b100,eqWithStrID.a500,eqWithStrID.b500";
                 var url = configuration.baseurls['StreamStatsMapServices'] + configuration.queryparams['coordinatedReachQueryService']
-                    .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint.crs, outFields);
+                    .format(this.selectedStudyArea.RegionID.toLowerCase(), boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3], this.selectedStudyArea.Pourpoint[0].crs, outFields);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     if (response.data.error) {
@@ -813,7 +1248,7 @@ var StreamStats;
             };
             StudyAreaService.prototype.GetKriggedReferenceGages = function () {
                 var _this = this;
-                var url = configuration.queryparams['KrigService'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint.Longitude, this.selectedStudyArea.Pourpoint.Latitude, this.selectedStudyArea.Pourpoint.crs, '5');
+                var url = configuration.queryparams['KrigService'].format(this.selectedStudyArea.RegionID, this.selectedStudyArea.Pourpoint[0].Longitude, this.selectedStudyArea.Pourpoint[0].Latitude, this.selectedStudyArea.Pourpoint[0].crs, '5');
                 if (!this.selectedStudyAreaExtensions)
                     return;
                 var sid = this.selectedStudyAreaExtensions.reduce(function (acc, val) { return acc.concat(val.parameters); }, []).filter(function (f) { return (f.code).toLowerCase() == "sid"; });
@@ -911,7 +1346,9 @@ var StreamStats;
                     else {
                         tolerance = 0.01;
                     }
-                    this.toaster.pop('warning', "Displaying simplified Basin.", "See FAQ for more information.", 0);
+                    if (this.selectedStudyArea.Pourpoint.length == 1) {
+                        this.toaster.pop('warning', "Displaying simplified Basin.", "See FAQ for more information.", 0);
+                    }
                     return turf.simplify(feature, { tolerance: tolerance, highQuality: false, mutate: true });
                 }
                 catch (e) {
@@ -944,7 +1381,7 @@ var StreamStats;
                     angular.forEach(paramList, function (value, index) {
                         if (val.code.toUpperCase().trim() === value.code.toUpperCase().trim()) {
                             if (val.value != undefined && val.code.toUpperCase().trim() == 'DRNAREA' && value.value != val.value) {
-                                var latLong = self.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + ',' + self.selectedStudyArea.Pourpoint.Longitude.toFixed(5);
+                                var latLong = self.selectedStudyArea.Pourpoint[0].Latitude.toFixed(5) + ',' + self.selectedStudyArea.Pourpoint[0].Longitude.toFixed(5);
                                 var daValue = val.value;
                                 if (val.unit.toLowerCase().trim() == 'square kilometers')
                                     daValue = daValue / 2.59;

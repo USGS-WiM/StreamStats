@@ -26,7 +26,8 @@
 module StreamStats.Models {
     export interface IStudyArea {
         RegionID: string;
-        Pourpoint: WiM.Models.IPoint;
+        Pourpoint: [WiM.Models.IPoint];
+        LinePoints: Array<WiM.Models.IPoint>;
         Description: string;
         Basin: Object;
         FeatureCollection: GeoJSON.FeatureCollection;
@@ -53,7 +54,8 @@ module StreamStats.Models {
     export class StudyArea implements IStudyArea {
         //properties
         public RegionID: string;
-        public Pourpoint: WiM.Models.IPoint;
+        public Pourpoint: [WiM.Models.IPoint];
+        public LinePoints: WiM.Models.IPoint[];
         public Description: string;
         public Basin: Object;
         public FeatureCollection: GeoJSON.FeatureCollection;
@@ -76,9 +78,10 @@ module StreamStats.Models {
         public NSS_Extensions: Array<any>;
         public wateruseQ10: any;
 
-        constructor(region: string, point: WiM.Models.IPoint) {
+        constructor(region: string, point: [WiM.Models.IPoint]) {
             this.RegionID = region;
             this.Pourpoint = point;
+            this.LinePoints = null;
             this.CoordinatedReach = null;
             this.defaultNHDStream = null;
             this.NHDStream = null;
