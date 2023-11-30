@@ -269,6 +269,24 @@ configuration.regions = [
     },
     { "RegionID": "CT", "Name": "Connecticut", "Bounds": [[40.998392, -73.725237], [42.047428, -71.788249]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/connecticut-streamstats" },
     { "RegionID": "DE", "Name": "Delaware", "Bounds": [[38.449602, -75.791094], [39.840119, -75.045623]], "Layers": {}, "Applications": ["Localres"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/delaware-streamstats" },
+    {"RegionID": "DC", "Name": "Washington, D.C. Stormwater", "Bounds": [[37.970255, -79.489865], [39.725461, -75.045623]], "Layers":
+        {
+            "StormDrainPipes": {
+                "name": "Stormdrain",
+                "url": configuration.baseurls['StreamStatsMapServices'] + "/arcgis/rest/services/stormdrain/dc/MapServer",
+                "type": 'agsDynamic',
+                "visible": true,
+                "layerOptions": {
+                    "zIndex": 1,
+                    "format": "png8",
+                    "layers": [0, 1, 2],
+                    "f": "image"
+                },
+                "queryProperties": { "Pipe": { "USGS_Type": "USGS Type", "USGS_SourceID_1": "USGS Source ID", "USGS_Town": "USGS Town" } }
+            }
+        },
+        "Applications": ["StormDrain"], "regionEnabled": true, "ScenariosAvailable": false, "URL": null
+    },
     { "RegionID": "FL", "Name": "Florida", "Bounds": [[24.956376, -87.625711], [31.003157, -80.050911]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false, "URL": null },
     { "RegionID": "GA", "Name": "Georgia", "Bounds": [[30.361291, -85.60896], [35.000366, -80.894753]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/georgia-streamstats" },
     { "RegionID": "GU", "Name": "Guam", "Bounds": [[13.234996, 144.634155], [13.65361, 144.953308]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": null },
