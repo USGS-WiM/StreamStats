@@ -11,10 +11,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Note about Batch Processor output projection
 - appConfig files for dev and test machines
+- Instructions about shapefile structure to Batch Processor Submit Batch tab
+- Checkbox option to ignore exclusion polygons on non-Production servers
+- Allow option to run Dev Batch Processor points that are in exclusion polygons
+- Error message in Batch Processor is Batch Processor services aren't working
+- "Start Next Batch" button to Batch Processor Manage Queue tab
+- Ability to refresh batches in Batch Processor Manage Queue tab
 
 ### Changed
 
 - Batch Processor streamgrids retrieved from different endpoints
+- Batch Processor times displayed in local time instead of UTC
+- Use SS Pourpoint ssExcludePolygon service instead of directly using state map services
+- Batch Processor Download Stream Grids tab files now also include Exclude Polys
 - Edited basin geometry is no longer simplified
 
 ### Deprecated
@@ -25,6 +34,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Latitude and Longitude columns swapped in the Elevation profile CSV export
 - Email address required for Batch Processor Batch Status tab
+- Stream Grids tab sometimes shows repeated regions
 
 ### Security
 

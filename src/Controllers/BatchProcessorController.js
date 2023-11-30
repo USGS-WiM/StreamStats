@@ -47,7 +47,7 @@ var StreamStats;
             __extends(BatchProcessorController, _super);
             function BatchProcessorController($scope, $http, modalService, nssService, modal, toaster, $sce) {
                 var _this = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
-                _this.displayWarning = false;
+                _this.displayError = false;
                 $scope.vm = _this;
                 _this.sce = $sce;
                 _this.modalInstance = modal;
@@ -56,6 +56,8 @@ var StreamStats;
                 _this.nssService = nssService;
                 _this.toaster = toaster;
                 _this.manageQueue = configuration.manageBPQueue;
+                _this.environment = configuration.environment;
+                console.log(_this.environment);
                 _this.cbFlowStats = false;
                 _this.cbBasinChar = false;
                 _this.selectedFlowStatsList = [];
@@ -82,11 +84,13 @@ var StreamStats;
                 _this.queues = ["Production Queue", "Development Queue"];
                 _this.selectedQueue = "Production Queue";
                 _this.isRefreshing = false;
+                _this.isStartingNextBatch = false;
                 _this.canReorder = false;
+                _this.basinDelineationCollapsed = false;
                 _this.basinCharCollapsed = false;
                 _this.flowStatsCollapsed = false;
                 _this.init();
-                _this.selectBatchProcessorTab(_this.selectedBatchProcessorTabName);
+                _this.displayWarning = configuration.showBPWarning;
                 return _this;
             }
             BatchProcessorController.prototype.Close = function () {
@@ -127,10 +131,12 @@ var StreamStats;
                 var url = configuration.baseurls["BatchProcessorServices"] +
                     configuration.queryparams["Regions"];
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
-                var self = this;
-                this.Execute(request).then(function (response) {
-                    self.regionList = response.data;
+                this.Execute(request)
+                    .then(function (response) {
+                    _this.regionList = response.data;
                     _this.regionListSpinner = false;
+                }, function (error) {
+                    _this.displayError = true;
                 });
             };
             BatchProcessorController.prototype.getFlowStatsAndParams = function (rcode) {
@@ -376,6 +382,15 @@ var StreamStats;
                     }
                 });
             };
+            BatchProcessorController.prototype.refreshBatch = function (batchID) {
+                var text = "Are you sure you want to refresh Batch ID " + batchID + "? All results for this batch will be deleted.";
+                if (confirm(text) == true) {
+                    this.refreshBatchResults(batchID);
+                }
+            };
+            BatchProcessorController.prototype.startNextBatch = function () {
+                this.startWorker();
+            };
             BatchProcessorController.prototype.trashBatch = function (batchID, deleteCode, batchStatusEmail) {
                 var text = "Are you sure you want to delete Batch ID " + batchID + "?";
                 if (confirm(text) == true) {
@@ -398,6 +413,7 @@ var StreamStats;
                 formdata.append("email", this.submitBatchData.email.toString());
                 formdata.append("IDField", this.submitBatchData.idField.toString());
                 formdata.append("geometryFile", this.submitBatchData.attachment, this.submitBatchData.attachment.name);
+                formdata.append("ignoreExcludePolys", this.submitBatchData.ignoreExcludePolys.toString());
                 var headers = {
                     "Content-Type": undefined,
                 };
@@ -548,20 +564,22 @@ var StreamStats;
                 if (window.location.host === "streamstats.usgs.gov") {
                     baseURL = "https://streamstats.usgs.gov/streamgrids/";
                 }
-                this.getStateMapServicesIDs().then(function (response) {
-                    var layerDictionary = response;
-                    _this.regionList.forEach(function (region) {
-                        _this.getStreamGridLastModifiedDate(layerDictionary[region["Code"]]).then(function (response) {
-                            var lastModifiedDate = response;
-                            _this.streamGridList.push({
-                                region: region["Name"],
-                                downloadURL: baseURL + region["Code"].toLowerCase() + "/streamgrid." + (region["Code"].toLowerCase() == "drb" ? "zip" : "tif"),
-                                lastModified: lastModifiedDate
+                setTimeout(function () {
+                    _this.getStateMapServicesIDs().then(function (response) {
+                        var layerDictionary = response;
+                        _this.regionList.forEach(function (region) {
+                            _this.getStreamGridLastModifiedDate(layerDictionary[region["Code"]]).then(function (response) {
+                                var lastModifiedDate = response;
+                                _this.streamGridList.push({
+                                    region: region["Name"],
+                                    downloadURL: baseURL + region["Code"].toLowerCase() + "/streamgrid." + (region["Code"].toLowerCase() == "drb" ? "zip" : "tif"),
+                                    lastModified: lastModifiedDate
+                                });
                             });
                         });
                     });
-                });
-                this.retrievingStreamGrids = false;
+                    _this.retrievingStreamGrids = false;
+                }, 1000);
             };
             BatchProcessorController.prototype.getStateMapServicesIDs = function () {
                 var _this = this;
@@ -700,9 +718,9 @@ var StreamStats;
                                 statusDescription: _this.batchStatusMessageList.filter(function (item) {
                                     return item.id == batch.StatusID;
                                 })[0].description,
-                                timeSubmitted: batch.TimeSubmitted,
-                                timeStarted: batch.TimeStarted,
-                                timeCompleted: batch.TimeCompleted,
+                                timeSubmitted: batch.TimeSubmitted == null ? null : new Date(new Date(batch.TimeSubmitted + "Z").toString()),
+                                timeStarted: batch.TimeStarted == null ? null : new Date(new Date(batch.TimeStarted + "Z").toString()),
+                                timeCompleted: batch.TimeCompleted == null ? null : new Date(new Date(batch.TimeCompleted + "Z").toString()),
                                 resultsURL: batch.ResultsURL,
                                 region: batch.Region,
                                 pointsRequested: batch.NumberPoints,
@@ -719,6 +737,43 @@ var StreamStats;
                     });
                     return batchStatusMessages;
                 }, function (error) { })
+                    .finally(function () { });
+            };
+            BatchProcessorController.prototype.refreshBatchResults = function (batchID) {
+                var _this = this;
+                var url = this.queueURL + configuration.queryparams["SSBatchProcessorRefreshBatch"].format(batchID, "true");
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET);
+                return this.Execute(request)
+                    .then(function (response) {
+                    var text = "Batch ID " + batchID + " was refreshed.";
+                    alert(text);
+                    _this.isRefreshing = true;
+                    _this.getManageQueueList();
+                    _this.retrievingManageQueue = true;
+                }, function (error) {
+                    var text = "Error refreshing batch ID " +
+                        batchID +
+                        ". Please try again later or click the Help menu button to submit a Support Request.";
+                    alert(text);
+                })
+                    .finally(function () { });
+            };
+            BatchProcessorController.prototype.startWorker = function () {
+                var _this = this;
+                var url = this.queueURL + configuration.queryparams["SSBatchProcessorStartWorker"];
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET);
+                return this.Execute(request)
+                    .then(function (response) {
+                    var text = "Worker was started on the server. The next batch will start running, if the server has capacity.";
+                    alert(text);
+                    _this.isRefreshing = true;
+                    _this.getManageQueueList();
+                    _this.retrievingManageQueue = true;
+                    _this.isStartingNextBatch = false;
+                }, function (error) {
+                    var text = "Error. Please try again later or click the Help menu button to submit a Support Request.";
+                    alert(text);
+                })
                     .finally(function () { });
             };
             BatchProcessorController.prototype.deleteBatch = function (batchID, deleteCode, batchStatusEmail) {
@@ -796,6 +851,8 @@ var StreamStats;
                 var content = e.currentTarget.nextElementSibling;
                 if (content.style.display === "none") {
                     content.style.display = "block";
+                    if (type === "basinDelineation")
+                        this.basinDelineationCollapsed = false;
                     if (type === "flowStatistics")
                         this.flowStatsCollapsed = false;
                     if (type === "basinCharacteristics")
@@ -803,6 +860,8 @@ var StreamStats;
                 }
                 else {
                     content.style.display = "none";
+                    if (type === "basinDelineation")
+                        this.basinDelineationCollapsed = true;
                     if (type === "flowStatistics")
                         this.flowStatsCollapsed = true;
                     if (type === "basinCharacteristics")
@@ -812,13 +871,16 @@ var StreamStats;
             BatchProcessorController.prototype.init = function () {
                 var _this = this;
                 this.getRegions();
+                if (this.manageQueue) {
+                    this.selectBatchProcessorTab("manageQueue");
+                }
                 if (this.modalService.modalOptions && this.modalService.modalOptions.tabName) {
                     if (this.modalService.modalOptions.tabName == "batchStatus") {
-                        this.selectBatchProcessorTab("batchStatus");
                         if (this.modalService.modalOptions.urlParams) {
                             this.batchStatusEmail = this.modalService.modalOptions.urlParams;
                             this.retrievingBatchStatus = true;
                         }
+                        this.selectBatchProcessorTab("batchStatus");
                     }
                     else if (this.modalService.modalOptions.tabName == "manageQueue") {
                         this.selectBatchProcessorTab("submitBatch");
@@ -827,8 +889,8 @@ var StreamStats;
                         this.selectBatchProcessorTab("streamGrid");
                     }
                 }
-                else if (this.manageQueue) {
-                    this.selectBatchProcessorTab("manageQueue");
+                else {
+                    this.selectBatchProcessorTab(this.selectedBatchProcessorTabName);
                 }
                 this.retrieveBatchStatusMessages().then(function (response) {
                     _this.batchStatusMessageList = response;

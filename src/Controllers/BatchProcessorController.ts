@@ -120,6 +120,7 @@ module StreamStats.Controllers {
     public email: string;
     public idField: string;
     public attachment: any;
+    public ignoreExcludePolys: boolean;
   }
 
   class BatchProcessorController
@@ -136,6 +137,7 @@ module StreamStats.Controllers {
     public displayMessage: string;
     public toaster: any;
     public manageQueue: boolean;
+    public environment: string;
 
     // Regions
     public regionList: Array<any>;
@@ -188,16 +190,19 @@ module StreamStats.Controllers {
     public selectedQueue: string;
     public queueURL: string;
     public isRefreshing: boolean;
+    public isStartingNextBatch: boolean;
     public canReorder;
 
     // collapsing sections
+    public basinDelineationCollapsed;
     public basinCharCollapsed;
     public flowStatsCollapsed;
 
     // warning message
-    public displayWarning = false;
+    public displayWarning;
     public warningMessage: string;
     public sce: any;
+    public displayError = false;
 
     //Constructor
     //-+-+-+-+-+-+-+-+-+-+-+-
@@ -228,6 +233,8 @@ module StreamStats.Controllers {
       this.nssService = nssService;
       this.toaster = toaster;
       this.manageQueue = configuration.manageBPQueue;
+      this.environment = configuration.environment;
+      console.log(this.environment);
       this.cbFlowStats = false;
       this.cbBasinChar = false;
       this.selectedFlowStatsList = [];
@@ -254,11 +261,13 @@ module StreamStats.Controllers {
       this.queues = ["Production Queue", "Development Queue"];
       this.selectedQueue = "Production Queue";
       this.isRefreshing = false;
+      this.isStartingNextBatch = false;
       this.canReorder = false;
+      this.basinDelineationCollapsed = false;
       this.basinCharCollapsed = false;
       this.flowStatsCollapsed = false;
       this.init();
-      this.selectBatchProcessorTab(this.selectedBatchProcessorTabName);
+      this.displayWarning = configuration.showBPWarning;
     }
 
     //Methods
@@ -306,12 +315,14 @@ module StreamStats.Controllers {
         configuration.queryparams["Regions"];
       var request: WiM.Services.Helpers.RequestInfo =
         new WiM.Services.Helpers.RequestInfo(url, true);
-      var self = this;
 
-      this.Execute(request).then((response: any) => {
-        self.regionList = response.data;
-        // console.log(self.regionList);
+      this.Execute(request)
+      .then((response: any) => {
+        this.regionList = response.data;
         this.regionListSpinner = false;
+      },(error) => {
+        // console.log(error)
+        this.displayError = true;
       });
     }
 
@@ -643,6 +654,19 @@ module StreamStats.Controllers {
       });
     }
 
+    // refresh a batch (deletes all results for that batch)
+    public refreshBatch( batchID: number) {
+      let text = "Are you sure you want to refresh Batch ID " + batchID + "? All results for this batch will be deleted.";
+      if (confirm(text) == true) {
+        this.refreshBatchResults(batchID);
+      }
+    }
+
+     // start a new worker
+    public startNextBatch() {
+      this.startWorker();
+    }
+
     // soft delete a batch
     public trashBatch(
       batchID: number,
@@ -683,6 +707,7 @@ module StreamStats.Controllers {
         this.submitBatchData.attachment,
         this.submitBatchData.attachment.name
       );
+      formdata.append("ignoreExcludePolys",this.submitBatchData.ignoreExcludePolys.toString());
 
       // create headers
       var headers = {
@@ -922,28 +947,28 @@ module StreamStats.Controllers {
       if (window.location.host === "streamstats.usgs.gov") {
         baseURL = "https://streamstats.usgs.gov/streamgrids/";
       }
-
-      this.getStateMapServicesIDs().then((response) => {
-        let layerDictionary = response;
-        this.regionList.forEach((region) => {
-          this.getStreamGridLastModifiedDate(layerDictionary[region["Code"]]).then((response) => {
-            let lastModifiedDate = response;
-            this.streamGridList.push({
-              region: region["Name"],
-              downloadURL: baseURL + region["Code"].toLowerCase() + "/streamgrid." + (region["Code"].toLowerCase()  == "drb" ? "zip" : "tif"),
-              lastModified: lastModifiedDate
-            })
+      setTimeout(() => {
+        this.getStateMapServicesIDs().then((response) => {
+          let layerDictionary = response;
+          this.regionList.forEach((region) => {
+            this.getStreamGridLastModifiedDate(layerDictionary[region["Code"]]).then((response) => {
+              let lastModifiedDate = response;
+              this.streamGridList.push({
+                region: region["Name"],
+                downloadURL: baseURL + region["Code"].toLowerCase() + "/streamgrid." + (region["Code"].toLowerCase()  == "drb" ? "zip" : "tif"),
+                lastModified: lastModifiedDate
+              })
+            });
           });
         });
-      });
-      this.retrievingStreamGrids = false;
+        this.retrievingStreamGrids = false;
+      },1000)
     } 
 
     // Service methods
 
     // get a dictionary that relates region codes to that region's stateServices stream grid map layer ID 
     public getStateMapServicesIDs(): ng.IPromise<any> {
-
       var url = configuration.baseurls.StreamStatsMapServices + configuration.queryparams["SSStateLayers"] + "?f=json"
 
       var request: WiM.Services.Helpers.RequestInfo =
@@ -1145,9 +1170,9 @@ module StreamStats.Controllers {
                       return item.id == batch.StatusID;
                     }
                   )[0].description,
-                  timeSubmitted: batch.TimeSubmitted,
-                  timeStarted: batch.TimeStarted,
-                  timeCompleted: batch.TimeCompleted,
+                  timeSubmitted: batch.TimeSubmitted == null ? null : new Date(new Date(batch.TimeSubmitted + "Z").toString()),
+                  timeStarted: batch.TimeStarted == null ? null : new Date(new Date(batch.TimeStarted + "Z").toString()),
+                  timeCompleted: batch.TimeCompleted == null ? null : new Date(new Date(batch.TimeCompleted + "Z").toString()),
                   resultsURL: batch.ResultsURL,
                   region: batch.Region,
                   pointsRequested: batch.NumberPoints,
@@ -1164,6 +1189,69 @@ module StreamStats.Controllers {
             return batchStatusMessages;
           },
           (error) => {}
+        )
+        .finally(() => {});
+    }
+
+    // soft delete a batch
+    public refreshBatchResults(batchID: number): ng.IPromise<any> {
+      var url = this.queueURL + configuration.queryparams["SSBatchProcessorRefreshBatch"].format(batchID, "true");
+
+      var request: WiM.Services.Helpers.RequestInfo =
+        new WiM.Services.Helpers.RequestInfo(
+          url,
+          true,
+          WiM.Services.Helpers.methodType.GET
+        );
+
+      return this.Execute(request)
+        .then(
+          (response: any) => {
+            let text = "Batch ID " + batchID + " was refreshed.";
+            alert(text);
+            // Refresh the list of batches
+            this.isRefreshing = true; 
+            this.getManageQueueList();
+            this.retrievingManageQueue = true;
+          },
+          (error) => {
+            let text =
+              "Error refreshing batch ID " +
+              batchID +
+              ". Please try again later or click the Help menu button to submit a Support Request.";
+            alert(text);
+          }
+        )
+        .finally(() => {});
+    }
+    
+    // kick off a worker on the server
+    public startWorker(): ng.IPromise<any> {
+      var url = this.queueURL + configuration.queryparams["SSBatchProcessorStartWorker"];
+
+      var request: WiM.Services.Helpers.RequestInfo =
+        new WiM.Services.Helpers.RequestInfo(
+          url,
+          true,
+          WiM.Services.Helpers.methodType.GET
+        );
+
+      return this.Execute(request)
+        .then(
+          (response: any) => {
+            let text = "Worker was started on the server. The next batch will start running, if the server has capacity.";
+            alert(text);
+            // Refresh the list of batches
+            this.isRefreshing = true; 
+            this.getManageQueueList();
+            this.retrievingManageQueue = true;
+            this.isStartingNextBatch = false;
+          },
+          (error) => {
+            let text =
+              "Error. Please try again later or click the Help menu button to submit a Support Request.";
+            alert(text);
+          }
         )
         .finally(() => {});
     }
@@ -1301,10 +1389,12 @@ module StreamStats.Controllers {
       var content = e.currentTarget.nextElementSibling;
       if (content.style.display === "none") {
           content.style.display = "block";
+          if(type === "basinDelineation") this.basinDelineationCollapsed = false;
           if(type === "flowStatistics") this.flowStatsCollapsed = false;
           if(type === "basinCharacteristics") this.basinCharCollapsed = false;
       } else {
           content.style.display = "none";
+          if(type === "basinDelineation") this.basinDelineationCollapsed = true;
           if(type === "flowStatistics") this.flowStatsCollapsed = true;
           if(type === "basinCharacteristics") this.basinCharCollapsed = true;
       }
@@ -1315,20 +1405,24 @@ module StreamStats.Controllers {
     private init(): void {
       this.getRegions();
       // Get selected tab
+      if (this.manageQueue) {
+        this.selectBatchProcessorTab("manageQueue")
+      }
+
       if (this.modalService.modalOptions && this.modalService.modalOptions.tabName) {
         if (this.modalService.modalOptions.tabName == "batchStatus") {
-          this.selectBatchProcessorTab("batchStatus");
           if  (this.modalService.modalOptions.urlParams) {
             this.batchStatusEmail = this.modalService.modalOptions.urlParams;
             this.retrievingBatchStatus = true;
           }
+          this.selectBatchProcessorTab("batchStatus");
         } else if (this.modalService.modalOptions.tabName == "manageQueue") {
           this.selectBatchProcessorTab("submitBatch")
         } else if (this.modalService.modalOptions.tabName == "streamGrid"){
           this.selectBatchProcessorTab("streamGrid")
         }
-      } else if (this.manageQueue) {
-        this.selectBatchProcessorTab("manageQueue")
+      } else {
+        this.selectBatchProcessorTab(this.selectedBatchProcessorTabName);
       }
       this.retrieveBatchStatusMessages().then((response) => {
         this.batchStatusMessageList = response;
