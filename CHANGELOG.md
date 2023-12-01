@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Security
 
-## [v4.19.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.19.0) - 2023-11-30
+## [v4.19.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.19.0) - 2023-12-01
 
 ### Added
 
