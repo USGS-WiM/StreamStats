@@ -1848,12 +1848,12 @@ var StreamStats;
                 var self = this;
                 var min;
                 if (this.formattedPeakDatesOnYear.length > 0) {
-                    min = (new Date(1 + '/' + 1 + '/' + this.startAndEnd[1].getFullYear())).getTime();
+                    min = (new Date(1 + '/' + 1 + '/' + this.allYears[0])).getTime();
                 }
                 else {
                     min = this.startAndEnd[0].getTime();
                 }
-                var max = (new Date(12 + '/' + 31 + '/' + this.startAndEnd[1].getFullYear())).getTime();
+                var max = (new Date(12 + '/' + 31 + '/' + this.allYears[0])).getTime();
                 this.chartConfig = {
                     chart: {
                         height: 550,

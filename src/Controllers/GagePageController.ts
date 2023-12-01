@@ -1289,15 +1289,13 @@ module StreamStats.Controllers {
             let finalDate;
             if (this.formattedDailyFlow.length > 0) {
                 var finalDailyIndex = this.formattedDailyFlow.length-1;
-                finalDate = this.formattedDailyFlow[finalDailyIndex].x
+                finalDate = this.formattedDailyFlow[finalDailyIndex].x    ///currently using the final DAILY flow point as latest year, but sometimes gage has more recent peaks
             }  else {
                 finalDate = new Date();
             }
             var finalIndex = this.formattedDailyFlow.length-1;
             var defaultYear = finalDate.getUTCFullYear();
             this.defaultYear = defaultYear;
-            //var finalYear = (finalPeakorDailyDate).getUTCFullYear(); //currently using the final daily flow point as latest year, but sometimes gage has more recent peaks
-            //return an array with a date each day between first recording and last
             function dateRange(startDate, endDate, steps = 1) {
                 const dateArray = [];
                 let currentDate = new Date(startDate);
@@ -1349,7 +1347,7 @@ module StreamStats.Controllers {
                     this.formattedEstPeakDatesOnYear.push({x: currentYear, y: estPeakOnYear.peak_va, realDate: new Date(estPeakOnYear.peak_dt)})
                 });
             }
-            //finding the earliest and latest dates out of all three data series
+            //finding the earliest and latest dates out of ALL THREE data series
             let startDate = new Date('January 1, 3000')  // assign way in future
             let endDate = new Date('January 1, 1800') // assign way in past
                 if (this.formattedPeakDates.length > 0) {
@@ -2219,11 +2217,11 @@ module StreamStats.Controllers {
             var self = this
             let min;
                 if (this.formattedPeakDatesOnYear.length > 0) {
-                    min = (new Date(1 +'/' + 1 + '/' + this.startAndEnd[1].getFullYear())).getTime()
+                    min = (new Date(1 +'/' + 1 + '/' + this.allYears[0])).getTime()
                 } else {
                     min = this.startAndEnd[0].getTime()
                 }
-            let max = (new Date(12 +'/' + 31 + '/' + this.startAndEnd[1].getFullYear())).getTime()
+            let max = (new Date(12 +'/' + 31 + '/' + this.allYears[0])).getTime();
             this.chartConfig = {
                 chart: {
                     height: 550,
