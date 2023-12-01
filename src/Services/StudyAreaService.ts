@@ -83,6 +83,7 @@ module StreamStats.Services {
         allIndexGages;
         extensionResultsChanged;
         additionalFeaturesLoaded: boolean;
+        ignoreExclusionPolygons: boolean;
 
     }
 
@@ -191,6 +192,7 @@ module StreamStats.Services {
         public allIndexGages;
         public extensionResultsChanged = 0;        
         public flowAnywhereData: any = null;
+        public ignoreExclusionPolygons: boolean = false;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
