@@ -61,6 +61,7 @@ var StreamStats;
                 _this.loadingDrainageArea = false;
                 _this.extensionResultsChanged = 0;
                 _this.flowAnywhereData = null;
+                _this.ignoreExclusionPolygons = false;
                 _this.modalservices = modal;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);

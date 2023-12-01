@@ -36,6 +36,28 @@ function inc(importance) {
         .pipe(replace(/configuration.version = "([^"]+)"/g, 'configuration.version = "' + newVer + '"'))
         .pipe(gulp.dest('./dist/'));
         //.pipe(git.add());
+    
+    //bump test appConfig version
+    gulp.src('./src/appConfig_test.js')
+        .pipe(replace(/configuration.version = "([^"]+)"/g, 'configuration.version = "' + newVer + '"'))
+        .pipe(gulp.dest('./src/'));
+        //.pipe(git.add());
+
+    gulp.src('./dist/appConfig_test.js')
+        .pipe(replace(/configuration.version = "([^"]+)"/g, 'configuration.version = "' + newVer + '"'))
+        .pipe(gulp.dest('./dist/'));
+        //.pipe(git.add());
+
+    //bump dev appConfig version
+    gulp.src('./src/appConfig_dev.js')
+        .pipe(replace(/configuration.version = "([^"]+)"/g, 'configuration.version = "' + newVer + '"'))
+        .pipe(gulp.dest('./src/'));
+        //.pipe(git.add());
+
+    gulp.src('./dist/appConfig_dev.js')
+        .pipe(replace(/configuration.version = "([^"]+)"/g, 'configuration.version = "' + newVer + '"'))
+        .pipe(gulp.dest('./dist/'));
+        //.pipe(git.add());
 
     // get all the files to bump version in 
     gulp.src(['package.json'])
@@ -157,6 +179,18 @@ gulp.task('appConfig', function () {
         .pipe(gulp.dest('dist/'))
 });
 
+// test appConfig
+gulp.task('appConfig_test', function () {
+    return gulp.src(['src/appConfig_test.js', 'web.config'])
+        .pipe(gulp.dest('dist/'))
+});
+
+// dev appConfig
+gulp.task('appConfig_dev', function () {
+    return gulp.src(['src/appConfig_dev.js', 'web.config'])
+        .pipe(gulp.dest('dist/'))
+});
+
 // Clean
 gulp.task('clean', function (cb) {
     del([
@@ -169,7 +203,7 @@ gulp.task('clean', function (cb) {
 });
 
 // build dist
-gulp.task('dist', ['html', 'images', 'leaflet','usgs-search-api','appConfig']);
+gulp.task('dist', ['html', 'images', 'leaflet','usgs-search-api','appConfig','appConfig_test','appConfig_dev']);
 
 // Default task
 gulp.task('default', ['clean'], function () {
