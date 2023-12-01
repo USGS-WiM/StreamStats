@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [v4.19.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.19.0) - 2023-11-30
+
+### Added
+
 - Note about Batch Processor output projection
 - appConfig files for dev and test machines
 - Instructions about shapefile structure to Batch Processor Submit Batch tab
@@ -26,17 +40,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Use SS Pourpoint ssExcludePolygon service instead of directly using state map services
 - Batch Processor Download Stream Grids tab files now also include Exclude Polys
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - Latitude and Longitude columns swapped in the Elevation profile CSV export
 - Email address required for Batch Processor Batch Status tab
 - Stream Grids tab sometimes shows repeated regions
-
-### Security
 
 ## [v4.18.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.18.1) - 2023-10-27
 

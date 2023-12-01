@@ -1,5 +1,5 @@
 var configuration = {};
-configuration.version = "4.18.1";
+configuration.version = "4.19.0";
 configuration.environment = 'development';
 configuration.showWarningModal = false;
 configuration.warningModalMessage = "Due to heavy demand, StreamStats is currently experiencing system interruptions. If you receive errors, please try back again later.<br><br>Thank you for your patience."
