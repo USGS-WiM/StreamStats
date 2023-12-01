@@ -323,7 +323,7 @@ configuration.regions = [
         {
             "Culverts": {
                 "name": "Stream Crossings",
-                "url": "https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/PROVISIONAL_Massachusetts_Stream_Crossing_Sites_Web_Map_Service/FeatureServer/0",
+                "url": "https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/PROVISIONAL_Massachusetts_Stream_Crossing_Project_Data_Web_Map_Service_PHASE2A/FeatureServer/0",
                 "type": 'agsFeature',
                 "visible": true,
                 "layerOptions": {

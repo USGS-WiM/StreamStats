@@ -182,7 +182,7 @@ var StreamStats;
             };
             StudyAreaService.prototype.loadCulvertBoundary = function (surveyID, regionIndex) {
                 var _this = this;
-                var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/PROVISIONAL_Massachusetts_Stream_Crossing_Sites_Web_Map_Service/FeatureServer/1' + configuration.queryparams['CulvertWatersheds']).format(surveyID);
+                var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/PROVISIONAL_Massachusetts_Stream_Crossing_Project_Data_Web_Map_Service_PHASE2A/FeatureServer/1' + configuration.queryparams['CulvertWatersheds']).format(surveyID);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
                     _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;

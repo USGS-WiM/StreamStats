@@ -297,7 +297,7 @@ module StreamStats.Services {
 
         public loadCulvertBoundary(surveyID, regionIndex) {
             // this.canUpdate = false;
-            var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/PROVISIONAL_Massachusetts_Stream_Crossing_Sites_Web_Map_Service/FeatureServer/1' + configuration.queryparams['CulvertWatersheds']).format(surveyID);
+            var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/PROVISIONAL_Massachusetts_Stream_Crossing_Project_Data_Web_Map_Service_PHASE2A/FeatureServer/1' + configuration.queryparams['CulvertWatersheds']).format(surveyID);
 
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
             this.Execute(request).then(
