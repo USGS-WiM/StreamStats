@@ -277,6 +277,7 @@ configuration.regions = [
                 "type": 'agsDynamic',
                 "visible": true,
                 "layerOptions": {
+                    "minZoom": 14,
                     "zIndex": 1,
                     "format": "png8",
                     "layers": [0, 1, 2],
