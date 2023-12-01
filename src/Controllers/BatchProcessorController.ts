@@ -955,7 +955,7 @@ module StreamStats.Controllers {
               let lastModifiedDate = response;
               this.streamGridList.push({
                 region: region["Name"],
-                downloadURL: baseURL + region["Code"].toLowerCase() + "/streamgrid." + (region["Code"].toLowerCase()  == "drb" ? "zip" : "tif"),
+                downloadURL: baseURL + region["Code"].toLowerCase() + "/" + region["Code"].toLowerCase() + ".zip",
                 lastModified: lastModifiedDate
               })
             });
