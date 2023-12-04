@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Removed
 
 ### Fixed
-
+- Batch processor allow to ignore exclude polygon on Production 
 
 ### Security
 
