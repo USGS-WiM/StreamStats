@@ -40,6 +40,7 @@ var StreamStats;
         }());
         var SubmitBatchData = (function () {
             function SubmitBatchData() {
+                this.ignoreExcludePolys = false;
             }
             return SubmitBatchData;
         }());
