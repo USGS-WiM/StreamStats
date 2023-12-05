@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 
 - Using updated provisional web map service
+- - MA Stream Crossing minimum zoom level set to 11
 
 ### Deprecated
 

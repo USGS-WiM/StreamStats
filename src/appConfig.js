@@ -338,7 +338,7 @@ configuration.regions = [
                             })
                         });
                     },
-                    "minZoom": 12,
+                    "minZoom": 11,
                 },
                 "layerArray": [{
                     note: "This overrides the ESRI legend",
