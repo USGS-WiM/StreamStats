@@ -180,11 +180,12 @@ var StreamStats;
                 this.regressionRegionQueryLoading = false;
                 this.eventManager.RaiseEvent(Services.onStudyAreaReset, this, WiM.Event.EventArgs.Empty);
             };
-            StudyAreaService.prototype.loadCulvertBoundary = function (surveyID, regionIndex) {
+            StudyAreaService.prototype.loadCulvertBoundary = function (crosCode, regionIndex) {
                 var _this = this;
-                var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/PROVISIONAL_Massachusetts_Stream_Crossing_Project_Data_Web_Map_Service_PHASE2A/FeatureServer/1' + configuration.queryparams['CulvertWatersheds']).format(surveyID);
+                var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/PROVISIONAL_Massachusetts_Stream_Crossing_Project_Data_Web_Map_Service_PHASE2A/FeatureServer/1' + configuration.queryparams['CulvertWatersheds']).format(crosCode);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
+                    console.log(response.data);
                     _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                     _this.selectedStudyArea.FeatureCollection = response.data;
                     _this.selectedStudyArea.Date = new Date();
@@ -197,12 +198,12 @@ var StreamStats;
                 }).finally(function () {
                 });
             };
-            StudyAreaService.prototype.getCulvertAttachments = function (surveyID, regionIndex) {
+            StudyAreaService.prototype.getCulvertAttachments = function (crosCode, regionIndex) {
                 var _this = this;
-                var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/PROVISIONAL_Massachusetts_Stream_Crossing_Sites_Web_Map_Service/FeatureServer/0' + configuration.queryparams['CulvertGeometryFiles']).format(surveyID);
+                var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/PROVISIONAL_Massachusetts_Stream_Crossing_Project_Data_Web_Map_Service_PHASE2A/FeatureServer/0' + configuration.queryparams['CulvertGeometryFiles']).format(crosCode);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
-                    _this.culvertAttachments = { filename: surveyID, url: response.data.attachmentGroups[0].attachmentInfos[0].url + "?token=" + configuration.regions[regionIndex].Layers.Culverts.layerOptions.token };
+                    _this.culvertAttachments = { filename: crosCode, url: response.data.attachmentGroups[0].attachmentInfos[0].url + "?token=" + configuration.regions[regionIndex].Layers.Culverts.layerOptions.token };
                 }, function (error) {
                     _this.toaster.clear();
                     _this.toaster.pop("error", "There was an HTTP error with the geometry file zip request", "", 0);

@@ -31,8 +31,8 @@ module StreamStats.Services {
         selectedStudyArea: Models.IStudyArea;
         undoEdit();
         loadParameters();
-        loadCulvertBoundary(surveyID: string, regionIndex: number);
-        getCulvertAttachments(surveyID: string, regionIndex: number);
+        loadCulvertBoundary(crosCode: string, regionIndex: number);
+        getCulvertAttachments(crosCode: string, regionIndex: number);
         loadStudyBoundary();
         upstreamRegulation();
         AddStudyArea(sa: Models.IStudyArea);
@@ -295,13 +295,14 @@ module StreamStats.Services {
             this.eventManager.RaiseEvent(Services.onStudyAreaReset, this, WiM.Event.EventArgs.Empty);
         }
 
-        public loadCulvertBoundary(surveyID, regionIndex) {
+        public loadCulvertBoundary(crosCode, regionIndex) {
             // this.canUpdate = false;
-            var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/PROVISIONAL_Massachusetts_Stream_Crossing_Project_Data_Web_Map_Service_PHASE2A/FeatureServer/1' + configuration.queryparams['CulvertWatersheds']).format(surveyID);
+            var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/PROVISIONAL_Massachusetts_Stream_Crossing_Project_Data_Web_Map_Service_PHASE2A/FeatureServer/1' + configuration.queryparams['CulvertWatersheds']).format(crosCode);
 
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
             this.Execute(request).then(
                 (response: any) => {  
+                    console.log(response.data)
                     this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
 
                     //reconfigure response
@@ -322,13 +323,13 @@ module StreamStats.Services {
                 });
         }
 
-        public getCulvertAttachments(surveyID, regionIndex) {
-            var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/PROVISIONAL_Massachusetts_Stream_Crossing_Sites_Web_Map_Service/FeatureServer/0' + configuration.queryparams['CulvertGeometryFiles']).format(surveyID);
+        public getCulvertAttachments(crosCode, regionIndex) {
+            var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/PROVISIONAL_Massachusetts_Stream_Crossing_Project_Data_Web_Map_Service_PHASE2A/FeatureServer/0' + configuration.queryparams['CulvertGeometryFiles']).format(crosCode);
 
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
             this.Execute(request).then(
                 (response: any) => {  
-                    this.culvertAttachments = {filename: surveyID, url: response.data.attachmentGroups[0].attachmentInfos[0].url + "?token=" + configuration.regions[regionIndex].Layers.Culverts.layerOptions.token};
+                    this.culvertAttachments = {filename: crosCode, url: response.data.attachmentGroups[0].attachmentInfos[0].url + "?token=" + configuration.regions[regionIndex].Layers.Culverts.layerOptions.token};
                 },(error) => {
                     //sm when error
                     this.toaster.clear();
