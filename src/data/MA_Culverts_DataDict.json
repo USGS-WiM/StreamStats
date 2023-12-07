@@ -1,22 +1,5 @@
 [
       {
-        "Name": "NAACC Survey ID",
-        "Code": "SurveyID",
-        "Description": "NAACC Survey Identification",
-        "SCS Standard": "",
-        "Units": "",
-        "Accuracy": "",
-        "Field type": "",
-        "NAACC Field": "Yes",
-        "Maximum Extent Practicable Culvert Design ": "No",
-        "10%-AEP Design Flow Culvert Design": "No",
-        "25%-AEP Design Flow Culvert Design": "No",
-        "In Report": "Yes",
-        "Matchcode": "SiteInfo",
-        "Citation": "North Atlantic Aquatic Connectivity Collaborative, 2021, NAACC Data Center: website accessed August 3, 2021 at https://naacc.org/naacc_data_center_home.cfm.",
-        "CitationURL": "https://naacc.org/naacc_data_center_home.cfm"
-      },
-      {
         "Name": "NAACC Code",
         "Code": "CrosCode",
         "Description": "NAACC Crossing Code (xy and decimal latitude and longitude)",

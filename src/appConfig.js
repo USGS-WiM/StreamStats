@@ -100,8 +100,8 @@ configuration.queryparams =
         'GageStatsServicesNearest': '/stations/Nearest?lat={0}&lon={1}&radius={2}&geojson=false&includeStats=true',
         'GageStatsServicesNetwork': '/stations/Network?lat={0}&lon={1}&distance={2}&includeStats=true&geojson=false',
         'GageStatsServicesBounds': '/stations/Bounds?xmin={0}&xmax={1}&ymin={2}&ymax={3}&geojson=true',
-        'CulvertWatersheds': '/query?where=SurveyID={0}&f=pgeojson',
-        'CulvertGeometryFiles': '/queryAttachments?DefinitionExpression=SurveyID={0}&returnUrl=true&f=pjson',
+        'CulvertWatersheds': "/query?where=CrosCode='{0}'&f=pgeojson",
+        'CulvertGeometryFiles': "/queryAttachments?DefinitionExpression=CrosCode='{0}'&returnUrl=true&f=pjson",
         'FlowAnywhereEstimates': '/models/FLA/estimate?state={0}',
         'FlowAnywhereGages': '/arcgis/rest/services/IowaStreamEst/FlowAnywhere/MapServer/1/query?geometry={0},{1}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.da_pub_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
         'Regions': '/regions/'
@@ -338,7 +338,7 @@ configuration.regions = [
                             })
                         });
                     },
-                    "minZoom": 12,
+                    "minZoom": 11,
                 },
                 "layerArray": [{
                     note: "This overrides the ESRI legend",
@@ -350,7 +350,7 @@ configuration.regions = [
                     }]
                 }],
                 "queryProperties": { "Stream Crossings": { 
-                    "SurveyID": "Survey ID",
+                    "CrosCode": "NAACC Code",
                     "HQSCORE": "Habitat Quality Score",
                     "RCPSCORE": "Restoration Connectivity Potential Score",
                     "MEPCF": "Maximum Extent Practicable (MEP) Cost Factor",

@@ -354,8 +354,8 @@ var StreamStats;
             SidebarController.prototype.skipDelineateAndShowCulvertResults = function (lat, lng, properties, regionIndex) {
                 var studyArea = new StreamStats.Models.StudyArea(this.regionService.selectedRegion.RegionID, new WiM.Models.Point(lat, lng, '4326'));
                 this.studyAreaService.AddStudyArea(studyArea);
-                this.studyAreaService.loadCulvertBoundary(properties.SurveyID, regionIndex);
-                this.studyAreaService.getCulvertAttachments(properties.SurveyID, regionIndex);
+                this.studyAreaService.loadCulvertBoundary(properties.CrosCode, regionIndex);
+                this.studyAreaService.getCulvertAttachments(properties.CrosCode, regionIndex);
                 var paramList = [];
                 var citations = [];
                 var statCitations = [];
@@ -535,7 +535,7 @@ var StreamStats;
                         region.Layers.Culverts.layerOptions.onEachFeature = function (feature, layer) {
                             var popupContent = '<div><h5>Stream Crossings</h5> ';
                             var queryProperties = {
-                                "SurveyID": "Survey ID",
+                                "CrosCode": "NAACC Code",
                                 "HQSCORE": "Habitat Quality Score",
                                 "RCPSCORE": "Restoration Connectivity Potential Score",
                                 "MEPCF": "Maximum Extent Practicable (MEP) Cost Factor",
