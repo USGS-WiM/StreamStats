@@ -185,7 +185,6 @@ var StreamStats;
                 var url = ('https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/PROVISIONAL_Massachusetts_Stream_Crossing_Project_Data_Web_Map_Service_PHASE2A/FeatureServer/1' + configuration.queryparams['CulvertWatersheds']).format(crosCode);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 this.Execute(request).then(function (response) {
-                    console.log(response.data);
                     _this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
                     _this.selectedStudyArea.FeatureCollection = response.data;
                     _this.selectedStudyArea.Date = new Date();

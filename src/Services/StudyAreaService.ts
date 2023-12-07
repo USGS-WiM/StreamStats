@@ -302,7 +302,6 @@ module StreamStats.Services {
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
             this.Execute(request).then(
                 (response: any) => {  
-                    console.log(response.data)
                     this.selectedStudyArea.WorkspaceID = response.data.hasOwnProperty("workspaceID") ? response.data["workspaceID"] : null;
 
                     //reconfigure response
