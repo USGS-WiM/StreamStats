@@ -235,7 +235,7 @@
                                 <button ng-click="vm.dateRangePicker()" >Load Date Range</button><br>
                                 <input type="checkbox" ng-if="vm.formattedPeakDates.length > 0" id="togglePeaks" name="togglePeaks" ng-checked="vm.peaksOnYear == true" ng-model="vm.peaksOnYear" ng-change="vm.togglePeakYear()" checked>
                                 <label for="togglePeaks" ng-if="vm.formattedPeakDates.length > 0">Plot Annual Streamflow Peaks on Year: </label>
-                                <select id='date-dropdown' style="width:6%; text-align-last:center; margin-top: 5px;" ng-model="vm.selectedYear" ng-options="year for year in vm.allYears" ng-change="vm.choosePeakYear()" ng-disabled="vm.peaksOnYear == false"></select>
+                                <select id='date-dropdown' style="width:6%; text-align-last:center; margin-top: 5px; margin-bottom: 5px" ng-model="vm.selectedYear" ng-options="year for year in vm.allYears" ng-change="vm.choosePeakYear()" ng-disabled="vm.peaksOnYear == false"></select>
                                 &nbsp;&nbsp;<input type="checkbox" ng-if="vm.containsNegatives() === false" id="logScale" name="logScale" ng-model="vm.logScale" ng-change="vm.toggleLogLinear()" checked>
                                 <label for="logScale" ng-if="vm.containsNegatives() === false"> Log Scale&nbsp;&nbsp;</label>
                                 <button ng-click="vm.resetZoom()">Reset Zoom</button><br>

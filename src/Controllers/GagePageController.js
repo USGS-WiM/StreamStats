@@ -102,6 +102,8 @@ var StreamStats;
                 _this_1.weightedOneDayStats = undefined;
                 _this_1.weightedSevenDayStats = undefined;
                 _this_1.weightedThirtyDayStats = undefined;
+                _this_1.weightedAEPstats = undefined;
+                _this_1.regulatedAEPstats = undefined;
                 _this_1.peakDates = undefined;
                 _this_1.estPeakDates = undefined;
                 _this_1.dailyFlow = undefined;
@@ -129,6 +131,8 @@ var StreamStats;
                 _this_1.formattedWeightedOneDayStats = [];
                 _this_1.formattedWeightedSevenDayStats = [];
                 _this_1.formattedWeightedThirtyDayStats = [];
+                _this_1.formattedWeightedAEP = [];
+                _this_1.formattedRegulatedAEP = [];
                 _this_1.allFloodFreqStats = [];
                 _this_1.allYears = [];
                 _this_1.formattedPeakDates = [];
@@ -516,6 +520,8 @@ var StreamStats;
                     var weightedOneDayLookup = [1755, 1775, 1732, 1746];
                     var weightedSevenDayLookup = [2025, 2050, 2001, 2017, 2041, 2007];
                     var weightedThirtyDayLookup = [1871, 1893, 1845, 1863, 1884, 1854];
+                    var weightedAEPlookup = [1065, 20, 513, 512, 21, 22, 23, 24, 25, 26, 27];
+                    var regulatedAEPlookup = [1328, 517, 516, 518, 519, 520, 521, 522, 523, 524, 525];
                     var AEPchartData = [];
                     var altAEPchartData = [];
                     var oneDayChartData = [];
@@ -529,6 +535,8 @@ var StreamStats;
                     var weightedOneDayChartData = [];
                     var weightedSevenDayChartData = [];
                     var weightedThirtyDayChartData = [];
+                    var weightedAEPchartData = [];
+                    var regulatedAEPchartData = [];
                     do {
                         var IDs = data.statistics;
                         for (var _i = 0, IDs_1 = IDs; _i < IDs_1.length; _i++) {
@@ -572,6 +580,12 @@ var StreamStats;
                             if (weightedThirtyDayLookup.indexOf(item.regressionTypeID) >= 0 && item.isPreferred == true) {
                                 weightedThirtyDayChartData.push(item);
                             }
+                            if (weightedAEPlookup.indexOf(item.regressionTypeID) >= 0 && item.isPreferred == true) {
+                                weightedAEPchartData.push(item);
+                            }
+                            if (regulatedAEPlookup.indexOf(item.regressionTypeID) >= 0 && item.isPreferred == true) {
+                                regulatedAEPchartData.push(item);
+                            }
                         }
                     } while (data.length > 0);
                     _this_1.floodFreq = AEPchartData;
@@ -587,6 +601,8 @@ var StreamStats;
                     _this_1.weightedOneDayStats = weightedOneDayChartData;
                     _this_1.weightedSevenDayStats = weightedSevenDayChartData;
                     _this_1.weightedThirtyDayStats = weightedThirtyDayChartData;
+                    _this_1.weightedAEPstats = weightedAEPchartData;
+                    _this_1.regulatedAEPstats = regulatedAEPchartData;
                 }).finally(function () {
                     _this_1.getDailyFlow();
                 });
@@ -1709,6 +1725,122 @@ var StreamStats;
                         });
                     });
                 }
+                if (this.weightedAEPstats) {
+                    this.formattedWeightedAEP = [];
+                    var weightedAEPcolors_1 = {
+                        27: "#9A6324",
+                        26: "#e6194B",
+                        25: "#f58231",
+                        24: "#ffe119",
+                        23: "#bfef45",
+                        22: "#3cb44b",
+                        21: "#42d4f4",
+                        512: "#4363d8",
+                        513: "#911eb4",
+                        20: "#dcbeff",
+                        1065: "#fabed4"
+                    };
+                    this.weightedAEPstats.forEach(function (weightedAEPitem) {
+                        var colorIndex = weightedAEPitem.regressionTypeID;
+                        var formattedName = weightedAEPitem.regressionType.name.substring(0, weightedAEPitem.regressionType.name.length - 18);
+                        _this_1.formattedAltFloodFreq.push({
+                            name: weightedAEPitem.regressionType.name,
+                            tooltip: {
+                                headerFormat: '<b>Alternative Annual Exceedance Probability (AEP)',
+                                pointFormatter: function () {
+                                    if (this.formattedPeakDates !== null) {
+                                        return '</b><br>AEP: <b>' + formattedName + '%' + '</b><br>Value: <b>' + weightedAEPitem.value + ' ft³/s<br>';
+                                    }
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: 'line',
+                            color: weightedAEPcolors_1[colorIndex],
+                            dataLabels: {
+                                enabled: true,
+                                zIndex: 3,
+                                pointFormatter: function () {
+                                    if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                        return formattedName + '% AEP';
+                                    }
+                                }
+                            },
+                            data: [
+                                {
+                                    x: startDate,
+                                    y: weightedAEPitem.value
+                                }, {
+                                    x: endOfFinalYear,
+                                    y: weightedAEPitem.value
+                                }
+                            ],
+                            linkedTo: 'weightedAEP',
+                            number: 15,
+                            marker: {
+                                symbol: 'circle',
+                                radius: 0.1
+                            },
+                        });
+                    });
+                }
+                if (this.regulatedAEPstats) {
+                    this.formattedRegulatedAEP = [];
+                    var regulatedAEPcolors_1 = {
+                        525: "#9A6324",
+                        524: "#e6194B",
+                        523: "#f58231",
+                        522: "#ffe119",
+                        521: "#bfef45",
+                        520: "#3cb44b",
+                        519: "#42d4f4",
+                        518: "#4363d8",
+                        516: "#911eb4",
+                        517: "#dcbeff",
+                        1328: "#fabed4"
+                    };
+                    this.regulatedAEPstats.forEach(function (regulatedAEPitem) {
+                        var colorIndex = regulatedAEPitem.regressionTypeID;
+                        var formattedName = regulatedAEPitem.regressionType.name.substring(0, regulatedAEPitem.regressionType.name.length - 18);
+                        _this_1.formattedAltFloodFreq.push({
+                            name: regulatedAEPitem.regressionType.name,
+                            tooltip: {
+                                headerFormat: '<b>Alternative Annual Exceedance Probability (AEP)',
+                                pointFormatter: function () {
+                                    if (this.formattedPeakDates !== null) {
+                                        return '</b><br>AEP: <b>' + formattedName + '%' + '</b><br>Value: <b>' + regulatedAEPitem.value + ' ft³/s<br>';
+                                    }
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: 'line',
+                            color: regulatedAEPcolors_1[colorIndex],
+                            dataLabels: {
+                                enabled: true,
+                                zIndex: 3,
+                                pointFormatter: function () {
+                                    if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                        return formattedName + '% AEP';
+                                    }
+                                }
+                            },
+                            data: [
+                                {
+                                    x: startDate,
+                                    y: regulatedAEPitem.value
+                                }, {
+                                    x: endOfFinalYear,
+                                    y: regulatedAEPitem.value
+                                }
+                            ],
+                            linkedTo: 'regulatedAEP',
+                            number: 15,
+                            marker: {
+                                symbol: 'circle',
+                                radius: 0.1
+                            },
+                        });
+                    });
+                }
                 if (this.formattedDailyHeat.length > 0) {
                     var noNulls = this.formattedDailyHeat.filter(function (item) {
                         return (item.value != null);
@@ -1798,7 +1930,7 @@ var StreamStats;
                             },
                         });
                     });
-                    this.allFloodFreqStats.push(this.formattedFloodFreq, this.formattedAltFloodFreq, this.formattedOneDayStats, this.formattedSevenDayStats, this.formattedFourteenDayStats, this.formattedThirtyDayStats, this.formattedContrOneDayStats, this.formattedContrSevenDayStats, this.formattedContrFourteenDayStats, this.formattedContrThirtyDayStats, this.formattedWeightedOneDayStats, this.formattedWeightedSevenDayStats, this.formattedWeightedThirtyDayStats);
+                    this.allFloodFreqStats.push(this.formattedFloodFreq, this.formattedAltFloodFreq, this.formattedOneDayStats, this.formattedSevenDayStats, this.formattedFourteenDayStats, this.formattedThirtyDayStats, this.formattedContrOneDayStats, this.formattedContrSevenDayStats, this.formattedContrFourteenDayStats, this.formattedContrThirtyDayStats, this.formattedWeightedOneDayStats, this.formattedWeightedSevenDayStats, this.formattedWeightedThirtyDayStats, this.formattedWeightedAEP, this.formattedRegulatedAEP);
                     this.allFloodFreqStats = this.allFloodFreqStats.filter(function (group) { return group.length > 0; });
                     this.allFloodFreqStats.forEach(function (group, index) {
                         _this_1.allFloodFreqStats[index] = {
@@ -2520,6 +2652,52 @@ var StreamStats;
                             },
                             showInLegend: false
                         }, {
+                            name: 'Weighted Annual Exceedance Percentage (AEP)',
+                            showInNavigator: false,
+                            tooltip: {
+                                headerFormat: null,
+                                pointFormatter: function () {
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: null,
+                            color: 'black',
+                            fillOpacity: null,
+                            lineWidth: null,
+                            data: null,
+                            linkedTo: null,
+                            visible: false,
+                            id: 'weightedAEP',
+                            zIndex: 2,
+                            marker: {
+                                symbol: 'line',
+                                radius: 0.1
+                            },
+                            showInLegend: false
+                        }, {
+                            name: 'Regulated Annual Exceedance Percentage (AEP)',
+                            showInNavigator: false,
+                            tooltip: {
+                                headerFormat: null,
+                                pointFormatter: function () {
+                                }
+                            },
+                            turboThreshold: 0,
+                            type: null,
+                            color: 'black',
+                            fillOpacity: null,
+                            lineWidth: null,
+                            data: null,
+                            linkedTo: null,
+                            visible: false,
+                            id: 'regulatedAEP',
+                            zIndex: 2,
+                            marker: {
+                                symbol: 'line',
+                                radius: 0.1
+                            },
+                            showInLegend: false
+                        }, {
                             name: 'Instantaneous Streamflow',
                             showInNavigator: true,
                             tooltip: {
@@ -2599,6 +2777,12 @@ var StreamStats;
                 });
                 this.formattedWeightedThirtyDayStats.forEach(function (formattedWeightedThirtyDay) {
                     _this_1.chartConfig.series.push((formattedWeightedThirtyDay));
+                });
+                this.formattedWeightedAEP.forEach(function (formattedWeightedAEPitem) {
+                    _this_1.chartConfig.series.push((formattedWeightedAEPitem));
+                });
+                this.formattedRegulatedAEP.forEach(function (formattedRegulatedAEPitem) {
+                    _this_1.chartConfig.series.push((formattedRegulatedAEPitem));
                 });
             };
             GagePageController.prototype.chooseFloodStats = function () {

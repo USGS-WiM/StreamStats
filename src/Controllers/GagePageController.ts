@@ -209,6 +209,8 @@ module StreamStats.Controllers {
         public weightedOneDayStats = undefined;
         public weightedSevenDayStats = undefined;
         public weightedThirtyDayStats = undefined;
+        public weightedAEPstats = undefined;
+        public regulatedAEPstats = undefined;
         public peakDates = undefined;
         public estPeakDates = undefined;
         public dailyFlow = undefined;
@@ -236,6 +238,8 @@ module StreamStats.Controllers {
         public formattedWeightedOneDayStats = [];
         public formattedWeightedSevenDayStats = [];
         public formattedWeightedThirtyDayStats = [];
+        public formattedWeightedAEP = [];
+        public formattedRegulatedAEP = [];
         public allFloodFreqStats = [];
         public allYears = [];
         public formattedPeakDates = [];
@@ -745,7 +749,7 @@ module StreamStats.Controllers {
                     const data = response.data
                     //Lookup arrays for desired Flood Statistic IDs
                     const AEPlookup = [9,852,8,4,7,3,6,1,501,5,2,500,851,1438,818];
-                    const altAEPlookup = [2311,2312,2313,2314,2315,2316,2317,2318]
+                    const altAEPlookup = [2311,2312,2313,2314,2315,2316,2317,2318];
                     const oneDayLookup = [82,83,84,85,596,820,1737];
                     const sevenDayLookup = [90,91,92,93,589,822,1165,1166,1167];
                     const fourteenDayLookup = [94,95,96,97,828,829];
@@ -757,6 +761,8 @@ module StreamStats.Controllers {
                     const weightedOneDayLookup = [1755,1775,1732,1746];
                     const weightedSevenDayLookup = [2025,2050,2001,2017,2041,2007];
                     const weightedThirtyDayLookup = [1871,1893,1845,1863,1884,1854];
+                    const weightedAEPlookup = [1065,20,513,512,21,22,23,24,25,26,27];
+                    const regulatedAEPlookup = [1328,517,516,518,519,520,521,522,523,524,525];
                     let AEPchartData = [];
                     let altAEPchartData = [];
                     let oneDayChartData = [];
@@ -770,6 +776,8 @@ module StreamStats.Controllers {
                     let weightedOneDayChartData = [];
                     let weightedSevenDayChartData = [];
                     let weightedThirtyDayChartData = [];
+                    let weightedAEPchartData = [];
+                    let regulatedAEPchartData = [];
                     do {
                         var IDs = data.statistics
                         for (let item of IDs) {
@@ -812,6 +820,12 @@ module StreamStats.Controllers {
                             if(weightedThirtyDayLookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
                                 weightedThirtyDayChartData.push(item);
                             }
+                            if(weightedAEPlookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
+                                weightedAEPchartData.push(item);
+                            }
+                            if(regulatedAEPlookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
+                                regulatedAEPchartData.push(item);
+                            }
                         }
                 } while (data.length > 0);
                 this.floodFreq = AEPchartData;
@@ -827,6 +841,8 @@ module StreamStats.Controllers {
                 this.weightedOneDayStats = weightedOneDayChartData;
                 this.weightedSevenDayStats = weightedSevenDayChartData;
                 this.weightedThirtyDayStats = weightedThirtyDayChartData;
+                this.weightedAEPstats = weightedAEPchartData;
+                this.regulatedAEPstats = regulatedAEPchartData;
             }).finally(() => {
                 this.getDailyFlow();
             });
@@ -2049,6 +2065,124 @@ module StreamStats.Controllers {
                         })
                 })
             }
+            if (this.weightedAEPstats) {
+                this.formattedWeightedAEP = [];
+                const weightedAEPcolors = {
+                    27: "#9A6324", //0.2%
+                    26: "#e6194B", //0.5%
+                    25: "#f58231", // 1%
+                    24: "#ffe119", //2%
+                    23: "#bfef45", //4%
+                    22: "#3cb44b", // 10%
+                    21: "#42d4f4", //20%
+                    512: "#4363d8", //42.9 %
+                    513: "#911eb4", //50%
+                    20: "#dcbeff", //66.7%
+                    1065: "#fabed4" //80%
+                };   
+                this.weightedAEPstats.forEach((weightedAEPitem) => {
+                    let colorIndex = weightedAEPitem.regressionTypeID;
+                    let formattedName = weightedAEPitem.regressionType.name.substring(0, weightedAEPitem.regressionType.name.length-18);
+                    this.formattedAltFloodFreq.push({
+                        name: weightedAEPitem.regressionType.name,
+                        tooltip: {
+                            headerFormat:'<b>Alternative Annual Exceedance Probability (AEP)',
+                            pointFormatter: function(){
+                                if (this.formattedPeakDates !== null){
+                                    return '</b><br>AEP: <b>'  + formattedName + '%' + '</b><br>Value: <b>' + weightedAEPitem.value + ' ft³/s<br>'
+                                }
+                            }
+                        },
+                        turboThreshold: 0, 
+                        type: 'line',
+                        color: weightedAEPcolors[colorIndex],
+                        dataLabels: {
+                            enabled: true,
+                            zIndex: 3,
+                            pointFormatter: function() { 
+                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                    return formattedName + '% AEP'
+                                }
+                            } 
+                        },
+                        data:
+                        [
+                            {
+                                x: startDate,
+                                y: weightedAEPitem.value
+                            },{
+                                x: endOfFinalYear,
+                                y: weightedAEPitem.value
+                            }
+                        ],
+                        linkedTo: 'weightedAEP',
+                        number: 15,
+                        marker: {
+                            symbol: 'circle',
+                            radius: 0.1
+                        },
+                        })
+                })
+            }
+            if (this.regulatedAEPstats) {
+                this.formattedRegulatedAEP = [];
+                const regulatedAEPcolors = {
+                    525: "#9A6324", //0.2%
+                    524: "#e6194B", //0.5%
+                    523: "#f58231", // 1%
+                    522: "#ffe119", //2%
+                    521: "#bfef45", //4%
+                    520: "#3cb44b", // 10%
+                    519: "#42d4f4", //20%
+                    518: "#4363d8", //42.9 %
+                    516: "#911eb4", //50%
+                    517: "#dcbeff", //66.7%
+                    1328: "#fabed4" //80%
+                };   
+                this.regulatedAEPstats.forEach((regulatedAEPitem) => {
+                    let colorIndex = regulatedAEPitem.regressionTypeID;
+                    let formattedName = regulatedAEPitem.regressionType.name.substring(0, regulatedAEPitem.regressionType.name.length-18);
+                    this.formattedAltFloodFreq.push({
+                        name: regulatedAEPitem.regressionType.name,
+                        tooltip: {
+                            headerFormat:'<b>Alternative Annual Exceedance Probability (AEP)',
+                            pointFormatter: function(){
+                                if (this.formattedPeakDates !== null){
+                                    return '</b><br>AEP: <b>'  + formattedName + '%' + '</b><br>Value: <b>' + regulatedAEPitem.value + ' ft³/s<br>'
+                                }
+                            }
+                        },
+                        turboThreshold: 0, 
+                        type: 'line',
+                        color: regulatedAEPcolors[colorIndex],
+                        dataLabels: {
+                            enabled: true,
+                            zIndex: 3,
+                            pointFormatter: function() { 
+                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                    return formattedName + '% AEP'
+                                }
+                            } 
+                        },
+                        data:
+                        [
+                            {
+                                x: startDate,
+                                y: regulatedAEPitem.value
+                            },{
+                                x: endOfFinalYear,
+                                y: regulatedAEPitem.value
+                            }
+                        ],
+                        linkedTo: 'regulatedAEP',
+                        number: 15,
+                        marker: {
+                            symbol: 'circle',
+                            radius: 0.1
+                        },
+                        })
+                })
+            }
             //Sum and average daily values by year
             if (this.formattedDailyHeat.length >0) {
             const noNulls = this.formattedDailyHeat.filter(item => {
@@ -2156,7 +2290,7 @@ module StreamStats.Controllers {
                             },
                             })
                     });
-            this.allFloodFreqStats.push(this.formattedFloodFreq, this.formattedAltFloodFreq, this.formattedOneDayStats, this.formattedSevenDayStats, this.formattedFourteenDayStats, this.formattedThirtyDayStats, this.formattedContrOneDayStats, this.formattedContrSevenDayStats, this.formattedContrFourteenDayStats, this.formattedContrThirtyDayStats, this.formattedWeightedOneDayStats, this.formattedWeightedSevenDayStats, this.formattedWeightedThirtyDayStats);
+            this.allFloodFreqStats.push(this.formattedFloodFreq, this.formattedAltFloodFreq, this.formattedOneDayStats, this.formattedSevenDayStats, this.formattedFourteenDayStats, this.formattedThirtyDayStats, this.formattedContrOneDayStats, this.formattedContrSevenDayStats, this.formattedContrFourteenDayStats, this.formattedContrThirtyDayStats, this.formattedWeightedOneDayStats, this.formattedWeightedSevenDayStats, this.formattedWeightedThirtyDayStats, this.formattedWeightedAEP, this.formattedRegulatedAEP);
             
             this.allFloodFreqStats = this.allFloodFreqStats.filter(group => group.length > 0);
 
@@ -2893,6 +3027,52 @@ module StreamStats.Controllers {
                     },
                     showInLegend: false
                 },{
+                    name: 'Weighted Annual Exceedance Percentage (AEP)',
+                    showInNavigator: false,
+                    tooltip: {
+                        headerFormat: null,
+                        pointFormatter: function(){
+                        }
+                    },
+                    turboThreshold: 0, 
+                    type: null,
+                    color: 'black',
+                    fillOpacity: null, 
+                    lineWidth: null,
+                    data: null,
+                    linkedTo: null,
+                    visible: false,
+                    id: 'weightedAEP',
+                    zIndex: 2,
+                    marker: {
+                        symbol: 'line',
+                        radius: 0.1
+                    },
+                    showInLegend: false
+                },{
+                    name: 'Regulated Annual Exceedance Percentage (AEP)',
+                    showInNavigator: false,
+                    tooltip: {
+                        headerFormat: null,
+                        pointFormatter: function(){
+                        }
+                    },
+                    turboThreshold: 0, 
+                    type: null,
+                    color: 'black',
+                    fillOpacity: null, 
+                    lineWidth: null,
+                    data: null,
+                    linkedTo: null,
+                    visible: false,
+                    id: 'regulatedAEP',
+                    zIndex: 2,
+                    marker: {
+                        symbol: 'line',
+                        radius: 0.1
+                    },
+                    showInLegend: false
+                },{
                     name    : 'Instantaneous Streamflow',
                     showInNavigator: true,
                     tooltip: {
@@ -2974,6 +3154,12 @@ module StreamStats.Controllers {
             });
             this.formattedWeightedThirtyDayStats.forEach((formattedWeightedThirtyDay) => {
                 this.chartConfig.series.push((formattedWeightedThirtyDay))
+            });
+            this.formattedWeightedAEP.forEach((formattedWeightedAEPitem) => {
+                this.chartConfig.series.push((formattedWeightedAEPitem))
+            });
+            this.formattedRegulatedAEP.forEach((formattedRegulatedAEPitem) => {
+                this.chartConfig.series.push((formattedRegulatedAEPitem))
             });
         }
 
