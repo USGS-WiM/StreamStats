@@ -8,7 +8,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased](https://github.com/USGS-WiM/StreamStats/tree/dev)
 
 ### Added
-- URL for Washington DC regional information page
 
 ### Changed
 
@@ -17,10 +16,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Removed
 
 ### Fixed
-- Batch processor allow to ignore exclude polygon on Production 
-- Batch processor not submitting when 'ignoreExcludePolys' was not defined
 
 ### Security
+
+## [v4.19.2](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.19.2) - 2023-12-11
+
+### Added
+- URL for Washington DC regional information page
+
+### Fixed
+- Batch processor allow to ignore exclude polygon on Production 
+- Batch processor not submitting when 'ignoreExcludePolys' was not defined
 
 ## [v4.19.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.19.1) - 2023-12-01
 
