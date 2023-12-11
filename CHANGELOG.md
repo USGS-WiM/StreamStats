@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased](https://github.com/USGS-WiM/StreamStats/tree/dev)
 
 ### Added
+- URL for Washington DC regional information page
 
 ### Changed
 
