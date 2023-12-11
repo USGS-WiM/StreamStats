@@ -120,7 +120,7 @@ module StreamStats.Controllers {
     public email: string;
     public idField: string;
     public attachment: any;
-    public ignoreExcludePolys: boolean;
+    public ignoreExcludePolys: boolean = false;
   }
 
   class BatchProcessorController
@@ -707,7 +707,7 @@ module StreamStats.Controllers {
         this.submitBatchData.attachment,
         this.submitBatchData.attachment.name
       );
-      formdata.append("ignoreExcludePolys",this.submitBatchData.ignoreExcludePolys.toString());
+      formdata.append("ignoreExcludePolys",this.submitBatchData.ignoreExcludePolys.toString());      
 
       // create headers
       var headers = {
