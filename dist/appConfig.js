@@ -15,7 +15,8 @@ configuration.baseurls =
         'WeightingServices': 'https://ss-weightingservices.streamstats.usgs.gov',
         'SCStormRunoffServices': 'https://streamstats.usgs.gov/local/scrunoffservices',
         'NationalMapServices': 'https://hydro.nationalmap.gov/arcgis/rest/services',
-        'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices'
+        'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices',
+        'PourPointServices': 'https://test.streamstats.usgs.gov/pourpoint'
     };
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
@@ -41,7 +42,7 @@ configuration.queryparams =
         'statisticsGroupLookup': '/statisticgroups?regions={0},NA&regressionregions={1}',
         'statisticsGroupParameterLookup': '/scenarios?regions={0},NA&statisticgroups={1}&regressionregions={2}',
         'estimateFlows': '/scenarios/estimate?regions={0},NA',
-        'SSdelineation': '/streamstatsservices/watershed.{0}?rcode={1}&xlocation={2}&ylocation={3}&crs={4}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
+        'SSdelineation': '/streamstatsservices/watershed.{0}?rcode={1}&xlocation={2}&ylocation={3}&crs={4}&simplify=false&includeparameters=false&includeflowtypes=false&includefeatures=true',
         'SSstormwaterDelineation': '/stormwaterservices/watershed?rcode={0}&xlocation={1}&ylocation={2}&simplify=false&surfacecontributiononly={3}',
         'SSwatershedByWorkspace': '/streamstatsservices/watershed.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
         'SSeditBasin': '/streamstatsservices/watershed/edit.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
@@ -89,7 +90,9 @@ configuration.queryparams =
         'SCComputeSpreadSheet': '/computespreadSheet',
         'SCFactorData': '/factorData',
         'FlowAnywhereEstimates': '/models/FLA/estimate?state={0}',
-        'FlowAnywhereGages': '/arcgis/rest/services/IowaStreamEst/FlowAnywhere/MapServer/1/query?geometry={0},{1}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.da_pub_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
+        'FlowAnywhereGages': '/arcgis/rest/services/IowaStreamEst/FlowAnywhere/MapServer/1/query?geometry={0},{1}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.da_pub_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
+        'lineIntersection': '/ssLineIntersection_Filtered/',
+        'checkExcludePolygons': '/ssExcludePolygon'
     };
 
 configuration.SupportTicketService = {
@@ -612,7 +615,7 @@ configuration.regions = [
                     }}
                 }
             },
-        "Applications": ["Regulation", "SCStormRunoff", "HydrologicFeatures"], "regionEnabled": true, "ScenariosAvailable": true
+        "Applications": ["Regulation", "SCStormRunoff", "HydrologicFeatures", "DelineateByLine"], "regionEnabled": true, "ScenariosAvailable": true
     },
     { "RegionID": "SD", "Name": "South Dakota", "Bounds": [[42.488459, -104.061036], [45.943547, -96.439394]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
     { "RegionID": "TN", "Name": "Tennessee", "Bounds": [[34.988759, -90.305448], [36.679683, -81.652272]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true },
