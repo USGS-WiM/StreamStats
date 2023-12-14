@@ -780,6 +780,7 @@ module StreamStats.Controllers {
                     let regulatedAEPchartData = [];
                     do {
                         var IDs = data.statistics
+                        //console.log('IDS', IDs)
                         for (let item of IDs) {
                             if(AEPlookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
                                 AEPchartData.push(item);
@@ -2083,10 +2084,10 @@ module StreamStats.Controllers {
                 this.weightedAEPstats.forEach((weightedAEPitem) => {
                     let colorIndex = weightedAEPitem.regressionTypeID;
                     let formattedName = weightedAEPitem.regressionType.name.substring(0, weightedAEPitem.regressionType.name.length-18);
-                    this.formattedAltFloodFreq.push({
+                    this.formattedWeightedAEP.push({
                         name: weightedAEPitem.regressionType.name,
                         tooltip: {
-                            headerFormat:'<b>Alternative Annual Exceedance Probability (AEP)',
+                            headerFormat:'<b>Weighted Annual Exceedance Probability (AEP)',
                             pointFormatter: function(){
                                 if (this.formattedPeakDates !== null){
                                     return '</b><br>AEP: <b>'  + formattedName + '%' + '</b><br>Value: <b>' + weightedAEPitem.value + ' ft³/s<br>'
@@ -2116,7 +2117,7 @@ module StreamStats.Controllers {
                             }
                         ],
                         linkedTo: 'weightedAEP',
-                        number: 15,
+                        number: 22,
                         marker: {
                             symbol: 'circle',
                             radius: 0.1
@@ -2142,10 +2143,10 @@ module StreamStats.Controllers {
                 this.regulatedAEPstats.forEach((regulatedAEPitem) => {
                     let colorIndex = regulatedAEPitem.regressionTypeID;
                     let formattedName = regulatedAEPitem.regressionType.name.substring(0, regulatedAEPitem.regressionType.name.length-18);
-                    this.formattedAltFloodFreq.push({
+                    this.formattedRegulatedAEP.push({
                         name: regulatedAEPitem.regressionType.name,
                         tooltip: {
-                            headerFormat:'<b>Alternative Annual Exceedance Probability (AEP)',
+                            headerFormat:'<b>Regulated Annual Exceedance Probability (AEP)',
                             pointFormatter: function(){
                                 if (this.formattedPeakDates !== null){
                                     return '</b><br>AEP: <b>'  + formattedName + '%' + '</b><br>Value: <b>' + regulatedAEPitem.value + ' ft³/s<br>'
@@ -2175,7 +2176,7 @@ module StreamStats.Controllers {
                             }
                         ],
                         linkedTo: 'regulatedAEP',
-                        number: 15,
+                        number: 23,
                         marker: {
                             symbol: 'circle',
                             radius: 0.1
@@ -2291,7 +2292,6 @@ module StreamStats.Controllers {
                             })
                     });
             this.allFloodFreqStats.push(this.formattedFloodFreq, this.formattedAltFloodFreq, this.formattedOneDayStats, this.formattedSevenDayStats, this.formattedFourteenDayStats, this.formattedThirtyDayStats, this.formattedContrOneDayStats, this.formattedContrSevenDayStats, this.formattedContrFourteenDayStats, this.formattedContrThirtyDayStats, this.formattedWeightedOneDayStats, this.formattedWeightedSevenDayStats, this.formattedWeightedThirtyDayStats, this.formattedWeightedAEP, this.formattedRegulatedAEP);
-            
             this.allFloodFreqStats = this.allFloodFreqStats.filter(group => group.length > 0);
 
             this.allFloodFreqStats.forEach((group, index) => {
@@ -3167,7 +3167,6 @@ module StreamStats.Controllers {
 public chooseFloodStats() {
     let chart = $('#chart1').highcharts();
     let floodSeries = chart.series[this.selectedFloodFreqStats.seriesIndex]
-    //figure out how to have this option loaded when the plot is instantiated
     if (this.selectedFloodFreqStats.name === this.selectedFloodFreqStats.name) {
         this.allFloodFreqStats.forEach((stat) => {
             let index = stat.seriesIndex
@@ -4009,7 +4008,6 @@ public createDailyRasterPlot(): void {
             let extremes = chart.xAxis[0].getExtremes();
             let min = new Date(extremes.min)
             let max = new Date(extremes.max)
-            console.log(min, max)
             var minDateString = new Date(min.getTime() - (min.getTimezoneOffset() * 60000 ))
                 .toISOString()
                 .split("T")[0];

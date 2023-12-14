@@ -1743,10 +1743,10 @@ var StreamStats;
                     this.weightedAEPstats.forEach(function (weightedAEPitem) {
                         var colorIndex = weightedAEPitem.regressionTypeID;
                         var formattedName = weightedAEPitem.regressionType.name.substring(0, weightedAEPitem.regressionType.name.length - 18);
-                        _this_1.formattedAltFloodFreq.push({
+                        _this_1.formattedWeightedAEP.push({
                             name: weightedAEPitem.regressionType.name,
                             tooltip: {
-                                headerFormat: '<b>Alternative Annual Exceedance Probability (AEP)',
+                                headerFormat: '<b>Weighted Annual Exceedance Probability (AEP)',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
                                         return '</b><br>AEP: <b>' + formattedName + '%' + '</b><br>Value: <b>' + weightedAEPitem.value + ' ft³/s<br>';
@@ -1775,7 +1775,7 @@ var StreamStats;
                                 }
                             ],
                             linkedTo: 'weightedAEP',
-                            number: 15,
+                            number: 22,
                             marker: {
                                 symbol: 'circle',
                                 radius: 0.1
@@ -1801,10 +1801,10 @@ var StreamStats;
                     this.regulatedAEPstats.forEach(function (regulatedAEPitem) {
                         var colorIndex = regulatedAEPitem.regressionTypeID;
                         var formattedName = regulatedAEPitem.regressionType.name.substring(0, regulatedAEPitem.regressionType.name.length - 18);
-                        _this_1.formattedAltFloodFreq.push({
+                        _this_1.formattedRegulatedAEP.push({
                             name: regulatedAEPitem.regressionType.name,
                             tooltip: {
-                                headerFormat: '<b>Alternative Annual Exceedance Probability (AEP)',
+                                headerFormat: '<b>Regulated Annual Exceedance Probability (AEP)',
                                 pointFormatter: function () {
                                     if (this.formattedPeakDates !== null) {
                                         return '</b><br>AEP: <b>' + formattedName + '%' + '</b><br>Value: <b>' + regulatedAEPitem.value + ' ft³/s<br>';
@@ -1833,7 +1833,7 @@ var StreamStats;
                                 }
                             ],
                             linkedTo: 'regulatedAEP',
-                            number: 15,
+                            number: 23,
                             marker: {
                                 symbol: 'circle',
                                 radius: 0.1
@@ -3608,7 +3608,6 @@ var StreamStats;
                 var extremes = chart.xAxis[0].getExtremes();
                 var min = new Date(extremes.min);
                 var max = new Date(extremes.max);
-                console.log(min, max);
                 var minDateString = new Date(min.getTime() - (min.getTimezoneOffset() * 60000))
                     .toISOString()
                     .split("T")[0];
