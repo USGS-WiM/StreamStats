@@ -686,7 +686,8 @@ module StreamStats.Services {
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
             
             return this.Execute(request).then((response: any) => {
-                if (response.data.response.line.length == 0) {
+                console.log(response)
+                if (response.data.response.points.length == 0) {
                     this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
                     throw new Error;
                 } else {
@@ -700,7 +701,7 @@ module StreamStats.Services {
         public checkExcludePolygon(points) {
             var data = {
                 'region': 'SC',
-                'points': points["line"]
+                'points': points["points"]
             }
             var url = configuration.baseurls['PourPointServices'] + configuration.queryparams['checkExcludePolygons']
             var headers = {

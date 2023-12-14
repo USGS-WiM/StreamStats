@@ -540,7 +540,8 @@ var StreamStats;
                 };
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
                 return this.Execute(request).then(function (response) {
-                    if (response.data.response.line.length == 0) {
+                    console.log(response);
+                    if (response.data.response.points.length == 0) {
                         _this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
                         throw new Error;
                     }
@@ -554,7 +555,7 @@ var StreamStats;
             StudyAreaService.prototype.checkExcludePolygon = function (points) {
                 var data = {
                     'region': 'SC',
-                    'points': points["line"]
+                    'points': points["points"]
                 };
                 var url = configuration.baseurls['PourPointServices'] + configuration.queryparams['checkExcludePolygons'];
                 var headers = {
