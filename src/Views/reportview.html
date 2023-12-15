@@ -130,7 +130,7 @@
                             </div>
 
                             <!--Flow Report-->
-                            <div ng-repeat="regressionRegion in statisticsGroup.regressionRegions">
+                            <div ng-repeat="regressionRegion in statisticsGroup.regressionRegions" ng-if="vm.displayRegressionRegion(statisticsGroup.regressionRegions, regressionRegion)">
                                 <!--Scenario Disclaimers-->
                                 <div ng-show="regressionRegion.disclaimer">
                                     <h3>{{statisticsGroup.name}} Disclaimers&nbsp;&nbsp;<span ng-bind="vm.GetRegressionRegionHeader(regressionRegion)"></span></h3>
@@ -165,6 +165,48 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                            </div>
+
+                            <div>
+                                <!-- TODO: only show the header if there is an area-averaged group-->
+                                <h3 class="collapsible" ng-click="vm.collapseSection($event, 'flowstats', statisticsGroup.name)"><i ng-class="!vm.flowStatsCollapsed[statisticsGroup.name] ? 'fa fa-chevron-right': 'fa fa-chevron-down'"></i>&nbsp;&nbsp;Regression Region Flow Reports</h3>
+                                <!-- TODO: have more than one regressionregion show up here -->
+                                <div class="collapsible-content" style="display:none" ng-repeat="regressionRegion in statisticsGroup.regressionRegions" ng-if="!vm.displayRegressionRegion(statisticsGroup.regressionRegions, regressionRegion)">
+                                    <div ng-show="regressionRegion.disclaimer">
+                                        <h3>{{statisticsGroup.name}} Disclaimers&nbsp;&nbsp;<span ng-bind="vm.GetRegressionRegionHeader(regressionRegion)"></span></h3>
+                                        <div class="wim-alert-warning">{{regressionRegion.disclaimer}}</div>
+                                    </div>
+    
+                                    <h3>{{statisticsGroup.name}} Flow Report&nbsp;&nbsp;<span ng-bind="vm.GetRegressionRegionHeader(regressionRegion)"></span></h3>
+                                    <span ng-show="regressionRegion.results[0].intervalBounds || regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0">PIL: Lower 90% Prediction Interval, PIU: Upper 90% Prediction Interval, ASEp: Average Standard Error of Prediction, SE: Standard Error (other -- see report)</span>
+                                    <table id="{{vm.camelize(statisticsGroup.name + regressionRegion.name + 'ScenarioFlowTable')}}" class="scenarioFlowTable table table-condensed">
+                                        <thead class="flow-table">
+                                            <tr>
+                                                <th>Statistic</th>
+                                                <th>Value</th>
+                                                <th ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation">Unregulated Value</th>
+                                                <th>Unit</th>
+                                                <th ng-if="regressionRegion.results[0].intervalBounds && regressionRegion.results[0].intervalBounds.lower">PIL</th>
+                                                <th ng-if="regressionRegion.results[0].intervalBounds && regressionRegion.results[0].intervalBounds.upper">PIU</th>
+                                                <th ng-if="regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0" ng-repeat="error in regressionRegion.results[0].errors" ng-bind="error.code"></th>
+                                                <th ng-if="regressionRegion.results[0].equivalentYears > 0">Equiv. Yrs.</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="stat in regressionRegion.results">
+                                                <td>{{stat.name}}</td>
+                                                <td>{{stat.value == -99999 ? 'undefined' : stat.value.toUSGSvalue()}}</td>
+                                                <td ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation" ng-bind="stat.unRegulatedValue.toUSGSvalue()"></td>
+                                                <td ng-bind="stat.unit.abbr"></td>
+                                                <td ng-if="stat.intervalBounds.lower" ng-bind="stat.intervalBounds.lower.toUSGSvalue()"></td>
+                                                <td ng-if="stat.intervalBounds.upper" ng-bind="stat.intervalBounds.upper.toUSGSvalue()"></td>
+                                                <td ng-if="stat.errors && stat.errors.length > 0" ng-repeat="error in stat.errors" ng-bind="(error.value) ? error.value.toUSGSvalue() : '--'"></td>
+                                                <td ng-if="stat.equivalentYears" ng-bind="stat.equivalentYears.toUSGSvalue()"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
                             </div>
 
                             <h4>{{statisticsGroup.name}} Citations</h4>

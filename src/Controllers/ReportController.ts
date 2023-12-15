@@ -107,6 +107,7 @@ module StreamStats.Controllers {
 
         public sectionCollapsed: Array<any>;
         public basinCharCollapsed;
+        public flowStatsCollapsed: Array<any>;
         public collapsed;
 
         public get showReport(): boolean {
@@ -161,9 +162,14 @@ module StreamStats.Controllers {
             this.environment = configuration.environment;
             this.sectionCollapsed = [];
             this.basinCharCollapsed = false;
+            this.flowStatsCollapsed = [];
             this.collapsed = false;
             this.selectedFDCTMTabName = "";
             this.eventManager = eventManager;
+
+            this.nssService.statisticsGroupList.forEach(group => {
+                this.flowStatsCollapsed[group.name] = true;
+            })
 
             // If we add QPPQ to additional states we might need to add an if statement here to limit to IN and IL
             // Handles states where there is more than one regression region in the same place
@@ -593,10 +599,12 @@ module StreamStats.Controllers {
                 content.style.display = "block";
                 if(type === "stats") this.sectionCollapsed[group] = false;
                 if(type === "basin") this.basinCharCollapsed = false;
+                if(type === "flowstats") this.flowStatsCollapsed[group] = false;
             } else {
                 content.style.display = "none";
                 if(type === "stats") this.sectionCollapsed[group] = true;
                 if(type === "basin") this.basinCharCollapsed = true;
+                if(type === "flowstats") this.flowStatsCollapsed[group] = true;
             }
         }
 
@@ -958,6 +966,20 @@ module StreamStats.Controllers {
                 else returnData.push({x: d.getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value.toUSGSvalue() : obs.value : null})
             }
             return returnData;
+        }
+
+        // Determine if a Regression Region's flow statistics should be displayed or hidden in a collapsed section
+        private displayRegressionRegion(regressionRegions, regressionRegion) {
+            // If this statistic group has area-averaged results
+            if (regressionRegions.filter(rr => rr.code === 'areaave').length > 0) {
+                if (regressionRegion.code == 'areaave') {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else { // this statistic group does not have area-averaged results
+                return true;
+            }
         }
     }//end class
     angular.module('StreamStats.Controllers')

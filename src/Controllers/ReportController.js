@@ -44,9 +44,13 @@ var StreamStats;
                 this.environment = configuration.environment;
                 this.sectionCollapsed = [];
                 this.basinCharCollapsed = false;
+                this.flowStatsCollapsed = [];
                 this.collapsed = false;
                 this.selectedFDCTMTabName = "";
                 this.eventManager = eventManager;
+                this.nssService.statisticsGroupList.forEach(function (group) {
+                    _this.flowStatsCollapsed[group.name] = true;
+                });
                 if (this.extensions && this.extensions[0].result && this.extensions[0].result.length > 1) {
                     this.extensions[0].result.forEach(function (r) {
                         if (r.name.toLowerCase().includes("multivar")) {
@@ -424,6 +428,8 @@ var StreamStats;
                         this.sectionCollapsed[group] = false;
                     if (type === "basin")
                         this.basinCharCollapsed = false;
+                    if (type === "flowstats")
+                        this.flowStatsCollapsed[group] = false;
                 }
                 else {
                     content.style.display = "none";
@@ -431,6 +437,8 @@ var StreamStats;
                         this.sectionCollapsed[group] = true;
                     if (type === "basin")
                         this.basinCharCollapsed = true;
+                    if (type === "flowstats")
+                        this.flowStatsCollapsed[group] = true;
                 }
             };
             ReportController.prototype.expandAll = function (expandOrCollapse) {
@@ -748,6 +756,19 @@ var StreamStats;
                         returnData.push({ x: d.getTime(), y: obs.hasOwnProperty('value') ? typeof obs.value == 'number' ? obs.value.toUSGSvalue() : obs.value : null });
                 }
                 return returnData;
+            };
+            ReportController.prototype.displayRegressionRegion = function (regressionRegions, regressionRegion) {
+                if (regressionRegions.filter(function (rr) { return rr.code === 'areaave'; }).length > 0) {
+                    if (regressionRegion.code == 'areaave') {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+                else {
+                    return true;
+                }
             };
             ReportController.$inject = ['$scope', '$modalInstance', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'leafletData', 'StreamStats.Services.RegionService', 'StreamStats.Services.ModalService', 'WiM.Event.EventManager'];
             return ReportController;
