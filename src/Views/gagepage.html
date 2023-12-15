@@ -240,22 +240,25 @@
                                 <label for="logScale" ng-if="vm.containsNegatives() === false"> Log Scale&nbsp;&nbsp;</label>
                                 <button ng-click="vm.resetZoom()">Reset Zoom</button><br>
                                 <input type="checkbox" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" id="toggleFloodStats" name="toggleFloodStats" ng-model="vm.showFloodStats" ng-change="vm.toggleFloodStats()" checked>
-                                <label for="toggleFloodStats" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" > Show Flood Statistics:</label>
+                                <label for="toggleFloodStats" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" > Show Streamgage Statistics:</label>
                                 <select id="gageFloodStatsSelect" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0 " style="width:31%; text-align-last:center; margin-top: 5px;" name="gageFloodStatsSelect" ng-model="vm.selectedFloodFreqStats" ng-options="floodFreqStat.name for floodFreqStat in vm.allFloodFreqStats" ng-change="vm.chooseFloodStats()" ng-disabled="vm.showFloodStats == false"></select>
                                 <div class="data-sources">
+                                    <label ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" >
+                                    Statistics are computed using at-site streamgage data or estimated using record extension or regional estimation methods. Please see the Gage Information tab for more detailed information.<br>
+                                    </label>
                                     Data: 
                                     <a ng-if="vm.formattedPeakDates.length > 0" href="{{vm.peakFlowURL}}">NWIS Annual Peak Streamflow,</a>
-                                    <text ng-if="vm.formattedPeakDates.length === 0">NWIS Annual Peak Streamflow (Not Available),</text>
+                                    <label ng-if="vm.formattedPeakDates.length === 0">NWIS Annual Peak Streamflow (Not Available),</label>
                                     <a ng-if="vm.formattedDailyFlow.length > 0" href="{{vm.dailyFlowURL}}">NWIS Mean Daily Streamflow,</a>
-                                    <text ng-if="vm.formattedDailyFlow.length === 0">NWIS Mean Daily Streamflow (Not Available),</text>
+                                    <label ng-if="vm.formattedDailyFlow.length === 0">NWIS Mean Daily Streamflow (Not Available),</label>
                                     <a ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0 " href="{{vm.floodStatsURL}}">USGS Flood Frequency Statistics,</a>
-                                    <text ng-if="vm.formattedFloodFreq.length === 0 && vm.formattedAltFloodFreq.length === 0 ">USGS Flood Frequency Statistics (Not Available),</text>
+                                    <label ng-if="vm.formattedFloodFreq.length === 0 && vm.formattedAltFloodFreq.length === 0 ">USGS Flood Frequency Statistics (Not Available),</label>
                                     <a ng-if="vm.formattedInstFlow.length > 0" href="{{vm.instFlowURL}}">NWIS Instantaneous Streamflow,</a>
-                                    <text ng-if="vm.formattedInstFlow.length === 0">NWIS Instantaneous Streamflow (Not Available),</text>
+                                    <label ng-if="vm.formattedInstFlow.length === 0">NWIS Instantaneous Streamflow (Not Available),</label>
                                     <a ng-if="vm.formattedP90to100.length > 0" href="{{vm.percentileURL}}">NWIS Mean Daily Percentile Streamflow,</a>
-                                    <text ng-if="vm.formattedP90to100.length === 0">NWIS Mean Daily Percentile Streamflow (Not Available),</text>
+                                    <label ng-if="vm.formattedP90to100.length === 0">NWIS Mean Daily Percentile Streamflow (Not Available),</label>
                                     <a ng-if="vm.NWSforecast !== undefined" href="{{vm.forecastURL}}">NWS Forecasted Streamflow</a>
-                                    <text ng-if="vm.NWSforecast === undefined">NWS Forecasted Streamflow (Not Available)</text>
+                                    <label ng-if="vm.NWSforecast === undefined">NWS Forecasted Streamflow (Not Available)</label>
                                 </div>
                         </div>
                     </center>
@@ -268,7 +271,7 @@
                             <div class="data-sources">
                                 Data: 
                                 <a ng-if="vm.formattedDailyFlow.length > 0" href="{{vm.dailyFlowURL}}">NWIS Mean Daily Streamflow</a>
-                                <text ng-if="vm.formattedDailyFlow.length === 0">NWIS Mean Daily Streamflow (Not Available)</a>
+                                <label ng-if="vm.formattedDailyFlow.length === 0">NWIS Mean Daily Streamflow (Not Available)</label>
                             </div>
                         </div>
                     </center> 
@@ -333,11 +336,11 @@
                             <div class="data-sources">
                                 Data: 
                                 <a ng-if="vm.dischargeObj.length > 5" href="{{vm.ratingURL}}">NWIS Rating Curve,</a>
-                                <text ng-if="5 > vm.dischargeObj.length">NWIS Rating Curve (Not Available),</text>
+                                <label ng-if="5 > vm.dischargeObj.length">NWIS Rating Curve (Not Available),</label>
                                 <a ng-if="vm.error === false" href="{{vm.measuredURL}}">USGS Measured River Stage,</a>
-                                <text ng-if="vm.error === true">USGS Measured River Stage (Not Available),</text>
+                                <label ng-if="vm.error === true">USGS Measured River Stage (Not Available),</label>
                                 <a ng-if="vm.formattedDischargePeakDates.length > 0" href="{{vm.peakFlowURL}}">NWIS Annual Peak Streamflow</a>
-                                <text ng-if="vm.formattedDischargePeakDates.length === 0">NWIS Annual Peak Streamflow (Not Available)</text>
+                                <label ng-if="vm.formattedDischargePeakDates.length === 0">NWIS Annual Peak Streamflow (Not Available)</label>
                             </div>
                         </div>
 

@@ -1711,10 +1711,12 @@ html, body, .angular-leaflet-map {
 
  
 .data-sources {
-    padding-left: 120px;
-    padding-right: 120px;
+    padding-left: 190px;
+    padding-right: 190px;
     padding-top: 10px;
-    font-size: 12px;
+    font-size: 13px;
+    font-family: "Source Sans Pro", sans-serif;
+    color: #2D3146BF
 }
  
  .toast-warning {
