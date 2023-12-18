@@ -1310,6 +1310,24 @@ module StreamStats.Controllers {
             }  else {
                 finalDate = new Date();
             }
+            // let finalDate;
+            // var finalDailyIndex = this.formattedDailyFlow.length-1;
+            // var finalPeakIndex = this.formattedPeakDates.length-1;
+            // if (this.formattedDailyFlow.length > 0) {
+            //     finalDate = this.formattedDailyFlow[finalDailyIndex].x
+            // }  
+            // if (this.formattedDailyFlow.length > 0 && this.formattedPeakDates.length > 0) {
+            //     if (this.formattedPeakDates[finalPeakIndex].x > this.formattedDailyFlow[finalDailyIndex].x) {
+            //         finalDate = this.formattedPeakDates[finalPeakIndex].x
+            //     }
+            // }
+            // if (this.formattedPeakDates.length > 0 && this.formattedDailyFlow.length == 0) {
+            //     finalDate = this.formattedPeakDates[finalPeakIndex].x
+            // }
+            // if (this.formattedPeakDates.length == 0 && this.formattedDailyFlow.length == 0) {
+            //     finalDate = new Date();
+            // }
+
             var finalIndex = this.formattedDailyFlow.length-1;
             var defaultYear = finalDate.getUTCFullYear();
             this.defaultYear = defaultYear;
