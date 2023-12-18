@@ -43,6 +43,7 @@ module StreamStats.Services {
         parametersLoading: boolean;
         showEditToolbar: boolean;
         checkingDelineatedPoint: boolean;
+        checkingDelineatedLine: boolean;
         canUpdate: boolean;
         studyAreaParameterList: Array<IParameter>;
         drawControl: any;
@@ -141,6 +142,7 @@ module StreamStats.Services {
         public regulationCheckComplete: boolean
         public parametersLoading: boolean;
         public checkingDelineatedPoint: boolean;
+        public checkingDelineatedLine: boolean;
         private _studyAreaList: Array<Models.IStudyArea>;
         public get StudyAreaList(): Array<Models.IStudyArea> {
             return this._studyAreaList;
@@ -287,6 +289,7 @@ module StreamStats.Services {
             this.parametersLoading = false;
             this.doDelineateFlag = false;
             this.checkingDelineatedPoint = false;
+            this.checkingDelineatedLine = false;
             this.studyAreaParameterList = [];  //angular.fromJson(angular.toJson(configuration.alwaysSelectedParameters));
             this.regulationCheckResults = [];
             this.allIndexGages = undefined;

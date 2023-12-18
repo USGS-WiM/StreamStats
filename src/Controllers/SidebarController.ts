@@ -85,6 +85,8 @@ module StreamStats.Controllers {
         }
         private scenarioHasExtensions: Boolean;
         private extensionsConfigured: Boolean;
+        public disablePoint: Boolean = false;
+        public disableLine: Boolean = false;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -105,7 +107,7 @@ module StreamStats.Controllers {
             this.leafletData = leafletData;
             this.multipleParameterSelectorAdd = true;
             this.explorationService = exploration;
-            
+
             StatisticsGroup.onSelectedStatisticsGroupChanged.subscribe(this._onSelectedStatisticsGroupChangedHandler);
             
             //watch for map based region changes here
@@ -215,6 +217,7 @@ module StreamStats.Controllers {
                 }
                 else {
                     if (type == "point") {
+                        this.disableLine = !this.disableLine;
                         this.toaster.pop(
                           "success",
                           "Delineate",
@@ -223,6 +226,7 @@ module StreamStats.Controllers {
                         this.studyAreaService.delineateByPoint = !this.studyAreaService.delineateByPoint;
                         this.studyAreaService.doDelineateFlag = !this.studyAreaService.doDelineateFlag;
                       } else {
+                        this.disablePoint = !this.disablePoint
                         // line
                         this.toaster.pop(
                           "success",
