@@ -715,7 +715,7 @@ var StreamStats;
                                         lat: point.point.lat,
                                         lng: point.point.long,
                                         message: '<strong>Latitude: </strong>' + point.point.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + point.point.long.toFixed(5),
-                                        focus: true,
+                                        focus: false,
                                         draggable: true
                                     };
                                     var latlng = new WiM.Models.Point(point.point.lat, point.point.long, '4326');
@@ -793,6 +793,7 @@ var StreamStats;
                                     if (excludeCode == 1) {
                                         _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
                                         gtag('event', 'ValidatePoint', { 'Label': 'Not allowed' });
+                                        _this.cursorStyle = 'pointer';
                                     }
                                     else {
                                         _this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
@@ -801,7 +802,6 @@ var StreamStats;
                                         gtag('event', 'ValidatePoint', { 'Label': 'Not advised' });
                                     }
                                 }
-                                _this.cursorStyle = 'pointer';
                             });
                         }
                     });
@@ -1004,6 +1004,7 @@ var StreamStats;
                 }
             };
             MapController.prototype.addGeoJSON = function (LayerName, feature) {
+                this.cursorStyle = 'pointer';
                 if (LayerName.includes('globalwatershedpoint')) {
                     var lat = this.studyArea.selectedStudyArea.Pourpoint[0].Latitude;
                     var lng = this.studyArea.selectedStudyArea.Pourpoint[0].Longitude;
