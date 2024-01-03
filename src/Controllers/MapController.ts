@@ -881,7 +881,7 @@ module StreamStats.Controllers {
                             // check line length 
                             console.log(this.drawControl._getMeasurementString())
                             var distance = this.drawControl._getMeasurementString();
-                            if (distance.replace(/[^0-9]/g, "") > 13200) { // line is longer than a mile
+                            if (distance.replace(/[^0-9]/g, "") > 13200) { // line is longer than 2.5 miles
                                 // remove listeners
                                 map.off("click", this.lineDelineationstart);
                                 this.drawControl.disable();
