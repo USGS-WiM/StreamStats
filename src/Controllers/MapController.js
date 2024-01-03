@@ -606,10 +606,12 @@ var StreamStats;
                         };
                         _this.lineDelineationstart = function (e) {
                             if (coordinates.point1.lat === null && coordinates.point1.long === null && coordinates.point2.lat === null && coordinates.point2.long === null) {
+                                console.log('one');
                                 coordinates.point1.lat = e.latlng.lat;
                                 coordinates.point1.long = e.latlng.lng;
                             }
                             else if (coordinates.point1.lat !== null && coordinates.point1.long !== null && coordinates.point2.lat === null && coordinates.point2.long === null) {
+                                console.log('two');
                                 coordinates.point2.lat = e.latlng.lat;
                                 coordinates.point2.long = e.latlng.lng;
                                 var line = [
@@ -617,6 +619,14 @@ var StreamStats;
                                     [coordinates.point2.lat, coordinates.point2.long]
                                 ];
                                 L.polyline(line, { color: 'blue' }).addTo(map);
+                                console.log(_this.drawControl._getMeasurementString());
+                                var distance = _this.drawControl._getMeasurementString();
+                                if (distance.replace(/[^0-9]/g, "") > 5280) {
+                                    map.off("click", _this.lineDelineationstart);
+                                    _this.drawControl.disable();
+                                    _this.toaster.pop("error", "Error", "Delineation not possible. Line is too long, must be shorter than 5280 feet.", 0);
+                                    throw new Error;
+                                }
                                 map.off("click", _this.lineDelineationstart);
                                 _this.drawControl.disable();
                                 var lineClickPoints = [new WiM.Models.Point(coordinates.point1.lat, coordinates.point1.long, '4326'), new WiM.Models.Point(coordinates.point2.lat, coordinates.point2.long, '4326')];
@@ -723,7 +733,6 @@ var StreamStats;
                                 });
                                 _this.startDelineate(ssPoints, false, null, lineClickPoints);
                             }, function (error) {
-                                _this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
                             }).finally(function () {
                             });
                         }

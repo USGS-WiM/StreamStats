@@ -863,9 +863,11 @@ module StreamStats.Controllers {
                     //listeners active during drawing              
                     this.lineDelineationstart = (e) => {
                         if (coordinates.point1.lat === null && coordinates.point1.long === null && coordinates.point2.lat === null && coordinates.point2.long === null) {
+                            console.log('one')
                             coordinates.point1.lat = e.latlng.lat;
                             coordinates.point1.long = e.latlng.lng;
                         } else if (coordinates.point1.lat !== null && coordinates.point1.long !== null && coordinates.point2.lat === null && coordinates.point2.long === null) {
+                            console.log('two')
                             coordinates.point2.lat = e.latlng.lat;
                             coordinates.point2.long = e.latlng.lng;
                             // We have enough points (2) to create a line
@@ -873,14 +875,32 @@ module StreamStats.Controllers {
                                 [ coordinates.point1.lat, coordinates.point1.long ],
                                 [ coordinates.point2.lat, coordinates.point2.long ]
                             ];
+                            // add line to map 
                             L.polyline(line, {color: 'blue'}).addTo(map);
-                            //remove listeners
+
+
+
+                            // check line length 
+                            console.log(this.drawControl._getMeasurementString())
+                            var distance = this.drawControl._getMeasurementString();
+                            if (distance.replace(/[^0-9]/g, "") > 5280) { // line is longer than a mile
+                                // remove listeners
+                                map.off("click", this.lineDelineationstart);
+                                this.drawControl.disable();
+                                // throw error
+                                this.toaster.pop("error", "Error", "Delineation not possible. Line is too long, must be shorter than 5280 feet.", 0);
+                                throw new Error;
+                            }
+
+                            // remove listeners
                             map.off("click", this.lineDelineationstart);
                             this.drawControl.disable();
-                            // console.log(this.studyArea.selectedStudyArea);
+
+                            // send line to checkDelineationLine
                             var lineClickPoints = [new WiM.Models.Point(coordinates.point1.lat, coordinates.point1.long, '4326'), new WiM.Models.Point(coordinates.point2.lat, coordinates.point2.long, '4326')] //here
                             this.checkDelineationLine(coordinates, lineClickPoints)
                         } 
+
                     };
                     map.on("click", this.lineDelineationstart);
                 });
@@ -1024,10 +1044,7 @@ module StreamStats.Controllers {
 
                             // TODO send exclude message if necessary  
                             this.startDelineate(ssPoints, false, null, lineClickPoints);
-                        }, (error) => {
-                            this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
-                            // var x = error;
-                            //sm when error                    
+                        }, (error) => {               
                         }).finally(() => {
                             // this.CanContinue = true;
                         });

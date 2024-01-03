@@ -686,9 +686,12 @@ module StreamStats.Services {
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
             
             return this.Execute(request).then((response: any) => {
-                console.log(response)
+                console.log(response.data.response.points.length)
                 if (response.data.response.points.length == 0) {
                     this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
+                    throw new Error;
+                } else if (response.data.response.points.length > 10) {
+                    this.toaster.pop("error", "Error", "Delineation not possible. Line has more than 10 intersections.", 0);
                     throw new Error;
                 } else {
                     return this.checkExcludePolygon(response.data.response)
