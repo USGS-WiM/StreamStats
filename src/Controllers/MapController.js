@@ -621,10 +621,10 @@ var StreamStats;
                                 L.polyline(line, { color: 'blue' }).addTo(map);
                                 console.log(_this.drawControl._getMeasurementString());
                                 var distance = _this.drawControl._getMeasurementString();
-                                if (distance.replace(/[^0-9]/g, "") > 5280) {
+                                if (distance.replace(/[^0-9]/g, "") > 13200) {
                                     map.off("click", _this.lineDelineationstart);
                                     _this.drawControl.disable();
-                                    _this.toaster.pop("error", "Error", "Delineation not possible. Line is too long, must be shorter than 5280 feet.", 0);
+                                    _this.toaster.pop("error", "Error", "Delineation not possible. Line is too long, must be shorter than 2.5 miles.", 0);
                                     throw new Error;
                                 }
                                 map.off("click", _this.lineDelineationstart);

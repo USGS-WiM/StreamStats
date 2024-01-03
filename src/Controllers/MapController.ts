@@ -878,17 +878,15 @@ module StreamStats.Controllers {
                             // add line to map 
                             L.polyline(line, {color: 'blue'}).addTo(map);
 
-
-
                             // check line length 
                             console.log(this.drawControl._getMeasurementString())
                             var distance = this.drawControl._getMeasurementString();
-                            if (distance.replace(/[^0-9]/g, "") > 5280) { // line is longer than a mile
+                            if (distance.replace(/[^0-9]/g, "") > 13200) { // line is longer than a mile
                                 // remove listeners
                                 map.off("click", this.lineDelineationstart);
                                 this.drawControl.disable();
                                 // throw error
-                                this.toaster.pop("error", "Error", "Delineation not possible. Line is too long, must be shorter than 5280 feet.", 0);
+                                this.toaster.pop("error", "Error", "Delineation not possible. Line is too long, must be shorter than 2.5 miles.", 0);
                                 throw new Error;
                             }
 
