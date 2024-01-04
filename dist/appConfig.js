@@ -3,8 +3,8 @@ configuration.version = "4.19.2";
 configuration.environment = 'development';
 configuration.showWarningModal = false;
 configuration.warningModalMessage = "Due to heavy demand, StreamStats is currently experiencing system interruptions. If you receive errors, please try back again later.<br><br>Thank you for your patience."
-configuration.showBPWarning = true;
-configuration.warningBPMessage = "On January 5, 2024, StreamStats will end support for the current Batch Processor (<a href='https://streamstatsags.cr.usgs.gov/ss_bp/' target='_blank'>https://streamstatsags.cr.usgs.gov/ss_bp/</a>) and replace it with the Batch Processor in this window (<a href='https://streamstats.usgs.gov/ss/?BP=submitBatch' target='_blank'>https://streamstats.usgs.gov/ss/?BP=submitBatch</a>). Complete the form below to submit a batch to the preview version of the new Batch Processor. Please note that the preview version may have errors or delays. Please email any issues or feedback to <b>streamstats@usgs.gov</b>."
+configuration.showBPWarning = false;
+configuration.warningBPMessage = ""
 configuration.manageBPQueue = false;
 if (window.location.host === 'test.streamstats.usgs.gov') {
     configuration.showBPButton = false;

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- Link to the batch processor drupal article to the batch processor modal
+
 ### Changed
 
 - Typescript installation
@@ -16,6 +18,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Deprecated
 
 ### Removed
+
+- Yellow warning text on top of the batch processor modal  
+- 'Preview' from the batch processor modal title
 
 ### Fixed
 
