@@ -5,7 +5,13 @@
     <button class="close" ng-click="vm.Close()">
         &times;
     </button>
-    <h4 class="modal-title">StreamStats Batch Processor: Preview Version</h4>
+    <h4 class="modal-title">StreamStats Batch Processor&nbsp;&nbsp;
+        <!-- ADD THIS BACK ONCE DRUPAL PAGE IS READY -->
+        <!-- <i ng-click = "showTooltip1=!showTooltip1" class="fa fa-question-circle"></i>
+        <span ng-show="showTooltip1" class="report-tooltip">
+            For more information, see our <a href="https://www.usgs.gov/streamstats/streamstats-batch-processing-tool">Batch Processor Information page</a>.
+        </span> -->
+    </h4>
 </div>
 <!-- End modal header -->
 
@@ -92,9 +98,9 @@
             <div style="padding-top: 15px">
                 <!-- Start idfield -->
                 <div> ID Field:
-                    <i ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false"
+                    <i ng-mouseover="showTooltip2 = true" ng-mouseleave="showTooltip2 = false"
                         class="fa fa-question-circle"></i>
-                    <span ng-show="showTooltip" class="report-tooltip">
+                    <span ng-show="showTooltip2" class="report-tooltip">
                         <span>This is the field heading from the shapefile of points that is unique to each point and
                             allows the data to be joined with the batch results.</span>
                     </span>
@@ -155,9 +161,9 @@
                 <div class="collapsible-content" style="background-color: #f5f5f5;overflow-x:auto;">
                     <input id="cbIgnoreExcludePolys", type="checkbox" display="inline-block" ng-model="vm.submitBatchData.ignoreExcludePolys">
                     <label class="chx" for="cbIgnoreExcludePolys">&nbsp;Ignore Exclusion Polygons&nbsp;</label>
-                    <i ng-mouseover="showTooltip = true" ng-mouseleave="showTooltip = false"
+                    <i ng-mouseover="showTooltip3 = true" ng-mouseleave="showTooltip3 = false"
                         class="fa fa-question-circle"></i>
-                    <span ng-show="showTooltip" class="report-tooltip">
+                    <span ng-show="showTooltip3" class="report-tooltip">
                         <span>If checked, basin delineations will occur where they are normally disallowed due to exclusionary polygons.</span>
                     </span>
                 </div>

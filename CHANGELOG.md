@@ -19,6 +19,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Security
 
+## [v4.19.3](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.19.3) - 2023-01-04
+
+### Added
+
+- Link to the batch processor drupal article to the batch processor modal
+
+### Changed
+
+- Typescript installation
+
+### Removed
+
+- Yellow warning text on top of the batch processor modal  
+- 'Preview' from the batch processor modal title
+
 ## [v4.19.2](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.19.2) - 2023-12-11
 
 ### Added
