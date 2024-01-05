@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- Fixed broken links in the sidebar
+
 ### Security
 
 ## [v4.19.3](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.19.3) - 2023-01-04
