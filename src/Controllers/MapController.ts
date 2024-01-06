@@ -269,6 +269,7 @@ module StreamStats.Controllers {
                 this.mapPoint.lng = latlng.lng;
                 //change cursor after delineate button click
                 if (this.studyArea.doDelineateFlag) this.cursorStyle = 'crosshair';
+                else this.cursorStyle = 'pointer'
             });
 
             $scope.$on('leafletDirectiveMap.mainMap.drag',(event, args) => {
@@ -362,8 +363,9 @@ module StreamStats.Controllers {
 
             $scope.$watch(() => this.studyArea.delineateByLine,(newval, oldval) => {
                 if (newval) {
-                    if (newval == true) this.drawDelineationLine()
-                    else this.drawControl.disable();
+                    this.drawDelineationLine();
+                } else {
+                    if (this.drawControl) this.drawControl.disable();
                 }
             });
 
@@ -968,7 +970,7 @@ module StreamStats.Controllers {
                     //good to go
                     else {
                         this.toaster.clear();
-                        this.studyArea.checkingDelineatedPoint = true;
+                        this.studyArea.checkingDelineatedLine = true;
 
                         this.toaster.pop("info", "Information", "Validating your line...", true, 0);
                         this.cursorStyle = 'wait';
@@ -995,6 +997,7 @@ module StreamStats.Controllers {
                                     if (point.type == 1){ // TODO: need to find points to test this
                                         // not able to delineate
                                         this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", point.message, 0);
+                                        this.studyArea.checkingDelineatedLine = false;
                                         return // break out - dont delineate 
                                     } else {
                                         //able to delineate but not advised
@@ -1002,7 +1005,8 @@ module StreamStats.Controllers {
                                     }
                                 }
                             });
-                            this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000)
+                            this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
+                            this.studyArea.checkingDelineatedLine = false;
                             this.markers = {}
                             var ssPoints: Array<WiM.Models.Point> = []
 

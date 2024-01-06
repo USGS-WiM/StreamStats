@@ -196,7 +196,7 @@
                     </div>
 
                     <!-- Hydrologic Features Application -->
-                    <div class="well well-sm"  ng-if="vm.regionService.selectedRegion.Applications.indexOf('HydrologicFeatures') != -1 && (vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID || vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME || vm.studyAreaService.selectedStudyArea.WBDHUC8.huc8 || vm.studyAreaService.selectedStudyArea.WBDHUC8.name)" ng-init=vm.setStream(vm.studyAreaService.selectedStudyArea.NHDStream)>
+                    <div class="well well-sm"  ng-if="vm.regionService.selectedRegion.Applications.indexOf('HydrologicFeatures') != -1" ng-init=vm.setStream(vm.studyAreaService.selectedStudyArea.NHDStream)>
                         <h3 class="collapsible" ng-click="vm.collapseSection($event, 'stats', 'HydrologicFeatures')"><i ng-class="!vm.sectionCollapsed['HydrologicFeatures'] ? 'fa fa-chevron-right': 'fa fa-chevron-down'"></i>&nbsp;&nbsp;NHD Features of Delineated Basin</h3>
                             <div class="collapsible-content">
                                 <h3>NHD Streams Intersecting Basin Delineation Boundary</h3>
@@ -205,7 +205,7 @@
                                     If you would like a different stream to appear in the above section, please make a selection below.
                                     
                                 </small>
-                                    <br>
+                                    <br><br>
                                     <div ng-show="vm.studyAreaService.selectedStudyArea.NHDStreamIntersections.length > 0">
                                     <table id="hydrologicFeaturesTable" class="mainParamTable table table-condensed">
                                         <thead class="param-table">
@@ -221,17 +221,18 @@
                                                 <td>{{stream.GNIS_ID}}</td>
                                                 <td>{{stream.GNIS_NAME}}</td>
                                                 <td>{{stream.distanceToPourPoint.toUSGSvalue()}}</td>
-                                                <td><input type="radio" id='{{stream.GNIS_NAME}}' name="streamName" ng-click="vm.setStream(stream)"><label for="{{stream.GNIS_NAME}}">{{stream.GNIS_NAME}}</label></td>
+                                                <td><input type="radio" id='{{stream.GNIS_ID}}' name="streamName" ng-click="vm.setStream(stream)"><label for="{{stream.GNIS_ID}}">{{stream.GNIS_NAME}}</label></td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
                                 <div ng-show="!vm.studyAreaService.selectedStudyArea.NHDStreamIntersections">
-                                    <i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
+                                    <b>There was error querying NHD Streams.</b>
                                 </div>
                                 <div ng-show="vm.studyAreaService.selectedStudyArea.NHDStreamIntersections.length == 0">
-                                    No NHD streams intersect the delineated basin.
+                                    <b>No NHD streams intersect the delineated basin.</b>
                                 </div>
+                                <br>
                                 <h4>NHD Hydrologic Features Citations</h4>
                                 <a href="https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/6" target="_blank">U.S. Geological Survey, 2022, USGS TNM - National Hydrography Dataset, accessed July 21, 2022 at URL https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/6.</a>
                             </div>
