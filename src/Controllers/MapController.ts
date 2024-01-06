@@ -267,7 +267,7 @@ module StreamStats.Controllers {
                 var latlng = args.leafletEvent.latlng;
                 this.mapPoint.lat = latlng.lat;
                 this.mapPoint.lng = latlng.lng;
-                //change cursor after delienate button click
+                //change cursor after delineate button click
                 if (this.studyArea.doDelineateFlag) this.cursorStyle = 'crosshair';
                 else this.cursorStyle = 'pointer'
             });
@@ -1016,15 +1016,13 @@ module StreamStats.Controllers {
                                     lat: point.point.lat,
                                     lng: point.point.long,
                                     message: '<strong>Latitude: </strong>' + point.point.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + point.point.long.toFixed(5),
-                                    focus: true,
+                                    focus: false,
                                     draggable: true
                                 }
 
                                 var latlng = new WiM.Models.Point(point.point.lat, point.point.long, '4326')
                                 ssPoints.push(latlng)
                             })
-
-                            // TODO close the popup for each point
 
                             // TODO send exclude message if necessary  
                             this.startDelineate(ssPoints, false, null, lineClickPoints);
@@ -1130,6 +1128,7 @@ module StreamStats.Controllers {
                                     this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
                                     //ga event
                                     gtag('event', 'ValidatePoint',{ 'Label': 'Not allowed' });
+                                    this.cursorStyle = 'pointer';
                                 }
                                 else {
                                     this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
@@ -1140,7 +1139,6 @@ module StreamStats.Controllers {
                                 }
                             }
 
-                            this.cursorStyle = 'pointer';
                         });
                     }
                 });
@@ -1453,6 +1451,7 @@ module StreamStats.Controllers {
         }
 
         private addGeoJSON(LayerName: string, feature: any) {
+            this.cursorStyle = 'pointer'
             if (LayerName.includes('globalwatershedpoint')) {
                 // console.log(feature)
                 var lat = this.studyArea.selectedStudyArea.Pourpoint[0].Latitude;
