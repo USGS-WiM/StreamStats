@@ -213,6 +213,7 @@ var StreamStats;
                 this.parametersLoading = false;
                 this.doDelineateFlag = false;
                 this.checkingDelineatedPoint = false;
+                this.checkingDelineatedLine = false;
                 this.studyAreaParameterList = [];
                 this.regulationCheckResults = [];
                 this.allIndexGages = undefined;

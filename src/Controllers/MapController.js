@@ -129,6 +129,8 @@ var StreamStats;
                     _this.mapPoint.lng = latlng.lng;
                     if (_this.studyArea.doDelineateFlag)
                         _this.cursorStyle = 'crosshair';
+                    else
+                        _this.cursorStyle = 'pointer';
                 });
                 $scope.$on('leafletDirectiveMap.mainMap.drag', function (event, args) {
                     _this.cursorStyle = 'grabbing';
@@ -199,9 +201,10 @@ var StreamStats;
                 });
                 $scope.$watch(function () { return _this.studyArea.delineateByLine; }, function (newval, oldval) {
                     if (newval) {
-                        if (newval == true)
-                            _this.drawDelineationLine();
-                        else
+                        _this.drawDelineationLine();
+                    }
+                    else {
+                        if (_this.drawControl)
                             _this.drawControl.disable();
                     }
                 });
@@ -684,7 +687,7 @@ var StreamStats;
                         }
                         else {
                             _this.toaster.clear();
-                            _this.studyArea.checkingDelineatedPoint = true;
+                            _this.studyArea.checkingDelineatedLine = true;
                             _this.toaster.pop("info", "Information", "Validating your line...", true, 0);
                             _this.cursorStyle = 'wait';
                             _this.studyArea.doDelineateFlag = false;
@@ -700,6 +703,7 @@ var StreamStats;
                                     if (point.inExclude == true) {
                                         if (point.type == 1) {
                                             _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", point.message, 0);
+                                            _this.studyArea.checkingDelineatedLine = false;
                                             return;
                                         }
                                         else {
@@ -708,6 +712,7 @@ var StreamStats;
                                     }
                                 });
                                 _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
+                                _this.studyArea.checkingDelineatedLine = false;
                                 _this.markers = {};
                                 var ssPoints = [];
                                 points.forEach(function (point, index) {

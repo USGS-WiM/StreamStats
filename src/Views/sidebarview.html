@@ -67,9 +67,11 @@
                     <div id="step2info" class="banner banner-no-icon" ng-hide="!vm.regionService.streamStatsAvailable">
                         <div class="banner-body">
                             <p ng-show="!vm.studyAreaService.zoomLevel15 && !vm.studyAreaService.selectedStudyArea.FeatureCollection"><strong>Step 1:</strong> Zoom in to level 15 or greater to enable the delineation tool</p>
-                            <p ng-show="vm.studyAreaService.zoomLevel15 && !vm.studyAreaService.doDelineateFlag && vm.studyAreaService.canUpdate && !vm.studyAreaService.selectedStudyArea.FeatureCollection && !vm.studyAreaService.checkingDelineatedPoint"><strong>Step 2:</strong> Click the 'Delineate' button to activate the delineation tool</p>
-                            <p ng-show="vm.studyAreaService.zoomLevel15 && vm.studyAreaService.doDelineateFlag"><strong>Step 3:</strong> Use your mouse or finger to click or tap a blue stream cell on the map</p>
-                            <p ng-show="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint"><strong>Step 4:</strong> Wait for delineation process to complete...</p>
+                            <p ng-show="vm.studyAreaService.zoomLevel15 && !vm.studyAreaService.doDelineateFlag && vm.studyAreaService.canUpdate && !vm.studyAreaService.selectedStudyArea.FeatureCollection && !vm.studyAreaService.checkingDelineatedPoint && !vm.studyAreaService.checkingDelineatedLine && vm.regionService.selectedRegion.Applications.indexOf('DelineateByLine') != -1"><strong>Step 2:</strong> Click the 'Delineate' or 'Delineate By Line' button to activate the delineation tool</p>
+                            <p ng-show="vm.studyAreaService.zoomLevel15 && !vm.studyAreaService.doDelineateFlag && vm.studyAreaService.canUpdate && !vm.studyAreaService.selectedStudyArea.FeatureCollection && !vm.studyAreaService.checkingDelineatedPoint && !vm.studyAreaService.checkingDelineatedLine && vm.regionService.selectedRegion.Applications.indexOf('DelineateByLine') == -1"><strong>Step 2:</strong> Click the 'Delineate' button to activate the delineation tool</p>
+                            <p ng-show="vm.studyAreaService.zoomLevel15 && vm.studyAreaService.doDelineateFlag && vm.studyAreaService.delineateByPoint"><strong>Step 3:</strong> Use your mouse or finger to click or tap a blue stream cell on the map</p>
+                            <p ng-show="vm.studyAreaService.zoomLevel15 && vm.studyAreaService.doDelineateFlag && vm.studyAreaService.delineateByLine"><strong>Step 3:</strong> Use your mouse or finger to click or tap two points on the map to create a line</p>
+                            <p ng-show="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint || vm.studyAreaService.checkingDelineatedLine"><strong>Step 4:</strong> Wait for delineation process to complete...</p>
                             <p ng-show="vm.studyAreaService.selectedStudyArea.FeatureCollection"><strong>Step 5:</strong> Your delineation is complete.  You can now clear, edit, or download your basin, or choose a state or regional study specific function (if available).  Click <strong>continue </strong>when you are ready.</p>
                         </div>
                     </div>
@@ -77,18 +79,18 @@
                     
                     <form ng-hide="vm.studyAreaService.selectedStudyArea.FeatureCollection" style="padding-bottom: 15px;">
                         <button id="delineateButton" type="button" class="btn-blue fullwidth" ng-click="vm.startDelineate('point')"
-                            ng-class="vm.studyAreaService.doDelineateFlag && !vm.studyAreaService.delineateByLine ? 'btn-orange' : 'btn-blue'"
-                            ng-hide="vm.studyAreaService.selectedStudyArea.FeatureCollection"
-                            ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint || !vm.studyAreaService.zoomLevel15 || vm.studyAreaService.delineateByLine"><i
+                            ng-class="vm.studyAreaService.doDelineateFlag && vm.studyAreaService.delineateByPoint ? 'btn-orange' : 'btn-blue'"
+                            ng-hide="vm.studyAreaService.selectedStudyArea.FeatureCollection || vm.disablePoint"
+                            ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint || !vm.studyAreaService.zoomLevel15 || vm.studyAreaService.delineateByLine" ><i
                                 ng-class="vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Delineate</button><br>
 
                         <button id="delineateByLineButton" type="button" class="btn-blue fullwidth" ng-click="vm.startDelineate('line')"
                             ng-show="vm.regionService.selectedRegion.Applications.indexOf('DelineateByLine') != -1"
-                            ng-class="vm.studyAreaService.doDelineateFlag && !vm.studyAreaService.delineateByPoint ? 'btn-orange' : 'btn-blue'"
-                            ng-hide="vm.studyAreaService.selectedStudyArea.FeatureCollection"
-                            ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint || !vm.studyAreaService.zoomLevel15 || vm.studyAreaService.delineateByPoint">
+                            ng-class="vm.studyAreaService.doDelineateFlag && vm.studyAreaService.delineateByLine ? 'btn-orange' : 'btn-blue'"
+                            ng-hide="vm.studyAreaService.selectedStudyArea.FeatureCollection || vm.disableLine"
+                            ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedLine || !vm.studyAreaService.zoomLevel15 || vm.studyAreaService.delineateByPoint">
                             <i
-                                ng-class="vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint ? 'fa fa-minus' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Delineate By Line</button>
+                                ng-class="vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedLine ? 'fa fa-minus' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Delineate By Line</button>
 
                         <div style="margin-top:10px;" ng-show="vm.regionService.selectedRegion.Applications.indexOf('StormDrain') > -1">
                             <checkbox style="height:20px; border:1px solid rgba(0,0,0,.2)!important;" ng-model="vm.studyAreaService.surfacecontributionsonly"></checkbox><span>&nbsp;&nbsp;Surface Contributing Basin only</span>
