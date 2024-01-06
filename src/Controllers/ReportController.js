@@ -140,18 +140,23 @@ var StreamStats;
                 configurable: true
             });
             ReportController.prototype.setStream = function (stream) {
-                this.studyAreaService.selectedStudyArea.NHDStream = stream;
-                var input = document.getElementById(stream.GNIS_NAME);
-                if (input != null) {
-                    input.checked = true;
+                if (stream) {
+                    this.studyAreaService.selectedStudyArea.NHDStream = stream;
+                    var input = document.getElementById(stream.GNIS_ID);
+                    if (input != null) {
+                        input.checked = true;
+                    }
+                    else {
+                        setTimeout(function () {
+                            var input = document.getElementById(stream.GNIS_ID);
+                            if (input != null) {
+                                input.checked = true;
+                            }
+                        }, 1000);
+                    }
                 }
                 else {
-                    setTimeout(function () {
-                        var input = document.getElementById(stream.GNIS_NAME);
-                        if (input != null) {
-                            input.checked = true;
-                        }
-                    }, 1000);
+                    return;
                 }
             };
             ReportController.prototype.selectFDCTMTab = function (tabname) {
@@ -212,17 +217,21 @@ var StreamStats;
                     csvFile += '\nDelineation Line Start Point Latitude,' + this.studyAreaService.selectedStudyArea.LinePoints[0].Latitude.toFixed(5) + '\nDelineation Line Start Point Longitude,' + this.studyAreaService.selectedStudyArea.LinePoints[0].Longitude.toFixed(5) + '\nDelineation Line End Point Latitude,' + this.studyAreaService.selectedStudyArea.LinePoints[1].Latitude.toFixed(5) + '\nDelineation Line End Point Longitude,' + this.studyAreaService.selectedStudyArea.LinePoints[1].Longitude.toFixed(5);
                 }
                 csvFile += '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
-                if (this.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID) {
-                    csvFile += '\nNHD Stream GNIS ID,' + this.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID;
+                if (this.studyAreaService.selectedStudyArea.NHDStream) {
+                    if (this.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID) {
+                        csvFile += '\nNHD Stream GNIS ID,' + this.studyAreaService.selectedStudyArea.NHDStream.GNIS_ID;
+                    }
+                    if (this.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME) {
+                        csvFile += '\nNHD Stream GNIS Name,' + this.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME;
+                    }
                 }
-                if (this.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME) {
-                    csvFile += '\nNHD Stream GNIS Name,' + this.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME;
-                }
-                if (this.studyAreaService.selectedStudyArea.WBDHUC8.huc8) {
-                    csvFile += '\nHUC 8,' + this.studyAreaService.selectedStudyArea.WBDHUC8.huc8;
-                }
-                if (this.studyAreaService.selectedStudyArea.WBDHUC8.name) {
-                    csvFile += ' (' + this.studyAreaService.selectedStudyArea.WBDHUC8.name + ')';
+                if (this.studyAreaService.selectedStudyArea.WBDHUC8) {
+                    if (this.studyAreaService.selectedStudyArea.WBDHUC8.huc8) {
+                        csvFile += '\nHUC 8,' + this.studyAreaService.selectedStudyArea.WBDHUC8.huc8;
+                    }
+                    if (this.studyAreaService.selectedStudyArea.WBDHUC8.name) {
+                        csvFile += ' (' + this.studyAreaService.selectedStudyArea.WBDHUC8.name + ')';
+                    }
                 }
                 csvFile += '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
                 csvFile += processMainParameterTable(this.studyAreaService.studyAreaParameterList);
@@ -308,7 +317,7 @@ var StreamStats;
                                 extVal += self.tableToCSV($('#hydrologicFeaturesTable'));
                             }
                             else if (!self.studyAreaService.selectedStudyArea.NHDStreamIntersections) {
-                                extVal += 'No NHD streams were loaded.';
+                                extVal += 'There was error querying NHD Streams.';
                             }
                             else if (self.studyAreaService.selectedStudyArea.NHDStreamIntersections.length == 0) {
                                 extVal += 'No NHD streams intersect the delineated basin.';

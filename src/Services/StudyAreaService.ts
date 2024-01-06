@@ -1232,7 +1232,7 @@ module StreamStats.Services {
         // Identify NHD streams and WBD HUC8s that intersect with the delineated basin
         // Select the NHD Stream and WBD HUC8 that is closest to the clickpoint 
         public queryHydrologicFeatures() {
-
+            
             var snappedDelineationPoint = turf.point([this.snappedPourPoint[0], this.snappedPourPoint[1]]);
             var delineatedBasinGeometry = this.selectedStudyArea.FeatureCollection.features[1].geometry; 
 
@@ -1246,7 +1246,6 @@ module StreamStats.Services {
             .run((error: any, results: any) => {
                 if (error) {
                     this.toaster.pop('error', "There was an error querying NHD streams", error, 0);
-                    this.selectedStudyArea.NHDStreamIntersections = [];
                 } else if (results && results.features.length > 0) {
                     results.features.forEach((feature) => {
                         if (feature.properties["gnis_id"]) {
@@ -1273,7 +1272,6 @@ module StreamStats.Services {
                 }
                 else {
                     this.toaster.pop('error', "There was an error querying NHD streams", "Please retry", 0);
-                    this.selectedStudyArea.NHDStreamIntersections = [];
                 }
             });
 
