@@ -94,7 +94,8 @@
 
                         <div style="margin-top:10px;" ng-show="vm.regionService.selectedRegion.Applications.indexOf('StormDrain') > -1">
                             <checkbox style="height:20px; border:1px solid rgba(0,0,0,.2)!important;" ng-model="vm.studyAreaService.surfacecontributionsonly"></checkbox><span>&nbsp;&nbsp;Surface Contributing Basin only</span>
-                        </div>                       
+                        </div>           
+                                    
                   </form>
                                           
                             <div ng-show="vm.studyAreaService.selectedStudyArea.FeatureCollection">
@@ -118,7 +119,7 @@
                                         <button type="button" class="btn-black" ng-click="vm.studyAreaService.undoEdit()"><span class="fa fa-undo"></span>&nbsp;&nbsp;Undo Edits</button>
                                     </form>
                                     <form style="padding:0 0 10px 0;">
-                                        <button type="button" class="btn-black" ng-click="vm.submitBasinEdits()"><span class="fa fa-check"></span>&nbsp;&nbsp;Submit edited basin</button>
+                                        <button type="button" class="btn-black" ng-click="vm.submitBasinEdits()"><span class="fa fa-check"></span>&nbsp;&nbsp;Submit Edited Basin</button>
                                     </form>
                                 </div>
 

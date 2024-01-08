@@ -23,6 +23,7 @@ var StreamStats;
                 this.leafletData = leafletData;
                 this.multipleParameterSelectorAdd = true;
                 this.explorationService = exploration;
+                this.environment = configuration.environment;
                 StatisticsGroup.onSelectedStatisticsGroupChanged.subscribe(this._onSelectedStatisticsGroupChangedHandler);
                 $scope.$watch(function () { return _this.regionService.selectedRegion; }, function (newval, oldval) {
                     if (newval == null)
@@ -259,7 +260,8 @@ var StreamStats;
                 }
             };
             SidebarController.prototype.submitBasinEdits = function () {
-                gtag('event', 'BasinEditor', { 'Type': 'SubmitEdits' });
+                var latLong = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + ',' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5);
+                gtag('event', 'BasinEditor', { 'Type': 'SubmitEdits', 'Location': latLong });
                 this.studyAreaService.showEditToolbar = false;
                 this.toaster.pop('wait', "Submitting edited basin", "Please wait...", 0);
                 if (this.studyAreaService.selectedStudyArea.Disclaimers['isEdited']) {

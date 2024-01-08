@@ -91,11 +91,13 @@ var StreamStats;
                 _this.NSSServicesVersion = '';
                 _this.streamgagesVisible = true;
                 _this.additionalFeaturesLoaded = false;
+                _this.global = true;
                 _this.extensionDateRange = null;
                 _this.extensionsConfigured = false;
                 _this.loadingDrainageArea = false;
                 _this.extensionResultsChanged = 0;
                 _this.flowAnywhereData = null;
+                _this.ignoreExclusionPolygons = false;
                 _this.modalservices = modal;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
@@ -174,17 +176,6 @@ var StreamStats;
                         return null;
                     else
                         return this.selectedStudyArea.NSS_Extensions;
-                },
-                enumerable: false,
-                configurable: true
-            });
-            Object.defineProperty(StudyAreaService.prototype, "freshdeskCredentials", {
-                get: function () {
-                    return this._freshdeskCreds;
-                },
-                set: function (val) {
-                    if (this._freshdeskCreds != val)
-                        this._freshdeskCreds = val;
                 },
                 enumerable: false,
                 configurable: true
@@ -1385,7 +1376,7 @@ var StreamStats;
                                 var daValue = val.value;
                                 if (val.unit.toLowerCase().trim() == 'square kilometers')
                                     daValue = daValue / 2.59;
-                                gtag('event', 'Calculate', { 'Category': 'DraingeArea', 'Location': latLong, 'Value': daValue.toFixed(0) });
+                                gtag('event', 'Calculate', { 'Category': 'DrainageArea', 'Location': latLong, 'Value': daValue.toFixed(0) });
                             }
                             value.value = val.value;
                             value.loaded = val.loaded;

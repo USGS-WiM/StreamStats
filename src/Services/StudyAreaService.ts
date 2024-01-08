@@ -46,6 +46,7 @@ module StreamStats.Services {
         checkingDelineatedLine: boolean;
         canUpdate: boolean;
         studyAreaParameterList: Array<IParameter>;
+        global: boolean;
         drawControl: any;
         drawControlOption: any;
         WatershedEditDecisionList: Models.IEditDecisionList;
@@ -81,7 +82,6 @@ module StreamStats.Services {
         computeFlowAnywhereResults();
         computeRegressionEquation(regtype: string);
         updateExtensions(); 
-        freshdeskCredentials();
         extensionsConfigured: boolean;
         loadDrainageArea();
         loadingDrainageArea: boolean;
@@ -89,6 +89,7 @@ module StreamStats.Services {
         allIndexGages;
         extensionResultsChanged;
         additionalFeaturesLoaded: boolean;
+        ignoreExclusionPolygons: boolean;
 
     }
 
@@ -191,6 +192,7 @@ module StreamStats.Services {
         private q10EventHandler: WiM.Event.EventHandler<Services.NSSEventArgs>;
         private regtype: string;
         public additionalFeaturesLoaded : boolean = false;
+        public global : boolean = true; // set true as default
         //QPPQ
         public extensionDateRange: IDateRange = null;
         public selectedGage: any;
@@ -199,14 +201,7 @@ module StreamStats.Services {
         public allIndexGages;
         public extensionResultsChanged = 0;        
         public flowAnywhereData: any = null;
-        // freshdesk
-        private _freshdeskCreds: any;
-        public get freshdeskCredentials(): any {
-            return this._freshdeskCreds;
-        }
-        public set freshdeskCredentials(val: any) {
-            if (this._freshdeskCreds != val) this._freshdeskCreds = val;
-        }
+        public ignoreExclusionPolygons: boolean = false;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -326,6 +321,18 @@ module StreamStats.Services {
 
                 this.Execute(request).then(
                     (response: any) => {  
+
+                        // check local or global - global delineations are not allowed to be edited
+                        try {
+                            var RELATEDOID  = response.data.featurecollection.filter(f=>f.name == "globalwatershed")[0].feature.features[0].properties.RELATEDOID;
+                            if(RELATEDOID == " ") { // local
+                                this.global = false;
+                            } else { // global
+                                this.global = true;
+                            }
+                        } catch(e) {
+                            this.global = true; // There was an error when looking for RELATEDOID, set to false to be safe
+                        }
 
                         //hack for st louis stormdrain
                         if (this.regionService.selectedRegion.Applications.indexOf('StormDrain') > -1) {
@@ -1740,7 +1747,7 @@ module StreamStats.Services {
                             var daValue = val.value;
                             if (val.unit.toLowerCase().trim() == 'square kilometers') daValue = daValue / 2.59;
                             //ga event
-                            gtag('event', 'Calculate', {'Category': 'DraingeArea', 'Location': latLong, 'Value': daValue.toFixed(0) });
+                            gtag('event', 'Calculate', {'Category': 'DrainageArea', 'Location': latLong, 'Value': daValue.toFixed(0) });
                         }
 
                         value.value = val.value;

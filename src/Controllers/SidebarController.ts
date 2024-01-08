@@ -87,6 +87,7 @@ module StreamStats.Controllers {
         private extensionsConfigured: Boolean;
         public disablePoint: Boolean = false;
         public disableLine: Boolean = false;
+        public environment: string;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -107,7 +108,8 @@ module StreamStats.Controllers {
             this.leafletData = leafletData;
             this.multipleParameterSelectorAdd = true;
             this.explorationService = exploration;
-
+            this.environment = configuration.environment;
+            
             StatisticsGroup.onSelectedStatisticsGroupChanged.subscribe(this._onSelectedStatisticsGroupChangedHandler);
             
             //watch for map based region changes here
@@ -403,7 +405,8 @@ module StreamStats.Controllers {
 
         public submitBasinEdits() {
             //ga event
-            gtag('event', 'BasinEditor', { 'Type': 'SubmitEdits'});
+            var latLong = this.studyAreaService.selectedStudyArea.Pourpoint[0].Latitude.toFixed(5) + ',' + this.studyAreaService.selectedStudyArea.Pourpoint[0].Longitude.toFixed(5);
+            gtag('event', 'BasinEditor', { 'Type': 'SubmitEdits', 'Location': latLong });
 
             this.studyAreaService.showEditToolbar = false;
 

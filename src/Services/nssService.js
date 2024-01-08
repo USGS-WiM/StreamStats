@@ -615,6 +615,39 @@ var StreamStats;
                 }
                 return result;
             };
+            nssService.prototype.getRegionList = function () {
+                var _this = this;
+                var url = configuration.baseurls['NSS'] + configuration.queryparams['Regions'];
+                var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                return this.Execute(request).then(function (response) {
+                    var regions = response.data;
+                    return regions;
+                }, function (error) {
+                    _this.toaster.pop('error', "There was an HTTP error returning the regions list.", "Please retry", 0);
+                }).finally(function () {
+                });
+            };
+            nssService.prototype.getFlowStatsList = function (rcode) {
+                var _this = this;
+                if (!rcode)
+                    return;
+                var headers = {
+                    "Content-Type": "application/json",
+                    "X-Is-StreamStats": true
+                };
+                var url = configuration.baseurls['NSS'] + configuration.queryparams['statisticsGroupParameterLookup'].format(rcode, "", "");
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
+                return this.Execute(request).then(function (response) {
+                    var flowStats = response.data;
+                    flowStats.forEach(function (element) {
+                        element.checked = false;
+                    });
+                    return flowStats;
+                }, function (error) {
+                    _this.toaster.pop('error', "There was an HTTP error returning the flow statistics list.", "Please retry", 0);
+                }).finally(function () {
+                });
+            };
             nssService.prototype.cleanRegressionRegions = function (RegressionRegions) {
                 for (var i = 0; i < RegressionRegions.length; i++) {
                     var regRegion = RegressionRegions[i];
