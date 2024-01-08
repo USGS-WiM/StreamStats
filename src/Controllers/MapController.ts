@@ -993,42 +993,56 @@ module StreamStats.Controllers {
 
                         //force map refresh
                         map.invalidateSize();
-
+                        var valid = true;
                         this.studyArea.lineIntersection(line).then((points) => {
                             points.forEach(point => {
                                 if (point.inExclude == true) {
-                                    if (point.type == 1){ // TODO: need to find points to test this
-                                        // not able to delineate
-                                        this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", point.message, 0);
-                                        this.studyArea.checkingDelineatedLine = false;
-                                        return // break out - dont delineate 
+                                    if (point.type == 1){ 
+                                        if (this.studyArea.ignoreExclusionPolygons) { // If user has selected to ignore exclusion polygons (not an option on Production)
+                                            this.toaster.pop("warning", "Delineation and flow statistic computation not allowed here", point.message.text, 0); // Warn the user
+                                            this.toaster.pop("success", "Ignoring exclusion areas", "Delineating your basin now...", 5000) // Proceed with delineation
+                                            gtag('event', 'ValidatePoint',{ 'Label': 'Invalid (exclusion polygons ignored)' });
+                                        } else { // If exclusion polygons are being considered
+                                            // Prohibit delineation
+                                            this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", point.message.text, 0);
+                                            this.studyArea.checkingDelineatedLine = false;
+                                            this.studyArea.disablePoint = false;
+                                            this.studyArea.delineateByLine = false;
+                                            this.studyArea.doDelineateFlag = false;
+                                            valid = false;
+                                            gtag('event', 'ValidatePoint',{ 'Label': 'Not allowed' });
+                                        }
                                     } else {
                                         //able to delineate but not advised
                                         this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", point.message, true, 0);
                                     }
                                 }
                             });
-                            this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
-                            this.studyArea.checkingDelineatedLine = false;
-                            this.markers = {}
-                            var ssPoints: Array<WiM.Models.Point> = []
 
-                            points.forEach((point, index) => {
-                                //put pourpoints on the map
-                                this.markers[index] = {
-                                    lat: point.point.lat,
-                                    lng: point.point.long,
-                                    message: '<strong>Latitude: </strong>' + point.point.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + point.point.long.toFixed(5),
-                                    focus: false,
-                                    draggable: true
-                                }
-
-                                var latlng = new WiM.Models.Point(point.point.lat, point.point.long, '4326')
-                                ssPoints.push(latlng)
-                            })
-
-                            // TODO send exclude message if necessary  
-                            this.startDelineate(ssPoints, false, null, lineClickPoints);
+                            if (valid) {
+                                this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
+                                this.studyArea.checkingDelineatedLine = false;
+                                this.markers = {}
+                                var ssPoints: Array<WiM.Models.Point> = []
+    
+                                points.forEach((point, index) => {
+                                    //put pourpoints on the map
+                                    this.markers[index] = {
+                                        lat: point.point.lat,
+                                        lng: point.point.long,
+                                        message: '<strong>Latitude: </strong>' + point.point.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + point.point.long.toFixed(5),
+                                        focus: false,
+                                        draggable: true
+                                    }
+    
+                                    var latlng = new WiM.Models.Point(point.point.lat, point.point.long, '4326')
+                                    ssPoints.push(latlng)
+                                })
+    
+                                // TODO send exclude message if necessary  
+                                this.startDelineate(ssPoints, false, null, lineClickPoints);
+                            }
+                            
                         }, (error) => {
                             this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
                             // var x = error;
@@ -1121,6 +1135,11 @@ module StreamStats.Controllers {
                                             // Prohibit delineation
                                             this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", result.message.text, 0);
                                             gtag('event', 'ValidatePoint',{ 'Label': 'Not allowed' });
+                                            this.studyArea.checkingDelineatedPoint = false;
+                                            this.studyArea.disableLine = false;
+                                            this.studyArea.delineateByPoint = false;
+                                            this.studyArea.doDelineateFlag = false;
+                                            
                                         }
                                     } else { // If point is in a soft exclusion polygon (delineation allowed)
                                         // Warn the user

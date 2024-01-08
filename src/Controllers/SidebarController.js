@@ -8,8 +8,6 @@ var StreamStats;
                 var _this = this;
                 this.EventManager = EventManager;
                 this.SSServicesVersion = '1.2.22';
-                this.disablePoint = false;
-                this.disableLine = false;
                 this.dateRange = { dates: { startDate: new Date(), endDate: new Date() }, minDate: new Date(1900, 1, 1), maxDate: new Date() };
                 $scope.vm = this;
                 this.init();
@@ -138,13 +136,13 @@ var StreamStats;
                     }
                     else {
                         if (type == "point") {
-                            _this.disableLine = !_this.disableLine;
+                            _this.studyAreaService.disableLine = !_this.studyAreaService.disableLine;
                             _this.toaster.pop("success", "Delineate", "Click on a blue stream cell to start delineation");
                             _this.studyAreaService.delineateByPoint = !_this.studyAreaService.delineateByPoint;
                             _this.studyAreaService.doDelineateFlag = !_this.studyAreaService.doDelineateFlag;
                         }
                         else {
-                            _this.disablePoint = !_this.disablePoint;
+                            _this.studyAreaService.disablePoint = !_this.studyAreaService.disablePoint;
                             _this.toaster.pop("success", "Delineate", "select a start and end point to delineate from a line");
                             _this.studyAreaService.delineateByLine = !_this.studyAreaService.delineateByLine;
                             _this.studyAreaService.doDelineateFlag = !_this.studyAreaService.doDelineateFlag;

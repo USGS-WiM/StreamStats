@@ -85,6 +85,8 @@ var StreamStats;
                 _this.nssService = nssService;
                 _this.regionService = regionService;
                 _this._onStudyAreaServiceFinishedChanged = new WiM.Event.Delegate();
+                _this.disablePoint = false;
+                _this.disableLine = false;
                 _this.surfacecontributionsonly = false;
                 _this.doSelectMapGage = false;
                 _this.doSelectNearestGage = false;

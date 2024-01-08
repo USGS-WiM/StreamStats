@@ -85,8 +85,6 @@ module StreamStats.Controllers {
         }
         private scenarioHasExtensions: Boolean;
         private extensionsConfigured: Boolean;
-        public disablePoint: Boolean = false;
-        public disableLine: Boolean = false;
         public environment: string;
 
         //Constructor
@@ -219,7 +217,7 @@ module StreamStats.Controllers {
                 }
                 else {
                     if (type == "point") {
-                        this.disableLine = !this.disableLine;
+                        this.studyAreaService.disableLine = !this.studyAreaService.disableLine;
                         this.toaster.pop(
                           "success",
                           "Delineate",
@@ -228,7 +226,7 @@ module StreamStats.Controllers {
                         this.studyAreaService.delineateByPoint = !this.studyAreaService.delineateByPoint;
                         this.studyAreaService.doDelineateFlag = !this.studyAreaService.doDelineateFlag;
                       } else {
-                        this.disablePoint = !this.disablePoint
+                        this.studyAreaService.disablePoint = !this.studyAreaService.disablePoint
                         // line
                         this.toaster.pop(
                           "success",

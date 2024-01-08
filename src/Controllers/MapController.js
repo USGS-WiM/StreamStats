@@ -715,35 +715,49 @@ var StreamStats;
                             });
                             gtag('event', 'DelineationLine', { 'Region': _this.regionServices.selectedRegion.Name, 'Location': line });
                             map.invalidateSize();
+                            var valid = true;
                             _this.studyArea.lineIntersection(line).then(function (points) {
                                 points.forEach(function (point) {
                                     if (point.inExclude == true) {
                                         if (point.type == 1) {
-                                            _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", point.message, 0);
-                                            _this.studyArea.checkingDelineatedLine = false;
-                                            return;
+                                            if (_this.studyArea.ignoreExclusionPolygons) {
+                                                _this.toaster.pop("warning", "Delineation and flow statistic computation not allowed here", point.message.text, 0);
+                                                _this.toaster.pop("success", "Ignoring exclusion areas", "Delineating your basin now...", 5000);
+                                                gtag('event', 'ValidatePoint', { 'Label': 'Invalid (exclusion polygons ignored)' });
+                                            }
+                                            else {
+                                                _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", point.message.text, 0);
+                                                _this.studyArea.checkingDelineatedLine = false;
+                                                _this.studyArea.disablePoint = false;
+                                                _this.studyArea.delineateByLine = false;
+                                                _this.studyArea.doDelineateFlag = false;
+                                                valid = false;
+                                                gtag('event', 'ValidatePoint', { 'Label': 'Not allowed' });
+                                            }
                                         }
                                         else {
                                             _this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", point.message, true, 0);
                                         }
                                     }
                                 });
-                                _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
-                                _this.studyArea.checkingDelineatedLine = false;
-                                _this.markers = {};
-                                var ssPoints = [];
-                                points.forEach(function (point, index) {
-                                    _this.markers[index] = {
-                                        lat: point.point.lat,
-                                        lng: point.point.long,
-                                        message: '<strong>Latitude: </strong>' + point.point.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + point.point.long.toFixed(5),
-                                        focus: false,
-                                        draggable: true
-                                    };
-                                    var latlng = new WiM.Models.Point(point.point.lat, point.point.long, '4326');
-                                    ssPoints.push(latlng);
-                                });
-                                _this.startDelineate(ssPoints, false, null, lineClickPoints);
+                                if (valid) {
+                                    _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
+                                    _this.studyArea.checkingDelineatedLine = false;
+                                    _this.markers = {};
+                                    var ssPoints = [];
+                                    points.forEach(function (point, index) {
+                                        _this.markers[index] = {
+                                            lat: point.point.lat,
+                                            lng: point.point.long,
+                                            message: '<strong>Latitude: </strong>' + point.point.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + point.point.long.toFixed(5),
+                                            focus: false,
+                                            draggable: true
+                                        };
+                                        var latlng = new WiM.Models.Point(point.point.lat, point.point.long, '4326');
+                                        ssPoints.push(latlng);
+                                    });
+                                    _this.startDelineate(ssPoints, false, null, lineClickPoints);
+                                }
                             }, function (error) {
                                 _this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
                             }).finally(function () {
@@ -814,6 +828,10 @@ var StreamStats;
                                             else {
                                                 _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", result.message.text, 0);
                                                 gtag('event', 'ValidatePoint', { 'Label': 'Not allowed' });
+                                                _this.studyArea.checkingDelineatedPoint = false;
+                                                _this.studyArea.disableLine = false;
+                                                _this.studyArea.delineateByPoint = false;
+                                                _this.studyArea.doDelineateFlag = false;
                                             }
                                         }
                                         else {

@@ -44,6 +44,8 @@ module StreamStats.Services {
         showEditToolbar: boolean;
         checkingDelineatedPoint: boolean;
         checkingDelineatedLine: boolean;
+        disablePoint: Boolean;
+        disableLine: Boolean;
         canUpdate: boolean;
         studyAreaParameterList: Array<IParameter>;
         global: boolean;
@@ -144,6 +146,8 @@ module StreamStats.Services {
         public parametersLoading: boolean;
         public checkingDelineatedPoint: boolean;
         public checkingDelineatedLine: boolean;
+        public disablePoint: Boolean = false;
+        public disableLine: Boolean = false;
         private _studyAreaList: Array<Models.IStudyArea>;
         public get StudyAreaList(): Array<Models.IStudyArea> {
             return this._studyAreaList;
