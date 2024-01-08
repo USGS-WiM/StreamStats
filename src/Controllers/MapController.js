@@ -775,36 +775,62 @@ var StreamStats;
                             _this.studyArea.doDelineateFlag = false;
                             gtag('event', 'DelineationClick', { 'Region': _this.regionServices.selectedRegion.Name, 'Location': latlng });
                             map.invalidateSize();
-                            var selectedRegionLayerName = _this.regionServices.selectedRegion.RegionID + "_region";
-                            if (queryString === 'visible:') {
-                                _this.toaster.clear();
-                                _this.toaster.pop("warning", "Selected State/Region does not have exlusion areas defined", "Delineating with no exclude polygon layer...", true, 0);
-                                var point = [new WiM.Models.Point(latlng.lat, latlng.lng, '4326')];
-                                _this.startDelineate(point, true);
-                                gtag('event', 'ValidatePoint', { 'Label': 'Not advised (no point query)' });
+                            _this.queryExcludePolygons(_this.regionServices.selectedRegion.RegionID, latlng.lat, latlng.lng).then(function (response) {
                                 _this.cursorStyle = 'pointer';
                                 _this.toaster.clear();
                                 if (response.status != 200) {
                                     _this.studyArea.checkingDelineatedPoint = false;
+                                    _this.toaster.pop('error', "There was an error checking exclusion polygons", "HTTP request error", 0);
+                                    _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
+                                    gtag('event', 'ValidatePoint', { 'Label': 'Not advised (no point query)' });
                                     var point = [new WiM.Models.Point(latlng.lat, latlng.lng, '4326')];
                                     _this.startDelineate(point, false);
                                 }
                                 else {
-                                    _this.studyArea.checkingDelineatedPoint = false;
-                                    var excludeCode = results.features[0].properties.ExcludeCod;
-                                    var popupMsg = results.features[0].properties.ExcludeRea;
-                                    if (excludeCode == 1) {
-                                        _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
-                                        gtag('event', 'ValidatePoint', { 'Label': 'Not allowed' });
-                                        _this.cursorStyle = 'pointer';
-                                    }
-                                    else {
-                                        _this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
+                                    var result = response.data.response[0];
+                                    if (result.inExclude == false) {
+                                        _this.studyArea.checkingDelineatedPoint = false;
+                                        if (result.message && result.message.text != null) {
+                                            _this.toaster.pop("warning", "Selected State/Region does not have exlusion areas defined", "Delineating with no exclude polygon layer...", true, 0);
+                                            gtag('event', 'ValidatePoint', { 'Label': 'Not advised (no point query)' });
+                                        }
+                                        else {
+                                            _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
+                                            gtag('event', 'ValidatePoint', { 'Label': 'Valid' });
+                                        }
                                         var point = [new WiM.Models.Point(latlng.lat, latlng.lng, '4326')];
-                                        _this.startDelineate(point, true, popupMsg);
-                                        gtag('event', 'ValidatePoint', { 'Label': 'Not advised' });
+                                        _this.startDelineate(point, true);
+                                    }
+                                    else if (result.inExclude == true) {
+                                        _this.studyArea.checkingDelineatedPoint = false;
+                                        if (result.type == 1) {
+                                            if (_this.studyArea.ignoreExclusionPolygons) {
+                                                _this.toaster.pop("warning", "Delineation and flow statistic computation not allowed here", result.message.text, 0);
+                                                _this.toaster.pop("success", "Ignoring exclusion areas", "Delineating your basin now...", 5000);
+                                                gtag('event', 'ValidatePoint', { 'Label': 'Invalid (exclusion polygons ignored)' });
+                                                var point = [new WiM.Models.Point(latlng.lat, latlng.lng, '4326')];
+                                                _this.startDelineate(point, true);
+                                            }
+                                            else {
+                                                _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", result.message.text, 0);
+                                                gtag('event', 'ValidatePoint', { 'Label': 'Not allowed' });
+                                            }
+                                        }
+                                        else {
+                                            _this.toaster.pop("warning", "Warning", result.message.text, true, 0);
+                                            gtag('event', 'ValidatePoint', { 'Label': 'Not advised' });
+                                            var point = [new WiM.Models.Point(latlng.lat, latlng.lng, '4326')];
+                                            _this.startDelineate(point, true);
+                                        }
                                     }
                                 }
+                            }, function (error) {
+                                _this.studyArea.checkingDelineatedPoint = false;
+                                _this.toaster.pop('error', "There was an error checking exclusion polygons", "HTTP request error", 0);
+                                _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
+                                gtag('event', 'ValidatePoint', { 'Label': 'Not advised (no point query)' });
+                                _this.startDelineate(latlng, false);
+                            }).finally(function () {
                             });
                         }
                     });
@@ -1483,6 +1509,26 @@ var StreamStats;
                     }
                 }
                 return layeridList;
+            };
+            MapController.prototype.queryExcludePolygons = function (region, lat, lng) {
+                var excludePolygonQuery = {
+                    "region": region,
+                    "points": [
+                        {
+                            "lat": lat,
+                            "long": lng
+                        }
+                    ]
+                };
+                var url = configuration.baseurls.PourPointServices + configuration.queryparams["PourPointServicesExcludePolygon"];
+                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(excludePolygonQuery));
+                return this.Execute(request)
+                    .then(function (response) {
+                    return response;
+                }, function (error) {
+                    return error;
+                })
+                    .finally(function () { });
             };
             MapController.prototype.startDelineate = function (points, isInExclusionArea, excludeReason, lineClickPoints) {
                 var studyArea = new StreamStats.Models.StudyArea(this.regionServices.selectedRegion.RegionID, points);

@@ -174,11 +174,10 @@ var StreamStats;
             SSModalType[SSModalType["e_extensionsupport"] = 9] = "e_extensionsupport";
             SSModalType[SSModalType["e_gagepage"] = 10] = "e_gagepage";
             SSModalType[SSModalType["e_nearestgages"] = 11] = "e_nearestgages";
-            SSModalType[SSModalType["e_scstormrunnoff"] = 12] = "e_scstormrunnoff";
-            SSModalType[SSModalType["e_flowanywhere"] = 13] = "e_flowanywhere";
             SSModalType[SSModalType["e_flowanywhere"] = 12] = "e_flowanywhere";
-            SSModalType[SSModalType["e_warningmessage"] = 13] = "e_warningmessage";
-            SSModalType[SSModalType["e_batchprocessor"] = 14] = "e_batchprocessor";
+            SSModalType[SSModalType["e_scstormrunnoff"] = 13] = "e_scstormrunnoff";
+            SSModalType[SSModalType["e_warningmessage"] = 14] = "e_warningmessage";
+            SSModalType[SSModalType["e_batchprocessor"] = 15] = "e_batchprocessor";
         })(SSModalType = Services.SSModalType || (Services.SSModalType = {}));
         factory.$inject = ['$modal'];
         function factory($modal) {

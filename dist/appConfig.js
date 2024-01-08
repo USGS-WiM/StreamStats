@@ -22,9 +22,9 @@ configuration.baseurls =
         'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
         'ScienceBase': 'https://gis.usgs.gov/sciencebase2',
         'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices',
-        'WeightingServices': 'https://ss-weightingservices.streamstats.usgs.gov',
         'SCStormRunoffServices': 'https://streamstats.usgs.gov/local/scrunoffservices',
         'NationalMapServices': 'https://hydro.nationalmap.gov/arcgis/rest/services',
+        'WeightingServices': 'https://streamstats.usgs.gov/channelweightingservices',
         'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices',
         'BatchProcessorServices': 'https://dev.streamstats.usgs.gov/batchprocessor', // Will need to change this if running locally and want to use production data
         'PourPointServices': 'https://test.streamstats.usgs.gov/pourpoint'
