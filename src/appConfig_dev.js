@@ -22,10 +22,12 @@ configuration.baseurls =
     'StormRunoffServices': 'https://test.streamstats.usgs.gov/runoffmodelingservices',
     'ScienceBase': 'https://gis.usgs.gov/sciencebase2',
     'GageStatsServices': 'https://dev.streamstats.usgs.gov/gagestatsservices',
+    'SCStormRunoffServices': 'https://streamstats.usgs.gov/local/scrunoffservices',
+    'NationalMapServices': 'https://hydro.nationalmap.gov/arcgis/rest/services',
     'WeightingServices': 'https://streamstats.usgs.gov/channelweightingservices',
     'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices',
     'BatchProcessorServices': 'https://dev.streamstats.usgs.gov/batchprocessor', // Will need to change this if running locally and want to use production data
-    'PourPointServices': 'https://dev.streamstats.usgs.gov/pourpoint'
+    'PourPointServices': 'https://test.streamstats.usgs.gov/pourpoint'
 };
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
@@ -106,6 +108,8 @@ configuration.queryparams =
     'GageStatsServicesBounds': '/stations/Bounds?xmin={0}&xmax={1}&ymin={2}&ymax={3}&geojson=true',
     'FlowAnywhereEstimates': '/models/FLA/estimate?state={0}',
     'FlowAnywhereGages': '/arcgis/rest/services/IowaStreamEst/FlowAnywhere/MapServer/1/query?geometry={0},{1}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.da_pub_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
+    'lineIntersection': '/ssLineIntersection_Filtered/',
+    'checkExcludePolygons': '/ssExcludePolygon',
     'Regions': '/regions/',
     'PourPointServicesExcludePolygon': '/ssExcludePolygon/'
 };
@@ -605,9 +609,34 @@ configuration.regions = [
                     "f": "image"
                 },
                 "queryProperties": { "Regulation Points": { "NAME": "NID ID Number" } }
+            },
+            "NHD_Streams": {
+                "name": "NHD Streams",
+                "url": "https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/6",
+                "type": 'agsFeature',
+                "visible": true,
+                "hidden": true, // do not show in legend
+                "layerOptions": {
+                    style: { color: '#50b4c4', opacity: 0, weight: 3 },
+                    "minZoom": 15,
+                    "queryDistance": 100
+                },
+                "layerArray": [{
+                    note: "This overrides the ESRI legend",
+                    "layerName": "NHD Streams",
+                    "legend": [{
+                        "contentType": "image/png",
+                        "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADFJREFUOI1jYaAyYBk1cNTAwWKg57Zj/6lh2HYvK0bauHC7lxUjVQ2kJhg1cNRAMgAABzkFjcbj6G8AAAAASUVORK5CYII=",
+                        "label": ""
+                    }]
+                }],
+                "queryProperties": { "NHD Streams": { 
+                    "GNIS_ID": "GNIS ID",
+                    "GNIS_NAME": "GNIS Name"
+                }}
             }
         },
-        "Applications": ["Regulation"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/south-carolina-streamstats"
+    "Applications": ["Regulation", "SCStormRunoff", "HydrologicFeatures", "DelineateByLine"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/south-carolina-streamstats"
     },
     { "RegionID": "SD", "Name": "South Dakota", "Bounds": [[42.488459, -104.061036], [45.943547, -96.439394]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/south-dakota-streamstats" },
     { "RegionID": "TN", "Name": "Tennessee", "Bounds": [[34.988759, -90.305448], [36.679683, -81.652272]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/tennessee-streamstats-0" },
