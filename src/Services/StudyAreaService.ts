@@ -693,9 +693,9 @@ module StreamStats.Services {
                 if (response.data.response.points.length == 0) {
                     this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
                     throw new Error;
-                } else if (response.data.response.points.length > 10) {
+                } else if (response.data.response.points.length > 3) {
                     this.toaster.pop("error", "Error", "Delineation not possible. Line has more than 10 intersections.", 0);
-                    throw new Error;
+                    throw new Error('lineLength');
                 } else {
                     return this.checkExcludePolygon(response.data.response)
                 }

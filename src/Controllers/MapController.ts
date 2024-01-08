@@ -845,7 +845,7 @@ module StreamStats.Controllers {
         private drawDelineationLine(){
             this.leafletData.getMap("mainMap").then((map: any) => {
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => {
-
+                    var polyline;
                     this.drawController({shapeOptions: { color: 'blue' }, metric: false }, true);
 
                     var drawnItems = maplayers.overlays.draw;
@@ -878,12 +878,13 @@ module StreamStats.Controllers {
                                 [ coordinates.point2.lat, coordinates.point2.long ]
                             ];
                             // add line to map 
-                            L.polyline(line, {color: 'blue'}).addTo(map);
+                            polyline = L.polyline(line, {color: 'blue'}).addTo(map);
 
                             // check line length 
                             console.log(this.drawControl._getMeasurementString())
                             var distance = this.drawControl._getMeasurementString();
                             if (distance.replace(/[^0-9]/g, "") > 13200) { // line is longer than 2.5 miles
+                                map.removeLayer(polyLine)
                                 // remove listeners
                                 map.off("click", this.lineDelineationstart);
                                 this.drawControl.disable();
@@ -898,7 +899,7 @@ module StreamStats.Controllers {
 
                             // send line to checkDelineationLine
                             var lineClickPoints = [new WiM.Models.Point(coordinates.point1.lat, coordinates.point1.long, '4326'), new WiM.Models.Point(coordinates.point2.lat, coordinates.point2.long, '4326')] //here
-                            this.checkDelineationLine(coordinates, lineClickPoints)
+                            this.checkDelineationLine(coordinates, lineClickPoints, polyline)
                         } 
 
                     };
@@ -977,7 +978,7 @@ module StreamStats.Controllers {
             });
         }
 
-        private checkDelineationLine(line, lineClickPoints){
+        private checkDelineationLine(line, lineClickPoints, polyline){
             //make sure were still at level 15 or greater
             this.leafletData.getMap("mainMap").then((map: any) => {
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => {
@@ -1044,7 +1045,8 @@ module StreamStats.Controllers {
 
                             // TODO send exclude message if necessary  
                             this.startDelineate(ssPoints, false, null, lineClickPoints);
-                        }, (error) => {               
+                        }, (error) => {    
+                            map.removeLayer(polyline)
                         }).finally(() => {
                             // this.CanContinue = true;
                         });

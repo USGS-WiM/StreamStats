@@ -594,6 +594,7 @@ var StreamStats;
                 var _this = this;
                 this.leafletData.getMap("mainMap").then(function (map) {
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {
+                        var polyline;
                         _this.drawController({ shapeOptions: { color: 'blue' }, metric: false }, true);
                         var drawnItems = maplayers.overlays.draw;
                         drawnItems.clearLayers();
@@ -621,10 +622,11 @@ var StreamStats;
                                     [coordinates.point1.lat, coordinates.point1.long],
                                     [coordinates.point2.lat, coordinates.point2.long]
                                 ];
-                                L.polyline(line, { color: 'blue' }).addTo(map);
+                                polyline = L.polyline(line, { color: 'blue' }).addTo(map);
                                 console.log(_this.drawControl._getMeasurementString());
                                 var distance = _this.drawControl._getMeasurementString();
                                 if (distance.replace(/[^0-9]/g, "") > 13200) {
+                                    map.removeLayer(polyLine);
                                     map.off("click", _this.lineDelineationstart);
                                     _this.drawControl.disable();
                                     _this.toaster.pop("error", "Error", "Delineation not possible. Line is too long, must be shorter than 2.5 miles.", 0);
@@ -633,7 +635,7 @@ var StreamStats;
                                 map.off("click", _this.lineDelineationstart);
                                 _this.drawControl.disable();
                                 var lineClickPoints = [new WiM.Models.Point(coordinates.point1.lat, coordinates.point1.long, '4326'), new WiM.Models.Point(coordinates.point2.lat, coordinates.point2.long, '4326')];
-                                _this.checkDelineationLine(coordinates, lineClickPoints);
+                                _this.checkDelineationLine(coordinates, lineClickPoints, polyline);
                             }
                         };
                         map.on("click", _this.lineDelineationstart);
@@ -688,7 +690,7 @@ var StreamStats;
                     });
                 });
             };
-            MapController.prototype.checkDelineationLine = function (line, lineClickPoints) {
+            MapController.prototype.checkDelineationLine = function (line, lineClickPoints, polyline) {
                 var _this = this;
                 this.leafletData.getMap("mainMap").then(function (map) {
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {
@@ -738,6 +740,7 @@ var StreamStats;
                                 });
                                 _this.startDelineate(ssPoints, false, null, lineClickPoints);
                             }, function (error) {
+                                map.removeLayer(polyline);
                             }).finally(function () {
                             });
                         }
