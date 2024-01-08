@@ -267,8 +267,9 @@ module StreamStats.Controllers {
                 var latlng = args.leafletEvent.latlng;
                 this.mapPoint.lat = latlng.lat;
                 this.mapPoint.lng = latlng.lng;
-                //change cursor after delienate button click
+                //change cursor after delineate button click
                 if (this.studyArea.doDelineateFlag) this.cursorStyle = 'crosshair';
+                else this.cursorStyle = 'pointer'
             });
 
             $scope.$on('leafletDirectiveMap.mainMap.drag',(event, args) => {
@@ -362,8 +363,9 @@ module StreamStats.Controllers {
 
             $scope.$watch(() => this.studyArea.delineateByLine,(newval, oldval) => {
                 if (newval) {
-                    if (newval == true) this.drawDelineationLine()
-                    else this.drawControl.disable();
+                    this.drawDelineationLine();
+                } else {
+                    if (this.drawControl) this.drawControl.disable();
                 }
             });
 
@@ -986,7 +988,7 @@ module StreamStats.Controllers {
                     //good to go
                     else {
                         this.toaster.clear();
-                        this.studyArea.checkingDelineatedPoint = true;
+                        this.studyArea.checkingDelineatedLine = true;
 
                         this.toaster.pop("info", "Information", "Validating your line...", true, 0);
                         this.cursorStyle = 'wait';
@@ -1013,6 +1015,7 @@ module StreamStats.Controllers {
                                     if (point.type == 1){ // TODO: need to find points to test this
                                         // not able to delineate
                                         this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", point.message, 0);
+                                        this.studyArea.checkingDelineatedLine = false;
                                         return // break out - dont delineate 
                                     } else {
                                         //able to delineate but not advised
@@ -1020,7 +1023,8 @@ module StreamStats.Controllers {
                                     }
                                 }
                             });
-                            this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000)
+                            this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
+                            this.studyArea.checkingDelineatedLine = false;
                             this.markers = {}
                             var ssPoints: Array<WiM.Models.Point> = []
 
@@ -1030,15 +1034,13 @@ module StreamStats.Controllers {
                                     lat: point.point.lat,
                                     lng: point.point.long,
                                     message: '<strong>Latitude: </strong>' + point.point.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + point.point.long.toFixed(5),
-                                    focus: true,
+                                    focus: false,
                                     draggable: true
                                 }
 
                                 var latlng = new WiM.Models.Point(point.point.lat, point.point.long, '4326')
                                 ssPoints.push(latlng)
                             })
-
-                            // TODO close the popup for each point
 
                             // TODO send exclude message if necessary  
                             this.startDelineate(ssPoints, false, null, lineClickPoints);
@@ -1141,6 +1143,7 @@ module StreamStats.Controllers {
                                     this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
                                     //ga event
                                     gtag('event', 'ValidatePoint',{ 'Label': 'Not allowed' });
+                                    this.cursorStyle = 'pointer';
                                 }
                                 else {
                                     this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
@@ -1151,7 +1154,6 @@ module StreamStats.Controllers {
                                 }
                             }
 
-                            this.cursorStyle = 'pointer';
                         });
                     }
                 });
@@ -1464,6 +1466,7 @@ module StreamStats.Controllers {
         }
 
         private addGeoJSON(LayerName: string, feature: any) {
+            this.cursorStyle = 'pointer'
             if (LayerName.includes('globalwatershedpoint')) {
                 // console.log(feature)
                 var lat = this.studyArea.selectedStudyArea.Pourpoint[0].Latitude;

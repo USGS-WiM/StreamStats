@@ -213,6 +213,7 @@ var StreamStats;
                 this.parametersLoading = false;
                 this.doDelineateFlag = false;
                 this.checkingDelineatedPoint = false;
+                this.checkingDelineatedLine = false;
                 this.studyAreaParameterList = [];
                 this.regulationCheckResults = [];
                 this.allIndexGages = undefined;
@@ -1003,7 +1004,6 @@ var StreamStats;
                     .run(function (error, results) {
                     if (error) {
                         _this.toaster.pop('error', "There was an error querying NHD streams", error, 0);
-                        _this.selectedStudyArea.NHDStreamIntersections = [];
                     }
                     else if (results && results.features.length > 0) {
                         results.features.forEach(function (feature) {
@@ -1032,7 +1032,6 @@ var StreamStats;
                     }
                     else {
                         _this.toaster.pop('error', "There was an error querying NHD streams", "Please retry", 0);
-                        _this.selectedStudyArea.NHDStreamIntersections = [];
                     }
                 });
                 var WBDHUC8Intersections = {};
