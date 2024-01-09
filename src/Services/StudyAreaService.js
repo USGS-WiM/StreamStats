@@ -563,7 +563,7 @@ var StreamStats;
                         _this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
                         throw new Error;
                     }
-                    else if (response.data.response.points.length > 3) {
+                    else if (response.data.response.points.length > 10) {
                         _this.resetDelineationButtons();
                         _this.toaster.pop("error", "Error", "Delineation not possible. Line has more than 10 intersections.", 0);
                         throw new Error('lineLength');
