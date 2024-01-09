@@ -450,9 +450,16 @@ module StreamStats.Controllers {
             this.Execute(request).then(
                 (response: any) => {
                     var regex = /[+-]?((\d+(\.\d*)?)|(\.\d+))/g;
-                    var latLong = response.data.split(this.gage.name)[1].match(regex);
-                    this.NWISlat = latLong[0];
-                    this.NWISlng = latLong[1];
+                    try {
+                        var latLong = response.data.split(this.gage.name)[1].match(regex);
+                        this.NWISlat = latLong[0];
+                        this.NWISlng = latLong[1];
+                    } catch (error) {
+                        var data = response.data.split('\n').filter(r => { return (!r.startsWith("#") && r != "") })[2].split('\t');
+                        this.NWISlat = data[4];
+                        this.NWISlng = data[5];
+                    }
+                    
                 });
         }
 

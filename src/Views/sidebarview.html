@@ -80,21 +80,27 @@
                     <form ng-hide="vm.studyAreaService.selectedStudyArea.FeatureCollection" style="padding-bottom: 15px;">
                         <button id="delineateButton" type="button" class="btn-blue fullwidth" ng-click="vm.startDelineate('point')"
                             ng-class="vm.studyAreaService.doDelineateFlag && vm.studyAreaService.delineateByPoint ? 'btn-orange' : 'btn-blue'"
-                            ng-hide="vm.studyAreaService.selectedStudyArea.FeatureCollection || vm.disablePoint"
+                            ng-hide="vm.studyAreaService.selectedStudyArea.FeatureCollection || vm.studyAreaService.disablePoint"
                             ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint || !vm.studyAreaService.zoomLevel15 || vm.studyAreaService.delineateByLine" ><i
                                 ng-class="vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Delineate</button><br>
-
-                        <button id="delineateByLineButton" type="button" class="btn-blue fullwidth" ng-click="vm.startDelineate('line')"
+                        <div ng-if ="vm.regionService.selectedRegion.Applications.indexOf('DelineateByLine') != -1">
+                            <button id="delineateByLineButton" type="button" class="btn-blue fullwidth" ng-click="vm.startDelineate('line')"
                             ng-show="vm.regionService.selectedRegion.Applications.indexOf('DelineateByLine') != -1"
                             ng-class="vm.studyAreaService.doDelineateFlag && vm.studyAreaService.delineateByLine ? 'btn-orange' : 'btn-blue'"
-                            ng-hide="vm.studyAreaService.selectedStudyArea.FeatureCollection || vm.disableLine"
-                            ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedLine || !vm.studyAreaService.zoomLevel15 || vm.studyAreaService.delineateByPoint">
-                            <i
+                            ng-hide="vm.studyAreaService.selectedStudyArea.FeatureCollection || vm.studyAreaService.disableLine"
+                            ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedLine || !vm.studyAreaService.zoomLevel15 || vm.studyAreaService.delineateByPoint"><i
                                 ng-class="vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedLine ? 'fa fa-minus' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Delineate By Line</button>
+                        </div>
+                        
+
+                        <div style="margin-top:10px;" ng-show="vm.environment != 'production'">
+                            <checkbox style="height:20px; border:1px solid rgba(0,0,0,.2)!important;" ng-model="vm.studyAreaService.ignoreExclusionPolygons"></checkbox><span>&nbsp;&nbsp;Ignore Exclusion Polygons</span>
+                        </div>  
 
                         <div style="margin-top:10px;" ng-show="vm.regionService.selectedRegion.Applications.indexOf('StormDrain') > -1">
                             <checkbox style="height:20px; border:1px solid rgba(0,0,0,.2)!important;" ng-model="vm.studyAreaService.surfacecontributionsonly"></checkbox><span>&nbsp;&nbsp;Surface Contributing Basin only</span>
-                        </div>                       
+                        </div>           
+                                    
                   </form>
                                           
                             <div ng-show="vm.studyAreaService.selectedStudyArea.FeatureCollection">
@@ -102,7 +108,8 @@
                                     <button id="clearDelinationButton" type="button" class="btn-red fullwidth" ng-click="vm.resetWorkSpace()" ng-show="vm.studyAreaService.selectedStudyArea.FeatureCollection" ng-disabled="!vm.studyAreaService.canUpdate"><span><i class="fa fa-trash-o"></i>&nbsp;&nbsp;Clear Basin</span></button>
                                 </form>
                                 <form style="padding: 5px 0;">
-                                    <button type="button" class="btn-blue fullwidth" ng-click="vm.studyAreaService.showEditToolbar = !vm.studyAreaService.showEditToolbar" ng-disabled="vm.studyAreaService.selectedStudyArea.Pourpoint.length > 1 || !vm.studyAreaService.canUpdate || vm.studyAreaService.regressionRegionQueryComplete || vm.regionService.selectedRegion.RegionID == 'OK'"><span class="fa fa-edit"></span>&nbsp;&nbsp;Edit Basin</button>
+                                    <p class="p-info" ng-show="vm.studyAreaService.global">Basin editing is currently only available for small basins.</p>
+                                    <button type="button" class="btn-blue fullwidth" ng-click="vm.studyAreaService.showEditToolbar = !vm.studyAreaService.showEditToolbar" ng-disabled="vm.studyAreaService.selectedStudyArea.Pourpoint.length > 1 || !vm.studyAreaService.canUpdate || vm.studyAreaService.regressionRegionQueryComplete || vm.regionService.selectedRegion.RegionID == 'OK' || vm.studyAreaService.global"><span class="fa fa-edit"></span>&nbsp;&nbsp;Edit Basin</button>
                                 </form>
 
 
@@ -118,7 +125,7 @@
                                         <button type="button" class="btn-black" ng-click="vm.studyAreaService.undoEdit()"><span class="fa fa-undo"></span>&nbsp;&nbsp;Undo Edits</button>
                                     </form>
                                     <form style="padding:0 0 10px 0;">
-                                        <button type="button" class="btn-black" ng-click="vm.submitBasinEdits()"><span class="fa fa-check"></span>&nbsp;&nbsp;Submit edited basin</button>
+                                        <button type="button" class="btn-black" ng-click="vm.submitBasinEdits()"><span class="fa fa-check"></span>&nbsp;&nbsp;Submit Edited Basin</button>
                                     </form>
                                 </div>
 
@@ -303,11 +310,11 @@
         <div class="sidebar-footer">
             <a href="https://usgs.gov/" target="_blank">USGS Home</a>
             <a href="https://answers.usgs.gov/" target="_blank">Contact USGS</a>
-            <a href="https://search.usgs.gov/" target="_blank">Search USGS</a>
-            <a href="https://www2.usgs.gov/laws/accessibility.html" target="_blank">Accessibility</a>
-            <a href="https://www2.usgs.gov/foia/" target="_blank">FOIA</a>
-            <a href="https://www2.usgs.gov/laws/privacy.html" target="_blank">Privacy</a>
-            <a href="https://www2.usgs.gov/laws/policies_notices.html" target="_blank">Policy & Notices</a>
+            <a href="https://www.usgs.gov/search" target="_blank">Search USGS</a>
+            <a href="https://www.usgs.gov/accessibility" target="_blank">Accessibility</a>
+            <a href="https://www.usgs.gov/foia" target="_blank">FOIA</a>
+            <a href="https://www.usgs.gov/office-of-the-director/privacy-policies" target="_blank">Privacy</a>
+            <a href="https://www.usgs.gov/policies-notices" target="_blank">Policy & Notices</a>
         </div>
     </div>
 </div>

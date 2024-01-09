@@ -8,8 +8,6 @@ var StreamStats;
                 var _this = this;
                 this.EventManager = EventManager;
                 this.SSServicesVersion = '1.2.22';
-                this.disablePoint = false;
-                this.disableLine = false;
                 this.dateRange = { dates: { startDate: new Date(), endDate: new Date() }, minDate: new Date(1900, 1, 1), maxDate: new Date() };
                 $scope.vm = this;
                 this.init();
@@ -23,6 +21,7 @@ var StreamStats;
                 this.leafletData = leafletData;
                 this.multipleParameterSelectorAdd = true;
                 this.explorationService = exploration;
+                this.environment = configuration.environment;
                 StatisticsGroup.onSelectedStatisticsGroupChanged.subscribe(this._onSelectedStatisticsGroupChangedHandler);
                 $scope.$watch(function () { return _this.regionService.selectedRegion; }, function (newval, oldval) {
                     if (newval == null)
@@ -137,13 +136,13 @@ var StreamStats;
                     }
                     else {
                         if (type == "point") {
-                            _this.disableLine = !_this.disableLine;
+                            _this.studyAreaService.disableLine = !_this.studyAreaService.disableLine;
                             _this.toaster.pop("success", "Delineate", "Click on a blue stream cell to start delineation");
                             _this.studyAreaService.delineateByPoint = !_this.studyAreaService.delineateByPoint;
                             _this.studyAreaService.doDelineateFlag = !_this.studyAreaService.doDelineateFlag;
                         }
                         else {
-                            _this.disablePoint = !_this.disablePoint;
+                            _this.studyAreaService.disablePoint = !_this.studyAreaService.disablePoint;
                             _this.toaster.pop("success", "Delineate", "select a start and end point to delineate from a line");
                             _this.studyAreaService.delineateByLine = !_this.studyAreaService.delineateByLine;
                             _this.studyAreaService.doDelineateFlag = !_this.studyAreaService.doDelineateFlag;
@@ -259,7 +258,8 @@ var StreamStats;
                 }
             };
             SidebarController.prototype.submitBasinEdits = function () {
-                gtag('event', 'BasinEditor', { 'Type': 'SubmitEdits' });
+                var latLong = this.studyAreaService.selectedStudyArea.Pourpoint[0].Latitude.toFixed(5) + ',' + this.studyAreaService.selectedStudyArea.Pourpoint[0].Longitude.toFixed(5);
+                gtag('event', 'BasinEditor', { 'Type': 'SubmitEdits', 'Location': latLong });
                 this.studyAreaService.showEditToolbar = false;
                 this.toaster.pop('wait', "Submitting edited basin", "Please wait...", 0);
                 if (this.studyAreaService.selectedStudyArea.Disclaimers['isEdited']) {
