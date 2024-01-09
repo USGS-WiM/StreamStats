@@ -111,7 +111,7 @@
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.parametersEdited">Parameter values have been edited, computed flows may not apply.</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.regulationChecked">Upstream regulation was checked for this watershed.</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated">This watershed is {{vm.studyAreaService.regulationCheckResults.percentarearegulated.toFixed(2)}} percent regulated, computed flows may not apply.</div>
-                        <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isEdited">This watershed has been edited, computed flows and basin characteristics may not apply.  For more information, submit a support request from the 'Help' button in the upper-right of the screen, attach a pdf of this report and request assistance from your local streamstats regional representative.</div>
+                        <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isEdited">This watershed has been edited, computed flows and basin characteristics may not apply.  For more information, submit a support request from the 'Help' button in the upper-right of the screen, attach a pdf of this report and request assistance from your local StreamStats regional representative.</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isInExclusionArea">{{vm.studyAreaService.selectedStudyArea.Disclaimers.isInExclusionArea}}</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.hasKarst">{{vm.studyAreaService.selectedStudyArea.Disclaimers.hasKarst}}</div>
                         <div class="wim-alert-warning" ng-show="vm.studyAreaService.selectedStudyArea.Disclaimers.isStormDrain">The resulting delineations are derived from digital elevation data and storm drain vectors that have been processed to enforce drainage through storm drains.</div>
@@ -159,7 +159,7 @@
                                 </div>
 
                                 <h3>{{statisticsGroup.name}} Flow Report&nbsp;&nbsp;<span ng-bind="vm.GetRegressionRegionHeader(regressionRegion)"></span></h3>
-                                <span ng-show="regressionRegion.results[0].intervalBounds || regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0">PIl: Prediction Interval-Lower, PIu: Prediction Interval-Upper, ASEp: Average Standard Error of Prediction, SE: Standard Error (other -- see report)</span>
+                                <span ng-show="regressionRegion.results[0].intervalBounds || regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0">PIL: Lower 90% Prediction Interval, PIU: Upper 90% Prediction Interval, ASEp: Average Standard Error of Prediction, SE: Standard Error (other -- see report)</span>
                                 <table id="{{vm.camelize(statisticsGroup.name + regressionRegion.name + 'ScenarioFlowTable')}}" class="scenarioFlowTable table table-condensed">
                                     <thead class="flow-table">
                                         <tr>
@@ -167,8 +167,8 @@
                                             <th>Value</th>
                                             <th ng-if="vm.studyAreaService.selectedStudyArea.Disclaimers.isRegulated && vm.showRegulation">Unregulated Value</th>
                                             <th>Unit</th>
-                                            <th ng-if="regressionRegion.results[0].intervalBounds && regressionRegion.results[0].intervalBounds.lower">PIl</th>
-                                            <th ng-if="regressionRegion.results[0].intervalBounds && regressionRegion.results[0].intervalBounds.upper">PIu</th>
+                                            <th ng-if="regressionRegion.results[0].intervalBounds && regressionRegion.results[0].intervalBounds.lower">PIL</th>
+                                            <th ng-if="regressionRegion.results[0].intervalBounds && regressionRegion.results[0].intervalBounds.upper">PIU</th>
                                             <th ng-if="regressionRegion.results[0].errors && regressionRegion.results[0].errors.length > 0" ng-repeat="error in regressionRegion.results[0].errors" ng-bind="error.code"></th>
                                             <th ng-if="regressionRegion.results[0].equivalentYears > 0">Equiv. Yrs.</th>
                                         </tr>
@@ -487,7 +487,7 @@
                                 <div ng-repeat="message in vm.nssService.equationWeightingDisclaimers track by $index">
                                     <div class="wim-alert-warning">{{message}}</div>
                                 </div>
-                                <span>PIl: Prediction Interval-Lower, PIu: Prediction Interval-Upper, ASEp: Average Standard Error of Prediction</span>
+                                <span>PIL: Lower 90% Prediction Interval, PIU: Upper 90% Prediction Interval, ASEp: Average Standard Error of Prediction</span>
                                 <div ng-repeat="rr in vm.nssService.equationWeightingResults">
                                     <h3>{{rr.RR}}</h3>
                                     <table id="channelWidthWeightingTable" class="scenarioFlowTable table table-condensed">
@@ -496,8 +496,8 @@
                                                 <th>Statistic</th>
                                                 <th>Value</th>
                                                 <th>Unit</th>
-                                                <th>PIl</th>
-                                                <th>PIu</th>
+                                                <th>PIL</th>
+                                                <th>PIU</th>
                                                 <th>SEP</th>
                                             </tr>
                                         </thead>
