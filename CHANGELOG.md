@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 
 - Fixed broken links in the sidebar
+- Duplicate stream grids in the "Download Stream Grids" tab when clicking the link from the "Submit Batch" tab
 
 ### Security
 
