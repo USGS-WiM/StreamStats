@@ -559,6 +559,7 @@ var StreamStats;
                 return this.Execute(request).then(function (response) {
                     console.log(response.data.response.points.length);
                     if (response.data.response.points.length == 0) {
+                        _this.resetDelineationButtons();
                         _this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
                         throw new Error;
                     }
