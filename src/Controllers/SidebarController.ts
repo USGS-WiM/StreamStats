@@ -197,9 +197,11 @@ module StreamStats.Controllers {
             //this.regionService.clearRegion();
             this.regionService.clearSelectedParameters();
             this.studyAreaService.clearStudyArea();
+            this.studyAreaService.resetDelineationButtons()
             this.studyAreaService.zoomLevel15 = true;
             this.nssService.clearNSSdata();
             this.multipleParameterSelectorAdd = false;
+            this.EventManager.RaiseEvent(Services.onClearBasin, this, WiM.Event.EventArgs.Empty); // to clear the line when doing line delineation 
         }
 
         public startSearch(e) {
