@@ -118,9 +118,11 @@ var StreamStats;
             SidebarController.prototype.resetWorkSpace = function () {
                 this.regionService.clearSelectedParameters();
                 this.studyAreaService.clearStudyArea();
+                this.studyAreaService.resetDelineationButtons();
                 this.studyAreaService.zoomLevel15 = true;
                 this.nssService.clearNSSdata();
                 this.multipleParameterSelectorAdd = false;
+                this.EventManager.RaiseEvent(StreamStats.Services.onClearBasin, this, WiM.Event.EventArgs.Empty);
             };
             SidebarController.prototype.startSearch = function (e) {
                 e.stopPropagation();
