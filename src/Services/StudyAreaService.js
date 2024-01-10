@@ -364,6 +364,7 @@ var StreamStats;
                                     this.toaster.clear();
                                     this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
                                     this.canUpdate = true;
+                                    console.log(this.selectedStudyArea.FeatureCollection);
                                 }
                                 else {
                                     this.toaster.clear();
@@ -815,6 +816,7 @@ var StreamStats;
                                 this.toaster.clear();
                                 this.parametersLoading = false;
                                 this.loadParameterResults(finalResponse);
+                                this.getAdditionalFeatureList();
                                 saEvent = new StudyAreaEventArgs();
                                 saEvent.parameterLoaded = true;
                                 this.eventManager.RaiseEvent(Services.onSelectedStudyParametersLoaded, this, saEvent);
@@ -865,44 +867,84 @@ var StreamStats;
             };
             StudyAreaService.prototype.getAdditionalFeatureList = function () {
                 var _this = this;
-                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSavailableFeatures'].format(this.selectedStudyArea.WorkspaceID);
-                var request = new WiM.Services.Helpers.RequestInfo(url, true);
-                request.withCredentials = true;
-                this.Execute(request).then(function (response) {
-                    if (response.data.featurecollection && response.data.featurecollection.length > 0) {
-                        _this.additionalFeaturesLoaded = false;
-                        var features = [];
-                        angular.forEach(response.data.featurecollection, function (feature, index) {
-                            if (_this.selectedStudyArea.FeatureCollection.features.map(function (f) { return f.id; }).indexOf(feature.name) === -1) {
-                                features.push(feature.name);
-                            }
-                        });
-                        _this.getAdditionalFeatures(features.join(','));
-                    }
-                    else {
+                if (this.selectedStudyArea.Pourpoint.length == 1) {
+                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSavailableFeatures'].format(this.selectedStudyArea.WorkspaceID);
+                    var request = new WiM.Services.Helpers.RequestInfo(url, true);
+                    request.withCredentials = true;
+                    this.Execute(request).then(function (response) {
+                        if (response.data.featurecollection && response.data.featurecollection.length > 0) {
+                            _this.additionalFeaturesLoaded = false;
+                            var features = [];
+                            angular.forEach(response.data.featurecollection, function (feature, index) {
+                                if (_this.selectedStudyArea.FeatureCollection.features.map(function (f) { return f.id; }).indexOf(feature.name) === -1) {
+                                    features.push(feature.name);
+                                }
+                            });
+                            _this.getAdditionalFeatures(_this.selectedStudyArea.WorkspaceID, features.join(','));
+                        }
+                        else {
+                            _this.additionalFeaturesLoaded = true;
+                        }
+                    }, function (error) {
+                        _this.toaster.clear();
                         _this.additionalFeaturesLoaded = true;
+                        _this.toaster.pop("error", "There was an HTTP error requesting additional feautres list", "Please retry", 0);
+                    }).finally(function () {
+                    });
+                }
+                else {
+                    console.log("here we are");
+                    var _loop_1 = function (feat) {
+                        console.log(feat);
+                        url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSavailableFeatures'].format(feat.properties.WorkspaceID);
+                        request = new WiM.Services.Helpers.RequestInfo(url, true);
+                        request.withCredentials = true;
+                        this_1.Execute(request).then(function (response) {
+                            if (response.data.featurecollection && response.data.featurecollection.length > 0) {
+                                _this.additionalFeaturesLoaded = false;
+                                var features = [];
+                                angular.forEach(response.data.featurecollection, function (feature, index) {
+                                    if (_this.selectedStudyArea.FeatureCollection.features.map(function (f) { return f.id; }).indexOf(feature.name) === -1) {
+                                        features.push(feature.name);
+                                    }
+                                });
+                                _this.getAdditionalFeatures(feat.properties.WorkspaceID, features.join(','));
+                            }
+                            else {
+                                _this.additionalFeaturesLoaded = true;
+                            }
+                        }, function (error) {
+                            _this.toaster.clear();
+                            _this.additionalFeaturesLoaded = true;
+                            _this.toaster.pop("error", "There was an HTTP error requesting additional feautres list", "Please retry", 0);
+                        }).finally(function () {
+                        });
+                    };
+                    var this_1 = this, url, request;
+                    for (var _i = 0, _a = this.selectedStudyArea.FeatureCollection.features.filter(function (f) { return (f.id).toLowerCase().includes("globalwatershed") && /\d/.test((f.id)) && f.geometry.type == 'Polygon'; }); _i < _a.length; _i++) {
+                        var feat = _a[_i];
+                        _loop_1(feat);
                     }
-                }, function (error) {
-                    _this.toaster.clear();
-                    _this.additionalFeaturesLoaded = true;
-                    _this.toaster.pop("error", "There was an HTTP error requesting additional feautres list", "Please retry", 0);
-                }).finally(function () {
-                });
+                }
             };
-            StudyAreaService.prototype.getAdditionalFeatures = function (featureString) {
+            StudyAreaService.prototype.getAdditionalFeatures = function (workspaceID, featureString) {
                 var _this = this;
+                console.log("here");
+                console.log(this.selectedStudyArea);
                 if (!featureString) {
                     this.additionalFeaturesLoaded = true;
                     return;
                 }
                 this.toaster.pop('wait', "Downloading additional features", "Please wait...", 0);
-                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSfeatures'].format(this.selectedStudyArea.WorkspaceID, 4326, featureString);
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSfeatures'].format(workspaceID, 4326, featureString);
+                console.log(url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 request.withCredentials = true;
                 this.Execute(request).then(function (response) {
                     if (response.data.featurecollection && response.data.featurecollection.length > 0) {
                         _this.toaster.clear();
                         var features = _this.reconfigureWatershedResponse(response.data.featurecollection);
+                        console.log(features);
                         angular.forEach(features, function (feature, index) {
                             if (features.length < 1) {
                                 for (var i = 0; i < _this.selectedStudyArea.FeatureCollection.features.length; i++) {
@@ -911,17 +953,27 @@ var StreamStats;
                                         break;
                                     }
                                 }
+                                if (feature && (feature.id == "longestflowpath3d" || feature.id == "longestflowpath")) {
+                                    _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id, imagesrc: null }, true));
+                                }
+                                else {
+                                    _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id, imagesrc: null }, false));
+                                }
+                                _this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, _this, '');
                             }
                             else {
+                                if (_this.selectedStudyArea.Pourpoint.length > 1) {
+                                    feature.id = feature.id + "_" + workspaceID;
+                                }
                                 _this.selectedStudyArea.FeatureCollection.features.push(feature);
+                                if (feature && (feature.id.includes("longestflowpath3d") || feature.id.includes("longestflowpath"))) {
+                                    _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id.split("_")[0], imagesrc: null }, true));
+                                }
+                                else {
+                                    _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id.split("_")[0], imagesrc: null }, false));
+                                }
+                                _this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, _this, '');
                             }
-                            if (feature && (feature.id == "longestflowpath3d" || feature.id == "longestflowpath")) {
-                                _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id, imagesrc: null }, true));
-                            }
-                            else {
-                                _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id, imagesrc: null }, false));
-                            }
-                            _this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, _this, '');
                         });
                     }
                     _this.additionalFeaturesLoaded = true;

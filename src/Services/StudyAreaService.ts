@@ -64,7 +64,7 @@ module StreamStats.Services {
         baseMap: Object;
         showModifyBasinCharacterstics: boolean;
         getAdditionalFeatureList();
-        getAdditionalFeatures(featureString: string);
+        getAdditionalFeatures(workspaceID: string, featureString: string);
         surfacecontributionsonly: boolean
         getflattenStudyArea(): any
         simplify(Feature: any);
@@ -462,6 +462,8 @@ module StreamStats.Services {
                     this.toaster.clear()
                     this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
                     this.canUpdate = true;
+
+                    console.log(this.selectedStudyArea.FeatureCollection);
 
                     // TODO: Not sure if we need this
                     // if (this.regionService.selectedRegion.Applications.indexOf("HydrologicFeatures") != -1) {
@@ -988,6 +990,10 @@ module StreamStats.Services {
                 this.toaster.clear();
                 this.parametersLoading = false;
                 this.loadParameterResults(finalResponse);
+
+                //get additional features for this workspace
+                this.getAdditionalFeatureList();    
+                
                 let saEvent = new StudyAreaEventArgs();
                 saEvent.parameterLoaded = true;
                 this.eventManager.RaiseEvent(onSelectedStudyParametersLoaded, this, saEvent);
@@ -1064,41 +1070,79 @@ module StreamStats.Services {
         }
 
         public getAdditionalFeatureList() {
-            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSavailableFeatures'].format(this.selectedStudyArea.WorkspaceID);
-            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
-            request.withCredentials = true;
-            this.Execute(request).then(
-                (response: any) => {
-                    if (response.data.featurecollection && response.data.featurecollection.length > 0) {
-                        this.additionalFeaturesLoaded = false;
-                        var features = [];
-                        angular.forEach(response.data.featurecollection, (feature, index) => {
-                            if (this.selectedStudyArea.FeatureCollection.features.map(f => { return f.id }).indexOf(feature.name) === -1){
-                                features.push(feature.name)                               
-                            }                            
-                        });//next feature
-                        this.getAdditionalFeatures(features.join(','));
-                    } else {
+            if (this.selectedStudyArea.Pourpoint.length == 1) {
+                var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSavailableFeatures'].format(this.selectedStudyArea.WorkspaceID);
+                var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+                request.withCredentials = true;
+                this.Execute(request).then(
+                    (response: any) => {
+                        if (response.data.featurecollection && response.data.featurecollection.length > 0) {
+                            this.additionalFeaturesLoaded = false;
+                            var features = [];
+                            angular.forEach(response.data.featurecollection, (feature, index) => {
+                                if (this.selectedStudyArea.FeatureCollection.features.map(f => { return f.id }).indexOf(feature.name) === -1){
+                                    features.push(feature.name)                               
+                                }                            
+                            });//next feature
+                            this.getAdditionalFeatures(this.selectedStudyArea.WorkspaceID, features.join(','));
+                        } else {
+                            this.additionalFeaturesLoaded = true;
+                        }
+                        //sm when complete
+                    }, (error) => {
+                        //sm when error
+                        this.toaster.clear();
                         this.additionalFeaturesLoaded = true;
-                    }
-                    //sm when complete
-                }, (error) => {
-                    //sm when error
-                    this.toaster.clear();
-                    this.additionalFeaturesLoaded = true;
-                    this.toaster.pop("error", "There was an HTTP error requesting additional feautres list", "Please retry", 0);
-                }).finally(() => {
-                });
+                        this.toaster.pop("error", "There was an HTTP error requesting additional feautres list", "Please retry", 0);
+                    }).finally(() => {
+                    });
+            } else {
+                console.log("here we are");
+                for (const feat of this.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase().includes("globalwatershed") && /\d/.test(<string>(f.id)) && f.geometry.type == 'Polygon'})) {
+                    console.log(feat);
+                    var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSavailableFeatures'].format(feat.properties.WorkspaceID);
+                    // console.log(url);
+                    var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
+                    request.withCredentials = true;
+                    this.Execute(request).then(
+                        (response: any) => {
+                            if (response.data.featurecollection && response.data.featurecollection.length > 0) {
+                                this.additionalFeaturesLoaded = false;
+                                var features = [];
+                                angular.forEach(response.data.featurecollection, (feature, index) => {
+                                    if (this.selectedStudyArea.FeatureCollection.features.map(f => { return f.id }).indexOf(feature.name) === -1){
+                                        // features.push(feature.name + (<string>feat.id).split('globalwatershed')[1])     //here         
+                                        features.push(feature.name);            
+                                    }                            
+                                });//next feature
+                                this.getAdditionalFeatures(feat.properties.WorkspaceID, features.join(','));
+                            } else {
+                                this.additionalFeaturesLoaded = true;
+                            }
+                            //sm when complete
+                        }, (error) => {
+                            //sm when error
+                            this.toaster.clear();
+                            this.additionalFeaturesLoaded = true;
+                            this.toaster.pop("error", "There was an HTTP error requesting additional feautres list", "Please retry", 0);
+                        }).finally(() => {
+                        });
+                }
+            }
+            
         }
 
-        public getAdditionalFeatures(featureString: string) {
+        public getAdditionalFeatures(workspaceID: string, featureString: string) {
+            console.log("here");
+            console.log(this.selectedStudyArea);
             if (!featureString) {
                 this.additionalFeaturesLoaded = true;
                 return;
             } 
 
             this.toaster.pop('wait', "Downloading additional features", "Please wait...", 0);
-            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSfeatures'].format(this.selectedStudyArea.WorkspaceID, 4326, featureString);
+            var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSfeatures'].format(workspaceID, 4326, featureString);
+            console.log(url);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
             request.withCredentials = true;
 
@@ -1109,6 +1153,7 @@ module StreamStats.Services {
                         //this.toaster.pop('success', "Additional features found", "Please continue", 5000);
                         //console.log('additional features:', response);
                         var features = this.reconfigureWatershedResponse(response.data.featurecollection);
+                        console.log(features);
                         angular.forEach(features, (feature, index) => {
                             if (features.length < 1) {
                                 //remove from studyarea array                                
@@ -1118,18 +1163,33 @@ module StreamStats.Services {
                                         break;
                                     }
                                 }
-                            }
+
+                                // TODO if delineate by line, do this later
+                                if (feature && (feature.id == "longestflowpath3d" || feature.id == "longestflowpath")) { // We want longest flow path to be checked automatically 
+                                    this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(<string>feature.id, "geojson", { displayName: feature.id, imagesrc: null }, true));
+                                } else { // All other features should be turned on and off manually by user
+                                    this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(<string>feature.id, "geojson", { displayName: feature.id, imagesrc: null }, false));
+                                }
+                                this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, this, '');
+                                }
                             else {
-                                this.selectedStudyArea.FeatureCollection.features.push(feature);               
+                                if (this.selectedStudyArea.Pourpoint.length > 1) {
+                                    feature.id = feature.id + "_" + workspaceID;
+                                }
+                                this.selectedStudyArea.FeatureCollection.features.push(feature);      
+                                
+                                if (feature && ((<string>feature.id).includes("longestflowpath3d") || (<string>feature.id).includes("longestflowpath"))) { // We want longest flow path to be checked automatically 
+                                    this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(<string>feature.id, "geojson", { displayName: (<string>feature.id).split("_")[0], imagesrc: null }, true));
+                                } else { // All other features should be turned on and off manually by user
+                                    this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(<string>feature.id, "geojson", { displayName: (<string>feature.id).split("_")[0], imagesrc: null }, false));
+                                }
+                                this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, this, '');
                             }
-                            if (feature && (feature.id == "longestflowpath3d" || feature.id == "longestflowpath")) { // We want longest flow path to be checked automatically 
-                                this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(<string>feature.id, "geojson", { displayName: feature.id, imagesrc: null }, true));
-                            } else { // All other features should be turned on and off manually by user
-                                this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(<string>feature.id, "geojson", { displayName: feature.id, imagesrc: null }, false));
-                            }
-                            this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, this, '');
+
+                            
                         });
                     }
+                    // TODO if delineate by line, do this later
                     this.additionalFeaturesLoaded = true;
                     //sm when complete
                 }, (error) => {
