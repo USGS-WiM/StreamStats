@@ -967,14 +967,14 @@ var StreamStats;
                                 }
                                 _this.selectedStudyArea.FeatureCollection.features.push(feature);
                                 if (feature && (feature.id.includes("longestflowpath3d") || feature.id.includes("longestflowpath"))) {
-                                    _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id.split("_")[0], imagesrc: null }, true));
+                                    _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id, imagesrc: null }, true));
                                 }
                                 else {
-                                    _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id.split("_")[0], imagesrc: null }, false));
+                                    _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id, imagesrc: null }, false));
                                 }
-                                _this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, _this, '');
                             }
                         });
+                        _this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, _this, '');
                     }
                     _this.additionalFeaturesLoaded = true;
                 }, function (error) {

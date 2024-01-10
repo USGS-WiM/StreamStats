@@ -1179,15 +1179,15 @@ module StreamStats.Services {
                                 this.selectedStudyArea.FeatureCollection.features.push(feature);      
                                 
                                 if (feature && ((<string>feature.id).includes("longestflowpath3d") || (<string>feature.id).includes("longestflowpath"))) { // We want longest flow path to be checked automatically 
-                                    this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(<string>feature.id, "geojson", { displayName: (<string>feature.id).split("_")[0], imagesrc: null }, true));
+                                    this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(<string>feature.id, "geojson", { displayName: <string>feature.id, imagesrc: null }, true));
                                 } else { // All other features should be turned on and off manually by user
-                                    this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(<string>feature.id, "geojson", { displayName: (<string>feature.id).split("_")[0], imagesrc: null }, false));
+                                    this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(<string>feature.id, "geojson", { displayName: <string>feature.id, imagesrc: null }, false));
                                 }
-                                this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, this, '');
                             }
 
                             
                         });
+                        this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, this, '');
                     }
                     // TODO if delineate by line, do this later
                     this.additionalFeaturesLoaded = true;
