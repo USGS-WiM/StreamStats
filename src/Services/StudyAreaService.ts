@@ -720,7 +720,8 @@ module StreamStats.Services {
                     throw new Error;
                 } else if (response.data.response.points.length > 10) {
                     this.resetDelineationButtons();
-                    this.toaster.pop("error", "Error", "Delineation not possible. Line has more than 10 intersections.", 0);
+                    this.toaster.pop("error", "Error", "Delineation not possible. Line has more than 10 intersections with stream grid.", 0);
+
                     throw new Error('lineLength');
                 } else {
                     return this.checkExcludePolygon(response.data.response)

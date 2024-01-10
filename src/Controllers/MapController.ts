@@ -907,7 +907,8 @@ module StreamStats.Controllers {
                                 map.off("click", this.lineDelineationstart);
                                 this.drawControl.disable();
                                 // throw error
-                                this.toaster.pop("error", "Error", "Delineation not possible. Line is too long, must be shorter than 2.5 miles.", 0);
+                                this.toaster.pop("error", "Error", "Delineation not possible. Line must be shorter than 2.5 miles.", 0);
+
                                 throw new Error;
                             }
 
