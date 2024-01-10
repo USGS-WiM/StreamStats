@@ -656,7 +656,7 @@ var StreamStats;
                                     map.removeLayer(_this.delineationLine);
                                     map.off("click", _this.lineDelineationstart);
                                     _this.drawControl.disable();
-                                    _this.toaster.pop("error", "Error", "Delineation not possible. Line is too long, must be shorter than 2.5 miles.", 0);
+                                    _this.toaster.pop("error", "Error", "Delineation not possible. Line must be shorter than 2.5 miles.", 0);
                                     throw new Error;
                                 }
                                 map.off("click", _this.lineDelineationstart);

@@ -565,7 +565,7 @@ var StreamStats;
                     }
                     else if (response.data.response.points.length > 10) {
                         _this.resetDelineationButtons();
-                        _this.toaster.pop("error", "Error", "Delineation not possible. Line has more than 10 intersections.", 0);
+                        _this.toaster.pop("error", "Error", "Delineation not possible. Line has more than 10 intersections with stream grid.", 0);
                         throw new Error('lineLength');
                     }
                     else {
