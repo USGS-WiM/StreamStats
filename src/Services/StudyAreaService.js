@@ -966,8 +966,8 @@ var StreamStats;
                                     feature.id = feature.id + "_" + workspaceID;
                                 }
                                 _this.selectedStudyArea.FeatureCollection.features.push(feature);
-                                if (feature && (feature.id.includes("longestflowpath3d") || feature.id.includes("longestflowpath"))) {
-                                    _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id, imagesrc: null }, true));
+                                if (feature.id.includes("longestflowpath")) {
+                                    _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id.split("_")[0], imagesrc: null }, true));
                                 }
                                 else {
                                     _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id, imagesrc: null }, false));
