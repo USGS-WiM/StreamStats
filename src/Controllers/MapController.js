@@ -625,6 +625,7 @@ var StreamStats;
                             }
                         };
                         _this.lineDelineationstart = function (e) {
+                            console.log(e);
                             if (coordinates.point1.lat === null && coordinates.point1.long === null && coordinates.point2.lat === null && coordinates.point2.long === null) {
                                 coordinates.point1.lat = e.latlng.lat;
                                 coordinates.point1.long = e.latlng.lng;
@@ -990,7 +991,7 @@ var StreamStats;
                     return;
                 this.studyArea.selectedStudyArea.FeatureCollection.features.forEach(function (layer) {
                     var item = angular.fromJson(angular.toJson(layer));
-                    if (item.id === 'longestflowpath3d' || item.id === 'longestflowpath') {
+                    if (item.id.includes('longestflowpath')) {
                         _this.addGeoJSON(item.id, item.geometry);
                     }
                 });

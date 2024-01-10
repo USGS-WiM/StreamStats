@@ -1386,7 +1386,7 @@ module StreamStats.Controllers {
             if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.FeatureCollection) return;
             this.studyArea.selectedStudyArea.FeatureCollection.features.forEach((layer) => {
                 var item = angular.fromJson(angular.toJson(layer));
-                if (item.id === 'longestflowpath3d' || item.id === 'longestflowpath') { 
+                if (item.id.includes('longestflowpath')) { 
                     this.addGeoJSON(item.id, item.geometry);
                 }
             });
