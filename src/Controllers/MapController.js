@@ -126,6 +126,9 @@ var StreamStats;
                     _this.removeGeoJson();
                 }));
                 _this.eventManager.SubscribeToEvent(StreamStats.Services.onClearBasin, new WiM.Event.EventHandler(function () {
+                    _this.studyArea.selectedStudyArea.FeatureCollection['features'].forEach(function (layer) {
+                        _this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, _this, new WiM.Directives.LegendLayerRemovedEventArgs(layer.id, "geojson"));
+                    });
                     if (_this.delineationLine) {
                         _this.leafletData.getMap("mainMap").then(function (map) {
                             map.removeLayer(_this.delineationLine);
@@ -1058,6 +1061,7 @@ var StreamStats;
                     this.nonsimplifiedBasin = undefined;
                 }
                 for (var k in this.geojson) {
+                    console.log(k);
                     if (typeof this.geojson[k] !== 'function' && (k != 'streamgages' || k == layerName)) {
                         delete this.geojson[k];
                         this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs(k, "geojson"));

@@ -252,7 +252,13 @@ module StreamStats.Controllers {
                 this.removeGeoJson();
             }));
 
-            this.eventManager.SubscribeToEvent(Services.onClearBasin, new WiM.Event.EventHandler<WiM.Event.EventArgs>(() => {
+            this.eventManager.SubscribeToEvent(Services.onClearBasin, new WiM.Event.EventHandler<WiM.Event.EventArgs>(() => {                
+                // need to clear the basin boundary, basin click points, and subbasin boundaries from legend
+                this.studyArea.selectedStudyArea.FeatureCollection['features'].forEach((layer:any) => {
+                    this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs(layer.id, "geojson"));
+                });
+
+                // need to clear delineation line from the map 
                 if (this.delineationLine) { 
                     this.leafletData.getMap("mainMap").then((map: any) => {
                         map.removeLayer(this.delineationLine)
@@ -1333,7 +1339,7 @@ module StreamStats.Controllers {
                             map.fitBounds(tempExtent.getBounds());
                         });
                     }
-
+                    
                     this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(layer.name, "geojson", this.geojson[layer.name].style));
                 });      
 
@@ -1485,6 +1491,7 @@ module StreamStats.Controllers {
                 this.nonsimplifiedBasin = undefined;
             }
             for (var k in this.geojson) {
+                console.log(k)
                 if (typeof this.geojson[k] !== 'function' && (k != 'streamgages' || k == layerName)) {
                     delete this.geojson[k];
                     this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs(k, "geojson")); 
@@ -1551,7 +1558,7 @@ module StreamStats.Controllers {
                     color: 'red',
                     fillOpacity: 0.5
                 }
-                // TODO: turn this layer off by default
+
                 this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(LayerName, "geojson", subBasinStyle, false));
             }
             else if (LayerName.includes('globalwatershed') && /\d/.test(LayerName) == false) {
@@ -1804,7 +1811,7 @@ module StreamStats.Controllers {
                     }
                     // if subbasin
                     if (e.LayerName.includes('globalwatershed') && /\d/.test(e.LayerName)) {
-                        this.addGeoJSON(e.LayerName, this.studyArea.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == e.LayerName})[0]) //here
+                        this.addGeoJSON(e.LayerName, this.studyArea.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == e.LayerName})[0]) 
                     }
 
 
