@@ -827,8 +827,8 @@ module StreamStats.Controllers {
                             });
                             // set up data for request
                             var urbanData = {
-                                "lat": this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
-                                "lon": this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
+                                "lat": this.studyAreaService.selectedStudyArea.Pourpoint[0].Latitude,
+                                "lon": this.studyAreaService.selectedStudyArea.Pourpoint[0].Longitude,
                                 "region3PercentArea": this.region3Percent,
                                 "region4PercentArea": this.region4Percent,
                                 "Qp": weightedAEP,
@@ -1222,8 +1222,8 @@ module StreamStats.Controllers {
             var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCComputeSpreadSheet'];
 
             unitHydrograph = { // Set up unit hydrograph data
-                "lat": this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
-                "lon": this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
+                "lat": this.studyAreaService.selectedStudyArea.Pourpoint[0].Latitude,
+                "lon": this.studyAreaService.selectedStudyArea.Pourpoint[0].Longitude,
                 "AEP": this._selectedAEPSynthetic.value,
                 "CNModificationMethod": this._selectedCNModification.name,
                 "Area": this.drainageAreaSynthetic,
@@ -1502,8 +1502,8 @@ module StreamStats.Controllers {
                             ]
                             // master data endpoint
                             data = {
-                                "lat": this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
-                                "lon": this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
+                                "lat": this.studyAreaService.selectedStudyArea.Pourpoint[0].Latitude,
+                                "lon": this.studyAreaService.selectedStudyArea.Pourpoint[0].Longitude,
                                 "watershedFeatures": watershedFeature,
                                 "prfData": this.prfSegments,
                                 "AEP": this._selectedAEPSynthetic?.value,
@@ -1911,7 +1911,7 @@ module StreamStats.Controllers {
             };
 
             //main file header with site information
-            var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n\n';
+            var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint[0].Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint[0].Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n\n';
 
             //first write main parameter table
             if (this.SelectedTab == 1) {
