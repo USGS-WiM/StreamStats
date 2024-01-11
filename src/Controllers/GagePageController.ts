@@ -214,7 +214,7 @@ module StreamStats.Controllers {
         public peakDates = undefined;
         public estPeakDates = undefined;
         public dailyFlow = undefined;
-        public instFlow = undefined;
+        public instFlow = [];
         public gageTimeZone = undefined;
         public NWSforecast = undefined;
         public meanPercentileStats = undefined;
@@ -845,42 +845,10 @@ module StreamStats.Controllers {
                 this.weightedAEPstats = weightedAEPchartData;
                 this.regulatedAEPstats = regulatedAEPchartData;
             }).finally(() => {
-                this.getDailyFlow();
+                this.getInstantaneousFlow();
             });
         }
 
-        //Pull in data for daily flow values
-        public getDailyFlow() {
-            var date = new Date ();
-			var timeInMillisec = date.getTime ();	// the milliseconds elapsed since 01 January, 1970 00:00:00 UTC
-			timeInMillisec -= 15 * 24 * 60 * 60 * 1000; 	// 14 days in milliseconds
-			date.setTime (timeInMillisec);
-            var twoWeeksAgo = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 )) //ending date range two weeks ago to replace with IV
-                    .toISOString()
-                    .split("T")[0];
-            var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01&endDT=' + twoWeeksAgo;
-            this.dailyFlowURL = url;
-            //console.log('GetDailyFlowURL', url);
-            const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-            this.Execute(request).then(
-                (response: any) => {
-                    const data = response.data.value.timeSeries;
-                    if (data.length !== 0) {
-                        var dailyValues = data[0].values[0].value
-                    }
-                    else {
-                        dailyValues = 0
-                    };
-                    if (dailyValues !== 0) {
-                    const filteredDaily = dailyValues.filter(item => {
-                        return (parseFloat(item.value) !== -999999) //removes placeholder values
-                    });
-                    this.dailyFlow = filteredDaily;
-                    }
-                    this.getInstantaneousFlow();
-                }); 
-            }
-        
         //Pull in instantaneous flow value data from NWIS
         public getInstantaneousFlow(){
             var date = new Date ();
@@ -892,8 +860,8 @@ module StreamStats.Controllers {
                     .split("T")[0]; //removes the timezone offset so the dates will appear in their recorded timezone
             var url = 'https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&startDT=' + twoWeeksAgo;
             this.instFlowURL = url;
-            //console.log(url)
-            const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+            const request: WiM
+            .Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
                     const data = response.data.value.timeSeries;
@@ -912,11 +880,49 @@ module StreamStats.Controllers {
                     this.instFlow = filteredInst;
                     }
                     //console.log('inst', this.instFlow)
-                    this.getRatingCurve();
+                    this.getDailyFlow();
                                         // console.log(this.gageTimeZone)
 
                 });
         }
+
+
+        //Pull in data for daily flow values
+        public getDailyFlow() {
+            var date = new Date ();
+			var timeInMillisec = date.getTime ();	// the milliseconds elapsed since 01 January, 1970 00:00:00 UTC
+			timeInMillisec -= 15 * 24 * 60 * 60 * 1000; 	// 14 days in milliseconds
+			date.setTime (timeInMillisec);
+            var twoWeeksAgo = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 )) //ending date range two weeks ago to replace with IV
+                    .toISOString()
+                    .split("T")[0];
+            let url;
+            if (this.instFlow.length > 0) {
+                url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01&endDT=' + twoWeeksAgo;
+            } else {
+                url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01&endDT=2024-01-11';
+            }
+            this.dailyFlowURL = url;
+            const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+            this.Execute(request).then(
+                (response: any) => {
+                    const data = response.data.value.timeSeries;
+                    if (data.length !== 0) {
+                        var dailyValues = data[0].values[0].value
+                    }
+                    else {
+                        dailyValues = 0
+                    };
+                    if (dailyValues !== 0) {
+                    const filteredDaily = dailyValues.filter(item => {
+                        return (parseFloat(item.value) !== -999999) //removes placeholder values
+                    });
+                    this.dailyFlow = filteredDaily;
+                    }
+                    this.getRatingCurve();
+                }); 
+            }
+    
 
         // rating curve
         public getRatingCurve() {
@@ -994,11 +1000,14 @@ module StreamStats.Controllers {
                 if (NWScode !== undefined) {
                     var url =  "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage="+ NWScode;
                     self.forecastURL = url;
-                    // console.log('NWS forecast url', url)
+                    console.log('NWS forecast url', url)
                     const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
                     self.Execute(request).then(
                         (response: any) => {
                             const xmlDocument = new DOMParser().parseFromString(response.data, "text/xml")
+
+                            console.log(xmlDocument.querySelector("message"))
+                            if (xmlDocument.querySelector("message") === null) {
 
                             const sigStages = xmlDocument.querySelector("sigstages");
                             // parse out tag values from sigStages. These will be the Y values
@@ -1007,6 +1016,7 @@ module StreamStats.Controllers {
                             const moderate = parseFloat(sigStages.querySelector("moderate").textContent);
                             const major = parseFloat(sigStages.querySelector("major").textContent);
                             const record = parseFloat(sigStages.querySelector("record").textContent);
+                            
                             // console.log("Action: ", action);
                             // console.log("Flood: ", flood);
                             // console.log("Moderate: ", moderate);
@@ -1030,6 +1040,7 @@ module StreamStats.Controllers {
                                 {name: 'major', x: majorX, y: major, color: 'rgba(204,51,255,0.7)'},
                                 {name: 'record', x: recordX, y: record, color: 'rgba(102,178,255,0.7)'}
                             ];
+                            }
                             const forecastData = xmlDocument.querySelectorAll("forecast");
                             if (forecastData[0] !== undefined) {
                             const smallerData = forecastData[0].childNodes;
@@ -1072,6 +1083,20 @@ module StreamStats.Controllers {
         public getShadedDailyStats() {
             var url = 'https://waterservices.usgs.gov/nwis/stat/?format=rdb,1.0&indent=on&sites=' + this.gage.code + '&statReportType=daily&statTypeCd=all&parameterCd=00060';
             this.percentileURL = url;
+            let finalDate;
+            if (this.dailyFlow !== undefined) {
+                var finalDailyIndex = this.dailyFlow.length-1;
+                finalDate = new Date(this.dailyFlow[finalDailyIndex].dateTime)    ///currently using the final DAILY flow point as latest year, but sometimes gage has more recent peaks
+            }  
+                let finalInstIndex = this.instFlow.length-1;
+                if (this.instFlow.length > 0) {
+                    finalDate = new Date(this.instFlow[finalInstIndex].dateTime)
+                }
+            if (this.dailyFlow == undefined && this.instFlow.length == 0) {
+                finalDate = new Date();
+            }
+            var finalYear = finalDate.getUTCFullYear();
+            this.defaultYear = finalYear; // globally setting this as the year that the plot will load on, used for other purposed as well
             //console.log('shaded url', url);
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
@@ -1085,9 +1110,6 @@ module StreamStats.Controllers {
                     do {
                         let nonArrayDataRow = data.shift().split('\t');
                         raw.push(nonArrayDataRow)
-                        var finalIndex = this.dailyFlow.length-1;
-                        var finalDate = new Date(this.dailyFlow[finalIndex].dateTime)
-                        var finalYear = finalDate.getUTCFullYear();
                         let stringDate = new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + finalYear);
                         const meanPercentiles = {
                             date: stringDate,
@@ -1169,15 +1191,15 @@ module StreamStats.Controllers {
 
         public getMinYear() {
             const minYear = Math.min.apply(
-              null, 
-              this.measuredObj.map((item) => {
+                null, 
+                this.measuredObj.map((item) => {
                 const itemDate = new Date(item.dateTime);
                 return itemDate.getFullYear();
-              })
+                })
             );
             return minYear;
-          }
-      
+        }
+
         // for sliders
         public updateChart() {
             let chart = $('#chart3').highcharts();
@@ -1287,7 +1309,7 @@ module StreamStats.Controllers {
                 }
                 })
             }
-            if (this.instFlow !== undefined) {
+            if (this.instFlow.length > 0) {
                 this.instFlow.forEach(instObj => {
                     if (parseFloat(instObj.value) !== -999999) {
                         if (this.formattedDailyFlow.length !== 0) {
@@ -1303,13 +1325,24 @@ module StreamStats.Controllers {
                 }
             })
             }
-            let finalDate;
-            if (this.formattedDailyFlow.length > 0) {
-                var finalDailyIndex = this.formattedDailyFlow.length-1;
-                finalDate = this.formattedDailyFlow[finalDailyIndex].x    ///currently using the final DAILY flow point as latest year, but sometimes gage has more recent peaks
-            }  else {
-                finalDate = new Date();
-            }
+            // let finalDate;
+            // let finalInstIndex = this.formattedInstFlow.length-1;
+            // if (this.formattedDailyFlow.length > 0) {
+            //     var finalDailyIndex = this.formattedDailyFlow.length-1;
+            //     finalDate = this.formattedDailyFlow[finalDailyIndex].x    ///currently using the final DAILY flow point as latest year, but sometimes gage has more recent peaks
+            // }  
+            // if (this.formattedDailyFlow.length > 0 && this.formattedInstFlow.length > 0) {
+            //     if (this.formattedInstFlow[finalInstIndex].x > this.formattedDailyFlow[finalDailyIndex].x) {
+            //         finalDate = this.formattedInstFlow[finalInstIndex].x
+            //     }
+            // }
+            // if (this.formattedDailyFlow.length == 0 && this.formattedInstFlow.length == 0) {
+            //     finalDate = new Date();
+            // }
+            // console.log(finalDate);
+
+
+
             // let finalDate;
             // var finalDailyIndex = this.formattedDailyFlow.length-1;
             // var finalPeakIndex = this.formattedPeakDates.length-1;
@@ -1329,8 +1362,8 @@ module StreamStats.Controllers {
             // }
 
             var finalIndex = this.formattedDailyFlow.length-1;
-            var defaultYear = finalDate.getUTCFullYear();
-            this.defaultYear = defaultYear;
+            // var defaultYear = finalDate.getUTCFullYear();
+            // this.defaultYear = defaultYear;
             function dateRange(startDate, endDate, steps = 1) {
                 const dateArray = [];
                 let currentDate = new Date(startDate);
@@ -1373,6 +1406,7 @@ module StreamStats.Controllers {
                         this.formattedPeakDatesOnYear.push({x: currentYear, y: peakOnYear.peak_va, realDate: new Date(peakOnYear.peak_dt)})
                         }
                 });
+                console.log(this.formattedPeakDatesOnYear)
             }
             if (this.estPeakDates) {
                 this.estPeakDates.forEach(estPeakOnYear => {
@@ -2321,6 +2355,7 @@ module StreamStats.Controllers {
             });
             this.selectedFloodFreqStats = this.allFloodFreqStats[0];
             this.selectedYear = this.allYears[0];
+            console.log('years', this.allYears, this.selectedYear);
             this.createAnnualFlowPlot();
             this.createDailyRasterPlot();
             this.createDischargePlot();
@@ -2369,11 +2404,15 @@ module StreamStats.Controllers {
             var self = this
             let min;
                 if (this.formattedPeakDatesOnYear.length > 0) {
+                    console.log('1')
                     min = (new Date(1 +'/' + 1 + '/' + this.allYears[0])).getTime()
                 } else {
+                    console.log('2')
                     min = this.startAndEnd[0].getTime()
                 }
             let max = (new Date(12 +'/' + 31 + '/' + this.allYears[0])).getTime();
+            console.log('min and max', new Date(1 +'/' + 1 + '/' + this.allYears[0]), new Date(12 +'/' + 31 + '/' + this.allYears[0]))
+            console.log(this.formattedPeakDatesOnYear)
             this.chartConfig = {
                 chart: {
                     height: 550,
