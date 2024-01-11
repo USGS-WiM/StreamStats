@@ -910,7 +910,6 @@ var StreamStats;
                     });
                 }
                 else {
-                    console.log("here we are");
                     var _loop_1 = function (feat) {
                         console.log(feat);
                         url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSavailableFeatures'].format(feat.properties.WorkspaceID);
@@ -978,17 +977,9 @@ var StreamStats;
                                 }
                                 _this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, _this, '');
                             }
-                            else {
-                                if (_this.selectedStudyArea.Pourpoint.length > 1) {
-                                    feature.id = feature.id + "_" + workspaceID;
-                                }
+                            else if (_this.selectedStudyArea.Pourpoint.length > 1) {
+                                feature.properties.WorkspaceID = workspaceID;
                                 _this.selectedStudyArea.FeatureCollection.features.push(feature);
-                                if (feature.id.includes("longestflowpath")) {
-                                    _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id.split("_")[0], imagesrc: null }, true));
-                                }
-                                else {
-                                    _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id, imagesrc: null }, false));
-                                }
                             }
                         });
                         _this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, _this, '');

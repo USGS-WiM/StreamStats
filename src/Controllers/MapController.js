@@ -635,7 +635,6 @@ var StreamStats;
                             }
                         };
                         _this.lineDelineationstart = function (e) {
-                            console.log(e);
                             if (coordinates.point1.lat === null && coordinates.point1.long === null && coordinates.point2.lat === null && coordinates.point2.long === null) {
                                 console.log('one');
                                 coordinates.point1.lat = e.latlng.lat;
@@ -1006,12 +1005,34 @@ var StreamStats;
                 var _this = this;
                 if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.FeatureCollection)
                     return;
-                this.studyArea.selectedStudyArea.FeatureCollection.features.forEach(function (layer) {
-                    var item = angular.fromJson(angular.toJson(layer));
-                    if (item.id.includes('longestflowpath')) {
-                        _this.addGeoJSON(item.id, item.geometry);
+                if (this.studyArea.selectedStudyArea.Pourpoint.length == 1) {
+                    this.studyArea.selectedStudyArea.FeatureCollection.features.forEach(function (layer) {
+                        var item = angular.fromJson(angular.toJson(layer));
+                        if (item.id.includes('longestflowpath')) {
+                            _this.addGeoJSON(item.id, item.geometry);
+                        }
+                    });
+                }
+                else {
+                    var longestLongestFlowPath = null;
+                    for (var _i = 0, _a = this.studyArea.selectedStudyArea.FeatureCollection.features.filter(function (f) { return (f.id).includes("longestflowpath"); }); _i < _a.length; _i++) {
+                        var layer = _a[_i];
+                        var item = angular.fromJson(angular.toJson(layer));
+                        if (longestLongestFlowPath == null || (item.properties.SHAPE_Leng > longestLongestFlowPath.properties.SHAPE_Leng)) {
+                            longestLongestFlowPath = item;
+                        }
                     }
-                });
+                    var longestLongestFlowPathWorkspaceID = longestLongestFlowPath.properties.WorkspaceID;
+                    this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(longestLongestFlowPath.id, "geojson", { displayName: longestLongestFlowPath.id, imagesrc: null }, true));
+                    this.addGeoJSON(longestLongestFlowPath.id, longestLongestFlowPath.geometry);
+                    this.studyArea.selectedStudyArea.FeatureCollection.features.forEach(function (layer) {
+                    });
+                    for (var _b = 0, _c = this.studyArea.selectedStudyArea.FeatureCollection.features.filter(function (f) { return f.properties.WorkspaceID == longestLongestFlowPathWorkspaceID && (f.id).includes("slp1085point"); }); _b < _c.length; _b++) {
+                        var layer = _c[_b];
+                        this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(layer.id, "geojson", { displayName: layer.id, imagesrc: null }, false));
+                    }
+                    this.studyArea.selectedStudyArea.FeatureCollection.features = this.studyArea.selectedStudyArea.FeatureCollection.features.filter(function (f) { return (f.id.includes("globalwatershed") || f.properties.WorkspaceID == longestLongestFlowPathWorkspaceID) && f.id != "globalwatershedpoint"; });
+                }
                 this.toaster.pop('success', "Additional features have been downloaded", "Please continue", 5000);
             };
             MapController.prototype.onSelectedStudyAreaChanged = function () {

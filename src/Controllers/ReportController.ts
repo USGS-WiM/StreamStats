@@ -866,26 +866,9 @@ module StreamStats.Controllers {
                         }
                     };
             }   
-            else if (LayerName == 'globalwatershedpoint') {
-                this.layers.overlays[LayerName] = {
-                    name: 'Basin Clicked Point',
-                    type: 'geoJSONShape',
-                    data: feature,
-                    visible: false,
-                    layerOptions: {
-                        style: {
-                            fillColor: "red",
-                            weight: 2,
-                            opacity: 1,
-                            color: 'white',
-                            fillOpacity: 0.5
-                        }
-                    }
-                }
-            } 
             else if (LayerName.includes('globalwatershedpoint')) {
                 this.layers.overlays[LayerName] = {
-                    name: 'Subbasin Delineation Point ' + LayerName.replace(/[^0-9]/g, ''),
+                    name: /\d/.test(LayerName) ? "Subbasin Delineation Point " + LayerName.replace(/[^0-9]/g, '') : "Basin Clicked Point",
                     type: 'geoJSONShape',
                     data: feature,
                     visible: true,
@@ -896,7 +879,7 @@ module StreamStats.Controllers {
                     name: 'Subbasin Boundary ' + LayerName.replace(/[^0-9]/g, ''),
                     type: 'geoJSONShape',
                     data: feature,
-                    visible: true,
+                    visible: false,
                 }
             }
             else if (LayerName == 'referenceGage') {
@@ -939,6 +922,20 @@ module StreamStats.Controllers {
                             opacity: 1,
                             color: 'white',
                             fillOpacity: 0.5
+                        }
+                    }
+                }
+            }
+            else if (LayerName.includes('longestflowpath')) {
+                this.layers.overlays[LayerName] = {
+                    name: LayerName,
+                    type: 'geoJSONShape',
+                    data: feature,
+                    visible: false,
+                    layerOptions: {
+                        style: {
+                            fillColor: "blue",
+                            color: 'blue'
                         }
                     }
                 }
