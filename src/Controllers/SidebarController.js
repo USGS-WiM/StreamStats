@@ -116,8 +116,10 @@ var StreamStats;
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_about, { "tabName": "regionInfo", "regionID": region });
             };
             SidebarController.prototype.resetWorkSpace = function () {
+                this.EventManager.RaiseEvent(StreamStats.Services.onClearBasin, this, WiM.Event.EventArgs.Empty);
                 this.regionService.clearSelectedParameters();
                 this.studyAreaService.clearStudyArea();
+                this.studyAreaService.resetDelineationButtons();
                 this.studyAreaService.zoomLevel15 = true;
                 this.nssService.clearNSSdata();
                 this.multipleParameterSelectorAdd = false;
