@@ -383,7 +383,7 @@ module StreamStats.Services {
                             this.toaster.clear();
                             this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
                             this.canUpdate = true;
-                            if (this.regionService.selectedRegion.Applications.indexOf("HydrologicFeatures") != -1) {
+                            if (this.regionService.selectedRegion.Applications.indexOf("HydrologicFeatures") != -1 && this.selectedStudyArea.Pourpoint.length == 1) {
                                 this.queryHydrologicFeatures();
                             }
                         }

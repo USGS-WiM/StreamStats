@@ -286,7 +286,7 @@ var StreamStats;
                                         _this.toaster.clear();
                                         _this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, _this, StudyAreaEventArgs.Empty);
                                         _this.canUpdate = true;
-                                        if (_this.regionService.selectedRegion.Applications.indexOf("HydrologicFeatures") != -1) {
+                                        if (_this.regionService.selectedRegion.Applications.indexOf("HydrologicFeatures") != -1 && _this.selectedStudyArea.Pourpoint.length == 1) {
                                             _this.queryHydrologicFeatures();
                                         }
                                     }
