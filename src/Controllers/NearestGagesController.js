@@ -104,8 +104,8 @@ var StreamStats;
                 var headers = {
                     "X-Is-Streamstats": true
                 };
-                var lat = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
-                var long = this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
+                var lat = this.studyAreaService.selectedStudyArea.Pourpoint[0].Latitude.toString();
+                var long = this.studyAreaService.selectedStudyArea.Pourpoint[0].Longitude.toString();
                 var url = configuration.baseurls.GageStatsServices;
                 if (this.queryBy == 'Nearest')
                     url += configuration.queryparams.GageStatsServicesNearest.format(lat, long, this.distance);

@@ -79,8 +79,8 @@ module StreamStats.Controllers {
 
             // Load list of reference gages from Flow Anywhere Gages service
             this.referenceGageList = null;
-            var lat = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
-            var lon = this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
+            var lat = this.studyAreaService.selectedStudyArea.Pourpoint[0].Latitude.toString();
+            var lon = this.studyAreaService.selectedStudyArea.Pourpoint[0].Longitude.toString();
             var url = configuration.baseurls.StreamStatsMapServices + configuration.queryparams.FlowAnywhereGages.format(lon, lat)
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
 
