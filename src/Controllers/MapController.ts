@@ -1442,7 +1442,7 @@ module StreamStats.Controllers {
                 }
 
                 // Remove all the additional features that were not associated with the sub-basin that had the longest longest flow path
-                this.studyArea.selectedStudyArea.FeatureCollection.features = this.studyArea.selectedStudyArea.FeatureCollection.features.filter(f => { return ((<string>f.id).includes("globalwatershed") || f.properties.WorkspaceID == longestLongestFlowPathWorkspaceID) && (<string>f.id) != "globalwatershedpoint" })
+                this.studyArea.selectedStudyArea.FeatureCollection.features = this.studyArea.selectedStudyArea.FeatureCollection.features.filter(f => { return ((<string>f.id).includes("globalwatershed") || f.properties.WorkspaceID == longestLongestFlowPathWorkspaceID) && (<string>f.id) != "globalwatershedpoint" });
                 
             }
 
