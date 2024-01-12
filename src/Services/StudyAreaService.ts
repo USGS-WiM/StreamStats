@@ -1083,7 +1083,7 @@ module StreamStats.Services {
         }
 
         public getAdditionalFeatureList() {
-            if (this.selectedStudyArea.Pourpoint.length == 1) {
+            if (this.selectedStudyArea.Pourpoint.length == 1) { // Point delineation
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSavailableFeatures'].format(this.selectedStudyArea.WorkspaceID);
                 var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
                 request.withCredentials = true;
@@ -1109,9 +1109,10 @@ module StreamStats.Services {
                         this.toaster.pop("error", "There was an HTTP error requesting additional feautres list", "Please retry", 0);
                     }).finally(() => {
                     });
-            } else {
+            } else { // Line delineation
+
+                // Iterate through each sub-basin and get its additional features
                 for (const feat of this.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase().includes("globalwatershed") && /\d/.test(<string>(f.id)) && f.geometry.type == 'Polygon'})) {
-                    console.log(feat);
                     var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSavailableFeatures'].format(feat.properties.WorkspaceID);
                     var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
                     request.withCredentials = true;
@@ -1134,10 +1135,11 @@ module StreamStats.Services {
                             //sm when error
                             this.toaster.clear();
                             this.additionalFeaturesLoaded = true;
-                            this.toaster.pop("error", "There was an HTTP error requesting additional feautres list", "Please retry", 0);
+                            this.toaster.pop("error", "There was an HTTP error requesting additional features list", "Please retry", 0);
                         }).finally(() => {
                         });
                 }
+                this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, this, '');
             }
             
         }
@@ -1176,14 +1178,22 @@ module StreamStats.Services {
                                     this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(<string>feature.id, "geojson", { displayName: feature.id, imagesrc: null }, false));
                                 }
                                 this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, this, '');
-                            } else if (this.selectedStudyArea.Pourpoint.length > 1) {
+                            } else if (this.selectedStudyArea.Pourpoint.length > 1) { // Line delineation
                                 feature.properties.WorkspaceID = workspaceID;
                                 this.selectedStudyArea.FeatureCollection.features.push(feature);      
+                            } else { // Point delineation
+                                this.selectedStudyArea.FeatureCollection.features.push(feature);               
+                            
+                                if (feature && (feature.id == "longestflowpath3d" || feature.id == "longestflowpath")) { // We want longest flow path to be checked automatically 
+                                    this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(<string>feature.id, "geojson", { displayName: feature.id, imagesrc: null }, true));
+                                } else { // All other features should be turned on and off manually by user
+                                    this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(<string>feature.id, "geojson", { displayName: feature.id, imagesrc: null }, false));
+                                }
+                                this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, this, '');
                             }
 
                             
                         });
-                        this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, this, '');
                     }
                     this.additionalFeaturesLoaded = true;
                     //sm when complete

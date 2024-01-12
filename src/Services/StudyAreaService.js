@@ -366,7 +366,6 @@ var StreamStats;
                                     this.toaster.clear();
                                     this.eventManager.RaiseEvent(Services.onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
                                     this.canUpdate = true;
-                                    console.log(this.selectedStudyArea.FeatureCollection);
                                 }
                                 else {
                                     this.toaster.clear();
@@ -911,7 +910,6 @@ var StreamStats;
                 }
                 else {
                     var _loop_1 = function (feat) {
-                        console.log(feat);
                         url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSavailableFeatures'].format(feat.properties.WorkspaceID);
                         request = new WiM.Services.Helpers.RequestInfo(url, true);
                         request.withCredentials = true;
@@ -932,7 +930,7 @@ var StreamStats;
                         }, function (error) {
                             _this.toaster.clear();
                             _this.additionalFeaturesLoaded = true;
-                            _this.toaster.pop("error", "There was an HTTP error requesting additional feautres list", "Please retry", 0);
+                            _this.toaster.pop("error", "There was an HTTP error requesting additional features list", "Please retry", 0);
                         }).finally(function () {
                         });
                     };
@@ -941,26 +939,23 @@ var StreamStats;
                         var feat = _a[_i];
                         _loop_1(feat);
                     }
+                    this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, this, '');
                 }
             };
             StudyAreaService.prototype.getAdditionalFeatures = function (workspaceID, featureString) {
                 var _this = this;
-                console.log("here");
-                console.log(this.selectedStudyArea);
                 if (!featureString) {
                     this.additionalFeaturesLoaded = true;
                     return;
                 }
                 this.toaster.pop('wait', "Downloading additional features", "Please wait...", 0);
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSfeatures'].format(workspaceID, 4326, featureString);
-                console.log(url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true);
                 request.withCredentials = true;
                 this.Execute(request).then(function (response) {
                     if (response.data.featurecollection && response.data.featurecollection.length > 0) {
                         _this.toaster.clear();
                         var features = _this.reconfigureWatershedResponse(response.data.featurecollection);
-                        console.log(features);
                         angular.forEach(features, function (feature, index) {
                             if (features.length < 1) {
                                 for (var i = 0; i < _this.selectedStudyArea.FeatureCollection.features.length; i++) {
@@ -981,8 +976,17 @@ var StreamStats;
                                 feature.properties.WorkspaceID = workspaceID;
                                 _this.selectedStudyArea.FeatureCollection.features.push(feature);
                             }
+                            else {
+                                _this.selectedStudyArea.FeatureCollection.features.push(feature);
+                                if (feature && (feature.id == "longestflowpath3d" || feature.id == "longestflowpath")) {
+                                    _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id, imagesrc: null }, true));
+                                }
+                                else {
+                                    _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(feature.id, "geojson", { displayName: feature.id, imagesrc: null }, false));
+                                }
+                                _this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, _this, '');
+                            }
                         });
-                        _this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, _this, '');
                     }
                     _this.additionalFeaturesLoaded = true;
                 }, function (error) {

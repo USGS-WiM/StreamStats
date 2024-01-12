@@ -1025,8 +1025,6 @@ var StreamStats;
                     var longestLongestFlowPathWorkspaceID = longestLongestFlowPath.properties.WorkspaceID;
                     this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(longestLongestFlowPath.id, "geojson", { displayName: longestLongestFlowPath.id, imagesrc: null }, true));
                     this.addGeoJSON(longestLongestFlowPath.id, longestLongestFlowPath.geometry);
-                    this.studyArea.selectedStudyArea.FeatureCollection.features.forEach(function (layer) {
-                    });
                     for (var _b = 0, _c = this.studyArea.selectedStudyArea.FeatureCollection.features.filter(function (f) { return f.properties.WorkspaceID == longestLongestFlowPathWorkspaceID && (f.id).includes("slp1085point"); }); _b < _c.length; _b++) {
                         var layer = _c[_b];
                         this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(layer.id, "geojson", { displayName: layer.id, imagesrc: null }, false));
