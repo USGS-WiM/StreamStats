@@ -203,8 +203,6 @@ module StreamStats.Controllers {
             fillOpacity: 0.5
         }
         public imageryToggled = false;
-        public lineDelineationstart: any;
-        public lineDelineationstop: any;
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$compile', 'toaster', '$location', '$stateParams','leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack', '$http'];

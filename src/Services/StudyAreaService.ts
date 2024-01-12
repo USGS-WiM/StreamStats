@@ -422,7 +422,7 @@ module StreamStats.Services {
                     for (let i = 0; i < 3; i++) {
                         //console.log( 'Try' + i)
                         var result = await this.executeDelineationRequest(request).then((response) => {
-                            // console.log(response);
+                            //console.log(response);
                             return (response)
                         })
                         if (result) {
@@ -452,7 +452,7 @@ module StreamStats.Services {
                     }
                     var featuresCollectionToMerge = turf.featureCollection(featuresToMerge);
                     var dissolvedFeatures = turf.dissolve(featuresCollectionToMerge);
-                    // console.log(dissolvedFeatures)
+                    //console.log(dissolvedFeatures)
                     dissolvedFeatures.features[0]['id'] = 'globalwatershed';
                     this.selectedStudyArea.FeatureCollection.features.push(dissolvedFeatures.features[0]);
                     var bbox = turf.bbox(dissolvedFeatures);
