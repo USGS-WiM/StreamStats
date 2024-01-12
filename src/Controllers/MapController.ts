@@ -917,7 +917,7 @@ module StreamStats.Controllers {
                             this.drawControl.disable();
 
                             // send line to checkDelineationLine
-                            var lineClickPoints = [new WiM.Models.Point(coordinates.point1.lat, coordinates.point1.long, '4326'), new WiM.Models.Point(coordinates.point2.lat, coordinates.point2.long, '4326')] //here
+                            var lineClickPoints = [new WiM.Models.Point(coordinates.point1.lat, coordinates.point1.long, '4326'), new WiM.Models.Point(coordinates.point2.lat, coordinates.point2.long, '4326')]
                             this.checkDelineationLine(coordinates, lineClickPoints)
                         } 
 
@@ -1421,7 +1421,7 @@ module StreamStats.Controllers {
                     }
                 });
             } else { // Line delineation
-
+                
                 // Determine which sub-basin has the longest longest flow path
                 var longestLongestFlowPath = null;
                 for (const layer of this.studyArea.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).includes("longestflowpath")})) {
