@@ -1,4 +1,4 @@
-﻿//------------------------------------------------------------------------------
+﻿﻿//------------------------------------------------------------------------------
 //----- StudyAreaService -------------------------------------------------------
 //------------------------------------------------------------------------------
 
@@ -37,6 +37,7 @@ module StreamStats.Services {
         AddStudyArea(sa: Models.IStudyArea);
         RemoveStudyArea();
         lineIntersection(line);
+        resetDelineationButtons();
         doDelineateFlag: boolean;
         delineateByLine: boolean;
         delineateByPoint: boolean
@@ -107,6 +108,7 @@ module StreamStats.Services {
     export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
     export var onSelectedStudyParametersLoaded: string = "onSelectedStudyParametersLoaded";
     export var onStudyAreaReset: string = "onStudyAreaReset";
+    export var onClearBasin: string = "onClearBasin";
     export var onEditClick: string = "onEditClick";
     export var onAdditionalFeaturesLoaded: string = "onAdditionalFeaturesLoaded";
     //export var onQ10Loaded: string = "onQ10Loaded";
@@ -216,6 +218,7 @@ module StreamStats.Services {
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyParametersLoaded);
             eventManager.AddEvent<StudyAreaEventArgs>(onSelectedStudyAreaChanged);
             eventManager.AddEvent<StudyAreaEventArgs>(onStudyAreaReset);
+            eventManager.AddEvent<StudyAreaEventArgs>(onClearBasin);
             eventManager.AddEvent<StudyAreaEventArgs>(onAdditionalFeaturesLoaded);
 
 
@@ -686,6 +689,16 @@ module StreamStats.Services {
                 });
         }
 
+        public resetDelineationButtons(){
+            this.checkingDelineatedLine = false;
+            this.disablePoint = false;
+            this.delineateByLine = false;
+            this.doDelineateFlag = false;
+            this.checkingDelineatedPoint = false;
+            this.disableLine = false;
+            this.delineateByPoint = false;
+        }
+
         public lineIntersection(line) {
             var data = {
                 'region': 'SC',
@@ -700,10 +713,16 @@ module StreamStats.Services {
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
             
             return this.Execute(request).then((response: any) => {
-                console.log(response)
+                console.log(response.data.response.points.length)
                 if (response.data.response.points.length == 0) {
+                    this.resetDelineationButtons();
                     this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
                     throw new Error;
+                } else if (response.data.response.points.length > 10) {
+                    this.resetDelineationButtons();
+                    this.toaster.pop("error", "Error", "Delineation not possible. Line has more than 10 intersections with stream grid.", 0);
+
+                    throw new Error('lineLength');
                 } else {
                     return this.checkExcludePolygon(response.data.response)
                 }

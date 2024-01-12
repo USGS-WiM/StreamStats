@@ -57,6 +57,7 @@ var StreamStats;
         Services.onSelectedStudyAreaChanged = "onSelectedStudyAreaChanged";
         Services.onSelectedStudyParametersLoaded = "onSelectedStudyParametersLoaded";
         Services.onStudyAreaReset = "onStudyAreaReset";
+        Services.onClearBasin = "onClearBasin";
         Services.onEditClick = "onEditClick";
         Services.onAdditionalFeaturesLoaded = "onAdditionalFeaturesLoaded";
         Services.onRegressionLoaded = "onRegressionLoaded";
@@ -104,6 +105,7 @@ var StreamStats;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
                 eventManager.AddEvent(Services.onStudyAreaReset);
+                eventManager.AddEvent(Services.onClearBasin);
                 eventManager.AddEvent(Services.onAdditionalFeaturesLoaded);
                 eventManager.SubscribeToEvent(Services.onSelectedStudyAreaChanged, new WiM.Event.EventHandler(function (sender, e) {
                     _this.onStudyAreaChanged(sender, e);
@@ -532,6 +534,15 @@ var StreamStats;
                 }).finally(function () {
                 });
             };
+            StudyAreaService.prototype.resetDelineationButtons = function () {
+                this.checkingDelineatedLine = false;
+                this.disablePoint = false;
+                this.delineateByLine = false;
+                this.doDelineateFlag = false;
+                this.checkingDelineatedPoint = false;
+                this.disableLine = false;
+                this.delineateByPoint = false;
+            };
             StudyAreaService.prototype.lineIntersection = function (line) {
                 var _this = this;
                 var data = {
@@ -546,10 +557,16 @@ var StreamStats;
                 };
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
                 return this.Execute(request).then(function (response) {
-                    console.log(response);
+                    console.log(response.data.response.points.length);
                     if (response.data.response.points.length == 0) {
+                        _this.resetDelineationButtons();
                         _this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
                         throw new Error;
+                    }
+                    else if (response.data.response.points.length > 10) {
+                        _this.resetDelineationButtons();
+                        _this.toaster.pop("error", "Error", "Delineation not possible. Line has more than 10 intersections with stream grid.", 0);
+                        throw new Error('lineLength');
                     }
                     else {
                         return _this.checkExcludePolygon(response.data.response);

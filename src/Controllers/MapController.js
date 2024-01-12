@@ -125,6 +125,16 @@ var StreamStats;
                 _this.eventManager.SubscribeToEvent(StreamStats.Services.onStudyAreaReset, new WiM.Event.EventHandler(function () {
                     _this.removeGeoJson();
                 }));
+                _this.eventManager.SubscribeToEvent(StreamStats.Services.onClearBasin, new WiM.Event.EventHandler(function () {
+                    _this.studyArea.selectedStudyArea.FeatureCollection['features'].forEach(function (layer) {
+                        _this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, _this, new WiM.Directives.LegendLayerRemovedEventArgs(layer.id, "geojson"));
+                    });
+                    if (_this.delineationLine) {
+                        _this.leafletData.getMap("mainMap").then(function (map) {
+                            map.removeLayer(_this.delineationLine);
+                        });
+                    }
+                }));
                 _this.eventManager.SubscribeToEvent(StreamStats.Services.onSelectedMethodExecuteComplete, new WiM.Event.EventHandler(function (sender, e) {
                     _this.onExplorationMethodComplete(sender, e);
                 }));
@@ -626,17 +636,29 @@ var StreamStats;
                         };
                         _this.lineDelineationstart = function (e) {
                             if (coordinates.point1.lat === null && coordinates.point1.long === null && coordinates.point2.lat === null && coordinates.point2.long === null) {
+                                console.log('one');
                                 coordinates.point1.lat = e.latlng.lat;
                                 coordinates.point1.long = e.latlng.lng;
                             }
                             else if (coordinates.point1.lat !== null && coordinates.point1.long !== null && coordinates.point2.lat === null && coordinates.point2.long === null) {
+                                console.log('two');
                                 coordinates.point2.lat = e.latlng.lat;
                                 coordinates.point2.long = e.latlng.lng;
-                                var line = [
+                                var lineCoordinates = [
                                     [coordinates.point1.lat, coordinates.point1.long],
                                     [coordinates.point2.lat, coordinates.point2.long]
                                 ];
-                                L.polyline(line, { color: 'blue' }).addTo(map);
+                                _this.delineationLine = L.polyline(lineCoordinates, { color: 'blue' }).addTo(map);
+                                console.log(_this.drawControl._getMeasurementString());
+                                var distance = _this.drawControl._getMeasurementString();
+                                if (distance.replace(/[^0-9]/g, "") > 13200) {
+                                    _this.studyArea.resetDelineationButtons();
+                                    map.removeLayer(_this.delineationLine);
+                                    map.off("click", _this.lineDelineationstart);
+                                    _this.drawControl.disable();
+                                    _this.toaster.pop("error", "Error", "Delineation not possible. Line must be shorter than 2.5 miles.", 0);
+                                    throw new Error;
+                                }
                                 map.off("click", _this.lineDelineationstart);
                                 _this.drawControl.disable();
                                 var lineClickPoints = [new WiM.Models.Point(coordinates.point1.lat, coordinates.point1.long, '4326'), new WiM.Models.Point(coordinates.point2.lat, coordinates.point2.long, '4326')];
@@ -727,11 +749,9 @@ var StreamStats;
                                             }
                                             else {
                                                 _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", point.message.text, 0);
-                                                _this.studyArea.checkingDelineatedLine = false;
-                                                _this.studyArea.disablePoint = false;
-                                                _this.studyArea.delineateByLine = false;
-                                                _this.studyArea.doDelineateFlag = false;
                                                 valid = false;
+                                                _this.studyArea.resetDelineationButtons();
+                                                map.removeLayer(_this.delineationLine);
                                                 gtag('event', 'ValidatePoint', { 'Label': 'Not allowed' });
                                             }
                                         }
@@ -759,7 +779,7 @@ var StreamStats;
                                     _this.startDelineate(ssPoints, false, null, lineClickPoints);
                                 }
                             }, function (error) {
-                                _this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
+                                map.removeLayer(_this.delineationLine);
                             }).finally(function () {
                             });
                         }
@@ -828,10 +848,7 @@ var StreamStats;
                                             else {
                                                 _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", result.message.text, 0);
                                                 gtag('event', 'ValidatePoint', { 'Label': 'Not allowed' });
-                                                _this.studyArea.checkingDelineatedPoint = false;
-                                                _this.studyArea.disableLine = false;
-                                                _this.studyArea.delineateByPoint = false;
-                                                _this.studyArea.doDelineateFlag = false;
+                                                _this.studyArea.resetDelineationButtons();
                                             }
                                         }
                                         else {
@@ -1009,7 +1026,7 @@ var StreamStats;
                     _this.addGeoJSON(name, item);
                     _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(name, "geojson", _this.geojson[name].style));
                     if (name.includes('globalwatershed') && /\d/.test(name) && !name.includes('point')) {
-                        _this.removeGeoJson(name);
+                        _this.removeGeoJsonLayers(name);
                     }
                 });
                 if (this.studyArea.selectedStudyArea.FeatureCollection['bbox']) {
@@ -1044,7 +1061,8 @@ var StreamStats;
                     this.nonsimplifiedBasin = undefined;
                 }
                 for (var k in this.geojson) {
-                    if (typeof this.geojson[k] !== 'function' && ((k != 'streamgages' && !k.includes('globalwatershedpoint')) || k == layerName)) {
+                    console.log(k);
+                    if (typeof this.geojson[k] !== 'function' && (k != 'streamgages' || k == layerName)) {
                         delete this.geojson[k];
                         this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs(k, "geojson"));
                     }

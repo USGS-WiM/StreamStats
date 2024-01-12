@@ -194,9 +194,11 @@ module StreamStats.Controllers {
         }
 
         public resetWorkSpace() {
+            this.EventManager.RaiseEvent(Services.onClearBasin, this, WiM.Event.EventArgs.Empty); // to clear the line when doing line delineation 
             //this.regionService.clearRegion();
             this.regionService.clearSelectedParameters();
             this.studyAreaService.clearStudyArea();
+            this.studyAreaService.resetDelineationButtons()
             this.studyAreaService.zoomLevel15 = true;
             this.nssService.clearNSSdata();
             this.multipleParameterSelectorAdd = false;

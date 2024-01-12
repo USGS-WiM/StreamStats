@@ -1,4 +1,4 @@
-﻿//------------------------------------------------------------------------------
+﻿﻿//------------------------------------------------------------------------------
 //----- MapController ----------------------------------------------------------
 //------------------------------------------------------------------------------
 
@@ -169,6 +169,7 @@ module StreamStats.Controllers {
         public drawControl: any;
         public toaster: any;
         public nomnimalZoomLevel: string;
+        public delineationLine;
         public get selectedExplorationMethodType(): Services.ExplorationMethodType {
             if (this.explorationService.selectedMethod == null) return 0;
             return this.explorationService.selectedMethod.navigationID;
@@ -249,6 +250,20 @@ module StreamStats.Controllers {
             
             this.eventManager.SubscribeToEvent(Services.onStudyAreaReset, new WiM.Event.EventHandler<WiM.Event.EventArgs>(() => {
                 this.removeGeoJson();
+            }));
+
+            this.eventManager.SubscribeToEvent(Services.onClearBasin, new WiM.Event.EventHandler<WiM.Event.EventArgs>(() => {                
+                // need to clear the basin boundary, basin click points, and subbasin boundaries from legend
+                this.studyArea.selectedStudyArea.FeatureCollection['features'].forEach((layer:any) => {
+                    this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs(layer.id, "geojson"));
+                });
+
+                // need to clear delineation line from the map 
+                if (this.delineationLine) { 
+                    this.leafletData.getMap("mainMap").then((map: any) => {
+                        map.removeLayer(this.delineationLine)
+                    });
+                }
             }));
 
             this.eventManager.SubscribeToEvent(Services.onSelectedMethodExecuteComplete, new WiM.Event.EventHandler<Services.ExplorationServiceEventArgs>((sender: any, e: Services.ExplorationServiceEventArgs) => {
@@ -848,7 +863,6 @@ module StreamStats.Controllers {
         private drawDelineationLine(){
             this.leafletData.getMap("mainMap").then((map: any) => {
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => {
-
                     this.drawController({shapeOptions: { color: 'blue' }, metric: false }, true);
 
                     var drawnItems = maplayers.overlays.draw;
@@ -868,24 +882,45 @@ module StreamStats.Controllers {
                     //listeners active during drawing              
                     this.lineDelineationstart = (e) => {
                         if (coordinates.point1.lat === null && coordinates.point1.long === null && coordinates.point2.lat === null && coordinates.point2.long === null) {
+                            console.log('one')
                             coordinates.point1.lat = e.latlng.lat;
                             coordinates.point1.long = e.latlng.lng;
                         } else if (coordinates.point1.lat !== null && coordinates.point1.long !== null && coordinates.point2.lat === null && coordinates.point2.long === null) {
+                            console.log('two')
                             coordinates.point2.lat = e.latlng.lat;
                             coordinates.point2.long = e.latlng.lng;
                             // We have enough points (2) to create a line
-                            const line = [
+                            const lineCoordinates = [
                                 [ coordinates.point1.lat, coordinates.point1.long ],
                                 [ coordinates.point2.lat, coordinates.point2.long ]
                             ];
-                            L.polyline(line, {color: 'blue'}).addTo(map);
-                            //remove listeners
+                            // add line to map 
+                            this.delineationLine = L.polyline(lineCoordinates, {color: 'blue'}).addTo(map)
+
+                            // check line length 
+                            console.log(this.drawControl._getMeasurementString())
+                            var distance = this.drawControl._getMeasurementString();
+                            if (distance.replace(/[^0-9]/g, "") > 13200) { // line is longer than 2.5 miles
+                                this.studyArea.resetDelineationButtons();
+                                map.removeLayer(this.delineationLine)
+                                // remove listeners
+                                map.off("click", this.lineDelineationstart);
+                                this.drawControl.disable();
+                                // throw error
+                                this.toaster.pop("error", "Error", "Delineation not possible. Line must be shorter than 2.5 miles.", 0);
+
+                                throw new Error;
+                            }
+
+                            // remove listeners
                             map.off("click", this.lineDelineationstart);
                             this.drawControl.disable();
-                            // console.log(this.studyArea.selectedStudyArea);
+
+                            // send line to checkDelineationLine
                             var lineClickPoints = [new WiM.Models.Point(coordinates.point1.lat, coordinates.point1.long, '4326'), new WiM.Models.Point(coordinates.point2.lat, coordinates.point2.long, '4326')] //here
                             this.checkDelineationLine(coordinates, lineClickPoints)
                         } 
+
                     };
                     map.on("click", this.lineDelineationstart);
                 });
@@ -1005,11 +1040,9 @@ module StreamStats.Controllers {
                                         } else { // If exclusion polygons are being considered
                                             // Prohibit delineation
                                             this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", point.message.text, 0);
-                                            this.studyArea.checkingDelineatedLine = false;
-                                            this.studyArea.disablePoint = false;
-                                            this.studyArea.delineateByLine = false;
-                                            this.studyArea.doDelineateFlag = false;
                                             valid = false;
+                                            this.studyArea.resetDelineationButtons();
+                                            map.removeLayer(this.delineationLine)
                                             gtag('event', 'ValidatePoint',{ 'Label': 'Not allowed' });
                                         }
                                     } else {
@@ -1044,9 +1077,7 @@ module StreamStats.Controllers {
                             }
                             
                         }, (error) => {
-                            this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
-                            // var x = error;
-                            //sm when error                    
+                            map.removeLayer(this.delineationLine)
                         }).finally(() => {
                             // this.CanContinue = true;
                         });
@@ -1135,10 +1166,7 @@ module StreamStats.Controllers {
                                             // Prohibit delineation
                                             this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", result.message.text, 0);
                                             gtag('event', 'ValidatePoint',{ 'Label': 'Not allowed' });
-                                            this.studyArea.checkingDelineatedPoint = false;
-                                            this.studyArea.disableLine = false;
-                                            this.studyArea.delineateByPoint = false;
-                                            this.studyArea.doDelineateFlag = false;
+                                            this.studyArea.resetDelineationButtons()
                                             
                                         }
                                     } else { // If point is in a soft exclusion polygon (delineation allowed)
@@ -1312,7 +1340,7 @@ module StreamStats.Controllers {
                             map.fitBounds(tempExtent.getBounds());
                         });
                     }
-
+                    
                     this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(layer.name, "geojson", this.geojson[layer.name].style));
                 });      
 
@@ -1414,7 +1442,7 @@ module StreamStats.Controllers {
                 
                 // Remove subbasins from map
                 if (name.includes('globalwatershed') && /\d/.test(name) && !name.includes('point')) {
-                    this.removeGeoJson(name);
+                    this.removeGeoJsonLayers(name)
                 } 
             });
             //zoom to bounding box
@@ -1455,7 +1483,7 @@ module StreamStats.Controllers {
                     "f": "image"
                 });
         }
-        
+
         private removeGeoJson(layerName: string = "") {
             // TODO: None of these are getting removed from the legend when this is run
             // remove non-simplified basin
@@ -1464,7 +1492,8 @@ module StreamStats.Controllers {
                 this.nonsimplifiedBasin = undefined;
             }
             for (var k in this.geojson) {
-                if (typeof this.geojson[k] !== 'function' && ((k != 'streamgages' && !k.includes('globalwatershedpoint')) || k == layerName)) {
+                console.log(k)
+                if (typeof this.geojson[k] !== 'function' && (k != 'streamgages' || k == layerName)) {
                     delete this.geojson[k];
                     this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs(k, "geojson")); 
                 }
@@ -1530,7 +1559,7 @@ module StreamStats.Controllers {
                     color: 'red',
                     fillOpacity: 0.5
                 }
-                // TODO: turn this layer off by default
+
                 this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(LayerName, "geojson", subBasinStyle, false));
             }
             else if (LayerName.includes('globalwatershed') && /\d/.test(LayerName) == false) {
@@ -1783,7 +1812,7 @@ module StreamStats.Controllers {
                     }
                     // if subbasin
                     if (e.LayerName.includes('globalwatershed') && /\d/.test(e.LayerName)) {
-                        this.addGeoJSON(e.LayerName, this.studyArea.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == e.LayerName})[0]) //here
+                        this.addGeoJSON(e.LayerName, this.studyArea.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase() == e.LayerName})[0]) 
                     }
 
 
