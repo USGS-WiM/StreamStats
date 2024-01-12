@@ -466,12 +466,6 @@ module StreamStats.Services {
                     this.eventManager.RaiseEvent(onSelectedStudyAreaChanged, this, StudyAreaEventArgs.Empty);
                     this.canUpdate = true;
 
-                    console.log(this.selectedStudyArea.FeatureCollection);
-
-                    // TODO: Not sure if we need this
-                    // if (this.regionService.selectedRegion.Applications.indexOf("HydrologicFeatures") != -1) {
-                    //     this.queryHydrologicFeatures();
-                    // }
                 } else {
                     this.toaster.clear();
                     this.toaster.pop("error", "A watershed was not returned from the delineation request", "Please retry", 0);
@@ -1149,8 +1143,6 @@ module StreamStats.Services {
         }
 
         public getAdditionalFeatures(workspaceID: string, featureString: string) {
-            console.log("here");
-            console.log(this.selectedStudyArea);
             if (!featureString) {
                 this.additionalFeaturesLoaded = true;
                 return;
@@ -1158,7 +1150,6 @@ module StreamStats.Services {
 
             this.toaster.pop('wait', "Downloading additional features", "Please wait...", 0);
             var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSfeatures'].format(workspaceID, 4326, featureString);
-            console.log(url);
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
             request.withCredentials = true;
 
@@ -1169,7 +1160,6 @@ module StreamStats.Services {
                         //this.toaster.pop('success', "Additional features found", "Please continue", 5000);
                         //console.log('additional features:', response);
                         var features = this.reconfigureWatershedResponse(response.data.featurecollection);
-                        console.log(features);
                         angular.forEach(features, (feature, index) => {
                             if (features.length < 1) {
                                 //remove from studyarea array                                
