@@ -332,7 +332,7 @@ module StreamStats.Controllers {
                 //network navigation
                 if (exploration.selectedMethod != null && exploration.selectedMethod.locations.length <= exploration.selectedMethod.minLocations) {
 
-                    console.log('in mapcontroller add point', exploration.selectedMethod.navigationPointCount, exploration.selectedMethod.locations.length)
+                    // console.log('in mapcontroller add point', exploration.selectedMethod.navigationPointCount, exploration.selectedMethod.locations.length)
 
                     //add point
                     if (exploration.explorationPointType == 'Start point location') exploration.selectedMethod.addLocation('Start point location', new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
@@ -918,7 +918,7 @@ module StreamStats.Controllers {
                             }
                         } 
                     };
-                    
+
                     map.on("draw:drawvertex", checkClicks);
                 });
             });
@@ -1489,7 +1489,6 @@ module StreamStats.Controllers {
                 this.nonsimplifiedBasin = undefined;
             }
             for (var k in this.geojson) {
-                console.log(k)
                 if (typeof this.geojson[k] !== 'function' && (k != 'streamgages' || k == layerName)) {
                     delete this.geojson[k];
                     this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs(k, "geojson")); 
@@ -1560,7 +1559,6 @@ module StreamStats.Controllers {
                 this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(LayerName, "geojson", subBasinStyle, false));
             }
             else if (LayerName.includes('globalwatershed') && /\d/.test(LayerName) == false) {
-                console.log(feature)
                 // Only try to simplify the watershed if we are not doing delineation by line
                 if (this.studyArea.selectedStudyArea.Pourpoint.length == 1) {
                     var verticies = feature.geometry.coordinates.reduce((count, row) => count + row.length, 0);
