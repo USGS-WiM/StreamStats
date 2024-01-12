@@ -1137,9 +1137,8 @@ module StreamStats.Services {
                             this.additionalFeaturesLoaded = true;
                             this.toaster.pop("error", "There was an HTTP error requesting additional features list", "Please retry", 0);
                         }).finally(() => {
-                        });
-                }
-                this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, this, '');
+                                        });
+            }
             }
             
         }
@@ -1180,7 +1179,12 @@ module StreamStats.Services {
                                 this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, this, '');
                             } else if (this.selectedStudyArea.Pourpoint.length > 1) { // Line delineation
                                 feature.properties.WorkspaceID = workspaceID;
-                                this.selectedStudyArea.FeatureCollection.features.push(feature);      
+                                this.selectedStudyArea.FeatureCollection.features.push(feature);   
+                                if (this.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase().includes("longestflowpath")}).length == this.selectedStudyArea.Pourpoint.length) {
+                                    // All additional features have been processed
+                                    this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, this, '');
+                                } 
+
                             } else { // Point delineation
                                 this.selectedStudyArea.FeatureCollection.features.push(feature);               
                             

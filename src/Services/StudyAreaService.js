@@ -939,7 +939,6 @@ var StreamStats;
                         var feat = _a[_i];
                         _loop_1(feat);
                     }
-                    this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, this, '');
                 }
             };
             StudyAreaService.prototype.getAdditionalFeatures = function (workspaceID, featureString) {
@@ -975,6 +974,9 @@ var StreamStats;
                             else if (_this.selectedStudyArea.Pourpoint.length > 1) {
                                 feature.properties.WorkspaceID = workspaceID;
                                 _this.selectedStudyArea.FeatureCollection.features.push(feature);
+                                if (_this.selectedStudyArea.FeatureCollection.features.filter(function (f) { return (f.id).toLowerCase().includes("longestflowpath"); }).length == _this.selectedStudyArea.Pourpoint.length) {
+                                    _this.eventManager.RaiseEvent(Services.onAdditionalFeaturesLoaded, _this, '');
+                                }
                             }
                             else {
                                 _this.selectedStudyArea.FeatureCollection.features.push(feature);
