@@ -328,7 +328,6 @@ module StreamStats.Controllers {
                     csvFile += ' (' + this.studyAreaService.selectedStudyArea.WBDHUC8.name + ')';
                 }
             }
-            csvFile += '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
 
             //first write main parameter table
             csvFile += processMainParameterTable(this.studyAreaService.studyAreaParameterList);
@@ -435,7 +434,8 @@ module StreamStats.Controllers {
                 // add Hydrologic Features content to CSV
                 if (self.applications) {
                     var isHydrologicFeatures = self.applications.indexOf('HydrologicFeatures') != -1;
-                    if (isHydrologicFeatures) {
+                    var isLineDelineation = self.studyAreaService.selectedStudyArea.Pourpoint.length > 1;
+                    if (isHydrologicFeatures && !isLineDelineation) {
                         extVal += 'National Hydrography Dataset (NHD) Hydrologic Features\n';
                         extVal += 'Intersecting NHD Streams\n';
                         if (self.studyAreaService.selectedStudyArea.NHDStreamIntersections.length > 0){
