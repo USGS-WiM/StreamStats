@@ -312,7 +312,6 @@ var StreamStats;
                             case 2:
                                 if (!(_i < _a.length)) return [3, 7];
                                 point = _a[_i];
-                                console.log(point);
                                 url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, point.Longitude.toString(), point.Latitude.toString(), point.crs.toString());
                                 index = index + 1;
                                 request = new WiM.Services.Helpers.RequestInfo(url, true);
@@ -321,7 +320,6 @@ var StreamStats;
                                 _d.label = 3;
                             case 3:
                                 if (!(i < 3)) return [3, 6];
-                                console.log('Try' + i);
                                 return [4, this.executeDelineationRequest(request).then(function (response) {
                                         return (response);
                                     })];
@@ -557,7 +555,6 @@ var StreamStats;
                 };
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
                 return this.Execute(request).then(function (response) {
-                    console.log(response.data.response.points.length);
                     if (response.data.response.points.length == 0) {
                         _this.resetDelineationButtons();
                         _this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
@@ -724,8 +721,6 @@ var StreamStats;
                                         requestParameterList.push('DRNAREA');
                                     }
                                 });
-                                console.log(requestParameterList);
-                                console.log(this.selectedStudyArea.FeatureCollection.features[2].properties);
                                 _i = 0, _a = this.selectedStudyArea.FeatureCollection.features.filter(function (f) { return (f.id).toLowerCase().includes("globalwatershed") && f.geometry.type == 'Polygon' && /\d/.test((f.id)); });
                                 _b.label = 1;
                             case 1:
@@ -738,7 +733,6 @@ var StreamStats;
                                 _b.label = 2;
                             case 2:
                                 if (!(i < 3)) return [3, 5];
-                                console.log('Try' + i);
                                 return [4, this.executeBasinCharacteristicsRequest(request).then(function (response) {
                                         return (response);
                                     })];
@@ -773,14 +767,10 @@ var StreamStats;
                                 parameterResults = {};
                                 for (parameterCode in parametersCombined_1) {
                                     value = null;
-                                    console.log(parametersCombined_1[parameterCode]);
-                                    console.log(computationDictionary[parameterCode]);
                                     isNull = false;
                                     parametersCombined_1[parameterCode].forEach(function (value) {
-                                        console.log(value);
                                         if (value == null) {
                                             isNull = true;
-                                            console.log(isNull);
                                         }
                                     });
                                     if (isNull == false) {
@@ -815,7 +805,6 @@ var StreamStats;
                                     parameterResults[parameterCode] = value;
                                 }
                                 ;
-                                console.log(parameterResults);
                                 paramErrors = false;
                                 finalResponse.forEach(function (parameter) {
                                     parameter["value"] = parameterResults[parameter["code"]];
@@ -828,7 +817,6 @@ var StreamStats;
                                     this.showModifyBasinCharacterstics = true;
                                     this.toaster.pop('error', "One or more basin characteristics failed to compute", "Click the 'Calculate Missing Parameters' button or manually enter parameter values to continue", 0);
                                 }
-                                console.log(finalResponse);
                                 this.toaster.clear();
                                 this.parametersLoading = false;
                                 this.loadParameterResults(finalResponse);
