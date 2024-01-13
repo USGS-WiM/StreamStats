@@ -411,7 +411,7 @@ module StreamStats.Services {
                 var index = 0;
 
                 for (const point of this.selectedStudyArea.Pourpoint) {
-                    console.log(point)
+                    //console.log(point)
                     var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSdelineation'].format('geojson', regionID, point.Longitude.toString(),
                     point.Latitude.toString(), point.crs.toString());
                     index = index + 1; 
@@ -420,9 +420,9 @@ module StreamStats.Services {
                     request.withCredentials = true;
 
                     for (let i = 0; i < 3; i++) {
-                        console.log( 'Try' + i)
+                        //console.log( 'Try' + i)
                         var result = await this.executeDelineationRequest(request).then((response) => {
-                            // console.log(response);
+                            //console.log(response);
                             return (response)
                         })
                         if (result) {
@@ -452,7 +452,7 @@ module StreamStats.Services {
                     }
                     var featuresCollectionToMerge = turf.featureCollection(featuresToMerge);
                     var dissolvedFeatures = turf.dissolve(featuresCollectionToMerge);
-                    // console.log(dissolvedFeatures)
+                    //console.log(dissolvedFeatures)
                     dissolvedFeatures.features[0]['id'] = 'globalwatershed';
                     this.selectedStudyArea.FeatureCollection.features.push(dissolvedFeatures.features[0]);
                     var bbox = turf.bbox(dissolvedFeatures);
@@ -709,7 +709,6 @@ module StreamStats.Services {
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
             
             return this.Execute(request).then((response: any) => {
-                console.log(response.data.response.points.length)
                 if (response.data.response.points.length == 0) {
                     this.resetDelineationButtons();
                     this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
@@ -886,15 +885,14 @@ module StreamStats.Services {
                     }
                 })
 
-                console.log(requestParameterList);
-                console.log(this.selectedStudyArea.FeatureCollection.features[2].properties);
                 for (const feature of this.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase().includes("globalwatershed") && f.geometry.type == 'Polygon' && /\d/.test(<string>(f.id))})) {
+                    //console.log(feature)
                     var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSComputeParams'].format(this.selectedStudyArea.RegionID, feature.properties.WorkspaceID,
                         requestParameterList.join(','));
                     var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true);
                     request.withCredentials = true;
                     for (let i = 0; i < 3; i++) {
-                        console.log( 'Try' + i)
+                        //console.log( 'Try' + i)
                         var result = await this.executeBasinCharacteristicsRequest(request).then((response) => {
                             return (response)
                         })
@@ -935,16 +933,12 @@ module StreamStats.Services {
                     // TODO make sure the length ofis equal to the number of delineations before combining
                     // TODO make sure dependent BCs were requested and computed
                     var value = null;
-                    console.log(parametersCombined[parameterCode]);
-                    console.log(computationDictionary[parameterCode]);
 
                     var isNull = false;
 
                     parametersCombined[parameterCode].forEach(value => {
-                        console.log(value);
                         if (value == null) {
                             isNull = true;
-                            console.log(isNull);
                         }
                     });
 
@@ -985,7 +979,6 @@ module StreamStats.Services {
                 };
 
                 // Results
-                console.log(parameterResults);
                 var paramErrors = false;
                 finalResponse.forEach(parameter => {
                     parameter["value"] = parameterResults[parameter["code"]]
@@ -999,7 +992,8 @@ module StreamStats.Services {
                     this.showModifyBasinCharacterstics = true;
                     this.toaster.pop('error', "One or more basin characteristics failed to compute", "Click the 'Calculate Missing Parameters' button or manually enter parameter values to continue", 0);
                 }
-                console.log(finalResponse);
+
+                //console.log(finalResponse);
                 this.toaster.clear();
                 this.parametersLoading = false;
                 this.loadParameterResults(finalResponse);

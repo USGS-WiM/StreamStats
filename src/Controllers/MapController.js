@@ -186,7 +186,6 @@ var StreamStats;
                         return;
                     }
                     if (exploration.selectedMethod != null && exploration.selectedMethod.locations.length <= exploration.selectedMethod.minLocations) {
-                        console.log('in mapcontroller add point', exploration.selectedMethod.navigationPointCount, exploration.selectedMethod.locations.length);
                         if (exploration.explorationPointType == 'Start point location')
                             exploration.selectedMethod.addLocation('Start point location', new WiM.Models.Point(args.leafletEvent.latlng.lat, args.leafletEvent.latlng.lng, '4326'));
                         if (exploration.explorationPointType == 'End point location')
@@ -634,38 +633,39 @@ var StreamStats;
                                 long: null
                             }
                         };
-                        _this.lineDelineationstart = function (e) {
+                        var checkClicks = function (e) {
                             if (coordinates.point1.lat === null && coordinates.point1.long === null && coordinates.point2.lat === null && coordinates.point2.long === null) {
-                                console.log('one');
-                                coordinates.point1.lat = e.latlng.lat;
-                                coordinates.point1.long = e.latlng.lng;
+                                coordinates.point1.lat = _this.drawControl._currentLatLng.lat;
+                                coordinates.point1.long = _this.drawControl._currentLatLng.lng;
                             }
                             else if (coordinates.point1.lat !== null && coordinates.point1.long !== null && coordinates.point2.lat === null && coordinates.point2.long === null) {
-                                console.log('two');
-                                coordinates.point2.lat = e.latlng.lat;
-                                coordinates.point2.long = e.latlng.lng;
+                                coordinates.point2.lat = _this.drawControl._currentLatLng.lat;
+                                coordinates.point2.long = _this.drawControl._currentLatLng.lng;
                                 var lineCoordinates = [
                                     [coordinates.point1.lat, coordinates.point1.long],
                                     [coordinates.point2.lat, coordinates.point2.long]
                                 ];
                                 _this.delineationLine = L.polyline(lineCoordinates, { color: 'blue' }).addTo(map);
-                                console.log(_this.drawControl._getMeasurementString());
-                                var distance = _this.drawControl._getMeasurementString();
-                                if (distance.replace(/[^0-9]/g, "") > 13200) {
+                                var one = L.latLng([lineCoordinates[0][0], lineCoordinates[0][1]]);
+                                var two = L.latLng([lineCoordinates[1][0], lineCoordinates[1][1]]);
+                                var distance = one.distanceTo(two);
+                                if (distance > 4023.36) {
                                     _this.studyArea.resetDelineationButtons();
                                     map.removeLayer(_this.delineationLine);
-                                    map.off("click", _this.lineDelineationstart);
+                                    map.off("draw:drawvertex", checkClicks);
                                     _this.drawControl.disable();
                                     _this.toaster.pop("error", "Error", "Delineation not possible. Line must be shorter than 2.5 miles.", 0);
                                     throw new Error;
                                 }
-                                map.off("click", _this.lineDelineationstart);
-                                _this.drawControl.disable();
-                                var lineClickPoints = [new WiM.Models.Point(coordinates.point1.lat, coordinates.point1.long, '4326'), new WiM.Models.Point(coordinates.point2.lat, coordinates.point2.long, '4326')];
-                                _this.checkDelineationLine(coordinates, lineClickPoints);
+                                else {
+                                    map.off("draw:drawvertex", checkClicks);
+                                    _this.drawControl.disable();
+                                    var lineClickPoints = [new WiM.Models.Point(coordinates.point1.lat, coordinates.point1.long, '4326'), new WiM.Models.Point(coordinates.point2.lat, coordinates.point2.long, '4326')];
+                                    _this.checkDelineationLine(coordinates, lineClickPoints);
+                                }
                             }
                         };
-                        map.on("click", _this.lineDelineationstart);
+                        map.on("draw:drawvertex", checkClicks);
                     });
                 });
             };
@@ -1081,7 +1081,6 @@ var StreamStats;
                     this.nonsimplifiedBasin = undefined;
                 }
                 for (var k in this.geojson) {
-                    console.log(k);
                     if (typeof this.geojson[k] !== 'function' && (k != 'streamgages' || k == layerName)) {
                         delete this.geojson[k];
                         this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs(k, "geojson"));
@@ -1143,7 +1142,6 @@ var StreamStats;
                     this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(LayerName, "geojson", subBasinStyle, false));
                 }
                 else if (LayerName.includes('globalwatershed') && /\d/.test(LayerName) == false) {
-                    console.log(feature);
                     if (this.studyArea.selectedStudyArea.Pourpoint.length == 1) {
                         var verticies = feature.geometry.coordinates.reduce(function (count, row) { return count + row.length; }, 0);
                         var data = this.studyArea.simplify(angular.copy(feature));
