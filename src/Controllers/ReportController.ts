@@ -328,7 +328,6 @@ module StreamStats.Controllers {
                     csvFile += ' (' + this.studyAreaService.selectedStudyArea.WBDHUC8.name + ')';
                 }
             }
-            csvFile += '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
 
             //first write main parameter table
             csvFile += processMainParameterTable(this.studyAreaService.studyAreaParameterList);
@@ -435,7 +434,8 @@ module StreamStats.Controllers {
                 // add Hydrologic Features content to CSV
                 if (self.applications) {
                     var isHydrologicFeatures = self.applications.indexOf('HydrologicFeatures') != -1;
-                    if (isHydrologicFeatures) {
+                    var isLineDelineation = self.studyAreaService.selectedStudyArea.Pourpoint.length > 1;
+                    if (isHydrologicFeatures && !isLineDelineation) {
                         extVal += 'National Hydrography Dataset (NHD) Hydrologic Features\n';
                         extVal += 'Intersecting NHD Streams\n';
                         if (self.studyAreaService.selectedStudyArea.NHDStreamIntersections.length > 0){
@@ -866,26 +866,9 @@ module StreamStats.Controllers {
                         }
                     };
             }   
-            else if (LayerName == 'globalwatershedpoint') {
-                this.layers.overlays[LayerName] = {
-                    name: 'Basin Clicked Point',
-                    type: 'geoJSONShape',
-                    data: feature,
-                    visible: false,
-                    layerOptions: {
-                        style: {
-                            fillColor: "red",
-                            weight: 2,
-                            opacity: 1,
-                            color: 'white',
-                            fillOpacity: 0.5
-                        }
-                    }
-                }
-            } 
             else if (LayerName.includes('globalwatershedpoint')) {
                 this.layers.overlays[LayerName] = {
-                    name: 'Subbasin Delineation Point ' + LayerName.replace(/[^0-9]/g, ''),
+                    name: /\d/.test(LayerName) ? "Subbasin Delineation Point " + LayerName.replace(/[^0-9]/g, '') : "Basin Clicked Point",
                     type: 'geoJSONShape',
                     data: feature,
                     visible: true,
@@ -896,7 +879,7 @@ module StreamStats.Controllers {
                     name: 'Subbasin Boundary ' + LayerName.replace(/[^0-9]/g, ''),
                     type: 'geoJSONShape',
                     data: feature,
-                    visible: true,
+                    visible: false,
                 }
             }
             else if (LayerName == 'referenceGage') {
@@ -939,6 +922,20 @@ module StreamStats.Controllers {
                             opacity: 1,
                             color: 'white',
                             fillOpacity: 0.5
+                        }
+                    }
+                }
+            }
+            else if (LayerName.includes('longestflowpath')) {
+                this.layers.overlays[LayerName] = {
+                    name: LayerName,
+                    type: 'geoJSONShape',
+                    data: feature,
+                    visible: false,
+                    layerOptions: {
+                        style: {
+                            fillColor: "blue",
+                            color: 'blue'
                         }
                     }
                 }

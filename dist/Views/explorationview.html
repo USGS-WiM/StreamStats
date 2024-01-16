@@ -28,7 +28,7 @@
                                 </div>
 
                                 <div ng-show="vm.studyAreaService.selectedStudyArea.Pourpoint">
-                                    <button class="btn-exploration-tools btn-green" ng-click="vm.addExplorationPointFromPourpoint(configuration.name, vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude, vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude, vm.studyAreaService.selectedStudyArea.Pourpoint.crs)"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Use pourpoint</span></button>
+                                    <button class="btn-exploration-tools btn-green" ng-click="vm.addExplorationPointFromPourpoint(configuration.name, vm.studyAreaService.selectedStudyArea.Pourpoint[0].Latitude, vm.studyAreaService.selectedStudyArea.Pourpoint[0].Longitude, vm.studyAreaService.selectedStudyArea.Pourpoint.crs)"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Use pourpoint</span></button>
                                 </div>
 
                                 <button class="btn-exploration-tools btn-green" ng-click="vm.addExplorationPointFromMapt(configuration.name)"><span><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Select point on Map</span></button>

@@ -625,8 +625,8 @@ var StreamStats;
                                 }
                             });
                             var urbanData = {
-                                "lat": _this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
-                                "lon": _this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
+                                "lat": _this.studyAreaService.selectedStudyArea.Pourpoint[0].Latitude,
+                                "lon": _this.studyAreaService.selectedStudyArea.Pourpoint[0].Longitude,
                                 "region3PercentArea": _this.region3Percent,
                                 "region4PercentArea": _this.region4Percent,
                                 "Qp": weightedAEP,
@@ -1000,8 +1000,8 @@ var StreamStats;
                 };
                 var url = configuration.baseurls['SCStormRunoffServices'] + configuration.queryparams['SCComputeSpreadSheet'];
                 unitHydrograph = {
-                    "lat": this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
-                    "lon": this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
+                    "lat": this.studyAreaService.selectedStudyArea.Pourpoint[0].Latitude,
+                    "lon": this.studyAreaService.selectedStudyArea.Pourpoint[0].Longitude,
                     "AEP": this._selectedAEPSynthetic.value,
                     "CNModificationMethod": this._selectedCNModification.name,
                     "Area": this.drainageAreaSynthetic,
@@ -1265,8 +1265,8 @@ var StreamStats;
                                 }
                             ];
                             data = {
-                                "lat": _this.studyAreaService.selectedStudyArea.Pourpoint.Latitude,
-                                "lon": _this.studyAreaService.selectedStudyArea.Pourpoint.Longitude,
+                                "lat": _this.studyAreaService.selectedStudyArea.Pourpoint[0].Latitude,
+                                "lon": _this.studyAreaService.selectedStudyArea.Pourpoint[0].Longitude,
                                 "watershedFeatures": watershedFeature,
                                 "prfData": _this.prfSegments,
                                 "AEP": (_a = _this._selectedAEPSynthetic) === null || _a === void 0 ? void 0 : _a.value,
@@ -1650,7 +1650,7 @@ var StreamStats;
                     finalVal += '\n\n' + string;
                     return finalVal + '\r\n';
                 };
-                var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n\n';
+                var csvFile = 'StreamStats Output Report\n\n' + 'State/Region ID,' + this.studyAreaService.selectedStudyArea.RegionID.toUpperCase() + '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint[0].Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint[0].Longitude.toFixed(5) + '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n\n';
                 if (this.SelectedTab == 1) {
                     csvFile += BohmanRural1989();
                 }

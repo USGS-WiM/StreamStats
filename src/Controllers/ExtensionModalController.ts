@@ -321,8 +321,8 @@ module StreamStats.Controllers {
                         }
 
                         if (gageInfo.hasOwnProperty('location')) {
-                            var lat = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
-                            var long = this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
+                            var lat = this.studyAreaService.selectedStudyArea.Pourpoint[0].Latitude.toString();
+                            var long = this.studyAreaService.selectedStudyArea.Pourpoint[0].Longitude.toString();
                             var from = turf.point(gageInfo.location.coordinates);
                             var to = turf.point([long, lat]);
                             var options = {units: 'miles'};
@@ -361,8 +361,8 @@ module StreamStats.Controllers {
             var headers = {
                 "X-Is-Streamstats": true
             };
-            var lat = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
-            var long = this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
+            var lat = this.studyAreaService.selectedStudyArea.Pourpoint[0].Latitude.toString();
+            var long = this.studyAreaService.selectedStudyArea.Pourpoint[0].Longitude.toString();
             var url = configuration.baseurls.GageStatsServices;
             if (this.queryBy == 'Nearest') url += configuration.queryparams.GageStatsServicesNearest.format(lat, long, (this.distance * 1.60934).toFixed(0));
             if (this.queryBy == 'Network') url += configuration.queryparams.GageStatsServicesNetwork.format(lat, long, (this.distance * 1.60934).toFixed(0));
@@ -401,8 +401,8 @@ module StreamStats.Controllers {
                                 if (gage.hasOwnProperty('name')) gage.Name = gage.name;
                                 if (gage.hasOwnProperty('code')) gage.StationID = gage.code;
                                 if (gage.hasOwnProperty('location')){
-                                    var lat = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
-                                    var long = this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
+                                    var lat = this.studyAreaService.selectedStudyArea.Pourpoint[0].Latitude.toString();
+                                    var long = this.studyAreaService.selectedStudyArea.Pourpoint[0].Longitude.toString();
                                     var from = turf.point(gage.location.coordinates);
                                     var to = turf.point([long, lat]);
                                     var options = {units: 'miles'};

@@ -338,8 +338,8 @@ var StreamStats;
                 var csvFile = 'StreamStats Water Use Report' +
                     '\nState/Region ID,' + this.StudyArea.RegionID.toUpperCase() +
                     '\nWorkspace ID,' + this.StudyArea.WorkspaceID +
-                    '\nLatitude,' + this.StudyArea.Pourpoint.Latitude.toFixed(5) +
-                    '\nLongitude,' + this.StudyArea.Pourpoint.Longitude.toFixed(5) +
+                    '\nLatitude,' + this.StudyArea.Pourpoint[0].Latitude.toFixed(5) +
+                    '\nLongitude,' + this.StudyArea.Pourpoint[0].Longitude.toFixed(5) +
                     '\nTime:,' + this.result.processDate.toLocaleString() +
                     '\nStart Year:,' + this.StartYear +
                     '\nEnd Year:,' + this.EndYear +

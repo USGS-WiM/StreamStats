@@ -1,4 +1,4 @@
-﻿﻿//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //----- MapController ----------------------------------------------------------
 //------------------------------------------------------------------------------
 
@@ -1407,12 +1407,40 @@ module StreamStats.Controllers {
 
         private onAdditionalFeaturesLoaded() {
             if (!this.studyArea.selectedStudyArea || !this.studyArea.selectedStudyArea.FeatureCollection) return;
-            this.studyArea.selectedStudyArea.FeatureCollection.features.forEach((layer) => {
-                var item = angular.fromJson(angular.toJson(layer));
-                if (item.id === 'longestflowpath3d' || item.id === 'longestflowpath') { 
-                    this.addGeoJSON(item.id, item.geometry);
+
+            if (this.studyArea.selectedStudyArea.Pourpoint.length == 1) { // Point delineation
+                this.studyArea.selectedStudyArea.FeatureCollection.features.forEach((layer) => {
+                    var item = angular.fromJson(angular.toJson(layer));
+                    if (item.id.includes('longestflowpath')) { 
+                        this.addGeoJSON(item.id, item.geometry);
+                    }
+                });
+            } else { // Line delineation
+                
+                // Determine which sub-basin has the longest longest flow path
+                var longestLongestFlowPath = null;
+                for (const layer of this.studyArea.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).includes("longestflowpath")})) {
+                    var item = angular.fromJson(angular.toJson(layer));
+                    if (longestLongestFlowPath == null || (item.properties.SHAPE_Leng > longestLongestFlowPath.properties.SHAPE_Leng)) {
+                        longestLongestFlowPath = item;
+                    }
                 }
-            });
+                var longestLongestFlowPathWorkspaceID = longestLongestFlowPath.properties.WorkspaceID;
+
+                // Add the longest longest flow path to the legend and map
+                this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(<string>longestLongestFlowPath.id, "geojson", { displayName: <string>longestLongestFlowPath.id, imagesrc: null }, true));
+                this.addGeoJSON(longestLongestFlowPath.id, longestLongestFlowPath.geometry);
+
+                // Add the longest longest flow path points to the legend
+                for (const layer of this.studyArea.selectedStudyArea.FeatureCollection.features.filter(f => { return f.properties.WorkspaceID == longestLongestFlowPathWorkspaceID && (<string>(f.id)).includes("slp1085point")})) {
+                    this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(<string>layer.id, "geojson", { displayName: layer.id, imagesrc: null }, false));
+                }
+
+                // Remove all the additional features that were not associated with the sub-basin that had the longest longest flow path
+                this.studyArea.selectedStudyArea.FeatureCollection.features = this.studyArea.selectedStudyArea.FeatureCollection.features.filter(f => { return ((<string>f.id).includes("globalwatershed") || f.properties.WorkspaceID == longestLongestFlowPathWorkspaceID) && (<string>f.id) != "globalwatershedpoint" });
+                
+            }
+
             this.toaster.pop('success', "Additional features have been downloaded", "Please continue", 5000);
         }
        

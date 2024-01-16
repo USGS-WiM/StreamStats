@@ -61,7 +61,7 @@
                     <!--<dl class="dl-horizontal">
             <dt>Region ID:</dt><dd>{{vm.studyAreaService.selectedStudyArea.RegionID}}</dd>
             <dt>Workspace ID:</dt><dd>{{vm.studyAreaService.selectedStudyArea.WorkspaceID}}</dd>
-            <dt>Clicked Point (Latitude, Longitude):</dt><dd>{{vm.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5)}}, {{vm.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5)}}</dd>
+            <dt>Clicked Point (Latitude, Longitude):</dt><dd>{{vm.studyAreaService.selectedStudyArea.Pourpoint[0].Latitude.toFixed(5)}}, {{vm.studyAreaService.selectedStudyArea.Pourpoint[0].Longitude.toFixed(5)}}</dd>
             <dt>Time:</dt><dd>{{vm.studyAreaService.selectedStudyArea.Date | date:'yyyy-MM-dd HH:mm:ss Z'}}</dd>
         </dl>-->
 
@@ -196,7 +196,7 @@
                     </div>
 
                     <!-- Hydrologic Features Application -->
-                    <div class="well well-sm"  ng-if="vm.regionService.selectedRegion.Applications.indexOf('HydrologicFeatures') != -1" ng-init=vm.setStream(vm.studyAreaService.selectedStudyArea.NHDStream)>
+                    <div class="well well-sm"  ng-if="vm.regionService.selectedRegion.Applications.indexOf('HydrologicFeatures') != -1 && vm.studyAreaService.selectedStudyArea.Pourpoint.length == 1" ng-init=vm.setStream(vm.studyAreaService.selectedStudyArea.NHDStream)>
                         <h3 class="collapsible" ng-click="vm.collapseSection($event, 'stats', 'HydrologicFeatures')"><i ng-class="!vm.sectionCollapsed['HydrologicFeatures'] ? 'fa fa-chevron-right': 'fa fa-chevron-down'"></i>&nbsp;&nbsp;NHD Features of Delineated Basin</h3>
                             <div class="collapsible-content">
                                 <h3>NHD Streams Intersecting Basin Delineation Boundary</h3>
