@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - BP informational tool tip for Drupal article
+- URL param "gage=" for opening a gage page directly
 
 ### Changed
 
