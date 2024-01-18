@@ -727,11 +727,9 @@ var StreamStats;
                     if (NWScode !== undefined) {
                         var url = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage=" + NWScode;
                         self.forecastURL = url;
-                        console.log('NWS forecast url', url);
                         var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
                         self.Execute(request).then(function (response) {
                             var xmlDocument = new DOMParser().parseFromString(response.data, "text/xml");
-                            console.log(xmlDocument.querySelector("message"));
                             if (xmlDocument.querySelector("message") === null) {
                                 var sigStages = xmlDocument.querySelector("sigstages");
                                 var action = parseFloat(sigStages.querySelector("action").textContent);
@@ -813,7 +811,13 @@ var StreamStats;
                         do {
                             var nonArrayDataRow = data.shift().split('\t');
                             raw.push(nonArrayDataRow);
-                            var stringDate = new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + finalYear);
+                            var stringDate = void 0;
+                            if (parseFloat(nonArrayDataRow[5]) > 9) {
+                                stringDate = new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + (finalYear - 1));
+                            }
+                            else {
+                                stringDate = new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + finalYear);
+                            }
                             var meanPercentiles = {
                                 date: stringDate,
                                 begin_yr: parseFloat(nonArrayDataRow[7]),
@@ -1032,10 +1036,21 @@ var StreamStats;
                 if (this.peakDates) {
                     this.peakDates.forEach(function (peakOnYear) {
                         var adjustedDate = new Date(peakOnYear.peak_dt);
-                        adjustedDate.setUTCFullYear(_this_1.defaultYear);
-                        var currentYear = new Date(adjustedDate.toUTCString());
+                        if (adjustedDate.getMonth() > 8) {
+                            adjustedDate.setUTCFullYear(_this_1.defaultYear - 1);
+                        }
+                        else {
+                            adjustedDate.setUTCFullYear(_this_1.defaultYear);
+                        }
+                        var currentWaterYear = new Date(adjustedDate.toUTCString());
+                        var realDate = new Date(peakOnYear.peak_dt);
+                        var waterYear = realDate.getUTCFullYear();
+                        if (realDate.getUTCMonth() > 8) {
+                            waterYear += 1;
+                        }
+                        ;
                         if (!isNaN(peakOnYear.peak_va)) {
-                            _this_1.formattedPeakDatesOnYear.push({ x: currentYear, y: peakOnYear.peak_va, realDate: new Date(peakOnYear.peak_dt) });
+                            _this_1.formattedPeakDatesOnYear.push({ x: currentWaterYear, y: peakOnYear.peak_va, realDate: realDate, waterYear: waterYear });
                         }
                     });
                     console.log(this.formattedPeakDatesOnYear);
@@ -1953,7 +1968,6 @@ var StreamStats;
                     });
                     this.selectedFloodFreqStats = this.allFloodFreqStats[0];
                     this.selectedYear = this.allYears[0];
-                    console.log('years', this.allYears, this.selectedYear);
                     this.createAnnualFlowPlot();
                     this.createDailyRasterPlot();
                     this.createDischargePlot();
@@ -1992,16 +2006,15 @@ var StreamStats;
                 }
                 var self = this;
                 var min;
+                var waterYearLateMonths = this.allYears[0] - 1;
                 if (this.formattedPeakDatesOnYear.length > 0) {
-                    console.log('1');
-                    min = (new Date(1 + '/' + 1 + '/' + this.allYears[0])).getTime();
+                    min = (new Date(10 + '/' + 1 + '/' + waterYearLateMonths)).getTime();
                 }
                 else {
-                    console.log('2');
                     min = this.startAndEnd[0].getTime();
                 }
-                var max = (new Date(12 + '/' + 31 + '/' + this.allYears[0])).getTime();
-                console.log('min and max', new Date(1 + '/' + 1 + '/' + this.allYears[0]), new Date(12 + '/' + 31 + '/' + this.allYears[0]));
+                var max = (new Date(9 + '/' + 30 + '/' + this.allYears[0])).getTime();
+                console.log('min and max', new Date(min), new Date(max));
                 console.log(this.formattedPeakDatesOnYear);
                 this.chartConfig = {
                     chart: {
@@ -2086,7 +2099,7 @@ var StreamStats;
                             name: 'Annual Peak Streamflow',
                             showInNavigator: false,
                             tooltip: {
-                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on One Year: <b>' + this.selectedYear,
+                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
                                 pointFormatter: function () {
                                     if (this.formattedPeakDatesOnYear !== null) {
                                         var waterYear = this.realDate.getUTCFullYear();
@@ -2122,7 +2135,7 @@ var StreamStats;
                             name: 'Annual Peak Streamflow (Date Estimated)',
                             showInNavigator: false,
                             tooltip: {
-                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on One Year: <b>' + this.selectedYear,
+                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
                                 pointFormatter: function () {
                                     if (this.formattedEstPeakDatesOnYear !== null) {
                                         var waterYear = this.realDate.getUTCFullYear();
@@ -2816,16 +2829,24 @@ var StreamStats;
             GagePageController.prototype.choosePeakYear = function () {
                 var _this_1 = this;
                 var chart = $('#chart1').highcharts();
-                var min = (new Date(1 + '/' + 1 + '/' + this.selectedYear)).getTime();
-                var max = (new Date(12 + '/' + 31 + '/' + this.selectedYear)).getTime();
+                var waterYearLateMonths = this.selectedYear - 1;
+                var min = (new Date(10 + '/' + 1 + '/' + waterYearLateMonths)).getTime();
+                var max = (new Date(9 + '/' + 30 + '/' + this.selectedYear)).getTime();
+                console.log(new Date(min), new Date(max));
                 var formattedSelectedPeaks = [];
                 var formattedEstSelectedPeaks = [];
                 if (this.selectedYear === this.selectedYear) {
                     if (this.peakDates) {
                         this.peakDates.forEach(function (peakOnYear) {
                             var adjustedDate = new Date(peakOnYear.peak_dt);
-                            adjustedDate.setUTCFullYear(_this_1.selectedYear);
+                            if (adjustedDate.getMonth() > 8) {
+                                adjustedDate.setUTCFullYear(waterYearLateMonths);
+                            }
+                            else {
+                                adjustedDate.setUTCFullYear(_this_1.selectedYear);
+                            }
                             var selectedDate = new Date(adjustedDate.toUTCString());
+                            console.log(selectedDate);
                             if (!isNaN(peakOnYear.peak_va)) {
                                 formattedSelectedPeaks.push({ x: selectedDate, y: peakOnYear.peak_va, realDate: new Date(peakOnYear.peak_dt) });
                             }
@@ -2834,17 +2855,25 @@ var StreamStats;
                     if (this.estPeakDates) {
                         this.estPeakDates.forEach(function (estPeakOnYear) {
                             var adjustedDate = new Date(estPeakOnYear.peak_dt);
-                            adjustedDate.setUTCFullYear(_this_1.selectedYear);
+                            if (adjustedDate.getMonth() > 8) {
+                                adjustedDate.setUTCFullYear(waterYearLateMonths);
+                            }
+                            else {
+                                adjustedDate.setUTCFullYear(_this_1.selectedYear);
+                            }
                             var selectedDate = new Date(adjustedDate.toUTCString());
                             formattedEstSelectedPeaks.push({ x: selectedDate, y: estPeakOnYear.peak_va, realDate: new Date(estPeakOnYear.peak_dt) });
                         });
                     }
+                    formattedSelectedPeaks.sort(function (a, b) { return a.x - b.x; });
+                    formattedEstSelectedPeaks.sort(function (a, b) { return a.x - b.x; });
+                    console.log('selected', formattedSelectedPeaks);
                     chart.series[0].update({ data: formattedSelectedPeaks });
                     chart.series[1].update({ data: formattedEstSelectedPeaks });
                     chart.yAxis[0].setExtremes();
                     chart.xAxis[0].setExtremes(min, max);
                     chart.series[0].update({ tooltip: {
-                            headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on One Year: <b>' + this.selectedYear,
+                            headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Water Year  HELLOOOOO: <b>' + this.selectedYear,
                             pointFormatter: function () {
                                 if (this.formattedPeakDatesOnYear !== null) {
                                     var waterYear = this.realDate.getUTCFullYear();
@@ -2862,7 +2891,7 @@ var StreamStats;
                             }
                         } });
                     chart.series[1].update({ tooltip: {
-                            headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on One Year: <b>' + this.selectedYear,
+                            headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
                             pointFormatter: function () {
                                 if (this.formattedEstPeakDatesOnYear !== null) {
                                     var waterYear = this.realDate.getUTCFullYear();
@@ -3373,15 +3402,16 @@ var StreamStats;
                 var chart = $('#chart1').highcharts();
                 chart.showLoading('Loading...');
                 setTimeout(function () {
+                    var waterYearLateMonths = _this_1.selectedYear - 1;
                     var min = _this_1.startAndEnd[0].getTime();
-                    var oneYearMin = (new Date(1 + '/' + 1 + '/' + _this_1.selectedYear)).getTime();
-                    var max = (new Date(12 + '/' + 31 + '/' + _this_1.selectedYear)).getTime();
+                    var oneYearMin = (new Date(10 + '/' + 1 + '/' + waterYearLateMonths)).getTime();
+                    var max = (new Date(9 + '/' + 30 + '/' + _this_1.startAndEnd[1].getFullYear())).getTime();
                     if (_this_1.peaksOnYear) {
                         chart.series[0].update({ data: _this_1.formattedPeakDatesOnYear });
                         chart.series[1].update({ data: _this_1.formattedEstPeakDatesOnYear });
                         chart.xAxis[0].setExtremes(oneYearMin, max);
                         chart.series[0].update({ tooltip: {
-                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on One Year: <b>' + _this_1.selectedYear,
+                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + _this_1.selectedYear,
                                 pointFormatter: function () {
                                     if (this.formattedPeakDatesOnYear !== null) {
                                         var waterYear = this.realDate.getUTCFullYear();
@@ -3399,7 +3429,7 @@ var StreamStats;
                                 }
                             } });
                         chart.series[1].update({ tooltip: {
-                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on One Year: <b>' + _this_1.selectedYear,
+                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + _this_1.selectedYear,
                                 pointFormatter: function () {
                                     if (this.formattedEstPeakDatesOnYear !== null) {
                                         var waterYear = this.realDate.getUTCFullYear();
@@ -3470,8 +3500,9 @@ var StreamStats;
             GagePageController.prototype.resetZoom = function () {
                 var chart = $('#chart1').highcharts();
                 var min = this.startAndEnd[0].getTime();
-                var oneYearMin = (new Date(1 + '/' + 1 + '/' + this.startAndEnd[1].getFullYear())).getTime();
-                var max = (new Date(12 + '/' + 31 + '/' + this.startAndEnd[1].getFullYear())).getTime();
+                var waterYearLateMonths = this.startAndEnd[1].getFullYear() - 1;
+                var oneYearMin = (new Date(10 + '/' + 1 + '/' + waterYearLateMonths)).getTime();
+                var max = (new Date(9 + '/' + 30 + '/' + this.startAndEnd[1].getFullYear())).getTime();
                 if (this.peaksOnYear) {
                     chart.xAxis[0].setExtremes(oneYearMin, max);
                     chart.yAxis[0].setExtremes();
@@ -3479,7 +3510,7 @@ var StreamStats;
                     chart.series[0].update({ data: this.formattedPeakDatesOnYear });
                     chart.series[1].update({ data: this.formattedEstPeakDatesOnYear });
                     chart.series[0].update({ tooltip: {
-                            headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on One Year: <b>' + this.selectedYear,
+                            headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
                             pointFormatter: function () {
                                 if (this.formattedPeakDatesOnYear !== null) {
                                     var waterYear = this.realDate.getUTCFullYear();
@@ -3497,7 +3528,7 @@ var StreamStats;
                             }
                         } });
                     chart.series[1].update({ tooltip: {
-                            headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on One Year: <b>' + this.selectedYear,
+                            headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
                             pointFormatter: function () {
                                 if (this.formattedEstPeakDatesOnYear !== null) {
                                     var waterYear = this.realDate.getUTCFullYear();
@@ -3691,8 +3722,14 @@ var StreamStats;
                     var formattedEstSelectedPeaks_1 = [];
                     if (this.peakDates) {
                         this.peakDates.forEach(function (peakOnYear) {
+                            var waterYearLateMonths = _this_1.selectedYear - 1;
                             var adjustedDate = new Date(peakOnYear.peak_dt);
-                            adjustedDate.setUTCFullYear(_this_1.selectedYear);
+                            if (adjustedDate.getMonth() > 8) {
+                                adjustedDate.setUTCFullYear(waterYearLateMonths);
+                            }
+                            else {
+                                adjustedDate.setUTCFullYear(_this_1.selectedYear);
+                            }
                             var selectedDate = new Date(adjustedDate.toUTCString());
                             if (!isNaN(peakOnYear.peak_va)) {
                                 formattedSelectedPeaks_1.push({ x: selectedDate, y: peakOnYear.peak_va, realDate: new Date(peakOnYear.peak_dt) });
@@ -3700,8 +3737,14 @@ var StreamStats;
                         });
                         if (this.estPeakDates) {
                             this.estPeakDates.forEach(function (estPeakOnYear) {
+                                var waterYearLateMonths = _this_1.selectedYear - 1;
                                 var adjustedDate = new Date(estPeakOnYear.peak_dt);
-                                adjustedDate.setUTCFullYear(_this_1.selectedYear);
+                                if (adjustedDate.getMonth() > 8) {
+                                    adjustedDate.setUTCFullYear(waterYearLateMonths);
+                                }
+                                else {
+                                    adjustedDate.setUTCFullYear(_this_1.selectedYear);
+                                }
                                 var selectedDate = new Date(adjustedDate.toUTCString());
                                 formattedEstSelectedPeaks_1.push({ x: selectedDate, y: estPeakOnYear.peak_va, realDate: new Date(estPeakOnYear.peak_dt) });
                             });
@@ -3709,7 +3752,7 @@ var StreamStats;
                         chart.series[0].update({ data: formattedSelectedPeaks_1 });
                         chart.series[1].update({ data: formattedEstSelectedPeaks_1 });
                         chart.series[0].update({ tooltip: {
-                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on One Year: <b>' + this.selectedYear,
+                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
                                 pointFormatter: function () {
                                     if (this.formattedPeakDatesOnYear !== null) {
                                         var waterYear = this.realDate.getUTCFullYear();
@@ -3727,7 +3770,7 @@ var StreamStats;
                                 }
                             } });
                         chart.series[1].update({ tooltip: {
-                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on One Year: <b>' + this.selectedYear,
+                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
                                 pointFormatter: function () {
                                     if (this.formattedEstPeakDatesOnYear !== null) {
                                         var waterYear = this.realDate.getUTCFullYear();
