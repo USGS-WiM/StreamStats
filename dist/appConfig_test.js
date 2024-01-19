@@ -61,8 +61,8 @@ configuration.queryparams =
         'SSComputeParams': '/streamstatsservices/parameters.json?rcode={0}&workspaceID={1}&includeparameters={2}',
         'SSavailableFeatures': '/streamstatsservices/features.json?workspaceID={0}',
         'SSfeatures': '/streamstatsservices/features.geojson?workspaceID={0}&crs={1}&includefeatures={2}&simplify=false',
-        'SSStateLayers': '/arcgis/rest/services/StreamStats/stateServices/MapServer',
-        'SSNationalLayers': '/arcgis/rest/services/StreamStats/nationalLayers/MapServer',
+        'SSStateLayers': '/arcgis/rest/services/StreamStats/stateServices_test/MapServer',
+        'SSNationalLayers': '/arcgis/rest/services/StreamStats/nationalLayers_test/MapServer',
         'SSBatchProcessorBatch': '/batch',
         'SSBatchProcessorBatchPause': '/pauseBatch?batchID={0}',
         'SSBatchProcessorBatchStatus': '/batch/?emailAddress={0}',
@@ -72,7 +72,7 @@ configuration.queryparams =
         'SSBatchProcessorReorderBatch': '/batch/order',
         'SSBatchProcessorStatusMessages': '/status/',
         'SSBatchProcessorStreamGrids': '/streamgrids/',
-        'SSBatchProcessorSubmitBatch': '/batch',
+        'SSBatchProcessorSubmitBatch': '/batch',  
         'SSBatchProcessorRefreshBatch': '/batch/{0}/refresh?deleteCurrentData={1}',
         'SSBatchProcessorStartWorker': '/worker',
         'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
@@ -398,123 +398,7 @@ configuration.regions = [
         }
     }, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/maine-streamstats" },
     { "RegionID": "MI", "Name": "Michigan", "Bounds": [[41.697494, -90.4082], [48.173795, -82.419836]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false, "URL": null },
-    { "RegionID": "MN", "Name": "Minnesota", "Bounds": [[43.498102, -97.229436], [49.37173, -89.530673]], "Layers": 
-        {
-            "RiverSizeClass": {
-                "name": "River Size Class",
-                "url": "https://webgis.ornl.gov/arcgis/rest/services/Hydro/StreamClassification/MapServer",
-                "type": 'agsDynamic',
-                "visible": false,
-                "layerOptions": {
-                    "zIndex": 1,
-                    "format": "png8",
-                    "layers": [15],
-                    "minZoom": 9,
-                    "f": "image"
-                },
-                "queryProperties": { "Stream network of size classes": { "COMID": "COMID", "GNIS_NAME": "GNIS Name", "Size class": "Size Class" }},
-                "layerArray": [{
-                    "layerName": "Stream network of size classes",
-                    "legend": [{                        
-                        "contentType": "image/png;base64",
-                        "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADNJREFUOI1jYaAyYBk1cNTAwWTgw4cPGyg1TF5evoGFmoYxMEBdCONQAwyhSBk1cBgbCABbjgku2+Np1gAAAABJRU5ErkJggg==",
-                        "label": "Headwater (HW)"
-                    },
-                    {                        
-                        "contentType": "image/png;base64",
-                        "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADNJREFUOI1jYaAyYBk1cNTAwWTg5s2bGyg1zNfXt4GFmoYxMEBdCONQAwyhSBk1cBgbCACYCwm4tWRbQAAAAABJRU5ErkJggg==",
-                        "label": "Small Creek (SC)"
-                    },
-                    {                        
-                        "contentType": "image/png;base64",
-                        "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADJJREFUOI1jYaAyYBk1cNTAwWRgc3NzA6WG1dbWNrBQ0zAGBqgLYRxqgCEUKaMGDmMDAeJKCkiJfRtuAAAAAElFTkSuQmCC",
-                        "label": "Large Creek (LC)"
-                    },
-                    {                        
-                        "contentType": "image/png;base64",
-                        "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADNJREFUOI1jYaAyYBk1cNTAwWRgRvnZBkoNm9Fp3MBCTcMYGKAuhHGoAYZQpIwaOIwNBACSbgolquB/MgAAAABJRU5ErkJggg==",
-                        "label": "Small River (SR)"
-                    },
-                    {                        
-                        "contentType": "image/png;base64",
-                        "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADNJREFUOI1jYaAyYBk1cNTAwWSga2pnA6WG7Z5d3sBCTcMYGKAuhHGoAYZQpIwaOIwNBACnzwqeBuPCRgAAAABJRU5ErkJggg==",
-                        "label": "Medium River (MR)"
-                    },
-                    {                        
-                        "contentType": "image/png;base64",
-                        "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADFJREFUOI1jYaAyYBk1cNTAwWKgq3/nf2oYtntjOSNtXLh7YzkjVQ2kJhg1cNRAMgAAskcGNVLEHrYAAAAASUVORK5CYII=",
-                        "label": "Mainstem (MS)"
-                    },
-                    {                        
-                        "contentType": "image/png;base64",
-                        "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAEdJREFUOI1jYaAyYBk1cNRAMg3kVituoJqB3GrFDV8ZGOqpYRg3A0MjjbzMwNBIDcO+3uptYPl6q7eBGobBwBBJNqMGDi4DARqBCt3ReFrxAAAAAElFTkSuQmCC",
-                        "label": "Large River (LR)"
-                    },
-                    {                        
-                        "contentType": "image/png;base64",
-                        "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAEdJREFUOI1jYaAyYBk1cNRAMg08yv2/gWoGHuX+38DwlaGeKqZxMzTSKAy5GRqpYZj1V8YGFuuvjA3UMAwGhkiyGTVwcBkIAKVOCt3sxb7VAAAAAElFTkSuQmCC",
-                        "label": "Great River (GR)"
-                    }]
-                }],
-            },
-            "SedimentRegions": {
-                "name": "Sediment Regions",
-                "url": "https://services.arcgis.com/v01gqwM5QqNysAAi/ArcGIS/rest/services/SedRegions/FeatureServer/0/",
-                "type": 'agsFeature',
-                "visible": false,
-                "layerOptions": {
-                    style: function (feature) {
-                        switch(feature.properties.Region){
-                            case 'MID': return {color: "rgb(245, 245, 122)", fillOpacity: .80};
-                            case 'NE': return {color: "rgb(225, 225, 225)", fillOpacity: .80};
-                            case 'NW': return {color: "rgb(215, 194, 158)", fillOpacity: .80};
-                            case 'SE': return {color: "rgb(255, 255, 190)", fillOpacity: .80};
-                            case 'SW': return {color: "rgb(215, 215, 158)", fillOpacity: .80};
-                        }
-                    },
-                    onEachFeature: function (feature, layer) {
-                        var popupContent = '<h5>MN Sediment Regions</h5> ';
-                        var queryProperties = { 
-                            "US_L4NAME": "Sediment Region", 
-                            "Region": "Region"
-                        };
-                        Object.keys(queryProperties).map(function (k) {
-                            popupContent += '<strong>' + queryProperties[k] + ': </strong>' + feature.properties[k] + '</br>';
-                        });
-                        layer.bindPopup(popupContent);                     
-                    }
-                },
-                "layerArray": [{
-                    "layerName": "MN Sediment Regions",
-                    "legend": [{
-                        "contentType": "image/png;base64",
-                        "imageData": 'iVBORw0KGgoAAAANSUhEUgAAACQAAAAhCAYAAACxzQkrAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACuSURBVFhH7c69DYMwEIZhRg4DUKRAQmyAxABUlBQMQJtM4gZSX0TE12EfP+cDRfdJb2PJ9pPQzWYgbgbi5gVV1ZOGoSfn3HKiMy+o63J6vR/UtqUqLAiaPimNU6oKY0FIC7YZpAXbDUKxYIdBSBp2GoSkYGIgdBYmDkJHYdFAaC8sOggB1jTF8sP61EBofjc0AxmIy0BcBuL6H1BdZ7/L0s3vhuYFXTUDcTNQeERf/TdX/8h535sAAAAASUVORK5CYII=',
-                        "label": "Middle"
-                    },{
-                        "contentType": "image/png;base64",
-                        "imageData": 'iVBORw0KGgoAAAANSUhEUgAAACEAAAAeCAYAAACiyHcXAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACmSURBVFhH7dW7DcQgEEXR7T9HogASEqgBiUKgAVoYC69fNELrz8A6mCu9BMlwMn/oBb0TYYyhnDO11o6T+TFECIFSSuS9X4ZhiBgj1VqplLIMM0RgKzA/ESswpxHYDMxlBCaJuY3AJDCPEdgTjBgCu4MRR2BXMNMQGDDOueMF3nQE1n8Ho5Yh+r2jFIEUgRSBFIEYwlq7fyC9fu8ohvhHikCK+Ea0AXvVp2CuiifSAAAAAElFTkSuQmCC',
-                        "label": "Northeast"
-                    },{
-                        "contentType": "image/png;base64",
-                        "imageData": 'iVBORw0KGgoAAAANSUhEUgAAACEAAAAfCAYAAABplKSyAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACxSURBVFhH7dUxCoNAEIVhbx+sIohWBhIECz1BmoDJFZJr7BUmWfFVw2LU2XGL+eE1C+5+nRklkCFQmoiyyOk1Psg5N5/EjyH6tqb7cKbuWqthGGL4IT7Pht5jo4YJIjANzCJCA/M3AouBWY3AJDGbEZgEZjcC24MRQ2BbMOIIbA0mGgID5nYp5xd40RGY/x2EUkP4e0MZAhkCGQIZAjFEVZymD6Tn7w3FEEdkCJQAgugLGBuRHPqZzecAAAAASUVORK5CYII=',
-                        "label": "Northwest"
-                    },{
-                        "contentType": "image/png;base64",
-                        "imageData": 'iVBORw0KGgoAAAANSUhEUgAAACIAAAAiCAYAAAA6RwvCAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAC6SURBVFhH7dUxDoMwDIXh3n/gAEWCdunCxAhMXeAG7S1yA3CVCkutFauQ2haDf+ktkUi+jRMcJIfQHEJjIWVZwDjdIYSwnujGQrruAo/nDdq2MgGxkL6/wgIDzMtgAvoJwWmDNkO0QbshOGlQNgQnBfobgvsETRkgMQguFyQOwe0FqUFwW0HqEByCmua8vvCdGQQXfx2pzCHx3lQOoTmE5hCaQ2gspK6L90fSi/emYiHWOYTmENpBIAAvqwBZ7EZJYpUAAAAASUVORK5CYII=',
-                        "label": "Southeast"
-                    },{
-                        "contentType": "image/png;base64",
-                        "imageData": 'iVBORw0KGgoAAAANSUhEUgAAACEAAAAjCAYAAAAaLGNkAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAC0SURBVFhH7dWxDYMwEIXhbI/S0BDTUNFQhAmSgoYZgC28woEjniJZsgBzZ7m4X3qNJeyv40EZlDeiej1pHAey1u4ncgUR797Q51tS19XimCCi3xDz0tA0N+KYQwQmiTmNkMRcRmCcmGgExoG5jcDuYNgQWAyGHYFdwYghsDMYcQQGTNtW+wv/kiEw9zvwS45w9/opAikCKQIpAgURxhS/D7jn7vULIlKmCKQIpAikCJQBgmgFWKK71Hq4wkIAAAAASUVORK5CYII=',
-                        "label": "Southwest"
-                    }]
-                }],
-                "queryProperties": { "MN Sediment Regions": { 
-                    "US_L4NAME": "Sediment Region", 
-                    "Region": "Region"
-                }}
-            }
-        },
-        "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/minnesota-streamstats" },
+    { "RegionID": "MN", "Name": "Minnesota", "Bounds": [[43.498102, -97.229436], [49.37173, -89.530673]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/minnesota-streamstats" },
     { "RegionID": "MO", "Name": "Missouri", "Bounds": [[35.989656, -95.767479], [40.609784, -89.105034]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/missouri-streamstats" },
     {
         "RegionID": "MO_STL", "Name": "Missouri St. Louis", "Bounds": [[38.399258, -90.673599], [38.837568, -89.693069]], "Layers":

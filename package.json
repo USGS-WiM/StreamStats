@@ -1,6 +1,6 @@
 {
   "name": "StreamStats",
-  "version": "4.16.0",
+  "version": "4.19.3",
   "homepage": "https://github.com/USGS-WiM/StreamStats",
   "repository": "https://github.com/USGS-WiM/StreamStats",
   "authors": [
@@ -66,6 +66,7 @@
     "jshint-stylish": "^2.2.1",
     "live-server": "^1.2.1",
     "open": "7.0.0",
-    "semver": "^4.3.3"
+    "semver": "^4.3.3",
+    "typescript": "^4.9.4"
   }
 }

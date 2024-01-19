@@ -77,9 +77,13 @@
                     
                     <form ng-hide="vm.studyAreaService.selectedStudyArea.FeatureCollection" style="padding-bottom: 15px;">
                         <button id="delineateButton" type="button" class="btn-blue fullwidth" ng-click="vm.startDelineate()" ng-class="vm.studyAreaService.doDelineateFlag ? 'btn-orange' : 'btn-blue'" ng-hide="vm.studyAreaService.selectedStudyArea.FeatureCollection" ng-disabled="!vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint || !vm.studyAreaService.zoomLevel15"><i ng-class="vm.studyAreaService.canUpdate || vm.studyAreaService.checkingDelineatedPoint ? 'fa fa-map-marker' : 'fa fa-refresh fa-spin'"></i>&nbsp;&nbsp;Delineate</button>
+                        <div style="margin-top:10px;" ng-show="vm.environment != 'production'">
+                            <checkbox style="height:20px; border:1px solid rgba(0,0,0,.2)!important;" ng-model="vm.studyAreaService.ignoreExclusionPolygons"></checkbox><span>&nbsp;&nbsp;Ignore Exclusion Polygons</span>
+                        </div>   
                         <div style="margin-top:10px;" ng-show="vm.regionService.selectedRegion.Applications.indexOf('StormDrain') > -1">
                             <checkbox style="height:20px; border:1px solid rgba(0,0,0,.2)!important;" ng-model="vm.studyAreaService.surfacecontributionsonly"></checkbox><span>&nbsp;&nbsp;Surface Contributing Basin only</span>
-                        </div>                       
+                        </div>           
+                                    
                   </form>
                                           
                             <div ng-show="vm.studyAreaService.selectedStudyArea.FeatureCollection">
@@ -291,11 +295,11 @@
         <div class="sidebar-footer">
             <a href="https://usgs.gov/" target="_blank">USGS Home</a>
             <a href="https://answers.usgs.gov/" target="_blank">Contact USGS</a>
-            <a href="https://search.usgs.gov/" target="_blank">Search USGS</a>
-            <a href="https://www2.usgs.gov/laws/accessibility.html" target="_blank">Accessibility</a>
-            <a href="https://www2.usgs.gov/foia/" target="_blank">FOIA</a>
-            <a href="https://www2.usgs.gov/laws/privacy.html" target="_blank">Privacy</a>
-            <a href="https://www2.usgs.gov/laws/policies_notices.html" target="_blank">Policy & Notices</a>
+            <a href="https://www.usgs.gov/search" target="_blank">Search USGS</a>
+            <a href="https://www.usgs.gov/accessibility" target="_blank">Accessibility</a>
+            <a href="https://www.usgs.gov/foia" target="_blank">FOIA</a>
+            <a href="https://www.usgs.gov/office-of-the-director/privacy-policies" target="_blank">Privacy</a>
+            <a href="https://www.usgs.gov/policies-notices" target="_blank">Policy & Notices</a>
         </div>
     </div>
 </div>

@@ -1,6 +1,16 @@
 var configuration = {};
-configuration.version = "4.16.0";
+configuration.version = "4.19.3";
 configuration.environment = 'development';
+configuration.showWarningModal = false;
+configuration.warningModalMessage = "Due to heavy demand, StreamStats is currently experiencing system interruptions. If you receive errors, please try back again later.<br><br>Thank you for your patience."
+configuration.showBPWarning = false;
+configuration.warningBPMessage = ""
+configuration.manageBPQueue = false;
+if (window.location.host === 'test.streamstats.usgs.gov') {
+    configuration.showBPButton = false;
+} else {
+    configuration.showBPButton = true;
+}
 
 configuration.baseurls =
     {
@@ -13,18 +23,22 @@ configuration.baseurls =
         'ScienceBase': 'https://gis.usgs.gov/sciencebase2',
         'GageStatsServices': 'https://test.streamstats.usgs.gov/gagestatsservices',
         'WeightingServices': 'https://streamstats.usgs.gov/channelweightingservices',
-        'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices'
+        'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices',
+        'BatchProcessorServices': 'https://dev.streamstats.usgs.gov/batchprocessor', // Will need to change this if running locally and want to use production data
+        'PourPointServices': 'https://test.streamstats.usgs.gov/pourpoint'
     };
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
 if (window.location.host === 'streamstats.usgs.gov') {
-    configuration.baseurls.StreamStatsServices = 'https://streamstats.usgs.gov',
+        configuration.baseurls.StreamStatsServices = 'https://streamstats.usgs.gov',
         configuration.baseurls.StreamStatsMapServices = 'https://gis.streamstats.usgs.gov',
         configuration.baseurls.NSS = 'https://streamstats.usgs.gov/nssservices',
         configuration.baseurls.WaterUseServices = 'https://streamstats.usgs.gov/wateruseservices',
         configuration.baseurls.StormRunoffServices = 'https://streamstats.usgs.gov/runoffmodelingservices',
         configuration.baseurls.GageStatsServices = 'https://streamstats.usgs.gov/gagestatsservices',
 		configuration.baseurls.FlowAnywhereRegressionServices = 'https://streamstats.usgs.gov/regressionservices',
+        configuration.baseurls.BatchProcessorServices = 'https://streamstats.usgs.gov/batchprocessor',
+        configuration.baseurls.PourPointServices = 'https://streamstats.usgs.gov/pourpoint',
         configuration.environment = 'production';
 }
 
@@ -39,16 +53,28 @@ configuration.queryparams =
         'statisticsGroupLookup': '/statisticgroups?regions={0},NA&regressionregions={1}',
         'statisticsGroupParameterLookup': '/scenarios?regions={0},NA&statisticgroups={1}&regressionregions={2}',
         'estimateFlows': '/scenarios/estimate?regions={0},NA',
-        'SSdelineation': '/streamstatsservices/watershed.{0}?rcode={1}&xlocation={2}&ylocation={3}&crs={4}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
+        'SSdelineation': '/streamstatsservices/watershed.{0}?rcode={1}&xlocation={2}&ylocation={3}&crs={4}&simplify=false&includeparameters=false&includeflowtypes=false&includefeatures=true',
         'SSstormwaterDelineation': '/stormwaterservices/watershed?rcode={0}&xlocation={1}&ylocation={2}&simplify=false&surfacecontributiononly={3}',
-        'SSwatershedByWorkspace': '/streamstatsservices/watershed.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
+        'SSwatershedByWorkspace': '/streamstatsservices/watershed.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=false&includeparameters=false&includeflowtypes=false&includefeatures=true',
         'SSeditBasin': '/streamstatsservices/watershed/edit.{0}?rcode={1}&workspaceID={2}&crs={3}&simplify=true&includeparameters=false&includeflowtypes=false&includefeatures=true',
         'SSAvailableParams': '/streamstatsservices/parameters.json?rcode={0}',
         'SSComputeParams': '/streamstatsservices/parameters.json?rcode={0}&workspaceID={1}&includeparameters={2}',
         'SSavailableFeatures': '/streamstatsservices/features.json?workspaceID={0}',
-        'SSfeatures': '/streamstatsservices/features.geojson?workspaceID={0}&crs={1}&includefeatures={2}&simplify=true',
+        'SSfeatures': '/streamstatsservices/features.geojson?workspaceID={0}&crs={1}&includefeatures={2}&simplify=false',
         'SSStateLayers': '/arcgis/rest/services/StreamStats/stateServices/MapServer',
         'SSNationalLayers': '/arcgis/rest/services/StreamStats/nationalLayers/MapServer',
+        'SSBatchProcessorBatch': '/batch',
+        'SSBatchProcessorBatchPause': '/pauseBatch?batchID={0}',
+        'SSBatchProcessorBatchStatus': '/batch/?emailAddress={0}',
+        'SSBatchProcessorBatchUnpause': '/unpauseBatch?batchID={0}',
+        'SSBatchProcessorDeleteBatch': '/batch/{0}',
+        'SSBatchProcessorGetBatch': '/batch/',
+        'SSBatchProcessorReorderBatch': '/batch/order',
+        'SSBatchProcessorStatusMessages': '/status/',
+        'SSBatchProcessorStreamGrids': '/streamgrids/',
+        'SSBatchProcessorSubmitBatch': '/batch',
+        'SSBatchProcessorRefreshBatch': '/batch/{0}/refresh?deleteCurrentData={1}',
+        'SSBatchProcessorStartWorker': '/worker',
         'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
         'NLCDQueryService': '/LandCover/USGS_EROS_LandCover_NLCD/MapServer/4',
         'regulationService': '/arcgis/rest/services/regulations/{0}/MapServer/exts/RegulationRESTSOE/Regulation',
@@ -79,7 +105,9 @@ configuration.queryparams =
         'GageStatsServicesNetwork': '/stations/Network?lat={0}&lon={1}&distance={2}&includeStats=true&geojson=false',
         'GageStatsServicesBounds': '/stations/Bounds?xmin={0}&xmax={1}&ymin={2}&ymax={3}&geojson=true',
         'FlowAnywhereEstimates': '/models/FLA/estimate?state={0}',
-        'FlowAnywhereGages': '/arcgis/rest/services/IowaStreamEst/FlowAnywhere/MapServer/1/query?geometry={0},{1}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.da_pub_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson'
+        'FlowAnywhereGages': '/arcgis/rest/services/IowaStreamEst/FlowAnywhere/MapServer/1/query?geometry={0},{1}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.da_pub_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
+        'Regions': '/regions/',
+        'PourPointServicesExcludePolygon': '/ssExcludePolygon/'
     };
 
 configuration.basemaps =
@@ -241,6 +269,24 @@ configuration.regions = [
     },
     { "RegionID": "CT", "Name": "Connecticut", "Bounds": [[40.998392, -73.725237], [42.047428, -71.788249]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/connecticut-streamstats" },
     { "RegionID": "DE", "Name": "Delaware", "Bounds": [[38.449602, -75.791094], [39.840119, -75.045623]], "Layers": {}, "Applications": ["Localres"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/delaware-streamstats" },
+    {"RegionID": "DC", "Name": "Washington, D.C. Stormwater", "Bounds": [[37.970255, -79.489865], [39.725461, -75.045623]], "Layers":
+        {
+            "StormDrainPipes": {
+                "name": "Stormdrain",
+                "url": configuration.baseurls['StreamStatsMapServices'] + "/arcgis/rest/services/stormdrain/dc/MapServer",
+                "type": 'agsDynamic',
+                "visible": true,
+                "layerOptions": {
+                    "zIndex": 1,
+                    "format": "png8",
+                    "layers": [0, 1, 2],
+                    "f": "image"
+                },
+                "queryProperties": { "Pipe": { "USGS_Type": "USGS Type", "USGS_SourceID_1": "USGS Source ID", "USGS_Town": "USGS Town" } }
+            }
+        },
+        "Applications": ["StormDrain"], "regionEnabled": true, "ScenariosAvailable": false, "URL": "https://www.usgs.gov/streamstats/washington-dc-streamstats"
+    },
     { "RegionID": "FL", "Name": "Florida", "Bounds": [[24.956376, -87.625711], [31.003157, -80.050911]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false, "URL": null },
     { "RegionID": "GA", "Name": "Georgia", "Bounds": [[30.361291, -85.60896], [35.000366, -80.894753]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/georgia-streamstats" },
     { "RegionID": "GU", "Name": "Guam", "Bounds": [[13.234996, 144.634155], [13.65361, 144.953308]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": null },
@@ -342,7 +388,7 @@ configuration.regions = [
                     "DASQMI": "Drainage Area (mi2)",
                     "SANDGRAVAF": "Aquifer Area (%)",
                     "JULYAVPRE": "Mean July Precip (in)",
-                    "AUGAVGBF": "Mean August Baseflow (cfs/mi2",
+                    "AUGAVGBF": "Mean August Baseflow (cfs/mi2)",
                     "OOB_DA": "Drainage Area out-of-bounds",
                     "OOB_JULYAV":"Mean July Precip out-of-bounds",
                     "OOB_WARNIN": "% Aquifer Area out-of-bounds",
@@ -488,7 +534,7 @@ configuration.regions = [
 
                 }
             },
-        "Applications": ["StormDrain"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/missouri-st-louis-streamstats"
+        "Applications": ["StormDrain"], "regionEnabled": true, "ScenariosAvailable": false, "URL": "https://www.usgs.gov/streamstats/missouri-st-louis-streamstats"
     },
     { "RegionID": "MP", "Name": "Northern Mariana Islands", "Bounds": [[14.105276, 144.89859], [20.556385, 145.870788]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": null },
     { 
@@ -509,7 +555,7 @@ configuration.regions = [
 
                 }
             }, 
-		"Applications": ["StormDrain"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/mystic-river-basin-streamstats"
+		"Applications": ["StormDrain"], "regionEnabled": true, "ScenariosAvailable": false, "URL": "https://www.usgs.gov/streamstats/mystic-river-basin-streamstats"
     },
     { "RegionID": "MS", "Name": "Mississippi", "Bounds": [[30.194935, -91.643682], [35.005041, -88.090468]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/mississippi-streamstats" },
     {
