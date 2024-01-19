@@ -1483,7 +1483,7 @@ module StreamStats.Controllers {
                 this.allYears.push(defaultYearPlusOne -= 1)
             }
             let endYear = endDate.getUTCFullYear();
-            let endOfFinalYear = new Date(12 + '/' + 31 + '/' + endYear)            
+            let endOfFinalYear = new Date(9 + '/' + 30 + '/' + endYear)            
             if (this.oneDayStats) {
                 this.formattedOneDayStats = [];
                 const oneDayStatsColors = {

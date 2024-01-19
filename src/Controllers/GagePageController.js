@@ -1108,7 +1108,7 @@ var StreamStats;
                     this.allYears.push(defaultYearPlusOne -= 1);
                 }
                 var endYear = endDate.getUTCFullYear();
-                var endOfFinalYear = new Date(12 + '/' + 31 + '/' + endYear);
+                var endOfFinalYear = new Date(9 + '/' + 30 + '/' + endYear);
                 if (this.oneDayStats) {
                     this.formattedOneDayStats = [];
                     var oneDayStatsColors_1 = {
