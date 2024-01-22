@@ -795,7 +795,10 @@ var StreamStats;
                 if (this.instFlow.length > 0) {
                     finalDate = new Date(this.instFlow[finalInstIndex].dateTime);
                 }
-                if (this.dailyFlow == undefined && this.instFlow.length == 0) {
+                if (this.NWSforecast !== undefined) {
+                    finalDate = new Date(this.NWSforecast[0].x);
+                }
+                if (this.dailyFlow == undefined && this.instFlow.length == 0 && this.NWSforecast == undefined) {
                     finalDate = new Date();
                 }
                 var finalYear = finalDate.getUTCFullYear();
