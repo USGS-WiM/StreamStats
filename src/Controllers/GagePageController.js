@@ -1056,7 +1056,6 @@ var StreamStats;
                             _this_1.formattedPeakDatesOnYear.push({ x: currentWaterYear, y: peakOnYear.peak_va, realDate: realDate, waterYear: waterYear });
                         }
                     });
-                    console.log(this.formattedPeakDatesOnYear);
                 }
                 if (this.estPeakDates) {
                     this.estPeakDates.forEach(function (estPeakOnYear) {
@@ -2009,16 +2008,14 @@ var StreamStats;
                 }
                 var self = this;
                 var min;
-                var waterYearLateMonths = this.allYears[0] - 1;
+                var octNovDecYear = this.allYears[0] - 1;
                 if (this.formattedPeakDatesOnYear.length > 0) {
-                    min = (new Date(10 + '/' + 1 + '/' + waterYearLateMonths)).getTime();
+                    min = (new Date(10 + '/' + 1 + '/' + octNovDecYear)).getTime();
                 }
                 else {
                     min = this.startAndEnd[0].getTime();
                 }
                 var max = (new Date(9 + '/' + 30 + '/' + this.allYears[0])).getTime();
-                console.log('min and max', new Date(min), new Date(max));
-                console.log(this.formattedPeakDatesOnYear);
                 this.chartConfig = {
                     chart: {
                         height: 550,
@@ -2832,10 +2829,9 @@ var StreamStats;
             GagePageController.prototype.choosePeakYear = function () {
                 var _this_1 = this;
                 var chart = $('#chart1').highcharts();
-                var waterYearLateMonths = this.selectedYear - 1;
-                var min = (new Date(10 + '/' + 1 + '/' + waterYearLateMonths)).getTime();
+                var octNovDecYear = this.selectedYear - 1;
+                var min = (new Date(10 + '/' + 1 + '/' + octNovDecYear)).getTime();
                 var max = (new Date(9 + '/' + 30 + '/' + this.selectedYear)).getTime();
-                console.log(new Date(min), new Date(max));
                 var formattedSelectedPeaks = [];
                 var formattedEstSelectedPeaks = [];
                 if (this.selectedYear === this.selectedYear) {
@@ -2843,13 +2839,12 @@ var StreamStats;
                         this.peakDates.forEach(function (peakOnYear) {
                             var adjustedDate = new Date(peakOnYear.peak_dt);
                             if (adjustedDate.getMonth() > 8) {
-                                adjustedDate.setUTCFullYear(waterYearLateMonths);
+                                adjustedDate.setUTCFullYear(octNovDecYear);
                             }
                             else {
                                 adjustedDate.setUTCFullYear(_this_1.selectedYear);
                             }
                             var selectedDate = new Date(adjustedDate.toUTCString());
-                            console.log(selectedDate);
                             if (!isNaN(peakOnYear.peak_va)) {
                                 formattedSelectedPeaks.push({ x: selectedDate, y: peakOnYear.peak_va, realDate: new Date(peakOnYear.peak_dt) });
                             }
@@ -2859,7 +2854,7 @@ var StreamStats;
                         this.estPeakDates.forEach(function (estPeakOnYear) {
                             var adjustedDate = new Date(estPeakOnYear.peak_dt);
                             if (adjustedDate.getMonth() > 8) {
-                                adjustedDate.setUTCFullYear(waterYearLateMonths);
+                                adjustedDate.setUTCFullYear(octNovDecYear);
                             }
                             else {
                                 adjustedDate.setUTCFullYear(_this_1.selectedYear);
@@ -2870,7 +2865,6 @@ var StreamStats;
                     }
                     formattedSelectedPeaks.sort(function (a, b) { return a.x - b.x; });
                     formattedEstSelectedPeaks.sort(function (a, b) { return a.x - b.x; });
-                    console.log('selected', formattedSelectedPeaks);
                     chart.series[0].update({ data: formattedSelectedPeaks });
                     chart.series[1].update({ data: formattedEstSelectedPeaks });
                     chart.yAxis[0].setExtremes();
@@ -3405,9 +3399,9 @@ var StreamStats;
                 var chart = $('#chart1').highcharts();
                 chart.showLoading('Loading...');
                 setTimeout(function () {
-                    var waterYearLateMonths = _this_1.selectedYear - 1;
+                    var octNovDecYear = _this_1.selectedYear - 1;
                     var min = _this_1.startAndEnd[0].getTime();
-                    var oneYearMin = (new Date(10 + '/' + 1 + '/' + waterYearLateMonths)).getTime();
+                    var oneYearMin = (new Date(10 + '/' + 1 + '/' + octNovDecYear)).getTime();
                     var max = (new Date(9 + '/' + 30 + '/' + _this_1.startAndEnd[1].getFullYear())).getTime();
                     if (_this_1.peaksOnYear) {
                         chart.series[0].update({ data: _this_1.formattedPeakDatesOnYear });
@@ -3503,8 +3497,8 @@ var StreamStats;
             GagePageController.prototype.resetZoom = function () {
                 var chart = $('#chart1').highcharts();
                 var min = this.startAndEnd[0].getTime();
-                var waterYearLateMonths = this.startAndEnd[1].getFullYear() - 1;
-                var oneYearMin = (new Date(10 + '/' + 1 + '/' + waterYearLateMonths)).getTime();
+                var octNovDecYear = this.startAndEnd[1].getFullYear() - 1;
+                var oneYearMin = (new Date(10 + '/' + 1 + '/' + octNovDecYear)).getTime();
                 var max = (new Date(9 + '/' + 30 + '/' + this.startAndEnd[1].getFullYear())).getTime();
                 if (this.peaksOnYear) {
                     chart.xAxis[0].setExtremes(oneYearMin, max);
@@ -3561,8 +3555,6 @@ var StreamStats;
                     var inputEnd = Date.parse($('#dischargeEnd').val());
                     chart.yAxis[0].setExtremes();
                     chart.xAxis[0].setExtremes(inputStart, inputEnd);
-                }
-                else {
                 }
             };
             GagePageController.prototype.updateShadedStats = function () {
@@ -3725,10 +3717,10 @@ var StreamStats;
                     var formattedEstSelectedPeaks_1 = [];
                     if (this.peakDates) {
                         this.peakDates.forEach(function (peakOnYear) {
-                            var waterYearLateMonths = _this_1.selectedYear - 1;
+                            var octNovDecYear = _this_1.selectedYear - 1;
                             var adjustedDate = new Date(peakOnYear.peak_dt);
                             if (adjustedDate.getMonth() > 8) {
-                                adjustedDate.setUTCFullYear(waterYearLateMonths);
+                                adjustedDate.setUTCFullYear(octNovDecYear);
                             }
                             else {
                                 adjustedDate.setUTCFullYear(_this_1.selectedYear);
@@ -3740,10 +3732,10 @@ var StreamStats;
                         });
                         if (this.estPeakDates) {
                             this.estPeakDates.forEach(function (estPeakOnYear) {
-                                var waterYearLateMonths = _this_1.selectedYear - 1;
+                                var octNovDecYear = _this_1.selectedYear - 1;
                                 var adjustedDate = new Date(estPeakOnYear.peak_dt);
                                 if (adjustedDate.getMonth() > 8) {
-                                    adjustedDate.setUTCFullYear(waterYearLateMonths);
+                                    adjustedDate.setUTCFullYear(octNovDecYear);
                                 }
                                 else {
                                     adjustedDate.setUTCFullYear(_this_1.selectedYear);

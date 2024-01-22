@@ -780,7 +780,6 @@ module StreamStats.Controllers {
                     let regulatedAEPchartData = [];
                     do {
                         var IDs = data.statistics
-                        //console.log('IDS', IDs)
                         for (let item of IDs) {
                             if(AEPlookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
                                 AEPchartData.push(item);
@@ -879,10 +878,7 @@ module StreamStats.Controllers {
                     });
                     this.instFlow = filteredInst;
                     }
-                    //console.log('inst', this.instFlow)
                     this.getDailyFlow();
-                                        // console.log(this.gageTimeZone)
-
                 });
         }
 
@@ -1331,45 +1327,7 @@ module StreamStats.Controllers {
                 }
             })
             }
-            // let finalDate;
-            // let finalInstIndex = this.formattedInstFlow.length-1;
-            // if (this.formattedDailyFlow.length > 0) {
-            //     var finalDailyIndex = this.formattedDailyFlow.length-1;
-            //     finalDate = this.formattedDailyFlow[finalDailyIndex].x    ///currently using the final DAILY flow point as latest year, but sometimes gage has more recent peaks
-            // }  
-            // if (this.formattedDailyFlow.length > 0 && this.formattedInstFlow.length > 0) {
-            //     if (this.formattedInstFlow[finalInstIndex].x > this.formattedDailyFlow[finalDailyIndex].x) {
-            //         finalDate = this.formattedInstFlow[finalInstIndex].x
-            //     }
-            // }
-            // if (this.formattedDailyFlow.length == 0 && this.formattedInstFlow.length == 0) {
-            //     finalDate = new Date();
-            // }
-            // console.log(finalDate);
-
-
-
-            // let finalDate;
-            // var finalDailyIndex = this.formattedDailyFlow.length-1;
-            // var finalPeakIndex = this.formattedPeakDates.length-1;
-            // if (this.formattedDailyFlow.length > 0) {
-            //     finalDate = this.formattedDailyFlow[finalDailyIndex].x
-            // }  
-            // if (this.formattedDailyFlow.length > 0 && this.formattedPeakDates.length > 0) {
-            //     if (this.formattedPeakDates[finalPeakIndex].x > this.formattedDailyFlow[finalDailyIndex].x) {
-            //         finalDate = this.formattedPeakDates[finalPeakIndex].x
-            //     }
-            // }
-            // if (this.formattedPeakDates.length > 0 && this.formattedDailyFlow.length == 0) {
-            //     finalDate = this.formattedPeakDates[finalPeakIndex].x
-            // }
-            // if (this.formattedPeakDates.length == 0 && this.formattedDailyFlow.length == 0) {
-            //     finalDate = new Date();
-            // }
-
             var finalIndex = this.formattedDailyFlow.length-1;
-            // var defaultYear = finalDate.getUTCFullYear();
-            // this.defaultYear = defaultYear;
             function dateRange(startDate, endDate, steps = 1) {
                 const dateArray = [];
                 let currentDate = new Date(startDate);
@@ -1413,14 +1371,6 @@ module StreamStats.Controllers {
                         adjustedDate.setUTCFullYear(this.defaultYear);
                     }
                     let currentWaterYear = new Date(adjustedDate.toUTCString())
-
-                    // if (currentYear.getMonth() > 8) {
-                    //     currentYear.setUTCFullYear(this.defaultYear - 1)
-                    //     waterYearDate = new Date(adjustedDate.toUTCString())
-                    // } else {
-                    //     //waterYearDate = currentYear
-                    // }
-                    //console.log('wyd', waterYearDate)
                     let realDate = new Date(peakOnYear.peak_dt)
                     let waterYear = realDate.getUTCFullYear();
                     if (realDate.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
@@ -1430,7 +1380,6 @@ module StreamStats.Controllers {
                         this.formattedPeakDatesOnYear.push({x: currentWaterYear, y: peakOnYear.peak_va, realDate: realDate, waterYear: waterYear})
                         }
                 });
-                console.log(this.formattedPeakDatesOnYear)
             }
             if (this.estPeakDates) {
                 this.estPeakDates.forEach(estPeakOnYear => {
@@ -2379,7 +2328,6 @@ module StreamStats.Controllers {
             });
             this.selectedFloodFreqStats = this.allFloodFreqStats[0];
             this.selectedYear = this.allYears[0];
-            //console.log('years', this.allYears, this.selectedYear);
             this.createAnnualFlowPlot();
             this.createDailyRasterPlot();
             this.createDischargePlot();
@@ -2427,15 +2375,13 @@ module StreamStats.Controllers {
 
             var self = this
             let min;
-            let waterYearLateMonths = this.allYears[0] - 1;
+            let octNovDecYear = this.allYears[0] - 1; //the year that October, November, and December will be plotted on since their cal year is diff than their water year
                 if (this.formattedPeakDatesOnYear.length > 0) {
-                    min = (new Date(10 +'/' + 1 + '/' + waterYearLateMonths)).getTime();
+                    min = (new Date(10 +'/' + 1 + '/' + octNovDecYear)).getTime();
                 } else {
                     min = this.startAndEnd[0].getTime()
                 }
             let max = (new Date(9 +'/' + 30 + '/' + this.allYears[0])).getTime();
-            console.log('min and max', new Date(min), new Date(max))
-            console.log(this.formattedPeakDatesOnYear)
             this.chartConfig = {
                 chart: {
                     height: 550,
@@ -3259,10 +3205,9 @@ public chooseFloodStats() {
 //dropdown for choosing year to plot peaks
 public choosePeakYear() {
     let chart = $('#chart1').highcharts();
-    let waterYearLateMonths = this.selectedYear - 1;
-    let min = (new Date(10 +'/' + 1 + '/' + waterYearLateMonths)).getTime()
+    let octNovDecYear = this.selectedYear - 1; //the year that October, November, and December will be plotted on since their cal year is diff than their water year
+    let min = (new Date(10 +'/' + 1 + '/' + octNovDecYear)).getTime()
     let max = (new Date(9 +'/' + 30 + '/' + this.selectedYear)).getTime()
-    console.log(new Date(min), new Date(max))
     let formattedSelectedPeaks = []; //new data array for peak streamflow plotted on the year selected
     let formattedEstSelectedPeaks = []; //new data array for Estimated peak streamflow plotted on the year selected
     if (this.selectedYear === this.selectedYear) {
@@ -3270,12 +3215,11 @@ public choosePeakYear() {
             this.peakDates.forEach(peakOnYear => {
                 let adjustedDate = new Date(peakOnYear.peak_dt);
                 if (adjustedDate.getMonth() > 8) {
-                    adjustedDate.setUTCFullYear(waterYearLateMonths);
+                    adjustedDate.setUTCFullYear(octNovDecYear);
                 } else {
                     adjustedDate.setUTCFullYear(this.selectedYear);
                 }
                 let selectedDate = new Date(adjustedDate.toUTCString())
-                console.log(selectedDate)
                 if (!isNaN(peakOnYear.peak_va)) {
                     formattedSelectedPeaks.push({x: selectedDate, y: peakOnYear.peak_va, realDate: new Date(peakOnYear.peak_dt)})
                     }
@@ -3285,7 +3229,7 @@ public choosePeakYear() {
             this.estPeakDates.forEach(estPeakOnYear => {
                 let adjustedDate = new Date(estPeakOnYear.peak_dt);
                 if (adjustedDate.getMonth() > 8) {
-                    adjustedDate.setUTCFullYear(waterYearLateMonths);
+                    adjustedDate.setUTCFullYear(octNovDecYear);
                 } else {
                     adjustedDate.setUTCFullYear(this.selectedYear);
                 }
@@ -3295,7 +3239,6 @@ public choosePeakYear() {
         }
         formattedSelectedPeaks.sort((a, b) => a.x - b.x);
         formattedEstSelectedPeaks.sort((a, b) => a.x - b.x);
-        console.log('selected', formattedSelectedPeaks)
         chart.series[0].update({data: formattedSelectedPeaks});
         chart.series[1].update({data: formattedEstSelectedPeaks});
         chart.yAxis[0].setExtremes();
@@ -3842,12 +3785,10 @@ public createDailyRasterPlot(): void {
             chart.showLoading('Loading...')
 
             setTimeout(() => {
-                let waterYearLateMonths = this.selectedYear - 1;
+                let octNovDecYear = this.selectedYear - 1; //the year that October, November, and December will be plotted on since their cal year is diff than their water year
                 let min = this.startAndEnd[0].getTime()
-                let oneYearMin = (new Date(10 +'/' + 1 + '/' + waterYearLateMonths)).getTime()
+                let oneYearMin = (new Date(10 +'/' + 1 + '/' + octNovDecYear)).getTime()
                 let max = (new Date(9 +'/' + 30 + '/' + this.startAndEnd[1].getFullYear())).getTime()
-                // let oneYearMin = (new Date(1 +'/' + 1 + '/' + this.startAndEnd[1].getFullYear())).getTime()
-                // let max = (new Date(12 +'/' + 31 + '/' + this.startAndEnd[1].getFullYear())).getTime()
                 if (this.peaksOnYear) {
                     chart.series[0].update({ data: this.formattedPeakDatesOnYear });
                     chart.series[1].update({ data: this.formattedEstPeakDatesOnYear});
@@ -3938,10 +3879,8 @@ public createDailyRasterPlot(): void {
         public resetZoom () {
             let chart = $('#chart1').highcharts();
             let min = this.startAndEnd[0].getTime()
-            let waterYearLateMonths = this.startAndEnd[1].getFullYear() - 1 ;
-            // let oneYearMin = (new Date(10 +'/' + 1 + '/' + waterYearLateMonths)).getTime()
-            // let max = (new Date(9 +'/' + 30 + '/' + this.selectedYear)).getTime()
-            let oneYearMin = (new Date(10 +'/' + 1 + '/' + waterYearLateMonths)).getTime()
+            let octNovDecYear = this.startAndEnd[1].getFullYear() - 1 ; //the year that October, November, and December will be plotted on since their cal year is diff than their water year
+            let oneYearMin = (new Date(10 +'/' + 1 + '/' + octNovDecYear)).getTime()
             let max = (new Date(9 +'/' + 30 + '/' + this.startAndEnd[1].getFullYear())).getTime()
             if (this.peaksOnYear) {
                 //reset to one year
@@ -3998,8 +3937,6 @@ public createDailyRasterPlot(): void {
             let inputEnd = Date.parse($('#dischargeEnd').val());
             chart.yAxis[0].setExtremes();
             chart.xAxis[0].setExtremes(inputStart, inputEnd);
-            } else {
-                //console.log('Please enter a valid date format')
             }
         }
         
@@ -4012,8 +3949,8 @@ public createDailyRasterPlot(): void {
                 .toISOString()
                 .split("T")[0];
             var maxDateString = new Date(max.getTime() - (min.getTimezoneOffset() * 60000 ))
-                    .toISOString()
-                            .split("T")[0];
+                .toISOString()
+                .split("T")[0];
             let minAndMax = {
                 min: minDateString,
                 max: maxDateString
@@ -4045,12 +3982,10 @@ public createDailyRasterPlot(): void {
                 
             const yearsArray = generateYearsBetween(minYear, maxYear);
             let newData = [];
-            //console.log('in the function', this.rawShaded)
             yearsArray.forEach(year => {
                 this.rawShaded.forEach(index => {
                     const data = {
                         date: new Date(parseFloat(index[5]) + '/' + parseFloat(index[6]) + '/' + year),
-                        //new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + year),
                         begin_yr: parseFloat(index[7]),
                         end_yr: parseFloat(index[8]),
                         min_va: parseFloat(index[13]),
@@ -4060,7 +3995,6 @@ public createDailyRasterPlot(): void {
                         p90_va: parseFloat(index[22]),
                         max_va: parseFloat(index[11])
                         }
-                        //console.log('here', data)
                         newData.push(data);
                 })
             })
@@ -4078,7 +4012,6 @@ public createDailyRasterPlot(): void {
                     newP90to100.push({x: stats.date, low: stats.p90_va, high: stats.max_va});
                 })
             }
-            //console.log('updated', newP0to10, newP10to25, newP25to75, newP75to90, newP90to100)
                 chart.series[5].show();
                 chart.series[6].show();
                 chart.series[2].show();
@@ -4168,10 +4101,10 @@ public createDailyRasterPlot(): void {
                 let formattedEstSelectedPeaks = []; //new data array for estimated peak streamflow plotted on the year that has been zoomed to
                     if (this.peakDates) {
                         this.peakDates.forEach(peakOnYear => {
-                            let waterYearLateMonths = this.selectedYear - 1;
+                            let octNovDecYear = this.selectedYear - 1;
                             let adjustedDate = new Date(peakOnYear.peak_dt);
                             if (adjustedDate.getMonth() > 8) {
-                                adjustedDate.setUTCFullYear(waterYearLateMonths);
+                                adjustedDate.setUTCFullYear(octNovDecYear);
                             } else {
                                 adjustedDate.setUTCFullYear(this.selectedYear);
                             }
@@ -4182,10 +4115,10 @@ public createDailyRasterPlot(): void {
                         });
                     if (this.estPeakDates) {
                         this.estPeakDates.forEach(estPeakOnYear => {
-                            let waterYearLateMonths = this.selectedYear - 1;
+                            let octNovDecYear = this.selectedYear - 1;
                             let adjustedDate = new Date(estPeakOnYear.peak_dt);
                             if (adjustedDate.getMonth() > 8) {
-                                adjustedDate.setUTCFullYear(waterYearLateMonths);
+                                adjustedDate.setUTCFullYear(octNovDecYear);
                             } else {
                                 adjustedDate.setUTCFullYear(this.selectedYear);
                             }
