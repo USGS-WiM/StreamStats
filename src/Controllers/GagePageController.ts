@@ -1234,7 +1234,10 @@ module StreamStats.Controllers {
             if (this.peakDates) {
                 this.peakDates.forEach(peakObj => {
                     if (!isNaN(peakObj.peak_va)) {
-                    this.formattedPeakDates.push({x: new Date(peakObj.peak_dt), y: peakObj.peak_va})
+                    let date = new Date(peakObj.peak_dt)
+                        .toISOString()
+                        .split("T")[0];
+                    this.formattedPeakDates.push({x: new Date(date), y: peakObj.peak_va})
                     this.formattedDischargePeakDates.push({x: peakObj.peak_va, y: peakObj.peak_stage, date: peakObj.peak_dt})
                 }
                 });
@@ -1242,7 +1245,10 @@ module StreamStats.Controllers {
             if (this.estPeakDates) {
                 this.estPeakDates.forEach(estPeakObj => {
                     if (!isNaN(estPeakObj.peak_va)) {
-                    this.formattedEstPeakDates.push({x: new Date(estPeakObj.peak_dt), y: estPeakObj.peak_va})
+                        let estDate = new Date(estPeakObj.peak_dt)
+                        .toISOString()
+                        .split("T")[0];
+                    this.formattedEstPeakDates.push({x: new Date(estDate), y: estPeakObj.peak_va})
                     }
                 });
             }
@@ -1365,7 +1371,7 @@ module StreamStats.Controllers {
                 this.peakDates.forEach(peakOnYear => {
                     //let waterYearDate;
                     let adjustedDate = new Date(peakOnYear.peak_dt); 
-                    if (adjustedDate.getMonth() > 8) {
+                    if (adjustedDate.getUTCMonth() > 8) {
                         adjustedDate.setUTCFullYear(this.defaultYear - 1);
                     } else {
                         adjustedDate.setUTCFullYear(this.defaultYear);
@@ -1384,9 +1390,13 @@ module StreamStats.Controllers {
             if (this.estPeakDates) {
                 this.estPeakDates.forEach(estPeakOnYear => {
                     let adjustedDate = new Date(estPeakOnYear.peak_dt);
-                    adjustedDate.setUTCFullYear(this.defaultYear);
-                    let currentYear = new Date(adjustedDate.toUTCString())
-                    this.formattedEstPeakDatesOnYear.push({x: currentYear, y: estPeakOnYear.peak_va, realDate: new Date(estPeakOnYear.peak_dt)})
+                    if (adjustedDate.getUTCMonth() > 8) {
+                        adjustedDate.setUTCFullYear(this.defaultYear - 1);
+                    } else {
+                        adjustedDate.setUTCFullYear(this.defaultYear);
+                    }
+                    let currentWaterYear = new Date(adjustedDate.toUTCString())
+                    this.formattedEstPeakDatesOnYear.push({x: currentWaterYear, y: estPeakOnYear.peak_va, realDate: new Date(estPeakOnYear.peak_dt)})
                 });
             }
             //finding the earliest and latest dates out of ALL THREE data series
@@ -2337,7 +2347,7 @@ module StreamStats.Controllers {
             //console.log('peak value plot data', this.formattedPeakDates);
             //console.log('estimated peak plot data', this.formattedEstPeakDates);
             //console.log('daily flow plot data', this.formattedDailyFlow);
-            //console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear.length)
+            //console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear);
             //console.log('0-10', this.formattedP0to10);
             //console.log('NWS Forecast', this.NWSforecast)
             //console.log('Inst Flow', this.formattedInstFlow.length)
@@ -3214,7 +3224,7 @@ public choosePeakYear() {
         if (this.peakDates) {
             this.peakDates.forEach(peakOnYear => {
                 let adjustedDate = new Date(peakOnYear.peak_dt);
-                if (adjustedDate.getMonth() > 8) {
+                if (adjustedDate.getUTCMonth() > 8) {
                     adjustedDate.setUTCFullYear(octNovDecYear);
                 } else {
                     adjustedDate.setUTCFullYear(this.selectedYear);
@@ -3228,7 +3238,7 @@ public choosePeakYear() {
         if (this.estPeakDates) {
             this.estPeakDates.forEach(estPeakOnYear => {
                 let adjustedDate = new Date(estPeakOnYear.peak_dt);
-                if (adjustedDate.getMonth() > 8) {
+                if (adjustedDate.getUTCMonth() > 8) {
                     adjustedDate.setUTCFullYear(octNovDecYear);
                 } else {
                     adjustedDate.setUTCFullYear(this.selectedYear);
@@ -3239,6 +3249,7 @@ public choosePeakYear() {
         }
         formattedSelectedPeaks.sort((a, b) => a.x - b.x);
         formattedEstSelectedPeaks.sort((a, b) => a.x - b.x);
+        console.log('choose peak year',formattedEstSelectedPeaks)
         chart.series[0].update({data: formattedSelectedPeaks});
         chart.series[1].update({data: formattedEstSelectedPeaks});
         chart.yAxis[0].setExtremes();
@@ -3877,6 +3888,7 @@ public createDailyRasterPlot(): void {
         }
 
         public resetZoom () {
+            console.log('reset zoom', this.formattedEstPeakDatesOnYear)
             let chart = $('#chart1').highcharts();
             let min = this.startAndEnd[0].getTime()
             let octNovDecYear = this.startAndEnd[1].getFullYear() - 1 ; //the year that October, November, and December will be plotted on since their cal year is diff than their water year
@@ -4041,8 +4053,8 @@ public createDailyRasterPlot(): void {
                 .toISOString()
                 .split("T")[0];
             var maxDateString = new Date(max.getTime() - (min.getTimezoneOffset() * 60000 ))
-                    .toISOString()
-                            .split("T")[0];
+                .toISOString()
+                .split("T")[0];
             let minAndMax = {
                 min: minDateString,
                 max: maxDateString
@@ -4103,7 +4115,7 @@ public createDailyRasterPlot(): void {
                         this.peakDates.forEach(peakOnYear => {
                             let octNovDecYear = this.selectedYear - 1;
                             let adjustedDate = new Date(peakOnYear.peak_dt);
-                            if (adjustedDate.getMonth() > 8) {
+                            if (adjustedDate.getUTCMonth() > 8) {
                                 adjustedDate.setUTCFullYear(octNovDecYear);
                             } else {
                                 adjustedDate.setUTCFullYear(this.selectedYear);
@@ -4117,7 +4129,7 @@ public createDailyRasterPlot(): void {
                         this.estPeakDates.forEach(estPeakOnYear => {
                             let octNovDecYear = this.selectedYear - 1;
                             let adjustedDate = new Date(estPeakOnYear.peak_dt);
-                            if (adjustedDate.getMonth() > 8) {
+                            if (adjustedDate.getUTCMonth() > 8) {
                                 adjustedDate.setUTCFullYear(octNovDecYear);
                             } else {
                                 adjustedDate.setUTCFullYear(this.selectedYear);

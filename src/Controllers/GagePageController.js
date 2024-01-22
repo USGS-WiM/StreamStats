@@ -910,7 +910,10 @@ var StreamStats;
                 if (this.peakDates) {
                     this.peakDates.forEach(function (peakObj) {
                         if (!isNaN(peakObj.peak_va)) {
-                            _this_1.formattedPeakDates.push({ x: new Date(peakObj.peak_dt), y: peakObj.peak_va });
+                            var date = new Date(peakObj.peak_dt)
+                                .toISOString()
+                                .split("T")[0];
+                            _this_1.formattedPeakDates.push({ x: new Date(date), y: peakObj.peak_va });
                             _this_1.formattedDischargePeakDates.push({ x: peakObj.peak_va, y: peakObj.peak_stage, date: peakObj.peak_dt });
                         }
                     });
@@ -918,7 +921,10 @@ var StreamStats;
                 if (this.estPeakDates) {
                     this.estPeakDates.forEach(function (estPeakObj) {
                         if (!isNaN(estPeakObj.peak_va)) {
-                            _this_1.formattedEstPeakDates.push({ x: new Date(estPeakObj.peak_dt), y: estPeakObj.peak_va });
+                            var estDate = new Date(estPeakObj.peak_dt)
+                                .toISOString()
+                                .split("T")[0];
+                            _this_1.formattedEstPeakDates.push({ x: new Date(estDate), y: estPeakObj.peak_va });
                         }
                     });
                 }
@@ -1039,7 +1045,7 @@ var StreamStats;
                 if (this.peakDates) {
                     this.peakDates.forEach(function (peakOnYear) {
                         var adjustedDate = new Date(peakOnYear.peak_dt);
-                        if (adjustedDate.getMonth() > 8) {
+                        if (adjustedDate.getUTCMonth() > 8) {
                             adjustedDate.setUTCFullYear(_this_1.defaultYear - 1);
                         }
                         else {
@@ -1060,9 +1066,14 @@ var StreamStats;
                 if (this.estPeakDates) {
                     this.estPeakDates.forEach(function (estPeakOnYear) {
                         var adjustedDate = new Date(estPeakOnYear.peak_dt);
-                        adjustedDate.setUTCFullYear(_this_1.defaultYear);
-                        var currentYear = new Date(adjustedDate.toUTCString());
-                        _this_1.formattedEstPeakDatesOnYear.push({ x: currentYear, y: estPeakOnYear.peak_va, realDate: new Date(estPeakOnYear.peak_dt) });
+                        if (adjustedDate.getUTCMonth() > 8) {
+                            adjustedDate.setUTCFullYear(_this_1.defaultYear - 1);
+                        }
+                        else {
+                            adjustedDate.setUTCFullYear(_this_1.defaultYear);
+                        }
+                        var currentWaterYear = new Date(adjustedDate.toUTCString());
+                        _this_1.formattedEstPeakDatesOnYear.push({ x: currentWaterYear, y: estPeakOnYear.peak_va, realDate: new Date(estPeakOnYear.peak_dt) });
                     });
                 }
                 var startDate = new Date('January 1, 3000');
@@ -2838,7 +2849,7 @@ var StreamStats;
                     if (this.peakDates) {
                         this.peakDates.forEach(function (peakOnYear) {
                             var adjustedDate = new Date(peakOnYear.peak_dt);
-                            if (adjustedDate.getMonth() > 8) {
+                            if (adjustedDate.getUTCMonth() > 8) {
                                 adjustedDate.setUTCFullYear(octNovDecYear);
                             }
                             else {
@@ -2853,7 +2864,7 @@ var StreamStats;
                     if (this.estPeakDates) {
                         this.estPeakDates.forEach(function (estPeakOnYear) {
                             var adjustedDate = new Date(estPeakOnYear.peak_dt);
-                            if (adjustedDate.getMonth() > 8) {
+                            if (adjustedDate.getUTCMonth() > 8) {
                                 adjustedDate.setUTCFullYear(octNovDecYear);
                             }
                             else {
@@ -2865,6 +2876,7 @@ var StreamStats;
                     }
                     formattedSelectedPeaks.sort(function (a, b) { return a.x - b.x; });
                     formattedEstSelectedPeaks.sort(function (a, b) { return a.x - b.x; });
+                    console.log('choose peak year', formattedEstSelectedPeaks);
                     chart.series[0].update({ data: formattedSelectedPeaks });
                     chart.series[1].update({ data: formattedEstSelectedPeaks });
                     chart.yAxis[0].setExtremes();
@@ -3495,6 +3507,7 @@ var StreamStats;
                 chart.resetZoomButton.hide();
             };
             GagePageController.prototype.resetZoom = function () {
+                console.log('reset zoom', this.formattedEstPeakDatesOnYear);
                 var chart = $('#chart1').highcharts();
                 var min = this.startAndEnd[0].getTime();
                 var octNovDecYear = this.startAndEnd[1].getFullYear() - 1;
@@ -3719,7 +3732,7 @@ var StreamStats;
                         this.peakDates.forEach(function (peakOnYear) {
                             var octNovDecYear = _this_1.selectedYear - 1;
                             var adjustedDate = new Date(peakOnYear.peak_dt);
-                            if (adjustedDate.getMonth() > 8) {
+                            if (adjustedDate.getUTCMonth() > 8) {
                                 adjustedDate.setUTCFullYear(octNovDecYear);
                             }
                             else {
@@ -3734,7 +3747,7 @@ var StreamStats;
                             this.estPeakDates.forEach(function (estPeakOnYear) {
                                 var octNovDecYear = _this_1.selectedYear - 1;
                                 var adjustedDate = new Date(estPeakOnYear.peak_dt);
-                                if (adjustedDate.getMonth() > 8) {
+                                if (adjustedDate.getUTCMonth() > 8) {
                                     adjustedDate.setUTCFullYear(octNovDecYear);
                                 }
                                 else {
