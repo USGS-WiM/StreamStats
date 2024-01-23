@@ -2876,7 +2876,6 @@ var StreamStats;
                     }
                     formattedSelectedPeaks.sort(function (a, b) { return a.x - b.x; });
                     formattedEstSelectedPeaks.sort(function (a, b) { return a.x - b.x; });
-                    console.log('choose peak year', formattedEstSelectedPeaks);
                     chart.series[0].update({ data: formattedSelectedPeaks });
                     chart.series[1].update({ data: formattedEstSelectedPeaks });
                     chart.yAxis[0].setExtremes();
@@ -3507,7 +3506,6 @@ var StreamStats;
                 chart.resetZoomButton.hide();
             };
             GagePageController.prototype.resetZoom = function () {
-                console.log('reset zoom', this.formattedEstPeakDatesOnYear);
                 var chart = $('#chart1').highcharts();
                 var min = this.startAndEnd[0].getTime();
                 var octNovDecYear = this.startAndEnd[1].getFullYear() - 1;

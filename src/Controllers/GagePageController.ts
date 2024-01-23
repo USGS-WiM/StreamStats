@@ -3249,7 +3249,6 @@ public choosePeakYear() {
         }
         formattedSelectedPeaks.sort((a, b) => a.x - b.x);
         formattedEstSelectedPeaks.sort((a, b) => a.x - b.x);
-        console.log('choose peak year',formattedEstSelectedPeaks)
         chart.series[0].update({data: formattedSelectedPeaks});
         chart.series[1].update({data: formattedEstSelectedPeaks});
         chart.yAxis[0].setExtremes();
@@ -3888,7 +3887,6 @@ public createDailyRasterPlot(): void {
         }
 
         public resetZoom () {
-            console.log('reset zoom', this.formattedEstPeakDatesOnYear)
             let chart = $('#chart1').highcharts();
             let min = this.startAndEnd[0].getTime()
             let octNovDecYear = this.startAndEnd[1].getFullYear() - 1 ; //the year that October, November, and December will be plotted on since their cal year is diff than their water year
