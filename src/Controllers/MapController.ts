@@ -1072,6 +1072,7 @@ module StreamStats.Controllers {
                             }
                             
                         }, (error) => {
+                            console.log('hehe')
                             map.removeLayer(this.delineationLine)
                         }).finally(() => {
                             // this.CanContinue = true;
@@ -2115,7 +2116,7 @@ module StreamStats.Controllers {
 
             this.studyArea.AddStudyArea(studyArea);
             this.studyArea.loadStudyBoundary();
-            
+
 
             //add disclaimer here
             this.studyArea.selectedStudyArea.LinePoints = lineClickPoints;

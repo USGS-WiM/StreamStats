@@ -779,6 +779,7 @@ var StreamStats;
                                     _this.startDelineate(ssPoints, false, null, lineClickPoints);
                                 }
                             }, function (error) {
+                                console.log('hehe');
                                 map.removeLayer(_this.delineationLine);
                             }).finally(function () {
                             });

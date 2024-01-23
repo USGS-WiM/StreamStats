@@ -338,7 +338,7 @@ module StreamStats.Services {
                                 this.global = true;
                             }
                         } catch(e) {
-                            this.global = true; // There was an error when looking for RELATEDOID, set to false to be safe
+                            this.global = true; // There was an error when looking for RELATEDOID, set to true to be safe
                         }
 
                         //hack for st louis stormdrain
@@ -439,23 +439,33 @@ module StreamStats.Services {
 
                 if (delineations.length == this.selectedStudyArea.Pourpoint.length) {
                     //reconfigure response
-                    // console.log(features)
+                    console.log(features)
                     this.selectedStudyArea.FeatureCollection = {
                         type: "FeatureCollection",
                         features: features,
                         bbox: null
                     };
-
-                    var featuresToMerge = []
-                    for (const feature of this.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase().includes("globalwatershed") && f.geometry.type == 'Polygon'})) {
-                        featuresToMerge.push(feature)
+                    try {
+                        var featuresToMerge = this.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase().includes("globalwatershed") && f.geometry.type == 'Polygon'})
+                        // do the union over each feature
+                        var union = featuresToMerge[0];
+                        for (let i=1; i< featuresToMerge.length; i++) {
+                            union = turf.union(union, featuresToMerge[i]);
+                        }
+                        console.log(union)
+                    } catch(e) {
+                        this.toaster.clear();
+                        this.toaster.pop('error', "Error merging basins.", "", 0);
+                        this.clearStudyArea();
+                        this.resetDelineationButtons();
+                        this.eventManager.RaiseEvent(Services.onClearBasin, this, WiM.Event.EventArgs.Empty); // to clear the line when doing line delineation 
+                        return
                     }
-                    var featuresCollectionToMerge = turf.featureCollection(featuresToMerge);
-                    var dissolvedFeatures = turf.dissolve(featuresCollectionToMerge);
-                    //console.log(dissolvedFeatures)
-                    dissolvedFeatures.features[0]['id'] = 'globalwatershed';
-                    this.selectedStudyArea.FeatureCollection.features.push(dissolvedFeatures.features[0]);
-                    var bbox = turf.bbox(dissolvedFeatures);
+
+
+                    union.id = 'globalwatershed';
+                    this.selectedStudyArea.FeatureCollection.features.push(union);
+                    var bbox = turf.bbox(union);
                     this.selectedStudyArea.FeatureCollection['bbox'] = bbox;
                     // var studyArea = this.simplify(angular.fromJson(angular.toJson(dissolved.features[0])));
                     // console.log(this.selectedStudyArea.FeatureCollection);
