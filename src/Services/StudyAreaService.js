@@ -344,7 +344,6 @@ var StreamStats;
                             case 7:
                                 ;
                                 if (delineations.length == this.selectedStudyArea.Pourpoint.length) {
-                                    console.log(features);
                                     this.selectedStudyArea.FeatureCollection = {
                                         type: "FeatureCollection",
                                         features: features,
@@ -359,6 +358,7 @@ var StreamStats;
                                         console.log(union);
                                     }
                                     catch (e) {
+                                        console.log(e);
                                         this.toaster.clear();
                                         this.toaster.pop('error', "Error merging basins.", "", 0);
                                         this.clearStudyArea();

@@ -439,12 +439,12 @@ module StreamStats.Services {
 
                 if (delineations.length == this.selectedStudyArea.Pourpoint.length) {
                     //reconfigure response
-                    console.log(features)
                     this.selectedStudyArea.FeatureCollection = {
                         type: "FeatureCollection",
                         features: features,
                         bbox: null
                     };
+                    
                     try {
                         var featuresToMerge = this.selectedStudyArea.FeatureCollection.features.filter(f => { return (<string>(f.id)).toLowerCase().includes("globalwatershed") && f.geometry.type == 'Polygon'})
                         // do the union over each feature
@@ -454,6 +454,7 @@ module StreamStats.Services {
                         }
                         console.log(union)
                     } catch(e) {
+                        console.log(e)
                         this.toaster.clear();
                         this.toaster.pop('error', "Error merging basins.", "", 0);
                         this.clearStudyArea();
