@@ -649,11 +649,13 @@ var StreamStats;
                     .toISOString()
                     .split("T")[0];
                 var url;
+                var now = new Date();
+                var today = now.getUTCFullYear() + '-' + now.getUTCMonth() + 1 + '-' + now.getUTCDate();
                 if (this.instFlow.length > 0) {
                     url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01&endDT=' + twoWeeksAgo;
                 }
                 else {
-                    url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01&endDT=2024-01-11';
+                    url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01&endDT=' + today;
                 }
                 this.dailyFlowURL = url;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
@@ -2881,7 +2883,7 @@ var StreamStats;
                     chart.yAxis[0].setExtremes();
                     chart.xAxis[0].setExtremes(min, max);
                     chart.series[0].update({ tooltip: {
-                            headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Water Year  HELLOOOOO: <b>' + this.selectedYear,
+                            headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
                             pointFormatter: function () {
                                 if (this.formattedPeakDatesOnYear !== null) {
                                     var waterYear = this.realDate.getUTCFullYear();
