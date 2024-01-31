@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - River Size Class map layer to Minnesota
 - Sediment Region map layer to Minnesota
+- Added 'Sediment' applications to MN config
+- Add 'Configure' button for 'Sediment Method'
 
 ### Changed   
 
