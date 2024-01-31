@@ -142,6 +142,15 @@ var StreamStats;
                                 backdropClass: 'backdropZ',
                                 windowClass: 'windowZ',
                             };
+                        case SSModalType.e_sediment:
+                            return {
+                                templateUrl: 'Views/sedimentview.html',
+                                controller: 'StreamStats.Controllers.SedimentController',
+                                size: 'sm',
+                                backdropClass: 'backdropZ',
+                                backdrop: 'static',
+                                windowClass: 'windowZ',
+                            };
                         default:
                             return null;
                     }
@@ -168,6 +177,7 @@ var StreamStats;
             SSModalType[SSModalType["e_flowanywhere"] = 12] = "e_flowanywhere";
             SSModalType[SSModalType["e_warningmessage"] = 13] = "e_warningmessage";
             SSModalType[SSModalType["e_batchprocessor"] = 14] = "e_batchprocessor";
+            SSModalType[SSModalType["e_sediment"] = 15] = "e_sediment";
         })(SSModalType = Services.SSModalType || (Services.SSModalType = {}));
         factory.$inject = ['$modal'];
         function factory($modal) {

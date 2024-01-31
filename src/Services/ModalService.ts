@@ -202,6 +202,15 @@ module StreamStats.Services {
                             backdropClass: 'backdropZ',
                             windowClass: 'windowZ',
                         };
+                    case SSModalType.e_sediment:
+                        return {
+                            templateUrl: 'Views/sedimentview.html',
+                            controller: 'StreamStats.Controllers.SedimentController',
+                            size: 'sm',
+                            backdropClass: 'backdropZ',
+                            backdrop: 'static',
+                            windowClass: 'windowZ',
+                        };
 
                     default:
                         return null;
@@ -228,7 +237,8 @@ export enum SSModalType {
         e_nearestgages = 11,        
         e_flowanywhere = 12,
         e_warningmessage = 13,
-        e_batchprocessor = 14
+        e_batchprocessor = 14,
+        e_sediment = 15
         
         
     }

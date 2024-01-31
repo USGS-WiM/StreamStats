@@ -380,6 +380,8 @@ module StreamStats.Controllers {
             } else if (extensionName == "FLA") {
                 this.modalService.openModal(Services.SSModalType.e_flowanywhere);
                 this.addParameterToStudyAreaList("DRNAREA");
+            } else if (extensionName == "Sediment") {
+                this.modalService.openModal(Services.SSModalType.e_sediment);
             }
         }
 
