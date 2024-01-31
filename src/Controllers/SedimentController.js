@@ -41,7 +41,7 @@ var StreamStats;
                 var errorMessage = this.verifyExtensionCanContinue();
                 if (!errorMessage) {
                     this.close();
-                    this.toaster.pop('success', "Flow Anywhere Method was successfully configured", "Please continue", 5000);
+                    this.toaster.pop('success', "Sediment Machine Learning Method was successfully configured", "Please continue", 5000);
                 }
                 else {
                     this.toaster.pop('error', "Error", errorMessage, 0);
