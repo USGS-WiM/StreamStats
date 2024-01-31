@@ -224,6 +224,8 @@
                     <form style="padding: 5px 0;" id="applications">
                         <button ng-if="vm.scenarioHasExtensions" type="button" class="fullwidth" ng-click="vm.configureExtensions('FDCTM')" ><i class="fa fa-check-circle"></i>&nbsp;&nbsp;Configure FDCTM</button>
                         <button ng-if="vm.regionService.selectedRegion.Applications.indexOf('FLA') != -1" type="button" class="fullwidth" ng-click="vm.configureExtensions('FLA')" ><i class="fa fa-check-circle"></i>&nbsp;&nbsp;Configure Flow Anywhere Method</button>
+                        <button ng-if="vm.regionService.selectedRegion.Applications.indexOf('Sediment') != -1" type="button" class="fullwidth" ng-click="vm.configureExtensions('Sediment')" ><i class="fa fa-check-circle"></i>&nbsp;&nbsp;Configure Sediment Model</button>
+                        <!-- *** Add sediment button here *** -->
                     </form>
                     <form style="padding: 5px 0;">
                         <button type="button" class="btn-blue fullwidth" ng-click="vm.calculateParameters()" ng-disabled="vm.studyAreaService.parametersLoading || vm.nssService.loadingParametersByStatisticsGroupCounter > 0 || vm.studyAreaService.studyAreaParameterList.length < 1 || (vm.scenarioHasExtensions && !vm.extensionsConfigured)"><i ng-class="vm.studyAreaService.parametersLoading ? 'fa fa-refresh fa-spin' : 'fa fa-check-circle'"></i>&nbsp;&nbsp;Continue</button>
