@@ -38,6 +38,14 @@ var StreamStats;
                 this.modalInstance.dismiss('cancel');
             };
             SedimentController.prototype.ok = function () {
+                var errorMessage = this.verifyExtensionCanContinue();
+                if (!errorMessage) {
+                    this.close();
+                    this.toaster.pop('success', "Flow Anywhere Method was successfully configured", "Please continue", 5000);
+                }
+                else {
+                    this.toaster.pop('error', "Error", errorMessage, 0);
+                }
             };
             SedimentController.prototype.init = function () {
                 this.isBusy = true;
@@ -46,8 +54,28 @@ var StreamStats;
                 var lon = this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
                 var url = configuration.baseurls.StreamStatsMapServices + configuration.queryparams.FlowAnywhereGages.format(lon, lat);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+                this.dateRange = { dates: { startDate: this.addDay(new Date(), -32), endDate: this.addDay(new Date(), -2) }, minDate: new Date(2006, 0, 1), maxDate: this.addDay(new Date(), -1) };
             };
             SedimentController.prototype.load = function () {
+            };
+            SedimentController.prototype.verifyExtensionCanContinue = function () {
+                if (this.dateRange) {
+                    if (!((this.dateRange.dates.startDate <= this.dateRange.maxDate || this.dateRange.dates.endDate <= this.dateRange.maxDate) &&
+                        (this.dateRange.dates.startDate >= this.dateRange.minDate || this.dateRange.dates.endDate >= this.dateRange.minDate) &&
+                        (this.dateRange.dates.startDate <= this.dateRange.dates.endDate))) {
+                        return "Date range is not valid.";
+                    }
+                }
+                return null;
+            };
+            SedimentController.prototype.addDay = function (d, days) {
+                try {
+                    var dayAsTime = 1000 * 60 * 60 * 24;
+                    return new Date(d.getTime() + days * dayAsTime);
+                }
+                catch (e) {
+                    return d;
+                }
             };
             SedimentController.$inject = ['$scope', '$modalInstance', 'StreamStats.Services.ModalService', 'StreamStats.Services.StudyAreaService', 'WiM.Event.EventManager', '$http', 'toaster'];
             return SedimentController;

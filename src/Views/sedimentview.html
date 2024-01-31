@@ -12,15 +12,14 @@
     <div class="modal-body">
         <div class="panel">
             <!-- https://github.com/fragaria/angular-daterangepicker -->
-            <!-- <small>Example to be changed for sediment model</small>
-            <h4 class="panel-title">Select/Enter a Date Range<small style="color:red">&nbsp;&nbsp;(Required)</small></h4>
-            <input id="dateSimple" date-range-picker class="form-control date-picker" type="text" ng-model="vm.dateRange.dates" min="vm.dateRange.minDate" max="vm.dateRange.maxDate" options="vm.dateRangeOptions" /> -->
+            <h4 class="panel-title">Select/Enter a Date Range<small style="color:red">&nbsp;&nbsp;(Required) &nbsp;&nbsp;</small><span><i title="Date range is limited to 2006 and later due to model limitations." class="fa fa-question-circle"></i></span></h4>
+            <input id="dateSimple" date-range-picker class="form-control date-picker" type="text" ng-model="vm.dateRange.dates" min="vm.dateRange.minDate" max="vm.dateRange.maxDate" options="vm.dateRangeOptions" />
         </div>
     </div>
     <div class="modal-footer  hidden-print">
         <div class="btn-group">
             <button class="btn-wim-default" ng-click="vm.close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Cancel</button>
-            <button ng-disabled="vm.isBusy" class="btn-wim-default" ng-click="vm.ok()"><i class="fa fa-close"></i>&nbsp;&nbsp;Ok</button>
+            <button class="btn-wim-default" ng-click="vm.ok()"><i class="fa fa-close"></i>&nbsp;&nbsp;Ok</button>
         </div>
     </div>
 </div>
