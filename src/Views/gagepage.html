@@ -236,8 +236,8 @@
                                 <input type="checkbox" ng-if="vm.formattedPeakDates.length > 0" id="togglePeaks" name="togglePeaks" ng-checked="vm.peaksOnYear == true" ng-model="vm.peaksOnYear" ng-change="vm.togglePeakYear()" checked>
                                 <label for="togglePeaks" ng-if="vm.formattedPeakDates.length > 0">Plot Annual Streamflow Peaks on Water Year: </label>
                                 <select id='date-dropdown' style="width:6%; text-align-last:center; margin-top: 5px; margin-bottom: 5px" ng-model="vm.selectedYear" ng-options="year for year in vm.allYears" ng-change="vm.choosePeakYear()" ng-disabled="vm.peaksOnYear == false"></select>
-                                &nbsp;&nbsp;<input type="checkbox" ng-if="vm.containsNegatives() === false" id="logScale" name="logScale" ng-model="vm.logScale" ng-change="vm.toggleLogLinear()" checked>
-                                <label for="logScale" ng-if="vm.containsNegatives() === false"> Log Scale&nbsp;&nbsp;</label>
+                                &nbsp;&nbsp;<input type="checkbox" ng-disabled="vm.containsNegatives() === true" id="logScale" name="logScale" ng-model="vm.logScale" ng-change="vm.toggleLogLinear()" checked>
+                                <label for="logScale"> Log Scale&nbsp;&nbsp;</label>
                                 <button ng-click="vm.resetZoom()">Reset Zoom</button><br>
                                 <input type="checkbox" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" id="toggleFloodStats" name="toggleFloodStats" ng-model="vm.showFloodStats" ng-change="vm.toggleFloodStats()" checked>
                                 <label for="toggleFloodStats" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" > Show Streamgage Statistics:</label>
