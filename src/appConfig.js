@@ -514,7 +514,7 @@ configuration.regions = [
                 }}
             }
         },
-        "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/minnesota-streamstats" },
+        "Applications": ["Sediment"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/minnesota-streamstats" },
     { "RegionID": "MO", "Name": "Missouri", "Bounds": [[35.989656, -95.767479], [40.609784, -89.105034]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/missouri-streamstats" },
     {
         "RegionID": "MO_STL", "Name": "Missouri St. Louis", "Bounds": [[38.399258, -90.673599], [38.837568, -89.693069]], "Layers":
