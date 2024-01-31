@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Sediment Region map layer to Minnesota
 - Added 'Sediment' applications to MN config
 - Add 'Configure' button for 'Sediment Method'
+- Sediment Modal to open when configure button clicked
 
 ### Changed   
 

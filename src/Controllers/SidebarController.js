@@ -246,6 +246,9 @@ var StreamStats;
                     this.modalService.openModal(StreamStats.Services.SSModalType.e_flowanywhere);
                     this.addParameterToStudyAreaList("DRNAREA");
                 }
+                else if (extensionName == "Sediment") {
+                    this.modalService.openModal(StreamStats.Services.SSModalType.e_sediment);
+                }
             };
             SidebarController.prototype.submitBasinEdits = function () {
                 var latLong = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + ',' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5);
