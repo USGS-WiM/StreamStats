@@ -12,7 +12,12 @@
     <div class="modal-body">
         <div class="panel">
             <!-- https://github.com/fragaria/angular-daterangepicker -->
-            <h4 class="panel-title">Select/Enter a Date Range<small style="color:red">&nbsp;&nbsp;(Required) &nbsp;&nbsp;</small><span><i title="Date range is limited to 2006 and later due to model limitations." class="fa fa-question-circle"></i></span></h4>
+            <h4 class="panel-title">Select/Enter a Date Range<small style="color:red">&nbsp;&nbsp;(Required) &nbsp;&nbsp;</small>
+                <i ng-click="showTooltip1 =! showTooltip1" ng-mouseover="showTooltip1 = true" ng-mouseleave="showTooltip1 = false" class="fa fa-info-circle"></i>
+                <span ng-show="showTooltip1" class="report-tooltip">
+                    Date range is limited to 2006 and later due to model limitations.
+                </span>
+            </h4>
             <input id="dateSimple" date-range-picker class="form-control date-picker" type="text" ng-model="vm.dateRange.dates" min="vm.dateRange.minDate" max="vm.dateRange.maxDate" options="vm.dateRangeOptions" />
         </div>
     </div>

@@ -44,7 +44,7 @@ var StreamStats;
                     this.toaster.pop('success', "Sediment Machine Learning Method was successfully configured", "Please continue", 5000);
                 }
                 else {
-                    this.toaster.pop('error', "Error", errorMessage, 0);
+                    this.toaster.pop('error', "Error", errorMessage, 5000);
                 }
             };
             SedimentController.prototype.init = function () {
@@ -60,7 +60,7 @@ var StreamStats;
             };
             SedimentController.prototype.verifyExtensionCanContinue = function () {
                 if (this.dateRange) {
-                    if (!((this.dateRange.dates.startDate <= this.dateRange.maxDate || this.dateRange.dates.endDate <= this.dateRange.maxDate) &&
+                    if (this.dateRange.dates === undefined || !((this.dateRange.dates || this.dateRange.dates.startDate <= this.dateRange.maxDate || this.dateRange.dates.endDate <= this.dateRange.maxDate) &&
                         (this.dateRange.dates.startDate >= this.dateRange.minDate || this.dateRange.dates.endDate >= this.dateRange.minDate) &&
                         (this.dateRange.dates.startDate <= this.dateRange.dates.endDate))) {
                         return "Date range is not valid.";
