@@ -132,7 +132,7 @@ module StreamStats.Controllers {
 
             // Check that dates are valid
             if (this.dateRange) {
-                if (this.dateRange.dates === undefined || !((this.dateRange.dates || this.dateRange.dates.startDate <= this.dateRange.maxDate || this.dateRange.dates.endDate <= this.dateRange.maxDate) &&
+                if ((this.dateRange.dates === undefined || this.dateRange.dates.startDate === undefined || this.dateRange.dates.endDate === undefined) || !((this.dateRange.dates || this.dateRange.dates.startDate <= this.dateRange.maxDate || this.dateRange.dates.endDate <= this.dateRange.maxDate) &&
                     (this.dateRange.dates.startDate >= this.dateRange.minDate || this.dateRange.dates.endDate >= this.dateRange.minDate) &&
                     (this.dateRange.dates.startDate <= this.dateRange.dates.endDate))) {
                     return "Date range is not valid.";
