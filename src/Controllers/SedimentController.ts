@@ -60,7 +60,16 @@ module StreamStats.Controllers {
         }
         public ok(): void {
             //validate info
-            
+            var errorMessage = this.verifyExtensionCanContinue();
+            if (!errorMessage) {
+                this.close();
+                // this.studyAreaService.flowAnywhereData = {};
+                // this.studyAreaService.flowAnywhereData.dateRange = this.dateRange;
+                // this.studyAreaService.flowAnywhereData.selectedGage = this.selectedReferenceGage;
+                this.toaster.pop('success', "Sediment Machine Learning Method was successfully configured", "Please continue", 5000);
+            } else {
+                this.toaster.pop('error', "Error", errorMessage, 5000);
+            }
         }
         
         //Helper Methods
@@ -102,7 +111,7 @@ module StreamStats.Controllers {
             // });
 
             // // Set initial date range for date selector
-            // this.dateRange = { dates: { startDate: this.addDay(new Date(), -32), endDate: this.addDay(new Date(), -2) }, minDate: new Date(1900, 1, 1), maxDate: this.addDay(new Date(), -1) };
+            this.dateRange = { dates: { startDate: this.addDay(new Date(), -32), endDate: this.addDay(new Date(), -2) }, minDate: new Date(2006, 0, 1), maxDate: this.addDay(new Date(), -1) };
         }
         private load(): void {
             // Get drainage area if not already retrieved/retrieving
@@ -119,6 +128,29 @@ module StreamStats.Controllers {
             //     }
             // }
         }
+        private verifyExtensionCanContinue() {
+
+            // Check that dates are valid
+            if (this.dateRange) {
+                if ((this.dateRange.dates === undefined || this.dateRange.dates.startDate === undefined || this.dateRange.dates.endDate === undefined) || !((this.dateRange.dates || this.dateRange.dates.startDate <= this.dateRange.maxDate || this.dateRange.dates.endDate <= this.dateRange.maxDate) &&
+                    (this.dateRange.dates.startDate >= this.dateRange.minDate || this.dateRange.dates.endDate >= this.dateRange.minDate) &&
+                    (this.dateRange.dates.startDate <= this.dateRange.dates.endDate))) {
+                    return "Date range is not valid.";
+                }
+            }
+
+            return null;
+        }
+        private addDay(d: Date, days: number): Date {
+            try {
+                var dayAsTime: number = 1000 * 60 * 60 * 24;
+                return new Date(d.getTime() + days * dayAsTime);
+            }
+            catch (e) {
+                return d;
+            }
+        }
+
 
     }//end  class
 
