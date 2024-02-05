@@ -1074,7 +1074,6 @@ module StreamStats.Controllers {
                             }
                             
                         }, (error) => {
-                            console.log('hehe')
                             map.removeLayer(this.delineationLine)
                         }).finally(() => {
                             // this.CanContinue = true;
