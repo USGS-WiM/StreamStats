@@ -297,6 +297,7 @@ module StreamStats.Controllers {
                                        // selected: number, buttonPosition: {align: string, x: number, y: number}
                                     },
                         navigator: { enabled: boolean}, 
+                        exporting : { buttons: {contextButton: {menuItems: string[]}}},
                         xAxis: {  type: string, events: { afterSetExtremes: Function}, gridLineWidth: number, min: number, max: number, title: {text: string}, custom: { allowNegativeLog: Boolean }},
                         yAxis: { title: {text: string}, gridLineWidth: number, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
                         series: { name: string; showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
@@ -926,7 +927,7 @@ module StreamStats.Controllers {
         public getRatingCurve() {
             const url = 'https://waterdata.usgs.gov/nwisweb/get_ratings?site_no=' + this.gage.code + '&file_type=exsa'
             this.ratingURL = url;
-            // console.log('getDischargeInfo', url)
+            //console.log('getDischargeInfo', url)
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             
             this.dischargeObj = [];
@@ -1140,7 +1141,7 @@ module StreamStats.Controllers {
         public getUSGSMeasured() {
             const url = 'https://waterdata.usgs.gov/nwis/measurements?site_no=' + this.gage.code + '&agency_cd=USGS&format=rdb_expanded'
             this.measuredURL = url;
-            // console.log('usgsMeasuredURL', url)
+            //console.log('usgsMeasuredURL', url)
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             
             this.measuredObj = [];
@@ -1180,8 +1181,8 @@ module StreamStats.Controllers {
                         this.measuredObj.push(object) 
                     });
                 }
-                    // console.log('measured obj', this.measuredObj)
-                        // console.log('dischargeObj', dischargeValue)
+                    //console.log('measured obj', this.measuredObj)
+                    // console.log('dischargeObj', dischargeValue)
                 }, (error) => {
                     // console.log(error)
                 }).finally(() => {
@@ -2448,6 +2449,13 @@ module StreamStats.Controllers {
                 },
                 navigator: {
                     enabled: true
+                },
+                exporting: {
+                    buttons: {
+                        contextButton: {
+                            menuItems: ['viewFullscreen']
+                        }
+                    }
                 },
                 xAxis: {
                     type: 'datetime',
@@ -3890,13 +3898,16 @@ public createDailyRasterPlot(): void {
 
         public resetZoom () {
             let chart = $('#chart1').highcharts();
+            chart.showLoading('Loading...')
+            setTimeout(() => {
             let min = this.startAndEnd[0].getTime()
-            let octNovDecYear = this.startAndEnd[1].getFullYear() - 1 ; //the year that October, November, and December will be plotted on since their cal year is diff than their water year
-            let oneYearMin = (new Date(10 +'/' + 1 + '/' + octNovDecYear)).getTime()
-            let max = (new Date(9 +'/' + 30 + '/' + this.startAndEnd[1].getFullYear())).getTime()
+            let octNovDecYear = this.defaultYear - 1 ; //the year that October, November, and December will be plotted on since their cal year is diff than their water year
+            let max = (new Date(9 +'/' + 30 + '/' + this.startAndEnd[1].getFullYear())).getTime();
+            let oneYearMin = (new Date(10 +'/' + 1 + '/' + octNovDecYear)).getTime();
+            let waterYearMax = (new Date(9 +'/' + 30 + '/' + this.defaultYear)).getTime();
             if (this.peaksOnYear) {
                 //reset to one year
-                chart.xAxis[0].setExtremes(oneYearMin, max);
+                chart.xAxis[0].setExtremes(oneYearMin, waterYearMax);
                 chart.yAxis[0].setExtremes();
                 this.selectedYear = this.allYears[0];
                 chart.series[0].update({ data: this.formattedPeakDatesOnYear });
@@ -3940,6 +3951,8 @@ public createDailyRasterPlot(): void {
                 chart.yAxis[0].setExtremes();
                 chart.xAxis[0].setExtremes(min, max);
             }
+            chart.hideLoading();
+        }, 100);
         }
 
         public dateRangePicker () {

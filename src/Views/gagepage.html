@@ -224,6 +224,8 @@
                     <div ng-if="!vm.chartConfig" class="panel panel-default reportSpinner">
                         &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
                     </div>
+                    <div style="break-after:page"></div>
+
                     <center>
                         <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.chartConfig">
                             <highchart id="chart1" config="vm.chartConfig" ng-init="vm.destroyResetZoom()"></highchart>
@@ -262,6 +264,8 @@
                                 </div>
                         </div>
                     </center>
+                    <div style="break-after:page"></div>
+
                     <center>
                         <div ng-if="!vm.heatChartConfig" class="panel panel-default reportSpinner">
                             &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
@@ -275,6 +279,8 @@
                             </div>
                         </div>
                     </center> 
+                    <div style="break-after:page"></div>
+
                     <center>
                         <div ng-if="!vm.dischargeChartConfig" class="panel panel-default reportSpinner">
                             &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>

@@ -2079,6 +2079,13 @@ var StreamStats;
                     navigator: {
                         enabled: true
                     },
+                    exporting: {
+                        buttons: {
+                            contextButton: {
+                                menuItems: ['viewFullscreen']
+                            }
+                        }
+                    },
                     xAxis: {
                         type: 'datetime',
                         events: {
@@ -3508,58 +3515,64 @@ var StreamStats;
                 chart.resetZoomButton.hide();
             };
             GagePageController.prototype.resetZoom = function () {
+                var _this_1 = this;
                 var chart = $('#chart1').highcharts();
-                var min = this.startAndEnd[0].getTime();
-                var octNovDecYear = this.startAndEnd[1].getFullYear() - 1;
-                var oneYearMin = (new Date(10 + '/' + 1 + '/' + octNovDecYear)).getTime();
-                var max = (new Date(9 + '/' + 30 + '/' + this.startAndEnd[1].getFullYear())).getTime();
-                if (this.peaksOnYear) {
-                    chart.xAxis[0].setExtremes(oneYearMin, max);
-                    chart.yAxis[0].setExtremes();
-                    this.selectedYear = this.allYears[0];
-                    chart.series[0].update({ data: this.formattedPeakDatesOnYear });
-                    chart.series[1].update({ data: this.formattedEstPeakDatesOnYear });
-                    chart.series[0].update({ tooltip: {
-                            headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
-                            pointFormatter: function () {
-                                if (this.formattedPeakDatesOnYear !== null) {
-                                    var waterYear = this.realDate.getUTCFullYear();
-                                    if (this.realDate.getUTCMonth() > 8) {
-                                        waterYear += 1;
+                chart.showLoading('Loading...');
+                setTimeout(function () {
+                    var min = _this_1.startAndEnd[0].getTime();
+                    var octNovDecYear = _this_1.defaultYear - 1;
+                    var max = (new Date(9 + '/' + 30 + '/' + _this_1.startAndEnd[1].getFullYear())).getTime();
+                    var oneYearMin = (new Date(10 + '/' + 1 + '/' + octNovDecYear)).getTime();
+                    var waterYearMax = (new Date(9 + '/' + 30 + '/' + _this_1.defaultYear)).getTime();
+                    if (_this_1.peaksOnYear) {
+                        chart.xAxis[0].setExtremes(oneYearMin, waterYearMax);
+                        chart.yAxis[0].setExtremes();
+                        _this_1.selectedYear = _this_1.allYears[0];
+                        chart.series[0].update({ data: _this_1.formattedPeakDatesOnYear });
+                        chart.series[1].update({ data: _this_1.formattedEstPeakDatesOnYear });
+                        chart.series[0].update({ tooltip: {
+                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + _this_1.selectedYear,
+                                pointFormatter: function () {
+                                    if (this.formattedPeakDatesOnYear !== null) {
+                                        var waterYear = this.realDate.getUTCFullYear();
+                                        if (this.realDate.getUTCMonth() > 8) {
+                                            waterYear += 1;
+                                        }
+                                        ;
+                                        var UTCday = this.realDate.getUTCDate();
+                                        var year = this.realDate.getUTCFullYear();
+                                        var month = this.realDate.getUTCMonth();
+                                        month += 1;
+                                        var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                                        return '</b><br>Date: <b>' + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear;
                                     }
-                                    ;
-                                    var UTCday = this.realDate.getUTCDate();
-                                    var year = this.realDate.getUTCFullYear();
-                                    var month = this.realDate.getUTCMonth();
-                                    month += 1;
-                                    var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
-                                    return '</b><br>Date: <b>' + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear;
                                 }
-                            }
-                        } });
-                    chart.series[1].update({ tooltip: {
-                            headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
-                            pointFormatter: function () {
-                                if (this.formattedEstPeakDatesOnYear !== null) {
-                                    var waterYear = this.realDate.getUTCFullYear();
-                                    if (this.realDate.getUTCMonth() > 8) {
-                                        waterYear += 1;
+                            } });
+                        chart.series[1].update({ tooltip: {
+                                headerFormat: '<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + _this_1.selectedYear,
+                                pointFormatter: function () {
+                                    if (this.formattedEstPeakDatesOnYear !== null) {
+                                        var waterYear = this.realDate.getUTCFullYear();
+                                        if (this.realDate.getUTCMonth() > 8) {
+                                            waterYear += 1;
+                                        }
+                                        ;
+                                        var UTCday = this.realDate.getUTCDate();
+                                        var year = this.realDate.getUTCFullYear();
+                                        var month = this.realDate.getUTCMonth();
+                                        month += 1;
+                                        var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                                        return '</b><br>Date (estimated): <b>' + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear;
                                     }
-                                    ;
-                                    var UTCday = this.realDate.getUTCDate();
-                                    var year = this.realDate.getUTCFullYear();
-                                    var month = this.realDate.getUTCMonth();
-                                    month += 1;
-                                    var formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
-                                    return '</b><br>Date (estimated): <b>' + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear;
                                 }
-                            }
-                        } });
-                }
-                else {
-                    chart.yAxis[0].setExtremes();
-                    chart.xAxis[0].setExtremes(min, max);
-                }
+                            } });
+                    }
+                    else {
+                        chart.yAxis[0].setExtremes();
+                        chart.xAxis[0].setExtremes(min, max);
+                    }
+                    chart.hideLoading();
+                }, 100);
             };
             GagePageController.prototype.dateRangePicker = function () {
                 var chart = $('#chart1').highcharts();
