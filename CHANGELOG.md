@@ -9,8 +9,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- BP informational tool tip for Drupal article
-
 ### Changed
 
 ### Deprecated
@@ -19,10 +17,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+### Security
+
+## [v4.19.4](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.19.4) - 2024-02-08
+
+### Added
+
+- BP informational tool tip for Drupal article
+
+### Fixed
+
 - Fixed broken links in the sidebar
 - Duplicate stream grids in the "Download Stream Grids" tab when clicking the link from the "Submit Batch" tab
-
-### Security
 
 ## [v4.19.3](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.19.3) - 2023-01-04
 
