@@ -901,6 +901,7 @@ module StreamStats.Controllers {
             } else {
                 url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01&endDT=' + today;
             }
+            //console.log(url);
             this.dailyFlowURL = url;
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
@@ -1447,8 +1448,7 @@ module StreamStats.Controllers {
             while (defaultYearPlusOne >= this.startAndEnd[0].getUTCFullYear()) {
                 this.allYears.push(defaultYearPlusOne -= 1)
             }
-            let endYear = endDate.getUTCFullYear();
-            let endOfFinalYear = new Date(9 + '/' + 30 + '/' + endYear)            
+            let endOfFinalYear = new Date(9 + '/' + 30 + '/' + this.defaultYear)            
             if (this.oneDayStats) {
                 this.formattedOneDayStats = [];
                 const oneDayStatsColors = {
@@ -1480,7 +1480,8 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x) {
+                                    console.log(this.x, endOfFinalYear)
                                     return formattedName
                                 }
                             } 
@@ -1537,7 +1538,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x) {
                                     return formattedName
                                 }
                             } 
@@ -1591,7 +1592,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x) {
                                     return formattedName
                                 }
                             } 
@@ -1648,7 +1649,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x) {
                                     return formattedName
                                 }
                             } 
@@ -1702,7 +1703,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x) {
                                     return formattedName
                                 }
                             } 
@@ -1756,7 +1757,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x) {
                                     return formattedName
                                 }
                             } 
@@ -1810,7 +1811,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x) {
                                     return formattedName
                                 }
                             } 
@@ -1864,7 +1865,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear()) {
                                     return formattedName
                                 }
                             } 
@@ -1916,7 +1917,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear()) {
                                     return formattedName
                                 }
                             } 
@@ -1970,7 +1971,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear()) {
                                     return formattedName
                                 }
                             } 
@@ -2024,7 +2025,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear()) {
                                     return formattedName
                                 }
                             } 
@@ -2080,7 +2081,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear()) {
                                     return formattedName + '% AEP'
                                 }
                             } 
@@ -2139,7 +2140,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear()) {
                                     return formattedName + '% AEP'
                                 }
                             } 
@@ -2198,7 +2199,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear())  {
                                     return formattedName + '% AEP'
                                 }
                             } 
@@ -2285,7 +2286,6 @@ module StreamStats.Controllers {
                         851: '#fabed4',
                         1438: '#469990'
                     };
-                    //this.formattedFloodFreq = [];
                     this.floodFreq.forEach((floodFreqItem) => {
                         let colorIndex = floodFreqItem.regressionTypeID;
                         let formattedName = floodFreqItem.regressionType.name.substring(0, floodFreqItem.regressionType.name.length-18);
@@ -2306,7 +2306,7 @@ module StreamStats.Controllers {
                                 enabled: true,
                                 zIndex: 3,
                                 pointFormatter: function() { 
-                                    if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                    if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear()) {
                                         return formattedName + '% AEP'
                                     }
                                 } 
@@ -2406,8 +2406,9 @@ module StreamStats.Controllers {
                     panKey: 'shift',
                     events: {
                         load: function () {
-                            self.updateShadedStats();
-                            self.updatePeaksAfterZoom();
+                            //self.updateShadedStats();
+                            //self.updatePeaksAfterZoom();
+                            //self.updateFloodStats();
                         }
                     }
                 },
@@ -2464,6 +2465,7 @@ module StreamStats.Controllers {
                             //console.log('the x axis has been resized')
                             self.updateShadedStats();
                             self.updatePeaksAfterZoom();
+                            self.updateFloodStats();
                         }
                     },
                     gridLineWidth: 0,
@@ -3207,16 +3209,46 @@ module StreamStats.Controllers {
             this.formattedRegulatedAEP.forEach((formattedRegulatedAEPitem) => {
                 this.chartConfig.series.push((formattedRegulatedAEPitem))
             });
+        //}
         }
 
 //dropdown for choosing flood statistics
 public chooseFloodStats() {
     let chart = $('#chart1').highcharts();
+            let extremes = chart.xAxis[0].getExtremes();
+            let min = new Date(extremes.min)
+            let max = new Date(extremes.max)
+            var minDateString = new Date(min.getTime() - (min.getTimezoneOffset() * 60000 ))
+                .toISOString()
+                .split("T")[0];
+            var maxDateString = new Date(max.getTime() - (min.getTimezoneOffset() * 60000 ))
+                .toISOString()
+                .split("T")[0];
+            let minAndMax = {
+                min: minDateString,
+                max: maxDateString
+            }
     let floodSeries = chart.series[this.selectedFloodFreqStats.seriesIndex]
+//     floodSeries.data.update([{
+//         x: new Date(minAndMax.min),
+//         y: 5000
+//         },{
+//         x: new Date(minAndMax.max),
+//         y: 5000
+//         }
+// ])
     if (this.selectedFloodFreqStats.name === this.selectedFloodFreqStats.name) {
         this.allFloodFreqStats.forEach((stat) => {
             let index = stat.seriesIndex
             chart.series[index].hide();
+            chart.series[index].update({data: [{
+                x: new Date(minAndMax.min),
+                y: 5000
+                },{
+                x: new Date(minAndMax.max),
+                y: 5000
+                }
+            ]})
         })
         floodSeries.show();
     }
@@ -4040,7 +4072,6 @@ public createDailyRasterPlot(): void {
                 chart.series[5].show();
                 chart.series[6].show();
                 chart.series[2].show();
-                
                 chart.series[3].update({data: newP0to10});
                 chart.series[4].update({data: newP10to25});
                 chart.series[5].update({data: newP25to75});
@@ -4053,6 +4084,57 @@ public createDailyRasterPlot(): void {
                 chart.series[6].hide();
                 chart.series[2].hide();
             }
+        }
+
+        public updateFloodStats() {
+            let chart = $('#chart1').highcharts();
+            let extremes = chart.xAxis[0].getExtremes();
+            let min = new Date(extremes.min)
+            let max = new Date(extremes.max)
+            chart.series.forEach(series => {
+                if (series.name.includes('AEP')) {
+                    let AEPformattedName = series.name.substring(0, series.name.length-18);
+                    series.update({data: [
+                        {
+                        x: min,
+                        y: series.yData[0]
+                        },{
+                        x: max,
+                        y: series.yData[1]
+                        }
+                    ]})    
+                    series.update({dataLabels: {
+                        enabled: true,
+                        zIndex: 3,
+                        pointFormatter: function() { 
+                            if (this.x.getUTCFullYear() == max.getUTCFullYear()) {
+                                return AEPformattedName + '% AEP'
+                            }
+                        } 
+                    }})            
+                }
+                if (series.name.includes('Flow')) {
+                    let lowFlowFormattedName = series.name.replaceAll('_',' ');
+                    series.update({data: [
+                        {
+                        x: min,
+                        y: series.yData[0]
+                        },{
+                        x: max,
+                        y: series.yData[1]
+                        }
+                    ]})    
+                    series.update({dataLabels: {
+                        enabled: true,
+                        zIndex: 3,
+                        pointFormatter: function() { 
+                            if (this.x.getUTCFullYear() == max.getUTCFullYear()) {
+                                return lowFlowFormattedName
+                            }
+                        } 
+                    }})            
+                }
+            })
         }
 
         //when the plot is resized to greater than 1 year, peaks switch to being plotted on real date

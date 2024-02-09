@@ -1122,8 +1122,7 @@ var StreamStats;
                 while (defaultYearPlusOne >= this.startAndEnd[0].getUTCFullYear()) {
                     this.allYears.push(defaultYearPlusOne -= 1);
                 }
-                var endYear = endDate.getUTCFullYear();
-                var endOfFinalYear = new Date(9 + '/' + 30 + '/' + endYear);
+                var endOfFinalYear = new Date(9 + '/' + 30 + '/' + this.defaultYear);
                 if (this.oneDayStats) {
                     this.formattedOneDayStats = [];
                     var oneDayStatsColors_1 = {
@@ -1155,7 +1154,8 @@ var StreamStats;
                                 enabled: true,
                                 zIndex: 3,
                                 pointFormatter: function () {
-                                    if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                    if (this.x) {
+                                        console.log(this.x, endOfFinalYear);
                                         return formattedName;
                                     }
                                 }
@@ -1211,7 +1211,7 @@ var StreamStats;
                                 enabled: true,
                                 zIndex: 3,
                                 pointFormatter: function () {
-                                    if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                    if (this.x) {
                                         return formattedName;
                                     }
                                 }
@@ -1264,7 +1264,7 @@ var StreamStats;
                                 enabled: true,
                                 zIndex: 3,
                                 pointFormatter: function () {
-                                    if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                    if (this.x) {
                                         return formattedName;
                                     }
                                 }
@@ -1320,7 +1320,7 @@ var StreamStats;
                                 enabled: true,
                                 zIndex: 3,
                                 pointFormatter: function () {
-                                    if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                    if (this.x) {
                                         return formattedName;
                                     }
                                 }
@@ -1373,7 +1373,7 @@ var StreamStats;
                                 enabled: true,
                                 zIndex: 3,
                                 pointFormatter: function () {
-                                    if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                    if (this.x) {
                                         return formattedName;
                                     }
                                 }
@@ -1426,7 +1426,7 @@ var StreamStats;
                                 enabled: true,
                                 zIndex: 3,
                                 pointFormatter: function () {
-                                    if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                    if (this.x) {
                                         return formattedName;
                                     }
                                 }
@@ -1479,7 +1479,7 @@ var StreamStats;
                                 enabled: true,
                                 zIndex: 3,
                                 pointFormatter: function () {
-                                    if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                    if (this.x) {
                                         return formattedName;
                                     }
                                 }
@@ -1532,7 +1532,7 @@ var StreamStats;
                                 enabled: true,
                                 zIndex: 3,
                                 pointFormatter: function () {
-                                    if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                    if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear()) {
                                         return formattedName;
                                     }
                                 }
@@ -1583,7 +1583,7 @@ var StreamStats;
                                 enabled: true,
                                 zIndex: 3,
                                 pointFormatter: function () {
-                                    if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                    if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear()) {
                                         return formattedName;
                                     }
                                 }
@@ -1636,7 +1636,7 @@ var StreamStats;
                                 enabled: true,
                                 zIndex: 3,
                                 pointFormatter: function () {
-                                    if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                    if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear()) {
                                         return formattedName;
                                     }
                                 }
@@ -1689,7 +1689,7 @@ var StreamStats;
                                 enabled: true,
                                 zIndex: 3,
                                 pointFormatter: function () {
-                                    if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                    if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear()) {
                                         return formattedName;
                                     }
                                 }
@@ -1744,7 +1744,7 @@ var StreamStats;
                                 enabled: true,
                                 zIndex: 3,
                                 pointFormatter: function () {
-                                    if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                    if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear()) {
                                         return formattedName + '% AEP';
                                     }
                                 }
@@ -1802,7 +1802,7 @@ var StreamStats;
                                 enabled: true,
                                 zIndex: 3,
                                 pointFormatter: function () {
-                                    if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                    if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear()) {
                                         return formattedName + '% AEP';
                                     }
                                 }
@@ -1860,7 +1860,7 @@ var StreamStats;
                                 enabled: true,
                                 zIndex: 3,
                                 pointFormatter: function () {
-                                    if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                    if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear()) {
                                         return formattedName + '% AEP';
                                     }
                                 }
@@ -1950,7 +1950,7 @@ var StreamStats;
                                 enabled: true,
                                 zIndex: 3,
                                 pointFormatter: function () {
-                                    if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                    if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear()) {
                                         return formattedName + '% AEP';
                                     }
                                 }
@@ -2040,8 +2040,6 @@ var StreamStats;
                         panKey: 'shift',
                         events: {
                             load: function () {
-                                self.updateShadedStats();
-                                self.updatePeaksAfterZoom();
                             }
                         }
                     },
@@ -2092,6 +2090,7 @@ var StreamStats;
                             afterSetExtremes: function () {
                                 self.updateShadedStats();
                                 self.updatePeaksAfterZoom();
+                                self.updateFloodStats();
                             }
                         },
                         gridLineWidth: 0,
@@ -2837,11 +2836,32 @@ var StreamStats;
             };
             GagePageController.prototype.chooseFloodStats = function () {
                 var chart = $('#chart1').highcharts();
+                var extremes = chart.xAxis[0].getExtremes();
+                var min = new Date(extremes.min);
+                var max = new Date(extremes.max);
+                var minDateString = new Date(min.getTime() - (min.getTimezoneOffset() * 60000))
+                    .toISOString()
+                    .split("T")[0];
+                var maxDateString = new Date(max.getTime() - (min.getTimezoneOffset() * 60000))
+                    .toISOString()
+                    .split("T")[0];
+                var minAndMax = {
+                    min: minDateString,
+                    max: maxDateString
+                };
                 var floodSeries = chart.series[this.selectedFloodFreqStats.seriesIndex];
                 if (this.selectedFloodFreqStats.name === this.selectedFloodFreqStats.name) {
                     this.allFloodFreqStats.forEach(function (stat) {
                         var index = stat.seriesIndex;
                         chart.series[index].hide();
+                        chart.series[index].update({ data: [{
+                                    x: new Date(minAndMax.min),
+                                    y: 5000
+                                }, {
+                                    x: new Date(minAndMax.max),
+                                    y: 5000
+                                }
+                            ] });
                     });
                     floodSeries.show();
                 }
@@ -3670,6 +3690,56 @@ var StreamStats;
                     chart.series[6].hide();
                     chart.series[2].hide();
                 }
+            };
+            GagePageController.prototype.updateFloodStats = function () {
+                var chart = $('#chart1').highcharts();
+                var extremes = chart.xAxis[0].getExtremes();
+                var min = new Date(extremes.min);
+                var max = new Date(extremes.max);
+                chart.series.forEach(function (series) {
+                    if (series.name.includes('AEP')) {
+                        var AEPformattedName_1 = series.name.substring(0, series.name.length - 18);
+                        series.update({ data: [
+                                {
+                                    x: min,
+                                    y: series.yData[0]
+                                }, {
+                                    x: max,
+                                    y: series.yData[1]
+                                }
+                            ] });
+                        series.update({ dataLabels: {
+                                enabled: true,
+                                zIndex: 3,
+                                pointFormatter: function () {
+                                    if (this.x.getUTCFullYear() == max.getUTCFullYear()) {
+                                        return AEPformattedName_1 + '% AEP';
+                                    }
+                                }
+                            } });
+                    }
+                    if (series.name.includes('Flow')) {
+                        var lowFlowFormattedName_1 = series.name.replaceAll('_', ' ');
+                        series.update({ data: [
+                                {
+                                    x: min,
+                                    y: series.yData[0]
+                                }, {
+                                    x: max,
+                                    y: series.yData[1]
+                                }
+                            ] });
+                        series.update({ dataLabels: {
+                                enabled: true,
+                                zIndex: 3,
+                                pointFormatter: function () {
+                                    if (this.x.getUTCFullYear() == max.getUTCFullYear()) {
+                                        return lowFlowFormattedName_1;
+                                    }
+                                }
+                            } });
+                    }
+                });
             };
             GagePageController.prototype.updatePeaksAfterZoom = function () {
                 var _this_1 = this;
