@@ -1481,7 +1481,6 @@ module StreamStats.Controllers {
                             zIndex: 3,
                             pointFormatter: function() { 
                                 if (this.x) {
-                                    console.log(this.x, endOfFinalYear)
                                     return formattedName
                                 }
                             } 
@@ -2776,7 +2775,7 @@ module StreamStats.Controllers {
                     },
                     showInLegend: this.NWSforecast !== undefined
                 },{
-                    name: 'Annual Exceedance Probability',
+                    name: 'Annual Exceedance Probability (AEP)',
                     showInNavigator: false,
                     tooltip: {
                         headerFormat: null,
@@ -3075,7 +3074,7 @@ module StreamStats.Controllers {
                     },
                     showInLegend: false
                 },{
-                    name: 'Weighted Annual Exceedance Percentage (AEP)',
+                    name: 'Weighted Annual Exceedance Probability (AEP)',
                     showInNavigator: false,
                     tooltip: {
                         headerFormat: null,
@@ -3098,7 +3097,7 @@ module StreamStats.Controllers {
                     },
                     showInLegend: false
                 },{
-                    name: 'Regulated Annual Exceedance Percentage (AEP)',
+                    name: 'Regulated Annual Exceedance Probability (AEP)',
                     showInNavigator: false,
                     tooltip: {
                         headerFormat: null,
@@ -3229,14 +3228,6 @@ public chooseFloodStats() {
                 max: maxDateString
             }
     let floodSeries = chart.series[this.selectedFloodFreqStats.seriesIndex]
-//     floodSeries.data.update([{
-//         x: new Date(minAndMax.min),
-//         y: 5000
-//         },{
-//         x: new Date(minAndMax.max),
-//         y: 5000
-//         }
-// ])
     if (this.selectedFloodFreqStats.name === this.selectedFloodFreqStats.name) {
         this.allFloodFreqStats.forEach((stat) => {
             let index = stat.seriesIndex
@@ -3252,6 +3243,7 @@ public chooseFloodStats() {
         })
         floodSeries.show();
     }
+    this.updateFloodStats();
 }
 
 //dropdown for choosing year to plot peaks
@@ -3839,12 +3831,13 @@ public createDailyRasterPlot(): void {
             setTimeout(() => {
                 let octNovDecYear = this.selectedYear - 1; //the year that October, November, and December will be plotted on since their cal year is diff than their water year
                 let min = this.startAndEnd[0].getTime()
-                let oneYearMin = (new Date(10 +'/' + 1 + '/' + octNovDecYear)).getTime()
-                let max = (new Date(9 +'/' + 30 + '/' + this.startAndEnd[1].getFullYear())).getTime()
+                let oneYearMin = (new Date(10 +'/' + 1 + '/' + octNovDecYear)).getTime();
+                let oneYearMax = (new Date(9 +'/' + 30 + '/' + this.selectedYear)).getTime();
+                let max = (new Date(9 +'/' + 30 + '/' + this.startAndEnd[1].getFullYear())).getTime();
                 if (this.peaksOnYear) {
                     chart.series[0].update({ data: this.formattedPeakDatesOnYear });
                     chart.series[1].update({ data: this.formattedEstPeakDatesOnYear});
-                    chart.xAxis[0].setExtremes(oneYearMin, max);
+                    chart.xAxis[0].setExtremes(oneYearMin, oneYearMax);
                     chart.series[0].update( {tooltip: {
                         headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
                         pointFormatter: function(){
@@ -4092,48 +4085,52 @@ public createDailyRasterPlot(): void {
             let min = new Date(extremes.min)
             let max = new Date(extremes.max)
             chart.series.forEach(series => {
-                if (series.name.includes('AEP')) {
-                    let AEPformattedName = series.name.substring(0, series.name.length-18);
-                    series.update({data: [
-                        {
-                        x: min,
-                        y: series.yData[0]
-                        },{
-                        x: max,
-                        y: series.yData[1]
-                        }
-                    ]})    
-                    series.update({dataLabels: {
-                        enabled: true,
-                        zIndex: 3,
-                        pointFormatter: function() { 
-                            if (this.x.getUTCFullYear() == max.getUTCFullYear()) {
-                                return AEPformattedName + '% AEP'
+                if (series.name.includes('AEP flood')) {
+                    if (series.linkedParent.name === this.selectedFloodFreqStats.name) {
+                        let AEPformattedName = series.name.substring(0, series.name.length-18);
+                        series.update({data: [
+                            {
+                            x: min,
+                            y: series.yData[0]
+                            },{
+                            x: max,
+                            y: series.yData[1]
                             }
-                        } 
-                    }})            
+                        ]})    
+                        series.update({dataLabels: {
+                            enabled: true,
+                            zIndex: 3,
+                            pointFormatter: function() { 
+                                if (this.x.getUTCFullYear() == max.getUTCFullYear()) {
+                                    return AEPformattedName + '% AEP'
+                                }
+                            } 
+                        }})       
+                    }
                 }
-                if (series.name.includes('Flow')) {
-                    let lowFlowFormattedName = series.name.replaceAll('_',' ');
-                    series.update({data: [
-                        {
-                        x: min,
-                        y: series.yData[0]
-                        },{
-                        x: max,
-                        y: series.yData[1]
-                        }
-                    ]})    
-                    series.update({dataLabels: {
-                        enabled: true,
-                        zIndex: 3,
-                        pointFormatter: function() { 
-                            if (this.x.getUTCFullYear() == max.getUTCFullYear()) {
-                                return lowFlowFormattedName
+                if (series.name.includes('Year Low Flow') && series.linkedParent.name === this.selectedFloodFreqStats.name) {
+                    if (series.linkedParent.name === this.selectedFloodFreqStats.name) {
+                        let lowFlowFormattedName = series.name.replaceAll('_',' ');
+                        series.update({data: [
+                            {
+                            x: min,
+                            y: series.yData[0]
+                            },{
+                            x: max,
+                            y: series.yData[1]
                             }
-                        } 
-                    }})            
-                }
+                        ]})    
+                        series.update({dataLabels: {
+                            enabled: true,
+                            zIndex: 3,
+                            pointFormatter: function() { 
+                                if (this.x.getUTCFullYear() == max.getUTCFullYear()) {
+                                    return lowFlowFormattedName
+                                }
+                            } 
+                        }})    
+                        }
+                    }
             })
         }
 
