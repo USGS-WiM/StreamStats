@@ -33,9 +33,10 @@
                         <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.Pourpoint[0].Latitude.toFixed(5)}}, {{vm.studyAreaService.selectedStudyArea.Pourpoint[0].Longitude.toFixed(5)}}</div>
                     </div>
                     <div class="row" ng-if="vm.studyAreaService.selectedStudyArea.Pourpoint.length > 1">
-                        <div class="col-md-7"><strong>Delineation Line (Latitude, Longitude):</strong></div>
-                        <!-- TODO LOOP THROUGH COORDINATES -->
-                        <div class="col-md-5">{{vm.studyAreaService.selectedStudyArea.LinePoints[0].Latitude.toFixed(5)}}, {{vm.studyAreaService.selectedStudyArea.LinePoints[0].Longitude.toFixed(5)}}</div>
+                        <div class="col-md-7"><strong>Clicked Polyline (Latitude, Longitude):</strong></div>
+                        <div class = "col-md-5">
+                            <div ng-repeat="coordinate in vm.studyAreaService.selectedStudyArea.LinePoints">{{coordinate.Latitude.toFixed(5)}}, {{coordinate.Longitude.toFixed(5)}}</div>
+                        </div>
                     </div>
                     
                     <div ng-if="vm.studyAreaService.selectedStudyArea.NHDStream.GNIS_NAME" class="row">
