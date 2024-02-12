@@ -27,7 +27,7 @@ configuration.baseurls =
         'WeightingServices': 'https://streamstats.usgs.gov/channelweightingservices',
         'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices',
         'BatchProcessorServices': 'https://dev.streamstats.usgs.gov/batchprocessor', // Will need to change this if running locally and want to use production data
-        'PourPointServices': 'http://127.0.0.1:8000'
+        'PourPointServices': 'https://test.streamstats.usgs.gov/pourpoint'
     };
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server

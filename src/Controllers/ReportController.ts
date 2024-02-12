@@ -311,7 +311,8 @@ module StreamStats.Controllers {
             } else {
                 this.studyAreaService.selectedStudyArea.LinePoints.forEach((element, i) => {
                     csvFile += '\nDelineation Polyline Point ' + (i+1).toString() + ' Latitude,' + element.Latitude.toFixed(5)
-                    csvFile += '\nDelineation Polyline Point ' + (i+1).toString() + ' Longitude,' + element.Longitude.toFixed(5)                });
+                    csvFile += '\nDelineation Polyline Point ' + (i+1).toString() + ' Longitude,' + element.Longitude.toFixed(5)                
+                });
             }
             csvFile += '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
             if (this.studyAreaService.selectedStudyArea.NHDStream) {

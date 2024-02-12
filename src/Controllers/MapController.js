@@ -638,7 +638,6 @@ var StreamStats;
                                 var two = L.latLng(coordinates[i]);
                                 totalDistance += one.distanceTo(two);
                             }
-                            console.log(totalDistance);
                             if (totalDistance > 4023.36) {
                                 _this.studyArea.resetDelineationButtons();
                                 map.removeLayer(_this.delineationLine);

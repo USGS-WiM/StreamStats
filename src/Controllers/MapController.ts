@@ -882,13 +882,11 @@ module StreamStats.Controllers {
 
                         // Calculating the distance of the polyline, internal funciton '_getMeasurementString' doesn't work on mobile
                         var totalDistance = 0.00000;
-
                         for (let i = 1; i < coordinates.length; i++) {
                             var one = L.latLng(coordinates[i-1])
                             var two = L.latLng(coordinates[i])
                             totalDistance += one.distanceTo(two);
                         }
-                        console.log(totalDistance)
                           
                         if (totalDistance > 4023.36) { // line is longer than 2.5 miles
                             this.studyArea.resetDelineationButtons();

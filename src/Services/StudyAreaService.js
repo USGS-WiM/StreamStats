@@ -564,7 +564,6 @@ var StreamStats;
                 };
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, 'json', JSON.stringify(data), headers);
                 return this.Execute(request).then(function (response) {
-                    console.log(response);
                     if (response.data.response.length == 0) {
                         _this.resetDelineationButtons();
                         _this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
