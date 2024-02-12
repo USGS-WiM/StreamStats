@@ -27,7 +27,7 @@ configuration.baseurls =
         'WeightingServices': 'https://streamstats.usgs.gov/channelweightingservices',
         'FlowAnywhereRegressionServices': 'https://streamstats.usgs.gov/regressionservices',
         'BatchProcessorServices': 'https://dev.streamstats.usgs.gov/batchprocessor', // Will need to change this if running locally and want to use production data
-        'PourPointServices': 'https://test.streamstats.usgs.gov/pourpoint'
+        'PourPointServices': 'http://127.0.0.1:8000'
     };
 
 //override streamstats arguments if on production, these get overriden again in MapController after load balancer assigns a server
@@ -116,7 +116,7 @@ configuration.queryparams =
         'SCFactorData': '/factorData',
         'FlowAnywhereEstimates': '/models/FLA/estimate?state={0}',
         'FlowAnywhereGages': '/arcgis/rest/services/IowaStreamEst/FlowAnywhere/MapServer/1/query?geometry={0},{1}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.da_pub_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
-        'lineIntersection': '/ssLineIntersection_Filtered/',
+        'lineIntersection': '/ssPolyLineIntersection_Filtered/',
         'checkExcludePolygons': '/ssExcludePolygon',
         'Regions': '/regions/',
         'PourPointServicesExcludePolygon': '/ssExcludePolygon/'
