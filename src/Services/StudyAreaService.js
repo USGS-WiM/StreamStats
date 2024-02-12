@@ -226,10 +226,10 @@ var StreamStats;
             };
             StudyAreaService.prototype.loadStudyBoundary = function () {
                 return __awaiter(this, void 0, void 0, function () {
-                    var regionID, url, url, request, delineations, features, index, _i, _a, point, url, request, i, result, featuresToMerge, _b, _c, feature, featuresCollectionToMerge, dissolvedFeatures, bbox;
+                    var regionID, url, url, request, delineations, features, index, _i, _a, point, url, request, i, result, featuresToMerge, union, i, bbox;
                     var _this = this;
-                    return __generator(this, function (_d) {
-                        switch (_d.label) {
+                    return __generator(this, function (_b) {
+                        switch (_b.label) {
                             case 0:
                                 this.toaster.pop("wait", "Delineating Basin", "Please wait...", 0);
                                 this.canUpdate = false;
@@ -308,7 +308,7 @@ var StreamStats;
                                 features = [];
                                 index = 0;
                                 _i = 0, _a = this.selectedStudyArea.Pourpoint;
-                                _d.label = 2;
+                                _b.label = 2;
                             case 2:
                                 if (!(_i < _a.length)) return [3, 7];
                                 point = _a[_i];
@@ -317,14 +317,14 @@ var StreamStats;
                                 request = new WiM.Services.Helpers.RequestInfo(url, true);
                                 request.withCredentials = true;
                                 i = 0;
-                                _d.label = 3;
+                                _b.label = 3;
                             case 3:
                                 if (!(i < 3)) return [3, 6];
                                 return [4, this.executeDelineationRequest(request).then(function (response) {
                                         return (response);
                                     })];
                             case 4:
-                                result = _d.sent();
+                                result = _b.sent();
                                 if (result) {
                                     result.features.forEach(function (feature) {
                                         feature['id'] = feature['id'] + String(index);
@@ -334,7 +334,7 @@ var StreamStats;
                                     delineations.push(result);
                                     return [3, 6];
                                 }
-                                _d.label = 5;
+                                _b.label = 5;
                             case 5:
                                 i++;
                                 return [3, 3];
@@ -349,16 +349,26 @@ var StreamStats;
                                         features: features,
                                         bbox: null
                                     };
-                                    featuresToMerge = [];
-                                    for (_b = 0, _c = this.selectedStudyArea.FeatureCollection.features.filter(function (f) { return (f.id).toLowerCase().includes("globalwatershed") && f.geometry.type == 'Polygon'; }); _b < _c.length; _b++) {
-                                        feature = _c[_b];
-                                        featuresToMerge.push(feature);
+                                    try {
+                                        featuresToMerge = this.selectedStudyArea.FeatureCollection.features.filter(function (f) { return (f.id).toLowerCase().includes("globalwatershed") && f.geometry.type == 'Polygon'; });
+                                        union = featuresToMerge[0];
+                                        for (i = 1; i < featuresToMerge.length; i++) {
+                                            union = turf.union(union, featuresToMerge[i]);
+                                        }
+                                        console.log(union);
                                     }
-                                    featuresCollectionToMerge = turf.featureCollection(featuresToMerge);
-                                    dissolvedFeatures = turf.dissolve(featuresCollectionToMerge);
-                                    dissolvedFeatures.features[0]['id'] = 'globalwatershed';
-                                    this.selectedStudyArea.FeatureCollection.features.push(dissolvedFeatures.features[0]);
-                                    bbox = turf.bbox(dissolvedFeatures);
+                                    catch (e) {
+                                        console.log(e);
+                                        this.toaster.clear();
+                                        this.toaster.pop('error', "Error merging basins.", "", 0);
+                                        this.clearStudyArea();
+                                        this.resetDelineationButtons();
+                                        this.eventManager.RaiseEvent(Services.onClearBasin, this, WiM.Event.EventArgs.Empty);
+                                        return [2];
+                                    }
+                                    union.id = 'globalwatershed';
+                                    this.selectedStudyArea.FeatureCollection.features.push(union);
+                                    bbox = turf.bbox(union);
                                     this.selectedStudyArea.FeatureCollection['bbox'] = bbox;
                                     this.selectedStudyArea.Date = new Date();
                                     this.toaster.clear();
@@ -369,7 +379,7 @@ var StreamStats;
                                     this.toaster.clear();
                                     this.toaster.pop("error", "A watershed was not returned from the delineation request", "Please retry", 0);
                                 }
-                                _d.label = 8;
+                                _b.label = 8;
                             case 8: return [2];
                         }
                     });

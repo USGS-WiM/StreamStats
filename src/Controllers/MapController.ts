@@ -252,10 +252,12 @@ module StreamStats.Controllers {
 
             this.eventManager.SubscribeToEvent(Services.onClearBasin, new WiM.Event.EventHandler<WiM.Event.EventArgs>(() => {                
                 // need to clear the basin boundary, basin click points, and subbasin boundaries from legend
-                this.studyArea.selectedStudyArea.FeatureCollection['features'].forEach((layer:any) => {
-                    this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs(layer.id, "geojson"));
-                });
-
+                if (this.studyArea.selectedStudyArea) {
+                    this.studyArea.selectedStudyArea.FeatureCollection['features'].forEach((layer:any) => {
+                        this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs(layer.id, "geojson"));
+                    });
+                }
+                
                 // need to clear delineation line from the map 
                 if (this.delineationLine) { 
                     this.leafletData.getMap("mainMap").then((map: any) => {
@@ -2114,7 +2116,7 @@ module StreamStats.Controllers {
 
             this.studyArea.AddStudyArea(studyArea);
             this.studyArea.loadStudyBoundary();
-            
+
 
             //add disclaimer here
             this.studyArea.selectedStudyArea.LinePoints = lineClickPoints;

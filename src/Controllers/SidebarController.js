@@ -42,6 +42,8 @@ var StreamStats;
                 $scope.$watchCollection(function () { return _this.studyAreaService.selectedStudyAreaExtensions; }, function (newval, oldval) {
                     if (newval == oldval)
                         return;
+                    if (!_this.studyAreaService.selectedStudyAreaExtensions)
+                        return;
                     _this.scenarioHasExtensions = (_this.studyAreaService.selectedStudyAreaExtensions.length > 0);
                 });
                 $scope.$watchCollection(function () { return _this.studyAreaService.extensionsConfigured; }, function (newval, oldval) {

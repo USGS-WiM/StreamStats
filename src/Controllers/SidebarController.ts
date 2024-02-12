@@ -126,6 +126,7 @@ module StreamStats.Controllers {
             });
             $scope.$watchCollection(() => this.studyAreaService.selectedStudyAreaExtensions, (newval, oldval) => {
                 if (newval == oldval) return;
+                if (!this.studyAreaService.selectedStudyAreaExtensions) return
                 this.scenarioHasExtensions = (this.studyAreaService.selectedStudyAreaExtensions.length >0 );
             });
             $scope.$watchCollection(() => this.studyAreaService.extensionsConfigured, (newval, oldval) => {
