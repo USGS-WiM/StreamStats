@@ -864,62 +864,57 @@ module StreamStats.Controllers {
             this.leafletData.getMap("mainMap").then((map: any) => {
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => {
                     this.drawController({shapeOptions: { color: 'blue' }, metric: false }, true);
-
+                    
                     var drawnItems = maplayers.overlays.draw;
                     drawnItems.clearLayers();
 
-                    let coordinates = {
-                        point1: {
-                            lat: null,
-                            long: null
-                        },
-                        point2: {
-                            lat: null,
-                            long: null
-                        }
-                    }
+                    let coordinates = []
 
                     // listeners active during drawing              
-                    var checkClicks = (e) => {
-                        if (coordinates.point1.lat === null && coordinates.point1.long === null && coordinates.point2.lat === null && coordinates.point2.long === null) {
-                            coordinates.point1.lat = this.drawControl._currentLatLng.lat;
-                            coordinates.point1.long = this.drawControl._currentLatLng.lng;
-                        } else if (coordinates.point1.lat !== null && coordinates.point1.long !== null && coordinates.point2.lat === null && coordinates.point2.long === null) {
-                            coordinates.point2.lat = this.drawControl._currentLatLng.lat;
-                            coordinates.point2.long = this.drawControl._currentLatLng.lng;
-                            // We have enough points (2) to create a line
-                            const lineCoordinates = [
-                                [ coordinates.point1.lat, coordinates.point1.long ],
-                                [ coordinates.point2.lat, coordinates.point2.long ]
-                            ];
-                            // add line to map 
-                            this.delineationLine = L.polyline(lineCoordinates, {color: 'blue'}).addTo(map)
-                            // check line length 
-                            var one = L.latLng([lineCoordinates[0][0],lineCoordinates[0][1]])
-                            var two = L.latLng([lineCoordinates[1][0],lineCoordinates[1][1]])
-                            var distance = one.distanceTo(two); // in meters
-                            
-                            if (distance > 4023.36) { // line is longer than 2.5 miles
-                                this.studyArea.resetDelineationButtons();
-                                map.removeLayer(this.delineationLine)
-                                // remove listeners
-                                map.off("draw:drawvertex", checkClicks);
-                                this.drawControl.disable();
-                                // throw error
-                                this.toaster.pop("error", "Error", "Delineation not possible. Line must be shorter than 2.5 miles.", 0);
-                                throw new Error;
-                            } else {
-                                // remove listeners
-                                map.off("draw:drawvertex", checkClicks);
-                                this.drawControl.disable();
-                                // send line to checkDelineationLine
-                                var lineClickPoints = [new WiM.Models.Point(coordinates.point1.lat, coordinates.point1.long, '4326'), new WiM.Models.Point(coordinates.point2.lat, coordinates.point2.long, '4326')] //here
-                                this.checkDelineationLine(coordinates, lineClickPoints)
-                            }
-                        } 
+                    var lineStart = (e) => {
+                        var coordinate = [this.drawControl._currentLatLng.lat,this.drawControl._currentLatLng.lng]
+                        coordinates.push(coordinate)
                     };
 
-                    map.on("draw:drawvertex", checkClicks);
+                    var lineStop = (e) => {
+                        // add line to map 
+                        this.delineationLine = L.polyline(coordinates, {color: 'blue'}).addTo(map)
+
+                        // Calculating the distance of the polyline, internal funciton '_getMeasurementString' doesn't work on mobile
+                        var totalDistance = 0.00000;
+                        for (let i = 1; i < coordinates.length; i++) {
+                            var one = L.latLng(coordinates[i-1])
+                            var two = L.latLng(coordinates[i])
+                            totalDistance += one.distanceTo(two);
+                        }
+                          
+                        if (totalDistance > 4023.36) { // line is longer than 2.5 miles
+                            this.studyArea.resetDelineationButtons();
+                            map.removeLayer(this.delineationLine)
+                            // remove listeners
+                            map.off("draw:drawvertex", lineStart);
+                            map.off("draw:created", lineStop);
+                            this.drawControl.disable();
+                            // throw error
+                            this.toaster.pop("error", "Error", "Delineation not possible. Line must be shorter than 2.5 miles.", 0);
+                            throw new Error;
+                        } else {
+                            // remove listeners
+                            map.off("draw:drawvertex", lineStart);
+                            map.off("draw:created", lineStop);
+                            this.drawControl.disable();
+                            // send line to checkDelineationLine
+                            var lineClickPoints = []
+                            coordinates.forEach(coordinate => {
+                                lineClickPoints.push(new WiM.Models.Point(coordinate[0], coordinate[1], '4326'))
+                            });
+                            this.checkDelineationLine(coordinates, lineClickPoints)
+                        }
+                    };
+
+                    map.on("draw:drawvertex", lineStart);
+                    map.on("draw:created", lineStop);
+
                 });
             });
         }
@@ -1048,7 +1043,6 @@ module StreamStats.Controllers {
                                     }
                                 }
                             });
-
                             if (valid) {
                                 this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
                                 this.studyArea.checkingDelineatedLine = false;
