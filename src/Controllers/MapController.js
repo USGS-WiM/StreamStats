@@ -733,9 +733,7 @@ var StreamStats;
                             map.invalidateSize();
                             var valid = true;
                             _this.studyArea.lineIntersection(line).then(function (points) {
-                                console.log(points);
                                 points.forEach(function (point) {
-                                    console.log(point);
                                     if (point.inExclude == true) {
                                         if (point.type == 1) {
                                             if (_this.studyArea.ignoreExclusionPolygons) {
@@ -756,7 +754,6 @@ var StreamStats;
                                         }
                                     }
                                 });
-                                console.log(valid);
                                 if (valid) {
                                     _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
                                     _this.studyArea.checkingDelineatedLine = false;

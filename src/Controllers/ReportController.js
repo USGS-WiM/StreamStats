@@ -215,8 +215,8 @@ var StreamStats;
                 }
                 else {
                     this.studyAreaService.selectedStudyArea.LinePoints.forEach(function (element, i) {
-                        csvFile += '\nDelineation Polyline Point ' + (i + 1).toString() + ' Latitude,' + element.Latitude.toFixed(5);
-                        csvFile += '\nDelineation Polyline Point ' + (i + 1).toString() + ' Longitude,' + element.Longitude.toFixed(5);
+                        csvFile += '\nDelineation Line Point ' + (i + 1).toString() + ' Latitude,' + element.Latitude.toFixed(5);
+                        csvFile += '\nDelineation Line Point ' + (i + 1).toString() + ' Longitude,' + element.Longitude.toFixed(5);
                     });
                 }
                 csvFile += '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';

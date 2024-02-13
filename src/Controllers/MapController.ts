@@ -864,7 +864,7 @@ module StreamStats.Controllers {
             this.leafletData.getMap("mainMap").then((map: any) => {
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => {
                     this.drawController({shapeOptions: { color: 'blue' }, metric: false }, true);
-
+                    
                     var drawnItems = maplayers.overlays.draw;
                     drawnItems.clearLayers();
 
@@ -1022,9 +1022,7 @@ module StreamStats.Controllers {
                         map.invalidateSize();
                         var valid = true;
                         this.studyArea.lineIntersection(line).then((points) => {
-                            console.log(points)
                             points.forEach(point => {
-                                console.log(point)
                                 if (point.inExclude == true) {
                                     if (point.type == 1){ 
                                         if (this.studyArea.ignoreExclusionPolygons) { // If user has selected to ignore exclusion polygons (not an option on Production)
@@ -1045,7 +1043,6 @@ module StreamStats.Controllers {
                                     }
                                 }
                             });
-                            console.log(valid)
                             if (valid) {
                                 this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
                                 this.studyArea.checkingDelineatedLine = false;

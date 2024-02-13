@@ -310,8 +310,8 @@ module StreamStats.Controllers {
                 csvFile += '\nWorkspace ID,' + this.studyAreaService.selectedStudyArea.WorkspaceID + '\nLatitude,' + this.studyAreaService.selectedStudyArea.Pourpoint[0].Latitude.toFixed(5) + '\nLongitude,' + this.studyAreaService.selectedStudyArea.Pourpoint[0].Longitude.toFixed(5)
             } else {
                 this.studyAreaService.selectedStudyArea.LinePoints.forEach((element, i) => {
-                    csvFile += '\nDelineation Polyline Point ' + (i+1).toString() + ' Latitude,' + element.Latitude.toFixed(5)
-                    csvFile += '\nDelineation Polyline Point ' + (i+1).toString() + ' Longitude,' + element.Longitude.toFixed(5)                
+                    csvFile += '\nDelineation Line Point ' + (i+1).toString() + ' Latitude,' + element.Latitude.toFixed(5)
+                    csvFile += '\nDelineation Line Point ' + (i+1).toString() + ' Longitude,' + element.Longitude.toFixed(5)                
                 });
             }
             csvFile += '\nTime,' + this.studyAreaService.selectedStudyArea.Date.toLocaleString() + '\n';
