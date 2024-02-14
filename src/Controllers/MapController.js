@@ -638,49 +638,41 @@ var StreamStats;
                         _this.drawController({ shapeOptions: { color: 'blue' }, metric: false }, true);
                         var drawnItems = maplayers.overlays.draw;
                         drawnItems.clearLayers();
-                        var coordinates = {
-                            point1: {
-                                lat: null,
-                                long: null
-                            },
-                            point2: {
-                                lat: null,
-                                long: null
+                        var coordinates = [];
+                        var lineStart = function (e) {
+                            var coordinate = [_this.drawControl._currentLatLng.lat, _this.drawControl._currentLatLng.lng];
+                            coordinates.push(coordinate);
+                        };
+                        var lineStop = function (e) {
+                            _this.delineationLine = L.polyline(coordinates, { color: 'blue' }).addTo(map);
+                            var totalDistance = 0.00000;
+                            for (var i = 1; i < coordinates.length; i++) {
+                                var one = L.latLng(coordinates[i - 1]);
+                                var two = L.latLng(coordinates[i]);
+                                totalDistance += one.distanceTo(two);
+                            }
+                            if (totalDistance > 4023.36) {
+                                _this.studyArea.resetDelineationButtons();
+                                map.removeLayer(_this.delineationLine);
+                                map.off("draw:drawvertex", lineStart);
+                                map.off("draw:created", lineStop);
+                                _this.drawControl.disable();
+                                _this.toaster.pop("error", "Error", "Delineation not possible. Line must be shorter than 2.5 miles.", 0);
+                                throw new Error;
+                            }
+                            else {
+                                map.off("draw:drawvertex", lineStart);
+                                map.off("draw:created", lineStop);
+                                _this.drawControl.disable();
+                                var lineClickPoints = [];
+                                coordinates.forEach(function (coordinate) {
+                                    lineClickPoints.push(new WiM.Models.Point(coordinate[0], coordinate[1], '4326'));
+                                });
+                                _this.checkDelineationLine(coordinates, lineClickPoints);
                             }
                         };
-                        var checkClicks = function (e) {
-                            if (coordinates.point1.lat === null && coordinates.point1.long === null && coordinates.point2.lat === null && coordinates.point2.long === null) {
-                                coordinates.point1.lat = _this.drawControl._currentLatLng.lat;
-                                coordinates.point1.long = _this.drawControl._currentLatLng.lng;
-                            }
-                            else if (coordinates.point1.lat !== null && coordinates.point1.long !== null && coordinates.point2.lat === null && coordinates.point2.long === null) {
-                                coordinates.point2.lat = _this.drawControl._currentLatLng.lat;
-                                coordinates.point2.long = _this.drawControl._currentLatLng.lng;
-                                var lineCoordinates = [
-                                    [coordinates.point1.lat, coordinates.point1.long],
-                                    [coordinates.point2.lat, coordinates.point2.long]
-                                ];
-                                _this.delineationLine = L.polyline(lineCoordinates, { color: 'blue' }).addTo(map);
-                                var one = L.latLng([lineCoordinates[0][0], lineCoordinates[0][1]]);
-                                var two = L.latLng([lineCoordinates[1][0], lineCoordinates[1][1]]);
-                                var distance = one.distanceTo(two);
-                                if (distance > 4023.36) {
-                                    _this.studyArea.resetDelineationButtons();
-                                    map.removeLayer(_this.delineationLine);
-                                    map.off("draw:drawvertex", checkClicks);
-                                    _this.drawControl.disable();
-                                    _this.toaster.pop("error", "Error", "Delineation not possible. Line must be shorter than 2.5 miles.", 0);
-                                    throw new Error;
-                                }
-                                else {
-                                    map.off("draw:drawvertex", checkClicks);
-                                    _this.drawControl.disable();
-                                    var lineClickPoints = [new WiM.Models.Point(coordinates.point1.lat, coordinates.point1.long, '4326'), new WiM.Models.Point(coordinates.point2.lat, coordinates.point2.long, '4326')];
-                                    _this.checkDelineationLine(coordinates, lineClickPoints);
-                                }
-                            }
-                        };
-                        map.on("draw:drawvertex", checkClicks);
+                        map.on("draw:drawvertex", lineStart);
+                        map.on("draw:created", lineStop);
                     });
                 });
             };
