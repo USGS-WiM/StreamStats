@@ -287,7 +287,7 @@ configuration.regions = [
         },
         "Applications": ["StormDrain"], "regionEnabled": true, "ScenariosAvailable": false, "URL": "https://www.usgs.gov/streamstats/washington-dc-streamstats"
     },
-    { "RegionID": "FL", "Name": "Florida", "Bounds": [[24.956376, -87.625711], [31.003157, -80.050911]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false, "URL": null },
+    { "RegionID": "FL", "Name": "Florida", "Bounds": [[24.956376, -87.625711], [31.003157, -80.050911]], "Layers": {}, "Applications": ["Localres"], "regionEnabled": true, "ScenariosAvailable": false, "URL": null },
     { "RegionID": "GA", "Name": "Georgia", "Bounds": [[30.361291, -85.60896], [35.000366, -80.894753]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/georgia-streamstats" },
     { "RegionID": "GU", "Name": "Guam", "Bounds": [[13.234996, 144.634155], [13.65361, 144.953308]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": null },
     { "RegionID": "HI", "Name": "Hawaii", "Bounds": [[18.921786, -160.242406], [22.22912, -154.791096]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/hawaii-streamstats" },
