@@ -28,6 +28,7 @@ var StreamStats;
                 this.isFlowTableOpen = false;
                 this.isEstimatedFlowFLATableOpen = false;
                 this.SSServicesVersion = '1.2.22';
+                this.subBasinColors = ["#5e4fa2", "#9e0142", "#3288bd", "#d53e4f", "#66c2a5", "#f46d43", "#abdda4", "#fdae61", "#e6f598", "#fee08b"];
                 this._graphData = {
                     data: {},
                     options: {}
@@ -695,7 +696,7 @@ var StreamStats;
                         name: /\d/.test(LayerName) ? "Subbasin Delineation Point " + LayerName.replace(/[^0-9]/g, '') : "Basin Clicked Point",
                         type: 'geoJSONShape',
                         data: feature,
-                        visible: true,
+                        visible: true
                     };
                 }
                 else if (LayerName.includes('globalwatershed')) {
@@ -704,6 +705,15 @@ var StreamStats;
                         type: 'geoJSONShape',
                         data: feature,
                         visible: false,
+                        layerOptions: {
+                            style: {
+                                fillColor: this.subBasinColors[parseInt(LayerName.replace(/[^0-9]/g, '')) - 1],
+                                weight: 2,
+                                opacity: 1,
+                                color: 'white',
+                                fillOpacity: 0.5,
+                            }
+                        }
                     };
                 }
                 else if (LayerName == 'referenceGage') {

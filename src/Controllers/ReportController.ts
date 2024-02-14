@@ -109,6 +109,8 @@ module StreamStats.Controllers {
         public basinCharCollapsed;
         public collapsed;
 
+        public subBasinColors = ["#5e4fa2", "#9e0142", "#3288bd","#d53e4f","#66c2a5","#f46d43", "#abdda4","#fdae61", "#e6f598","#fee08b"]
+
         public get showReport(): boolean {
             if (!this.studyAreaService.studyAreaParameterList) return false;
             for (var i = 0; i < this.studyAreaService.studyAreaParameterList.length; i++) {
@@ -874,7 +876,7 @@ module StreamStats.Controllers {
                     name: /\d/.test(LayerName) ? "Subbasin Delineation Point " + LayerName.replace(/[^0-9]/g, '') : "Basin Clicked Point",
                     type: 'geoJSONShape',
                     data: feature,
-                    visible: true,
+                    visible: true
                 }
             }
             else if (LayerName.includes('globalwatershed')) {
@@ -883,6 +885,15 @@ module StreamStats.Controllers {
                     type: 'geoJSONShape',
                     data: feature,
                     visible: false,
+                    layerOptions: {
+                        style: {
+                            fillColor: this.subBasinColors[parseInt(LayerName.replace(/[^0-9]/g, '')) - 1],
+                            weight: 2,
+                            opacity: 1,
+                            color: 'white',
+                            fillOpacity: 0.5,
+                        }
+                    }
                 }
             }
             else if (LayerName == 'referenceGage') {
