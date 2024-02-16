@@ -193,6 +193,7 @@ module StreamStats.Controllers {
         public annualFlowPlot: any;
         public peakValues: any;
         public selectedFloodFreqStats;
+        public selectedYear;
         public dischargeObj = undefined; // Stage vs. Discharge Plot
         public measuredObj = undefined; // Stage vs. Discharge Plot
         public floodFreq = undefined;
@@ -208,10 +209,12 @@ module StreamStats.Controllers {
         public weightedOneDayStats = undefined;
         public weightedSevenDayStats = undefined;
         public weightedThirtyDayStats = undefined;
+        public weightedAEPstats = undefined;
+        public regulatedAEPstats = undefined;
         public peakDates = undefined;
         public estPeakDates = undefined;
         public dailyFlow = undefined;
-        public instFlow = undefined;
+        public instFlow = [];
         public gageTimeZone = undefined;
         public NWSforecast = undefined;
         public meanPercentileStats = undefined;
@@ -235,7 +238,10 @@ module StreamStats.Controllers {
         public formattedWeightedOneDayStats = [];
         public formattedWeightedSevenDayStats = [];
         public formattedWeightedThirtyDayStats = [];
+        public formattedWeightedAEP = [];
+        public formattedRegulatedAEP = [];
         public allFloodFreqStats = [];
+        public allYears = [];
         public formattedPeakDates = [];
         public formattedPeakDatesOnYear = [];
         public formattedEstPeakDatesOnYear = [];
@@ -245,10 +251,12 @@ module StreamStats.Controllers {
         public dailyDatesOnly = [];
         public startAndEnd = []; 
         public extremes;
+        public defaultYear;
         public formattedDailyHeat = [];
-        public formattedDailyPlusAvg = [];
-        public formattedDischargePeakDates = []; // Stage vs. Discharge Plot
         public dailyValuesOnly = [];
+        public formattedDailyPlusAvg = [];
+        // Stage vs. Discharge Plot
+        public formattedDischargePeakDates = []; 
         public USGSMeasuredAgeQualityData = 'age';
         public sectionCollapsed: Array<any>;
         public peakDataSourcesCollapsed; // for Annual Peak plot data sources collapsible 
@@ -289,6 +297,7 @@ module StreamStats.Controllers {
                                        // selected: number, buttonPosition: {align: string, x: number, y: number}
                                     },
                         navigator: { enabled: boolean}, 
+                        exporting : { buttons: {contextButton: {menuItems: string[]}}},
                         xAxis: {  type: string, events: { afterSetExtremes: Function}, gridLineWidth: number, min: number, max: number, title: {text: string}, custom: { allowNegativeLog: Boolean }},
                         yAxis: { title: {text: string}, gridLineWidth: number, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
                         series: { name: string; showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
@@ -319,6 +328,7 @@ module StreamStats.Controllers {
             this.selectedStatisticGroups = [];
             this.selectedCitations = [];
             this.selectedFloodFreqStats = [];
+            this.selectedYear = [];
             this.selectedStatGroupsChar = [];
             this.selectedCitationsChar = [];
             this.statCitationList = [];
@@ -740,7 +750,7 @@ module StreamStats.Controllers {
                     const data = response.data
                     //Lookup arrays for desired Flood Statistic IDs
                     const AEPlookup = [9,852,8,4,7,3,6,1,501,5,2,500,851,1438,818];
-                    const altAEPlookup = [2311,2312,2313,2314,2315,2316,2317,2318]
+                    const altAEPlookup = [2311,2312,2313,2314,2315,2316,2317,2318];
                     const oneDayLookup = [82,83,84,85,596,820,1737];
                     const sevenDayLookup = [90,91,92,93,589,822,1165,1166,1167];
                     const fourteenDayLookup = [94,95,96,97,828,829];
@@ -752,6 +762,8 @@ module StreamStats.Controllers {
                     const weightedOneDayLookup = [1755,1775,1732,1746];
                     const weightedSevenDayLookup = [2025,2050,2001,2017,2041,2007];
                     const weightedThirtyDayLookup = [1871,1893,1845,1863,1884,1854];
+                    const weightedAEPlookup = [1065,20,513,512,21,22,23,24,25,26,27];
+                    const regulatedAEPlookup = [1328,517,516,518,519,520,521,522,523,524,525];
                     let AEPchartData = [];
                     let altAEPchartData = [];
                     let oneDayChartData = [];
@@ -765,6 +777,8 @@ module StreamStats.Controllers {
                     let weightedOneDayChartData = [];
                     let weightedSevenDayChartData = [];
                     let weightedThirtyDayChartData = [];
+                    let weightedAEPchartData = [];
+                    let regulatedAEPchartData = [];
                     do {
                         var IDs = data.statistics
                         for (let item of IDs) {
@@ -807,6 +821,12 @@ module StreamStats.Controllers {
                             if(weightedThirtyDayLookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
                                 weightedThirtyDayChartData.push(item);
                             }
+                            if(weightedAEPlookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
+                                weightedAEPchartData.push(item);
+                            }
+                            if(regulatedAEPlookup.indexOf(item.regressionTypeID) >=0 && item.isPreferred == true){
+                                regulatedAEPchartData.push(item);
+                            }
                         }
                 } while (data.length > 0);
                 this.floodFreq = AEPchartData;
@@ -822,43 +842,13 @@ module StreamStats.Controllers {
                 this.weightedOneDayStats = weightedOneDayChartData;
                 this.weightedSevenDayStats = weightedSevenDayChartData;
                 this.weightedThirtyDayStats = weightedThirtyDayChartData;
+                this.weightedAEPstats = weightedAEPchartData;
+                this.regulatedAEPstats = regulatedAEPchartData;
             }).finally(() => {
-                this.getDailyFlow();
+                this.getInstantaneousFlow();
             });
         }
 
-        //Pull in data for daily flow values
-        public getDailyFlow() {
-            var date = new Date ();
-			var timeInMillisec = date.getTime ();	// the milliseconds elapsed since 01 January, 1970 00:00:00 UTC
-			timeInMillisec -= 15 * 24 * 60 * 60 * 1000; 	// 14 days in milliseconds
-			date.setTime (timeInMillisec);
-            var twoWeeksAgo = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 )) //ending date range two weeks ago to replace with IV
-                    .toISOString()
-                    .split("T")[0];
-            var url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01&endDT=' + twoWeeksAgo;
-            this.dailyFlowURL = url;
-            //console.log('GetDailyFlowURL', url);
-            const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
-            this.Execute(request).then(
-                (response: any) => {
-                    const data = response.data.value.timeSeries;
-                    if (data.length !== 0) {
-                        var dailyValues = data[0].values[0].value
-                    }
-                    else {
-                        dailyValues = 0
-                    };
-                    if (dailyValues !== 0) {
-                    const filteredDaily = dailyValues.filter(item => {
-                        return (parseFloat(item.value) !== -999999) //removes placeholder values
-                    });
-                    this.dailyFlow = filteredDaily;
-                    }
-                    this.getInstantaneousFlow();
-                }); 
-            }
-        
         //Pull in instantaneous flow value data from NWIS
         public getInstantaneousFlow(){
             var date = new Date ();
@@ -870,8 +860,8 @@ module StreamStats.Controllers {
                     .split("T")[0]; //removes the timezone offset so the dates will appear in their recorded timezone
             var url = 'https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&startDT=' + twoWeeksAgo;
             this.instFlowURL = url;
-            //console.log(url)
-            const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+            const request: WiM
+            .Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
                     const data = response.data.value.timeSeries;
@@ -889,18 +879,56 @@ module StreamStats.Controllers {
                     });
                     this.instFlow = filteredInst;
                     }
-                    //console.log('inst', this.instFlow)
-                    this.getRatingCurve();
-                                        // console.log(this.gageTimeZone)
-
+                    this.getDailyFlow();
                 });
         }
+
+
+        //Pull in data for daily flow values
+        public getDailyFlow() {
+            var date = new Date ();
+			var timeInMillisec = date.getTime ();	// the milliseconds elapsed since 01 January, 1970 00:00:00 UTC
+			timeInMillisec -= 15 * 24 * 60 * 60 * 1000; 	// 14 days in milliseconds
+			date.setTime (timeInMillisec);
+            var twoWeeksAgo = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 )) //ending date range two weeks ago to replace with IV
+                    .toISOString()
+                    .split("T")[0];
+            let url;
+            let now = new Date()
+            let today = now.getUTCFullYear() + '-' + now.getUTCMonth() + 1 + '-' + now.getUTCDate();
+            if (this.instFlow.length > 0) {
+                url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01&endDT=' + twoWeeksAgo;
+            } else {
+                url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01&endDT=' + today;
+            }
+            //console.log(url);
+            this.dailyFlowURL = url;
+            const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
+            this.Execute(request).then(
+                (response: any) => {
+                    const data = response.data.value.timeSeries;
+                    if (data.length !== 0) {
+                        var dailyValues = data[0].values[0].value
+                    }
+                    else {
+                        dailyValues = 0
+                    };
+                    if (dailyValues !== 0) {
+                    const filteredDaily = dailyValues.filter(item => {
+                        return (parseFloat(item.value) !== -999999) //removes placeholder values
+                    });
+                    this.dailyFlow = filteredDaily;
+                    }
+                    this.getRatingCurve();
+                }); 
+            }
+    
 
         // rating curve
         public getRatingCurve() {
             const url = 'https://waterdata.usgs.gov/nwisweb/get_ratings?site_no=' + this.gage.code + '&file_type=exsa'
             this.ratingURL = url;
-            // console.log('getDischargeInfo', url)
+            //console.log('getDischargeInfo', url)
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             
             this.dischargeObj = [];
@@ -972,11 +1000,14 @@ module StreamStats.Controllers {
                 if (NWScode !== undefined) {
                     var url =  "https://water.weather.gov/ahps2/hydrograph_to_xml.php?output=xml&gage="+ NWScode;
                     self.forecastURL = url;
-                    // console.log('NWS forecast url', url)
+                    //console.log('NWS forecast url', url)
                     const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'xml');
                     self.Execute(request).then(
                         (response: any) => {
                             const xmlDocument = new DOMParser().parseFromString(response.data, "text/xml")
+
+                            //console.log(xmlDocument.querySelector("message"))
+                            if (xmlDocument.querySelector("message") === null) {
 
                             const sigStages = xmlDocument.querySelector("sigstages");
                             // parse out tag values from sigStages. These will be the Y values
@@ -985,6 +1016,7 @@ module StreamStats.Controllers {
                             const moderate = parseFloat(sigStages.querySelector("moderate").textContent);
                             const major = parseFloat(sigStages.querySelector("major").textContent);
                             const record = parseFloat(sigStages.querySelector("record").textContent);
+                            
                             // console.log("Action: ", action);
                             // console.log("Flood: ", flood);
                             // console.log("Moderate: ", moderate);
@@ -1008,6 +1040,7 @@ module StreamStats.Controllers {
                                 {name: 'major', x: majorX, y: major, color: 'rgba(204,51,255,0.7)'},
                                 {name: 'record', x: recordX, y: record, color: 'rgba(102,178,255,0.7)'}
                             ];
+                            }
                             const forecastData = xmlDocument.querySelectorAll("forecast");
                             if (forecastData[0] !== undefined) {
                             const smallerData = forecastData[0].childNodes;
@@ -1050,6 +1083,23 @@ module StreamStats.Controllers {
         public getShadedDailyStats() {
             var url = 'https://waterservices.usgs.gov/nwis/stat/?format=rdb,1.0&indent=on&sites=' + this.gage.code + '&statReportType=daily&statTypeCd=all&parameterCd=00060';
             this.percentileURL = url;
+            let finalDate;
+            if (this.dailyFlow !== undefined) {
+                var finalDailyIndex = this.dailyFlow.length-1;
+                finalDate = new Date(this.dailyFlow[finalDailyIndex].dateTime)    ///currently using the final DAILY flow point as latest year, but sometimes gage has more recent peaks
+            }  
+                let finalInstIndex = this.instFlow.length-1;
+                if (this.instFlow.length > 0) {
+                    finalDate = new Date(this.instFlow[finalInstIndex].dateTime)
+                }
+            if (this.NWSforecast !== undefined) {
+                finalDate = new Date(this.NWSforecast[0].x)
+            }
+            if (this.dailyFlow == undefined && this.instFlow.length == 0 && this.NWSforecast == undefined) {
+                finalDate = new Date();
+            }
+            var finalYear = finalDate.getUTCFullYear();
+            this.defaultYear = finalYear; // globally setting this as the year that the plot will load on, used for other purposed as well
             //console.log('shaded url', url);
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
@@ -1063,10 +1113,12 @@ module StreamStats.Controllers {
                     do {
                         let nonArrayDataRow = data.shift().split('\t');
                         raw.push(nonArrayDataRow)
-                        var finalIndex = this.dailyFlow.length-1;
-                        var finalDate = new Date(this.dailyFlow[finalIndex].dateTime)
-                        var finalYear = finalDate.getUTCFullYear();
-                        let stringDate = new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + finalYear);
+                        let stringDate;
+                        if (parseFloat(nonArrayDataRow[5]) > 9 ) { //makes the shaded stats display in water years
+                            stringDate = new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + (finalYear - 1));
+                        } else {
+                            stringDate = new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + finalYear);
+                        }
                         const meanPercentiles = {
                             date: stringDate,
                             begin_yr: parseFloat(nonArrayDataRow[7]),
@@ -1086,13 +1138,11 @@ module StreamStats.Controllers {
                     this.getUSGSMeasured();
                 });
         }
-        
-
 
         public getUSGSMeasured() {
             const url = 'https://waterdata.usgs.gov/nwis/measurements?site_no=' + this.gage.code + '&agency_cd=USGS&format=rdb_expanded'
             this.measuredURL = url;
-            // console.log('usgsMeasuredURL', url)
+            //console.log('usgsMeasuredURL', url)
             const request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             
             this.measuredObj = [];
@@ -1132,8 +1182,8 @@ module StreamStats.Controllers {
                         this.measuredObj.push(object) 
                     });
                 }
-                    // console.log('measured obj', this.measuredObj)
-                        // console.log('dischargeObj', dischargeValue)
+                    //console.log('measured obj', this.measuredObj)
+                    // console.log('dischargeObj', dischargeValue)
                 }, (error) => {
                     // console.log(error)
                 }).finally(() => {
@@ -1147,15 +1197,15 @@ module StreamStats.Controllers {
 
         public getMinYear() {
             const minYear = Math.min.apply(
-              null, 
-              this.measuredObj.map((item) => {
+                null, 
+                this.measuredObj.map((item) => {
                 const itemDate = new Date(item.dateTime);
                 return itemDate.getFullYear();
-              })
+                })
             );
             return minYear;
-          }
-      
+        }
+
         // for sliders
         public updateChart() {
             let chart = $('#chart3').highcharts();
@@ -1188,7 +1238,10 @@ module StreamStats.Controllers {
             if (this.peakDates) {
                 this.peakDates.forEach(peakObj => {
                     if (!isNaN(peakObj.peak_va)) {
-                    this.formattedPeakDates.push({x: new Date(peakObj.peak_dt), y: peakObj.peak_va})
+                    let date = new Date(peakObj.peak_dt)
+                        .toISOString()
+                        .split("T")[0];
+                    this.formattedPeakDates.push({x: new Date(date), y: peakObj.peak_va})
                     this.formattedDischargePeakDates.push({x: peakObj.peak_va, y: peakObj.peak_stage, date: peakObj.peak_dt})
                 }
                 });
@@ -1196,7 +1249,10 @@ module StreamStats.Controllers {
             if (this.estPeakDates) {
                 this.estPeakDates.forEach(estPeakObj => {
                     if (!isNaN(estPeakObj.peak_va)) {
-                    this.formattedEstPeakDates.push({x: new Date(estPeakObj.peak_dt), y: estPeakObj.peak_va})
+                        let estDate = new Date(estPeakObj.peak_dt)
+                        .toISOString()
+                        .split("T")[0];
+                    this.formattedEstPeakDates.push({x: new Date(estDate), y: estPeakObj.peak_va})
                     }
                 });
             }
@@ -1265,7 +1321,7 @@ module StreamStats.Controllers {
                 }
                 })
             }
-            if (this.instFlow !== undefined) {
+            if (this.instFlow.length > 0) {
                 this.instFlow.forEach(instObj => {
                     if (parseFloat(instObj.value) !== -999999) {
                         if (this.formattedDailyFlow.length !== 0) {
@@ -1281,23 +1337,7 @@ module StreamStats.Controllers {
                 }
             })
             }
-            //checking for the latest year between the peaks and the daily flow
-            let finalPeakorDailyDate = new Date('January 1, 1800') // assign way in past
-            if (this.formattedPeakDates.length > 0) {
-                var finalPeakIndex = this.formattedPeakDates.length-1;
-                if (this.formattedPeakDates[finalPeakIndex].x > finalPeakorDailyDate) {
-                    finalPeakorDailyDate = this.formattedPeakDates[finalPeakIndex].x
-                }
-            }
-            if (this.formattedDailyFlow.length > 0) {
-                var finalDailyIndex = this.formattedDailyFlow.length-1;
-                if (this.formattedDailyFlow[finalDailyIndex].x > finalPeakorDailyDate) {
-                    finalPeakorDailyDate = this.formattedDailyFlow[finalDailyIndex].x
-                }
-            }
             var finalIndex = this.formattedDailyFlow.length-1;
-            var finalYear = (finalPeakorDailyDate).getUTCFullYear(); //currently using the final daily flow point as latest year, but sometimes gage has more recent peaks
-            //return an array with a date each day between first recording and last
             function dateRange(startDate, endDate, steps = 1) {
                 const dateArray = [];
                 let currentDate = new Date(startDate);
@@ -1333,23 +1373,37 @@ module StreamStats.Controllers {
             }
             if (this.peakDates) {
                 this.peakDates.forEach(peakOnYear => {
-                    let adjustedDate = new Date(peakOnYear.peak_dt);
-                    adjustedDate.setUTCFullYear(finalYear);
-                    let currentYear = new Date(adjustedDate.toUTCString())
+                    //let waterYearDate;
+                    let adjustedDate = new Date(peakOnYear.peak_dt); 
+                    if (adjustedDate.getUTCMonth() > 8) {
+                        adjustedDate.setUTCFullYear(this.defaultYear - 1);
+                    } else {
+                        adjustedDate.setUTCFullYear(this.defaultYear);
+                    }
+                    let currentWaterYear = new Date(adjustedDate.toUTCString())
+                    let realDate = new Date(peakOnYear.peak_dt)
+                    let waterYear = realDate.getUTCFullYear();
+                    if (realDate.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                        waterYear += 1; // adding a year to dates that fall into the next water year
+                    };
                     if (!isNaN(peakOnYear.peak_va)) {
-                        this.formattedPeakDatesOnYear.push({x: currentYear, y: peakOnYear.peak_va, realDate: new Date(peakOnYear.peak_dt)})
+                        this.formattedPeakDatesOnYear.push({x: currentWaterYear, y: peakOnYear.peak_va, realDate: realDate, waterYear: waterYear})
                         }
                 });
             }
             if (this.estPeakDates) {
                 this.estPeakDates.forEach(estPeakOnYear => {
                     let adjustedDate = new Date(estPeakOnYear.peak_dt);
-                    adjustedDate.setUTCFullYear(finalYear);
-                    let currentYear = new Date(adjustedDate.toUTCString())
-                    this.formattedEstPeakDatesOnYear.push({x: currentYear, y: estPeakOnYear.peak_va, realDate: new Date(estPeakOnYear.peak_dt)})
+                    if (adjustedDate.getUTCMonth() > 8) {
+                        adjustedDate.setUTCFullYear(this.defaultYear - 1);
+                    } else {
+                        adjustedDate.setUTCFullYear(this.defaultYear);
+                    }
+                    let currentWaterYear = new Date(adjustedDate.toUTCString())
+                    this.formattedEstPeakDatesOnYear.push({x: currentWaterYear, y: estPeakOnYear.peak_va, realDate: new Date(estPeakOnYear.peak_dt)})
                 });
             }
-            //finding the earliest and latest dates out of all three data series
+            //finding the earliest and latest dates out of ALL THREE data series
             let startDate = new Date('January 1, 3000')  // assign way in future
             let endDate = new Date('January 1, 1800') // assign way in past
                 if (this.formattedPeakDates.length > 0) {
@@ -1390,8 +1444,11 @@ module StreamStats.Controllers {
                     }
                 }
             this.startAndEnd.push(startDate, endDate);
-            let endYear = endDate.getUTCFullYear();
-            let endOfFinalYear = new Date(12 + '/' + 31 + '/' + endYear)            
+            let defaultYearPlusOne = this.defaultYear + 1; //adding a year to the current year for looping purposes below (want to include the current year too)
+            while (defaultYearPlusOne >= this.startAndEnd[0].getUTCFullYear()) {
+                this.allYears.push(defaultYearPlusOne -= 1)
+            }
+            let endOfFinalYear = new Date(9 + '/' + 30 + '/' + this.defaultYear)            
             if (this.oneDayStats) {
                 this.formattedOneDayStats = [];
                 const oneDayStatsColors = {
@@ -1423,7 +1480,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x) {
                                     return formattedName
                                 }
                             } 
@@ -1480,7 +1537,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x) {
                                     return formattedName
                                 }
                             } 
@@ -1534,7 +1591,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x) {
                                     return formattedName
                                 }
                             } 
@@ -1591,7 +1648,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x) {
                                     return formattedName
                                 }
                             } 
@@ -1645,7 +1702,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x) {
                                     return formattedName
                                 }
                             } 
@@ -1699,7 +1756,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x) {
                                     return formattedName
                                 }
                             } 
@@ -1753,7 +1810,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x) {
                                     return formattedName
                                 }
                             } 
@@ -1807,7 +1864,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear()) {
                                     return formattedName
                                 }
                             } 
@@ -1859,7 +1916,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear()) {
                                     return formattedName
                                 }
                             } 
@@ -1913,7 +1970,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear()) {
                                     return formattedName
                                 }
                             } 
@@ -1967,7 +2024,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear()) {
                                     return formattedName
                                 }
                             } 
@@ -2023,7 +2080,7 @@ module StreamStats.Controllers {
                             enabled: true,
                             zIndex: 3,
                             pointFormatter: function() { 
-                                if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear()) {
                                     return formattedName + '% AEP'
                                 }
                             } 
@@ -2040,6 +2097,124 @@ module StreamStats.Controllers {
                         ],
                         linkedTo: 'altAEP',
                         number: 15,
+                        marker: {
+                            symbol: 'circle',
+                            radius: 0.1
+                        },
+                        })
+                })
+            }
+            if (this.weightedAEPstats) {
+                this.formattedWeightedAEP = [];
+                const weightedAEPcolors = {
+                    27: "#9A6324", //0.2%
+                    26: "#e6194B", //0.5%
+                    25: "#f58231", // 1%
+                    24: "#ffe119", //2%
+                    23: "#bfef45", //4%
+                    22: "#3cb44b", // 10%
+                    21: "#42d4f4", //20%
+                    512: "#4363d8", //42.9 %
+                    513: "#911eb4", //50%
+                    20: "#dcbeff", //66.7%
+                    1065: "#fabed4" //80%
+                };   
+                this.weightedAEPstats.forEach((weightedAEPitem) => {
+                    let colorIndex = weightedAEPitem.regressionTypeID;
+                    let formattedName = weightedAEPitem.regressionType.name.substring(0, weightedAEPitem.regressionType.name.length-18);
+                    this.formattedWeightedAEP.push({
+                        name: weightedAEPitem.regressionType.name,
+                        tooltip: {
+                            headerFormat:'<b>Weighted Annual Exceedance Probability (AEP)',
+                            pointFormatter: function(){
+                                if (this.formattedPeakDates !== null){
+                                    return '</b><br>AEP: <b>'  + formattedName + '%' + '</b><br>Value: <b>' + weightedAEPitem.value + ' ft³/s<br>'
+                                }
+                            }
+                        },
+                        turboThreshold: 0, 
+                        type: 'line',
+                        color: weightedAEPcolors[colorIndex],
+                        dataLabels: {
+                            enabled: true,
+                            zIndex: 3,
+                            pointFormatter: function() { 
+                                if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear()) {
+                                    return formattedName + '% AEP'
+                                }
+                            } 
+                        },
+                        data:
+                        [
+                            {
+                                x: startDate,
+                                y: weightedAEPitem.value
+                            },{
+                                x: endOfFinalYear,
+                                y: weightedAEPitem.value
+                            }
+                        ],
+                        linkedTo: 'weightedAEP',
+                        number: 22,
+                        marker: {
+                            symbol: 'circle',
+                            radius: 0.1
+                        },
+                        })
+                })
+            }
+            if (this.regulatedAEPstats) {
+                this.formattedRegulatedAEP = [];
+                const regulatedAEPcolors = {
+                    525: "#9A6324", //0.2%
+                    524: "#e6194B", //0.5%
+                    523: "#f58231", // 1%
+                    522: "#ffe119", //2%
+                    521: "#bfef45", //4%
+                    520: "#3cb44b", // 10%
+                    519: "#42d4f4", //20%
+                    518: "#4363d8", //42.9 %
+                    516: "#911eb4", //50%
+                    517: "#dcbeff", //66.7%
+                    1328: "#fabed4" //80%
+                };   
+                this.regulatedAEPstats.forEach((regulatedAEPitem) => {
+                    let colorIndex = regulatedAEPitem.regressionTypeID;
+                    let formattedName = regulatedAEPitem.regressionType.name.substring(0, regulatedAEPitem.regressionType.name.length-18);
+                    this.formattedRegulatedAEP.push({
+                        name: regulatedAEPitem.regressionType.name,
+                        tooltip: {
+                            headerFormat:'<b>Regulated Annual Exceedance Probability (AEP)',
+                            pointFormatter: function(){
+                                if (this.formattedPeakDates !== null){
+                                    return '</b><br>AEP: <b>'  + formattedName + '%' + '</b><br>Value: <b>' + regulatedAEPitem.value + ' ft³/s<br>'
+                                }
+                            }
+                        },
+                        turboThreshold: 0, 
+                        type: 'line',
+                        color: regulatedAEPcolors[colorIndex],
+                        dataLabels: {
+                            enabled: true,
+                            zIndex: 3,
+                            pointFormatter: function() { 
+                                if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear())  {
+                                    return formattedName + '% AEP'
+                                }
+                            } 
+                        },
+                        data:
+                        [
+                            {
+                                x: startDate,
+                                y: regulatedAEPitem.value
+                            },{
+                                x: endOfFinalYear,
+                                y: regulatedAEPitem.value
+                            }
+                        ],
+                        linkedTo: 'regulatedAEP',
+                        number: 23,
                         marker: {
                             symbol: 'circle',
                             radius: 0.1
@@ -2110,7 +2285,6 @@ module StreamStats.Controllers {
                         851: '#fabed4',
                         1438: '#469990'
                     };
-                    //this.formattedFloodFreq = [];
                     this.floodFreq.forEach((floodFreqItem) => {
                         let colorIndex = floodFreqItem.regressionTypeID;
                         let formattedName = floodFreqItem.regressionType.name.substring(0, floodFreqItem.regressionType.name.length-18);
@@ -2131,7 +2305,7 @@ module StreamStats.Controllers {
                                 enabled: true,
                                 zIndex: 3,
                                 pointFormatter: function() { 
-                                    if (this.x.getUTCFullYear() == endDate.getUTCFullYear()) {
+                                    if (this.x.getUTCFullYear() == endOfFinalYear.getUTCFullYear()) {
                                         return formattedName + '% AEP'
                                     }
                                 } 
@@ -2154,8 +2328,7 @@ module StreamStats.Controllers {
                             },
                             })
                     });
-            this.allFloodFreqStats.push(this.formattedFloodFreq, this.formattedAltFloodFreq, this.formattedOneDayStats, this.formattedSevenDayStats, this.formattedFourteenDayStats, this.formattedThirtyDayStats, this.formattedContrOneDayStats, this.formattedContrSevenDayStats, this.formattedContrFourteenDayStats, this.formattedContrThirtyDayStats, this.formattedWeightedOneDayStats, this.formattedWeightedSevenDayStats, this.formattedWeightedThirtyDayStats);
-            
+            this.allFloodFreqStats.push(this.formattedFloodFreq, this.formattedAltFloodFreq, this.formattedOneDayStats, this.formattedSevenDayStats, this.formattedFourteenDayStats, this.formattedThirtyDayStats, this.formattedContrOneDayStats, this.formattedContrSevenDayStats, this.formattedContrFourteenDayStats, this.formattedContrThirtyDayStats, this.formattedWeightedOneDayStats, this.formattedWeightedSevenDayStats, this.formattedWeightedThirtyDayStats, this.formattedWeightedAEP, this.formattedRegulatedAEP);
             this.allFloodFreqStats = this.allFloodFreqStats.filter(group => group.length > 0);
 
             this.allFloodFreqStats.forEach((group, index) => {
@@ -2166,6 +2339,7 @@ module StreamStats.Controllers {
                 }
             });
             this.selectedFloodFreqStats = this.allFloodFreqStats[0];
+            this.selectedYear = this.allYears[0];
             this.createAnnualFlowPlot();
             this.createDailyRasterPlot();
             this.createDischargePlot();
@@ -2175,7 +2349,7 @@ module StreamStats.Controllers {
             //console.log('peak value plot data', this.formattedPeakDates);
             //console.log('estimated peak plot data', this.formattedEstPeakDates);
             //console.log('daily flow plot data', this.formattedDailyFlow);
-            //console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear.length)
+            //console.log('peak value plot data plotted on one year', this.formattedPeakDatesOnYear);
             //console.log('0-10', this.formattedP0to10);
             //console.log('NWS Forecast', this.NWSforecast)
             //console.log('Inst Flow', this.formattedInstFlow.length)
@@ -2213,12 +2387,13 @@ module StreamStats.Controllers {
 
             var self = this
             let min;
+            let octNovDecYear = this.allYears[0] - 1; //the year that October, November, and December will be plotted on since their cal year is diff than their water year
                 if (this.formattedPeakDatesOnYear.length > 0) {
-                    min = (new Date(1 +'/' + 1 + '/' + this.startAndEnd[1].getFullYear())).getTime()
+                    min = (new Date(10 +'/' + 1 + '/' + octNovDecYear)).getTime();
                 } else {
                     min = this.startAndEnd[0].getTime()
                 }
-            let max = (new Date(12 +'/' + 31 + '/' + this.startAndEnd[1].getFullYear())).getTime()
+            let max = (new Date(9 +'/' + 30 + '/' + this.allYears[0])).getTime();
             this.chartConfig = {
                 chart: {
                     height: 550,
@@ -2230,7 +2405,9 @@ module StreamStats.Controllers {
                     panKey: 'shift',
                     events: {
                         load: function () {
-                            self.updateShadedStats();
+                            //self.updateShadedStats();
+                            //self.updatePeaksAfterZoom();
+                            //self.updateFloodStats();
                         }
                     }
                 },
@@ -2244,7 +2421,7 @@ module StreamStats.Controllers {
                 },
                 legend: {
                     useHTML: true,
-                    symbolPadding: null,
+                    symbolPadding: 10,
                     symbolWidth: null,
                     symbolHeight: null,
                     squareSymbol: null,
@@ -2273,12 +2450,21 @@ module StreamStats.Controllers {
                 navigator: {
                     enabled: true
                 },
+                exporting: {
+                    buttons: {
+                        contextButton: {
+                            menuItems: ['viewFullscreen']
+                        }
+                    }
+                },
                 xAxis: {
                     type: 'datetime',
                     events: {
                         afterSetExtremes: function() {
                             //console.log('the x axis has been resized')
                             self.updateShadedStats();
+                            self.updatePeaksAfterZoom();
+                            self.updateFloodStats();
                         }
                     },
                     gridLineWidth: 0,
@@ -2306,7 +2492,7 @@ module StreamStats.Controllers {
                     name    : 'Annual Peak Streamflow',
                     showInNavigator: false,
                     tooltip: {
-                        headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Latest Year',
+                        headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
                         pointFormatter: function(){
                             if (this.formattedPeakDatesOnYear !== null){
                                 let waterYear = this.realDate.getUTCFullYear();
@@ -2318,7 +2504,7 @@ module StreamStats.Controllers {
                                 let month = this.realDate.getUTCMonth();
                                     month += 1; // adding a month to the UTC months (which are zero-indexed)
                                 let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
-                                return '<br>Date: <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                                return '</b><br>Date: <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
                             }
                         }
                     },
@@ -2341,7 +2527,7 @@ module StreamStats.Controllers {
                     name    : 'Annual Peak Streamflow (Date Estimated)',
                     showInNavigator: false,
                     tooltip: {
-                        headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Latest Year',
+                        headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
                         pointFormatter: function(){
                             if (this.formattedEstPeakDatesOnYear !== null){
                                 let waterYear = this.realDate.getUTCFullYear();
@@ -2353,7 +2539,7 @@ module StreamStats.Controllers {
                                 let month = this.realDate.getUTCMonth();
                                     month += 1; // adding a month to the UTC months (which are zero-indexed)
                                 let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
-                                return '<br>Date (estimated): <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                                return '</b><br>Date (estimated): <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
                             }
                         }
                     },
@@ -2589,7 +2775,7 @@ module StreamStats.Controllers {
                     },
                     showInLegend: this.NWSforecast !== undefined
                 },{
-                    name: 'Annual Exceedance Probability',
+                    name: 'Annual Exceedance Probability (AEP)',
                     showInNavigator: false,
                     tooltip: {
                         headerFormat: null,
@@ -2888,6 +3074,52 @@ module StreamStats.Controllers {
                     },
                     showInLegend: false
                 },{
+                    name: 'Weighted Annual Exceedance Probability (AEP)',
+                    showInNavigator: false,
+                    tooltip: {
+                        headerFormat: null,
+                        pointFormatter: function(){
+                        }
+                    },
+                    turboThreshold: 0, 
+                    type: null,
+                    color: 'black',
+                    fillOpacity: null, 
+                    lineWidth: null,
+                    data: null,
+                    linkedTo: null,
+                    visible: false,
+                    id: 'weightedAEP',
+                    zIndex: 2,
+                    marker: {
+                        symbol: 'line',
+                        radius: 0.1
+                    },
+                    showInLegend: false
+                },{
+                    name: 'Regulated Annual Exceedance Probability (AEP)',
+                    showInNavigator: false,
+                    tooltip: {
+                        headerFormat: null,
+                        pointFormatter: function(){
+                        }
+                    },
+                    turboThreshold: 0, 
+                    type: null,
+                    color: 'black',
+                    fillOpacity: null, 
+                    lineWidth: null,
+                    data: null,
+                    linkedTo: null,
+                    visible: false,
+                    id: 'regulatedAEP',
+                    zIndex: 2,
+                    marker: {
+                        symbol: 'line',
+                        radius: 0.1
+                    },
+                    showInLegend: false
+                },{
                     name    : 'Instantaneous Streamflow',
                     showInNavigator: true,
                     tooltip: {
@@ -2970,19 +3202,125 @@ module StreamStats.Controllers {
             this.formattedWeightedThirtyDayStats.forEach((formattedWeightedThirtyDay) => {
                 this.chartConfig.series.push((formattedWeightedThirtyDay))
             });
+            this.formattedWeightedAEP.forEach((formattedWeightedAEPitem) => {
+                this.chartConfig.series.push((formattedWeightedAEPitem))
+            });
+            this.formattedRegulatedAEP.forEach((formattedRegulatedAEPitem) => {
+                this.chartConfig.series.push((formattedRegulatedAEPitem))
+            });
+        //}
         }
 
 //dropdown for choosing flood statistics
 public chooseFloodStats() {
     let chart = $('#chart1').highcharts();
+            let extremes = chart.xAxis[0].getExtremes();
+            let min = new Date(extremes.min)
+            let max = new Date(extremes.max)
+            var minDateString = new Date(min.getTime() - (min.getTimezoneOffset() * 60000 ))
+                .toISOString()
+                .split("T")[0];
+            var maxDateString = new Date(max.getTime() - (min.getTimezoneOffset() * 60000 ))
+                .toISOString()
+                .split("T")[0];
+            let minAndMax = {
+                min: minDateString,
+                max: maxDateString
+            }
     let floodSeries = chart.series[this.selectedFloodFreqStats.seriesIndex]
-    //figure out how to have this option loaded when the plot is instantiated
     if (this.selectedFloodFreqStats.name === this.selectedFloodFreqStats.name) {
         this.allFloodFreqStats.forEach((stat) => {
             let index = stat.seriesIndex
             chart.series[index].hide();
+            chart.series[index].update({data: [{
+                x: new Date(minAndMax.min),
+                y: 5000
+                },{
+                x: new Date(minAndMax.max),
+                y: 5000
+                }
+            ]})
         })
         floodSeries.show();
+    }
+    this.updateFloodStats();
+}
+
+//dropdown for choosing year to plot peaks
+public choosePeakYear() {
+    let chart = $('#chart1').highcharts();
+    let octNovDecYear = this.selectedYear - 1; //the year that October, November, and December will be plotted on since their cal year is diff than their water year
+    let min = (new Date(10 +'/' + 1 + '/' + octNovDecYear)).getTime()
+    let max = (new Date(9 +'/' + 30 + '/' + this.selectedYear)).getTime()
+    let formattedSelectedPeaks = []; //new data array for peak streamflow plotted on the year selected
+    let formattedEstSelectedPeaks = []; //new data array for Estimated peak streamflow plotted on the year selected
+    if (this.selectedYear === this.selectedYear) {
+        if (this.peakDates) {
+            this.peakDates.forEach(peakOnYear => {
+                let adjustedDate = new Date(peakOnYear.peak_dt);
+                if (adjustedDate.getUTCMonth() > 8) {
+                    adjustedDate.setUTCFullYear(octNovDecYear);
+                } else {
+                    adjustedDate.setUTCFullYear(this.selectedYear);
+                }
+                let selectedDate = new Date(adjustedDate.toUTCString())
+                if (!isNaN(peakOnYear.peak_va)) {
+                    formattedSelectedPeaks.push({x: selectedDate, y: peakOnYear.peak_va, realDate: new Date(peakOnYear.peak_dt)})
+                    }
+            });
+        }
+        if (this.estPeakDates) {
+            this.estPeakDates.forEach(estPeakOnYear => {
+                let adjustedDate = new Date(estPeakOnYear.peak_dt);
+                if (adjustedDate.getUTCMonth() > 8) {
+                    adjustedDate.setUTCFullYear(octNovDecYear);
+                } else {
+                    adjustedDate.setUTCFullYear(this.selectedYear);
+                }
+                let selectedDate = new Date(adjustedDate.toUTCString())
+                formattedEstSelectedPeaks.push({x: selectedDate, y: estPeakOnYear.peak_va, realDate: new Date(estPeakOnYear.peak_dt)})
+            });
+        }
+        formattedSelectedPeaks.sort((a, b) => a.x - b.x);
+        formattedEstSelectedPeaks.sort((a, b) => a.x - b.x);
+        chart.series[0].update({data: formattedSelectedPeaks});
+        chart.series[1].update({data: formattedEstSelectedPeaks});
+        chart.yAxis[0].setExtremes();
+        chart.xAxis[0].setExtremes(min, max)
+        chart.series[0].update( {tooltip: {
+            headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
+            pointFormatter: function(){
+                if (this.formattedPeakDatesOnYear !== null){
+                    let waterYear = this.realDate.getUTCFullYear();
+                    if (this.realDate.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                        waterYear += 1; // adding a year to dates that fall into the next water year
+                    };
+                    let UTCday = this.realDate.getUTCDate();
+                    let year = this.realDate.getUTCFullYear();
+                    let month = this.realDate.getUTCMonth();
+                        month += 1; // adding a month to the UTC months (which are zero-indexed)
+                    let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                    return '</b><br>Date: <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                }
+            }
+        }})
+        chart.series[1].update({tooltip: {
+            headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
+            pointFormatter: function(){
+                if (this.formattedEstPeakDatesOnYear !== null){
+                    let waterYear = this.realDate.getUTCFullYear();
+                    if (this.realDate.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                        waterYear += 1; // adding a year to dates that fall into the next water year
+                    };
+                    let UTCday = this.realDate.getUTCDate();
+                    let year = this.realDate.getUTCFullYear();
+                    let month = this.realDate.getUTCMonth();
+                        month += 1; // adding a month to the UTC months (which are zero-indexed)
+                    let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                    return '</b><br>Date (estimated): <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                }
+            }
+        }})
     }
 }
 
@@ -3040,7 +3378,6 @@ public createDischargePlot(): void {
             this.updateChart();
         },
     };
-
     let measuredDataMax = Math.max.apply(Math, this.measuredObj
         .filter(obj => typeof obj.y === 'number' && !isNaN(obj.y))
         .map(obj => obj.y)
@@ -3054,7 +3391,7 @@ public createDischargePlot(): void {
     var self = this
     this.dischargeChartConfig = {
         chart: {
-            height: 450,
+            height: 550,
             width: 800,
             zooming: {
                 type: 'xy'
@@ -3348,7 +3685,7 @@ public createDailyRasterPlot(): void {
     }
     this.heatChartConfig = {
         chart: {
-                height: 450,
+                height: 550,
                 width: 800,
                 zooming: {
                     type: 'xy'
@@ -3492,16 +3829,17 @@ public createDailyRasterPlot(): void {
             chart.showLoading('Loading...')
 
             setTimeout(() => {
-        
+                let octNovDecYear = this.selectedYear - 1; //the year that October, November, and December will be plotted on since their cal year is diff than their water year
                 let min = this.startAndEnd[0].getTime()
-                let oneYearMin = (new Date(1 +'/' + 1 + '/' + this.startAndEnd[1].getFullYear())).getTime()
-                let max = (new Date(12 +'/' + 31 + '/' + this.startAndEnd[1].getFullYear())).getTime()
+                let oneYearMin = (new Date(10 +'/' + 1 + '/' + octNovDecYear)).getTime();
+                let oneYearMax = (new Date(9 +'/' + 30 + '/' + this.selectedYear)).getTime();
+                let max = (new Date(9 +'/' + 30 + '/' + this.startAndEnd[1].getFullYear())).getTime();
                 if (this.peaksOnYear) {
                     chart.series[0].update({ data: this.formattedPeakDatesOnYear });
                     chart.series[1].update({ data: this.formattedEstPeakDatesOnYear});
-                    chart.xAxis[0].setExtremes(oneYearMin, max);
+                    chart.xAxis[0].setExtremes(oneYearMin, oneYearMax);
                     chart.series[0].update( {tooltip: {
-                        headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Latest Year',
+                        headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
                         pointFormatter: function(){
                             if (this.formattedPeakDatesOnYear !== null){
                                 let waterYear = this.realDate.getUTCFullYear();
@@ -3513,12 +3851,12 @@ public createDailyRasterPlot(): void {
                                 let month = this.realDate.getUTCMonth();
                                     month += 1; // adding a month to the UTC months (which are zero-indexed)
                                 let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
-                                return '<br>Date: <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                                return '</b><br>Date: <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
                             }
                         }
                     } })
                     chart.series[1].update( {tooltip: {
-                        headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Latest Year',
+                        headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
                         pointFormatter: function(){
                             if (this.formattedEstPeakDatesOnYear !== null){
                                 let waterYear = this.realDate.getUTCFullYear();
@@ -3530,7 +3868,7 @@ public createDailyRasterPlot(): void {
                                 let month = this.realDate.getUTCMonth();
                                     month += 1; // adding a month to the UTC months (which are zero-indexed)
                                 let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
-                                return '<br>Date (estimated): <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                                return '</b><br>Date (estimated): <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
                             }
                         }
                     } })
@@ -3585,18 +3923,61 @@ public createDailyRasterPlot(): void {
 
         public resetZoom () {
             let chart = $('#chart1').highcharts();
+            chart.showLoading('Loading...')
+            setTimeout(() => {
             let min = this.startAndEnd[0].getTime()
-            let oneYearMin = (new Date(1 +'/' + 1 + '/' + this.startAndEnd[1].getFullYear())).getTime()
-            let max = (new Date(12 +'/' + 31 + '/' + this.startAndEnd[1].getFullYear())).getTime()
+            let octNovDecYear = this.defaultYear - 1 ; //the year that October, November, and December will be plotted on since their cal year is diff than their water year
+            let max = (new Date(9 +'/' + 30 + '/' + this.startAndEnd[1].getFullYear())).getTime();
+            let oneYearMin = (new Date(10 +'/' + 1 + '/' + octNovDecYear)).getTime();
+            let waterYearMax = (new Date(9 +'/' + 30 + '/' + this.defaultYear)).getTime();
             if (this.peaksOnYear) {
                 //reset to one year
-                chart.xAxis[0].setExtremes(oneYearMin, max);
+                chart.xAxis[0].setExtremes(oneYearMin, waterYearMax);
                 chart.yAxis[0].setExtremes();
+                this.selectedYear = this.allYears[0];
+                chart.series[0].update({ data: this.formattedPeakDatesOnYear });
+                chart.series[1].update({ data: this.formattedEstPeakDatesOnYear});
+                chart.series[0].update( {tooltip: {
+                    headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
+                    pointFormatter: function(){
+                        if (this.formattedPeakDatesOnYear !== null){
+                            let waterYear = this.realDate.getUTCFullYear();
+                            if (this.realDate.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                                waterYear += 1; // adding a year to dates that fall into the next water year
+                            };
+                            let UTCday = this.realDate.getUTCDate();
+                            let year = this.realDate.getUTCFullYear();
+                            let month = this.realDate.getUTCMonth();
+                                month += 1; // adding a month to the UTC months (which are zero-indexed)
+                            let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                            return '</b><br>Date: <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                        }
+                    }
+                }})
+                chart.series[1].update({tooltip: {
+                    headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
+                    pointFormatter: function(){
+                        if (this.formattedEstPeakDatesOnYear !== null){
+                            let waterYear = this.realDate.getUTCFullYear();
+                            if (this.realDate.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                                waterYear += 1; // adding a year to dates that fall into the next water year
+                            };
+                            let UTCday = this.realDate.getUTCDate();
+                            let year = this.realDate.getUTCFullYear();
+                            let month = this.realDate.getUTCMonth();
+                                month += 1; // adding a month to the UTC months (which are zero-indexed)
+                            let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                            return '</b><br>Date (estimated): <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                        }
+                    }
+                }})
             } else {
                 //reset to full extent
                 chart.yAxis[0].setExtremes();
                 chart.xAxis[0].setExtremes(min, max);
             }
+            chart.hideLoading();
+        }, 100);
         }
 
         public dateRangePicker () {
@@ -3606,22 +3987,20 @@ public createDailyRasterPlot(): void {
             let inputEnd = Date.parse($('#dischargeEnd').val());
             chart.yAxis[0].setExtremes();
             chart.xAxis[0].setExtremes(inputStart, inputEnd);
-            } else {
-                //console.log('Please enter a valid date format')
             }
         }
         
         public updateShadedStats () {
             let chart = $('#chart1').highcharts();
-            let extremes = chart.xAxis[0].getExtremes()
+            let extremes = chart.xAxis[0].getExtremes();
             let min = new Date(extremes.min)
             let max = new Date(extremes.max)
             var minDateString = new Date(min.getTime() - (min.getTimezoneOffset() * 60000 ))
                 .toISOString()
                 .split("T")[0];
             var maxDateString = new Date(max.getTime() - (min.getTimezoneOffset() * 60000 ))
-                    .toISOString()
-                            .split("T")[0];
+                .toISOString()
+                .split("T")[0];
             let minAndMax = {
                 min: minDateString,
                 max: maxDateString
@@ -3653,12 +4032,10 @@ public createDailyRasterPlot(): void {
                 
             const yearsArray = generateYearsBetween(minYear, maxYear);
             let newData = [];
-            //console.log('in the function', this.rawShaded)
             yearsArray.forEach(year => {
                 this.rawShaded.forEach(index => {
                     const data = {
                         date: new Date(parseFloat(index[5]) + '/' + parseFloat(index[6]) + '/' + year),
-                        //new Date(parseFloat(nonArrayDataRow[5]) + '/' + parseFloat(nonArrayDataRow[6]) + '/' + year),
                         begin_yr: parseFloat(index[7]),
                         end_yr: parseFloat(index[8]),
                         min_va: parseFloat(index[13]),
@@ -3668,7 +4045,6 @@ public createDailyRasterPlot(): void {
                         p90_va: parseFloat(index[22]),
                         max_va: parseFloat(index[11])
                         }
-                        //console.log('here', data)
                         newData.push(data);
                 })
             })
@@ -3686,11 +4062,9 @@ public createDailyRasterPlot(): void {
                     newP90to100.push({x: stats.date, low: stats.p90_va, high: stats.max_va});
                 })
             }
-            //console.log('updated', newP0to10, newP10to25, newP25to75, newP75to90, newP90to100)
                 chart.series[5].show();
                 chart.series[6].show();
                 chart.series[2].show();
-                
                 chart.series[3].update({data: newP0to10});
                 chart.series[4].update({data: newP10to25});
                 chart.series[5].update({data: newP25to75});
@@ -3704,6 +4078,198 @@ public createDailyRasterPlot(): void {
                 chart.series[2].hide();
             }
         }
+
+        public updateFloodStats() {
+            let chart = $('#chart1').highcharts();
+            let extremes = chart.xAxis[0].getExtremes();
+            let min = new Date(extremes.min)
+            let max = new Date(extremes.max)
+            chart.series.forEach(series => {
+                if (series.name.includes('AEP flood')) {
+                    if (series.linkedParent.name === this.selectedFloodFreqStats.name) {
+                        let AEPformattedName = series.name.substring(0, series.name.length-18);
+                        series.update({data: [
+                            {
+                            x: min,
+                            y: series.yData[0]
+                            },{
+                            x: max,
+                            y: series.yData[1]
+                            }
+                        ]})    
+                        series.update({dataLabels: {
+                            enabled: true,
+                            zIndex: 3,
+                            pointFormatter: function() { 
+                                if (this.x.getUTCFullYear() == max.getUTCFullYear()) {
+                                    return AEPformattedName + '% AEP'
+                                }
+                            } 
+                        }})       
+                    }
+                }
+                if (series.name.includes('Year Low Flow') && series.linkedParent.name === this.selectedFloodFreqStats.name) {
+                    if (series.linkedParent.name === this.selectedFloodFreqStats.name) {
+                        let lowFlowFormattedName = series.name.replaceAll('_',' ');
+                        series.update({data: [
+                            {
+                            x: min,
+                            y: series.yData[0]
+                            },{
+                            x: max,
+                            y: series.yData[1]
+                            }
+                        ]})    
+                        series.update({dataLabels: {
+                            enabled: true,
+                            zIndex: 3,
+                            pointFormatter: function() { 
+                                if (this.x.getUTCFullYear() == max.getUTCFullYear()) {
+                                    return lowFlowFormattedName
+                                }
+                            } 
+                        }})    
+                        }
+                    }
+            })
+        }
+
+        //when the plot is resized to greater than 1 year, peaks switch to being plotted on real date
+        //when the plot resized back to 1 year or less, peaks switch back to being plotted on one calendar year
+        public updatePeaksAfterZoom() {
+            let chart = $('#chart1').highcharts();
+            let extremes = chart.xAxis[0].getExtremes();
+            let min = new Date(extremes.min)
+            let max = new Date(extremes.max)
+            var minDateString = new Date(min.getTime() - (min.getTimezoneOffset() * 60000 ))
+                .toISOString()
+                .split("T")[0];
+            var maxDateString = new Date(max.getTime() - (min.getTimezoneOffset() * 60000 ))
+                .toISOString()
+                .split("T")[0];
+            let minAndMax = {
+                min: minDateString,
+                max: maxDateString
+            }
+            this.extremes = minAndMax;
+            function inMonths(d1, d2) {
+                var d1Y = d1.getFullYear();
+                var d2Y = d2.getFullYear();
+                var d1M = d1.getMonth();
+                var d2M = d2.getMonth();
+                return (d2M+12*d2Y)-(d1M+12*d1Y);
+            }
+            if ((inMonths(min, max)) > 12) { //more than a year
+                chart.series[0].update({ data: this.formattedPeakDates });
+                chart.series[1].update({ data: this.formattedEstPeakDates});
+                chart.series[0].update({ tooltip: {
+                    headerFormat:'<b>Annual Peak Streamflow</b>',
+                    pointFormatter: function(){
+                        if (this.formattedPeakDates !== null){
+                            let waterYear = this.x.getUTCFullYear();
+                            if (this.x.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                                waterYear += 1; // adding a year to dates that fall into the next water year
+                            };
+                            let UTCday = this.x.getUTCDate();
+                            let year = this.x.getUTCFullYear();
+                            let month = this.x.getUTCMonth();
+                                month += 1; // adding a month to the UTC months (which are zero-indexed)
+                            let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                            return '<br>Date: <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                        }
+                    }
+                }})
+                chart.series[1].update({ tooltip: {
+                    headerFormat:'<b>Annual Peak Streamflow</b>',
+                    pointFormatter: function(){
+                        if (this.formattedEstPeakDates !== null){
+                            let waterYear = this.x.getUTCFullYear();
+                            if (this.x.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                                waterYear += 1; // adding a year to dates that fall into the next water year
+                            };
+                            let UTCday = this.x.getUTCDate();
+                            let year = this.x.getUTCFullYear();
+                            let month = this.x.getUTCMonth();
+                                month += 1; // adding a month to the UTC months (which are zero-indexed)
+                            let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                            return '<br>Date (estimated): <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                        }
+                    }
+                }})
+                this.peaksOnYear = false;
+                //update tooltip
+            } else { //less than or equal to a year
+                this.peaksOnYear = true;
+                this.selectedYear = max.getUTCFullYear();
+                let formattedSelectedPeaks = []; //new data array for peak streamflow plotted on the year that has been zoomed to
+                let formattedEstSelectedPeaks = []; //new data array for estimated peak streamflow plotted on the year that has been zoomed to
+                    if (this.peakDates) {
+                        this.peakDates.forEach(peakOnYear => {
+                            let octNovDecYear = this.selectedYear - 1;
+                            let adjustedDate = new Date(peakOnYear.peak_dt);
+                            if (adjustedDate.getUTCMonth() > 8) {
+                                adjustedDate.setUTCFullYear(octNovDecYear);
+                            } else {
+                                adjustedDate.setUTCFullYear(this.selectedYear);
+                            }
+                            let selectedDate = new Date(adjustedDate.toUTCString())
+                            if (!isNaN(peakOnYear.peak_va)) {
+                                formattedSelectedPeaks.push({x: selectedDate, y: peakOnYear.peak_va, realDate: new Date(peakOnYear.peak_dt)})
+                                }
+                        });
+                    if (this.estPeakDates) {
+                        this.estPeakDates.forEach(estPeakOnYear => {
+                            let octNovDecYear = this.selectedYear - 1;
+                            let adjustedDate = new Date(estPeakOnYear.peak_dt);
+                            if (adjustedDate.getUTCMonth() > 8) {
+                                adjustedDate.setUTCFullYear(octNovDecYear);
+                            } else {
+                                adjustedDate.setUTCFullYear(this.selectedYear);
+                            }
+                            let selectedDate = new Date(adjustedDate.toUTCString())
+                            formattedEstSelectedPeaks.push({x: selectedDate, y: estPeakOnYear.peak_va, realDate: new Date(estPeakOnYear.peak_dt)})
+                        });
+                    }
+                chart.series[0].update({data: formattedSelectedPeaks});
+                chart.series[1].update({data: formattedEstSelectedPeaks});
+                chart.series[0].update( {tooltip: {
+                    headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
+                    pointFormatter: function(){
+                        if (this.formattedPeakDatesOnYear !== null){
+                            let waterYear = this.realDate.getUTCFullYear();
+                            if (this.realDate.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                                waterYear += 1; // adding a year to dates that fall into the next water year
+                            };
+                            let UTCday = this.realDate.getUTCDate();
+                            let year = this.realDate.getUTCFullYear();
+                            let month = this.realDate.getUTCMonth();
+                                month += 1; // adding a month to the UTC months (which are zero-indexed)
+                            let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                            return '</b><br>Date: <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                        }
+                    }
+                }})
+                chart.series[1].update({tooltip: {
+                    headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
+                    pointFormatter: function(){
+                        if (this.formattedEstPeakDatesOnYear !== null){
+                            let waterYear = this.realDate.getUTCFullYear();
+                            if (this.realDate.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                                waterYear += 1; // adding a year to dates that fall into the next water year
+                            };
+                            let UTCday = this.realDate.getUTCDate();
+                            let year = this.realDate.getUTCFullYear();
+                            let month = this.realDate.getUTCMonth();
+                                month += 1; // adding a month to the UTC months (which are zero-indexed)
+                            let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                            return '</b><br>Date (estimated): <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                        }
+                    }
+                }})
+                }
+            }
+        }
+
             
         // try to dynamic legend of discharge plot
         public logScaleDischarge = false; // starts with it unchecked
@@ -3717,6 +4283,7 @@ public createDailyRasterPlot(): void {
             } else {
                 chart.xAxis[0].update({ type: 'linear' });
                 chart.yAxis[0].update({ type: 'linear' });
+                this.peaksOnYear = false
             }
         }
 
