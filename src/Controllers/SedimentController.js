@@ -309,8 +309,6 @@ var StreamStats;
                     rg.Latitude_DD = gage.geometry.coordinates[0];
                     rg.Longitude_DD = gage.geometry.coordinates[1];
                 }
-                sid[0].options = this.referenceGageList;
-                sid[0].value = rg;
                 this.selectedReferenceGage = rg;
                 this.studyAreaService.selectedGage = rg;
             };

@@ -382,8 +382,8 @@ module StreamStats.Controllers {
                 rg.Longitude_DD = gage.geometry.coordinates[1];
             }
             //add to list of reference gages
-            sid[0].options = this.referenceGageList;
-            sid[0].value = rg;
+            // sid[0].options = this.referenceGageList;
+            // sid[0].value = rg;
             this.selectedReferenceGage = rg;
             this.studyAreaService.selectedGage = rg;
         }
