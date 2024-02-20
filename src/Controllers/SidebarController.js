@@ -248,6 +248,8 @@ var StreamStats;
                 }
                 else if (extensionName == "Sediment") {
                     this.modalService.openModal(StreamStats.Services.SSModalType.e_sediment);
+                    this.addParameterToStudyAreaList("DRNAREA");
+                    this.addParameterToStudyAreaList("SSURGOC");
                 }
             };
             SidebarController.prototype.submitBasinEdits = function () {
