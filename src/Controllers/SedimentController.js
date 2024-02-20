@@ -58,6 +58,7 @@ var StreamStats;
             };
             SedimentController.prototype.init = function () {
                 this.isBusy = false;
+                this.selectedReferenceGage = new StreamStats.Models.ReferenceGage("", "");
                 this.referenceGageList = null;
                 var lat = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
                 var lon = this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();

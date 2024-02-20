@@ -90,6 +90,8 @@ module StreamStats.Controllers {
         private init(): void {
             this.isBusy = false;
 
+            this.selectedReferenceGage = new Models.ReferenceGage("", ""); 
+
             // Load list of reference gages from Flow Anywhere Gages service
             this.referenceGageList = null;
             var lat = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
