@@ -73,6 +73,7 @@ module StreamStats.Services {
         extensionDateRange: IDateRange;
         selectedGage: any;        
         flowAnywhereData: any;
+        sedimentModelData: any;
         computeFlowAnywhereResults();
         computeRegressionEquation(regtype: string);
         updateExtensions(); 
@@ -1009,6 +1010,9 @@ module StreamStats.Services {
 
         public selectGage(gage) {
             // selects gage and adds it to gage options for qppq
+            if () {
+                do stuff 
+            } else if 
             var sid: Array<any> = this.selectedStudyAreaExtensions.reduce((acc, val) => acc.concat(val.parameters), []).filter(f => { return (<string>(f.code)).toLowerCase() == "sid" });
             var siteList:Array<Models.IReferenceGage> = [];
             let rg = new Models.ReferenceGage(gage.properties.Code, gage.properties.Name);
