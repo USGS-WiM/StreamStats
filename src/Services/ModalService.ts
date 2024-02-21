@@ -165,7 +165,7 @@ module StreamStats.Services {
                             backdropClass: 'backdropZ',
                             backdrop: 'static',
                             windowClass: 'windowZ modal-xl',
-                        };
+                                                    };
 
                     case SSModalType.e_nearestgages:
                         return {
@@ -200,6 +200,7 @@ module StreamStats.Services {
                             controller: 'StreamStats.Controllers.BatchProcessorController',
                             size: 'lg',
                             backdropClass: 'backdropZ',
+                            backdrop: 'static',
                             windowClass: 'windowZ',
                         };
 
