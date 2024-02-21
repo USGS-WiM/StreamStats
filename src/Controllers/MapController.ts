@@ -202,6 +202,16 @@ module StreamStats.Controllers {
             color: 'red',
             fillOpacity: 0.5
         }
+        public simplifiedBasinStyle = {
+            //https://www.base64-image.de/
+            displayName: "Basin Boundary",
+            imagesrc: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADCCAYAAAC/i6XiAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKOSURBVHhe7dxBjoJAEEBRcO/9D+oBlElYTEwmE7XlI763kS2Ln0qlsefrYgIyp/UXiIgQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGL7+GztMq8PEDi3CZiEEBMhxEQIsW12QjsfRzJ4hzQJISZCiIkQYu/ZCe2AfJMXd0STEGIihJgIISZCiIkQYiKEmAghNuac0Lkg38w5IXw2EUJMhBATIcRECDERQkyEEBMhxEQIMRFCTIQQ8+0oPMq9o3AsIoSYCCFmJ4RX+T8hfDYRQkyEEBMhxEQIMRFCTIQQEyHERAgxEUJMhBATIcRECDERQkyEEBMhxEQIMRFCTIQQc8cMPMq9o3AsIoSYCCFmJ4R7g3e+/5iEEBMhxEQIMTvhj413APjNJISYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIzdfF+jzOZV4fduo8/pXhWSYhxEQIMRFCTIQQEyHERAgxEULsPeeE9+pzQ+eC7JhJCDERQkyEENtmJwT+ZBJCTISQmqYb05tLRBeJJLsAAAAASUVORK5CYII=",
+            fillColor: "yellow",
+            weight: 2,
+            opacity: 1,
+            color: 'white',
+            fillOpacity: 0.5
+        }
         public imageryToggled = false;
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
@@ -1047,15 +1057,19 @@ module StreamStats.Controllers {
         }
 
         private enterBasinEditMode() {
+            // Remove the simplified basin from the map and uncheck it in the legend
             this.studyArea.selectedStudyArea.FeatureCollection['features'].forEach((layer) => {
                 var item = angular.fromJson(angular.toJson(layer));
                 var name = item.id.toLowerCase();
                 if (name == 'globalwatershed') {
                     this.removeGeoJson(name);
+                    this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs('globalwatershed', "geojson", this.simplifiedBasinStyle, false));
                 } 
             });
-            this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs('nonsimplifiedbasin', "geojson", this.nonsimplifiedBasinStyle, true));
+            // Add the non-simplified basin from the map and check it in the legend
+            this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs('nonsimplifiedbasin', "geojson")); 
             this.addGeoJSON('nonsimplifiedbasin', this.nonsimplifiedBasin);
+            this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs('nonsimplifiedbasin', "geojson", this.nonsimplifiedBasinStyle, true));
             this.toaster.clear();
             this.toaster.pop("info", "Entering Edit Basin mode", "Displaying non-simplified Basin.", 0);
         }

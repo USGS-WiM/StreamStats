@@ -432,7 +432,6 @@ module StreamStats.Services {
 
         public enterEditBasinInterface() {
 
-            // okhere
             this.eventManager.RaiseEvent(onEditBasinStartClick,this,WiM.Event.EventArgs.Empty)
 
         }
