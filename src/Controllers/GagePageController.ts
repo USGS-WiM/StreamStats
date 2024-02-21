@@ -164,15 +164,17 @@ module StreamStats.Controllers {
         public NWISlat: string;
         public NWISlng: string;
         public URLsToDisplay = [];
+        public toaster: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
-        constructor($scope: IGagePageControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
+        static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance', "toaster"];
+        constructor($scope: IGagePageControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance, toaster) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
             this.modalInstance = modal;
             this.modalService = modalService;
+            this.toaster = toaster;
             this.init();  
             this.selectedStatisticGroups = [];
             this.selectedCitations = [];
@@ -187,6 +189,14 @@ module StreamStats.Controllers {
                 gtag('event', 'Download', { 'Category': 'GagePage', "Type": 'Print' });
                 window.print();
             };
+
+            // Properly close modal when Esc key pressed
+            document.addEventListener("keydown", function(event) {
+                const key = event.key;
+                if (key === "Escape") {
+                    $scope.vm.Close();
+                }
+            });
         }  
         
         //Methods  
@@ -194,12 +204,21 @@ module StreamStats.Controllers {
 
         public Close(): void {
             this.modalInstance.dismiss('cancel')
+            
+            // clear URL parameters
+            var url = document.location.href;
+            window.history.pushState({}, "", url.split("?")[0]);
         }
 
         public getGagePage() {
 
             //instantiate gage
             this.gage = new GageInfo(this.modalService.modalOptions.siteid);
+
+            // set url parameters
+            var queryParams = new URLSearchParams(window.location.search);
+            queryParams.set("gage", this.modalService.modalOptions.siteid);
+            history.replaceState(null, null, "?" + queryParams.toString());
                     
             var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.gage.code;
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
@@ -220,6 +239,13 @@ module StreamStats.Controllers {
                     this.additionalLinkCheck(this.gage.code);
 
                 }, (error) => {
+                    this.Close();
+                    this.toaster.pop(
+                        "error",
+                        "Gage page could not be opened: ",
+                        error.data.message,
+                        0
+                    );
                     //sm when error
                 }).finally(() => {
 

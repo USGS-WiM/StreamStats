@@ -140,6 +140,7 @@ var StreamStats;
                                 controller: 'StreamStats.Controllers.BatchProcessorController',
                                 size: 'lg',
                                 backdropClass: 'backdropZ',
+                                backdrop: 'static',
                                 windowClass: 'windowZ',
                             };
                         default:
