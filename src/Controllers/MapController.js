@@ -884,11 +884,15 @@ var StreamStats;
                     return;
                 this.markers = {};
                 this.removeOverlayLayers('globalwatershed', true);
+                if (this.editedBasin) {
+                    this.removeGeoJson('globalwatershed');
+                    this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs('globalwatershed', "geojson"));
+                }
                 this.studyArea.selectedStudyArea.FeatureCollection['features'].forEach(function (layer) {
                     var item = angular.fromJson(angular.toJson(layer));
                     var name = item.id.toLowerCase();
                     _this.addGeoJSON(name, item);
-                    _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(name, "geojson", _this.geojson[name].style));
+                    _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(name, "geojson", _this.geojson[name].style, true));
                 });
                 if (this.studyArea.selectedStudyArea.FeatureCollection['bbox']) {
                     bbox = this.studyArea.selectedStudyArea.FeatureCollection['bbox'];

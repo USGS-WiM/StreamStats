@@ -1250,12 +1250,18 @@ module StreamStats.Controllers {
 
             this.removeOverlayLayers('globalwatershed', true);
 
+            if (this.editedBasin) {
+                this.removeGeoJson('globalwatershed'); //here
+                this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs('globalwatershed', "geojson"));
+            }
+
+
             this.studyArea.selectedStudyArea.FeatureCollection['features'].forEach((layer) => {
 
                 var item = angular.fromJson(angular.toJson(layer));
                 var name = item.id.toLowerCase();
                 this.addGeoJSON(name, item);
-                this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(name, "geojson", this.geojson[name].style));
+                this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs(name, "geojson", this.geojson[name].style, true));
             });
             //zoom to bounding box
             if (this.studyArea.selectedStudyArea.FeatureCollection['bbox']) {
