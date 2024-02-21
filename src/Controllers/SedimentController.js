@@ -58,6 +58,7 @@ var StreamStats;
             };
             SedimentController.prototype.init = function () {
                 this.isBusy = false;
+                this.selectedReferenceGage = new StreamStats.Models.ReferenceGage("", "");
                 this.referenceGageList = null;
                 var lat = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
                 var lon = this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
@@ -309,8 +310,6 @@ var StreamStats;
                     rg.Latitude_DD = gage.geometry.coordinates[0];
                     rg.Longitude_DD = gage.geometry.coordinates[1];
                 }
-                sid[0].options = this.referenceGageList;
-                sid[0].value = rg;
                 this.selectedReferenceGage = rg;
                 this.studyAreaService.selectedGage = rg;
             };

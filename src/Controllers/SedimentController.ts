@@ -90,6 +90,8 @@ module StreamStats.Controllers {
         private init(): void {
             this.isBusy = false;
 
+            this.selectedReferenceGage = new Models.ReferenceGage("", ""); 
+
             // Load list of reference gages from Flow Anywhere Gages service
             this.referenceGageList = null;
             var lat = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
@@ -382,8 +384,8 @@ module StreamStats.Controllers {
                 rg.Longitude_DD = gage.geometry.coordinates[1];
             }
             //add to list of reference gages
-            sid[0].options = this.referenceGageList;
-            sid[0].value = rg;
+            // sid[0].options = this.referenceGageList;
+            // sid[0].value = rg;
             this.selectedReferenceGage = rg;
             this.studyAreaService.selectedGage = rg;
         }

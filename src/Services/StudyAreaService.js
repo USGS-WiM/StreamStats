@@ -693,7 +693,13 @@ var StreamStats;
                 });
             };
             StudyAreaService.prototype.selectGage = function (gage) {
-                var sid = this.selectedStudyAreaExtensions.reduce(function (acc, val) { return acc.concat(val.parameters); }, []).filter(function (f) { return (f.code).toLowerCase() == "sid"; });
+                if () {
+                    do
+                        stuff;
+                    while ();
+                }
+                else if ()
+                    var sid = this.selectedStudyAreaExtensions.reduce(function (acc, val) { return acc.concat(val.parameters); }, []).filter(function (f) { return (f.code).toLowerCase() == "sid"; });
                 var siteList = [];
                 var rg = new StreamStats.Models.ReferenceGage(gage.properties.Code, gage.properties.Name);
                 rg.Latitude_DD = gage.geometry.coordinates[0];
