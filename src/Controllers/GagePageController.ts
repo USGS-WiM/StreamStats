@@ -909,6 +909,8 @@ module StreamStats.Controllers {
                     const data = response.data.value.timeSeries;
                     if (data.length !== 0) {
                         var dailyValues = data[0].values[0].value
+                        var timeZoneInfo = data[0].sourceInfo.timeZoneInfo;
+                        this.gageTimeZone = timeZoneInfo;
                     }
                     else {
                         dailyValues = 0
@@ -2462,10 +2464,15 @@ module StreamStats.Controllers {
                     events: {
                         afterSetExtremes: function() {
                             //console.log('the x axis has been resized')
-                            self.updateShadedStats();
-                            self.updatePeaksAfterZoom();
-                            self.updateFloodStats();
-                        }
+                            // let chart = $('#chart1').highcharts();
+                            // chart.showLoading('Loading...')
+                            // setTimeout(() => {
+                                self.updateShadedStats();
+                                self.updatePeaksAfterZoom();
+                                self.updateFloodStats();
+                                //chart.hideLoading();
+                            // }, 100);
+                            }
                     },
                     gridLineWidth: 0,
                     min: min,
@@ -3214,41 +3221,47 @@ module StreamStats.Controllers {
 //dropdown for choosing flood statistics
 public chooseFloodStats() {
     let chart = $('#chart1').highcharts();
-            let extremes = chart.xAxis[0].getExtremes();
-            let min = new Date(extremes.min)
-            let max = new Date(extremes.max)
-            var minDateString = new Date(min.getTime() - (min.getTimezoneOffset() * 60000 ))
-                .toISOString()
-                .split("T")[0];
-            var maxDateString = new Date(max.getTime() - (min.getTimezoneOffset() * 60000 ))
-                .toISOString()
-                .split("T")[0];
-            let minAndMax = {
-                min: minDateString,
-                max: maxDateString
-            }
-    let floodSeries = chart.series[this.selectedFloodFreqStats.seriesIndex]
-    if (this.selectedFloodFreqStats.name === this.selectedFloodFreqStats.name) {
-        this.allFloodFreqStats.forEach((stat) => {
-            let index = stat.seriesIndex
-            chart.series[index].hide();
-            chart.series[index].update({data: [{
-                x: new Date(minAndMax.min),
-                y: 5000
-                },{
-                x: new Date(minAndMax.max),
-                y: 5000
-                }
-            ]})
-        })
-        floodSeries.show();
-    }
-    this.updateFloodStats();
+    chart.showLoading('Loading...')
+    setTimeout(() => {
+        let extremes = chart.xAxis[0].getExtremes();
+        let min = new Date(extremes.min)
+        let max = new Date(extremes.max)
+        var minDateString = new Date(min.getTime() - (min.getTimezoneOffset() * 60000 ))
+            .toISOString()
+            .split("T")[0];
+        var maxDateString = new Date(max.getTime() - (min.getTimezoneOffset() * 60000 ))
+            .toISOString()
+            .split("T")[0];
+        let minAndMax = {
+            min: minDateString,
+            max: maxDateString
+        }
+        let floodSeries = chart.series[this.selectedFloodFreqStats.seriesIndex]
+        if (this.selectedFloodFreqStats.name === this.selectedFloodFreqStats.name) {
+            this.allFloodFreqStats.forEach((stat) => {
+                let index = stat.seriesIndex
+                chart.series[index].hide();
+                chart.series[index].update({data: [{
+                    x: new Date(minAndMax.min),
+                    y: 5000
+                    },{
+                    x: new Date(minAndMax.max),
+                    y: 5000
+                    }
+                ]})
+            })
+            floodSeries.show();
+        }
+        this.updateFloodStats();
+        chart.hideLoading();
+    }, 100);
 }
 
 //dropdown for choosing year to plot peaks
 public choosePeakYear() {
     let chart = $('#chart1').highcharts();
+    chart.showLoading('Loading...')
+    setTimeout(() => {
     let octNovDecYear = this.selectedYear - 1; //the year that October, November, and December will be plotted on since their cal year is diff than their water year
     let min = (new Date(10 +'/' + 1 + '/' + octNovDecYear)).getTime()
     let max = (new Date(9 +'/' + 30 + '/' + this.selectedYear)).getTime()
@@ -3322,6 +3335,8 @@ public choosePeakYear() {
             }
         }})
     }
+    chart.hideLoading();
+}, 100);
 }
 
 public stageDischargeAgeColor(date): string {
@@ -3925,69 +3940,73 @@ public createDailyRasterPlot(): void {
             let chart = $('#chart1').highcharts();
             chart.showLoading('Loading...')
             setTimeout(() => {
-            let min = this.startAndEnd[0].getTime()
-            let octNovDecYear = this.defaultYear - 1 ; //the year that October, November, and December will be plotted on since their cal year is diff than their water year
-            let max = (new Date(9 +'/' + 30 + '/' + this.startAndEnd[1].getFullYear())).getTime();
-            let oneYearMin = (new Date(10 +'/' + 1 + '/' + octNovDecYear)).getTime();
-            let waterYearMax = (new Date(9 +'/' + 30 + '/' + this.defaultYear)).getTime();
-            if (this.peaksOnYear) {
-                //reset to one year
-                chart.xAxis[0].setExtremes(oneYearMin, waterYearMax);
-                chart.yAxis[0].setExtremes();
-                this.selectedYear = this.allYears[0];
-                chart.series[0].update({ data: this.formattedPeakDatesOnYear });
-                chart.series[1].update({ data: this.formattedEstPeakDatesOnYear});
-                chart.series[0].update( {tooltip: {
-                    headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
-                    pointFormatter: function(){
-                        if (this.formattedPeakDatesOnYear !== null){
-                            let waterYear = this.realDate.getUTCFullYear();
-                            if (this.realDate.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
-                                waterYear += 1; // adding a year to dates that fall into the next water year
-                            };
-                            let UTCday = this.realDate.getUTCDate();
-                            let year = this.realDate.getUTCFullYear();
-                            let month = this.realDate.getUTCMonth();
-                                month += 1; // adding a month to the UTC months (which are zero-indexed)
-                            let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
-                            return '</b><br>Date: <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                let min = this.startAndEnd[0].getTime()
+                let octNovDecYear = this.defaultYear - 1 ; //the year that October, November, and December will be plotted on since their cal year is diff than their water year
+                let max = (new Date(9 +'/' + 30 + '/' + this.startAndEnd[1].getFullYear())).getTime();
+                let oneYearMin = (new Date(10 +'/' + 1 + '/' + octNovDecYear)).getTime();
+                let waterYearMax = (new Date(9 +'/' + 30 + '/' + this.defaultYear)).getTime();
+                if (this.peaksOnYear) {
+                    //reset to one year
+                    chart.xAxis[0].setExtremes(oneYearMin, waterYearMax);
+                    chart.yAxis[0].setExtremes();
+                    this.selectedYear = this.allYears[0];
+                    chart.series[0].update({ data: this.formattedPeakDatesOnYear });
+                    chart.series[1].update({ data: this.formattedEstPeakDatesOnYear});
+                    chart.series[0].update( {tooltip: {
+                        headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
+                        pointFormatter: function(){
+                            if (this.formattedPeakDatesOnYear !== null){
+                                let waterYear = this.realDate.getUTCFullYear();
+                                if (this.realDate.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                                    waterYear += 1; // adding a year to dates that fall into the next water year
+                                };
+                                let UTCday = this.realDate.getUTCDate();
+                                let year = this.realDate.getUTCFullYear();
+                                let month = this.realDate.getUTCMonth();
+                                    month += 1; // adding a month to the UTC months (which are zero-indexed)
+                                let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                                return '</b><br>Date: <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                            }
                         }
-                    }
-                }})
-                chart.series[1].update({tooltip: {
-                    headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
-                    pointFormatter: function(){
-                        if (this.formattedEstPeakDatesOnYear !== null){
-                            let waterYear = this.realDate.getUTCFullYear();
-                            if (this.realDate.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
-                                waterYear += 1; // adding a year to dates that fall into the next water year
-                            };
-                            let UTCday = this.realDate.getUTCDate();
-                            let year = this.realDate.getUTCFullYear();
-                            let month = this.realDate.getUTCMonth();
-                                month += 1; // adding a month to the UTC months (which are zero-indexed)
-                            let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
-                            return '</b><br>Date (estimated): <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                    }})
+                    chart.series[1].update({tooltip: {
+                        headerFormat:'<b>Annual Peak Streamflow</b><br> Plotted on Water Year: <b>' + this.selectedYear,
+                        pointFormatter: function(){
+                            if (this.formattedEstPeakDatesOnYear !== null){
+                                let waterYear = this.realDate.getUTCFullYear();
+                                if (this.realDate.getUTCMonth() > 8) { // looking for dates that have a month beginning with 1 (this will be Oct, Nov, Dec)
+                                    waterYear += 1; // adding a year to dates that fall into the next water year
+                                };
+                                let UTCday = this.realDate.getUTCDate();
+                                let year = this.realDate.getUTCFullYear();
+                                let month = this.realDate.getUTCMonth();
+                                    month += 1; // adding a month to the UTC months (which are zero-indexed)
+                                let formattedUTCPeakDate = month + '/' + UTCday + '/' + year;
+                                return '</b><br>Date (estimated): <b>'  + formattedUTCPeakDate + '</b><br>Value: <b>' + this.y + ' ft³/s</b><br>Water Year: <b>' + waterYear
+                            }
                         }
-                    }
-                }})
-            } else {
-                //reset to full extent
-                chart.yAxis[0].setExtremes();
-                chart.xAxis[0].setExtremes(min, max);
-            }
-            chart.hideLoading();
-        }, 100);
+                    }})
+                } else {
+                    //reset to full extent
+                    chart.yAxis[0].setExtremes();
+                    chart.xAxis[0].setExtremes(min, max);
+                }
+                chart.hideLoading();
+            }, 100);
         }
 
         public dateRangePicker () {
             let chart = $('#chart1').highcharts();
-            if (($('#dischargeStart').val()).length === 10 && ($('#dischargeEnd').val()).length === 10) {
-            let inputStart = Date.parse($('#dischargeStart').val())
-            let inputEnd = Date.parse($('#dischargeEnd').val());
-            chart.yAxis[0].setExtremes();
-            chart.xAxis[0].setExtremes(inputStart, inputEnd);
-            }
+            chart.showLoading('Loading...')
+            setTimeout(() => {
+                if (($('#dischargeStart').val()).length === 10 && ($('#dischargeEnd').val()).length === 10) {
+                let inputStart = Date.parse($('#dischargeStart').val())
+                let inputEnd = Date.parse($('#dischargeEnd').val());
+                chart.yAxis[0].setExtremes();
+                chart.xAxis[0].setExtremes(inputStart, inputEnd);
+                }
+                chart.hideLoading();
+            }, 100);
         }
         
         public updateShadedStats () {
@@ -4084,6 +4103,11 @@ public createDailyRasterPlot(): void {
             let extremes = chart.xAxis[0].getExtremes();
             let min = new Date(extremes.min)
             let max = new Date(extremes.max)
+            let UTCday = max.getUTCDate();
+            let year = max.getUTCFullYear();
+            let month = max.getUTCMonth();
+                month += 1; // adding a month to the UTC months (which are zero-indexed)
+            let formattedUTCMax = new Date (month + '/' + UTCday + '/' + year);
             chart.series.forEach(series => {
                 if (series.name.includes('AEP flood')) {
                     if (series.linkedParent.name === this.selectedFloodFreqStats.name) {
@@ -4093,7 +4117,7 @@ public createDailyRasterPlot(): void {
                             x: min,
                             y: series.yData[0]
                             },{
-                            x: max,
+                            x: formattedUTCMax,
                             y: series.yData[1]
                             }
                         ]})    
@@ -4116,7 +4140,7 @@ public createDailyRasterPlot(): void {
                             x: min,
                             y: series.yData[0]
                             },{
-                            x: max,
+                            x: formattedUTCMax,
                             y: series.yData[1]
                             }
                         ]})    
