@@ -69,6 +69,7 @@ module StreamStats.Controllers {
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
             const BP = urlParams.get('BP')
+            const gage = urlParams.get('gage')
             if (BP) {
                 if (BP == 'submitBatch') { // open submit batch processor page
                     this.modalService.openModal(Services.SSModalType.e_batchprocessor, { "tabName": "submitBatch"});
@@ -87,6 +88,8 @@ module StreamStats.Controllers {
                 if (BP == 'manageQueue') { // open queue batch processor page
                     this.modalService.openModal(Services.SSModalType.e_batchprocessor, { "tabName": "manageQueue"});
                 }
+            } else if (gage) {
+                this.modalService.openModal(Services.SSModalType.e_gagepage, { "siteid": gage });
             }
         }
         public openBatchProcessor(): void {
