@@ -204,6 +204,11 @@ module StreamStats.Controllers {
 
             //instantiate gage
             this.gage = new GageInfo(this.modalService.modalOptions.siteid);
+
+            // set url parameters
+            var queryParams = new URLSearchParams(window.location.search);
+            queryParams.set("gage", this.modalService.modalOptions.siteid);
+            history.replaceState(null, null, "?" + queryParams.toString());
                     
             var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.gage.code;
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');

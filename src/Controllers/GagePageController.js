@@ -112,6 +112,9 @@ var StreamStats;
             GagePageController.prototype.getGagePage = function () {
                 var _this_1 = this;
                 this.gage = new GageInfo(this.modalService.modalOptions.siteid);
+                var queryParams = new URLSearchParams(window.location.search);
+                queryParams.set("gage", this.modalService.modalOptions.siteid);
+                history.replaceState(null, null, "?" + queryParams.toString());
                 var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.gage.code;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
