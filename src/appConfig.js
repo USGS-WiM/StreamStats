@@ -9,7 +9,7 @@ configuration.manageBPQueue = false;
 if (window.location.host === 'test.streamstats.usgs.gov') {
     configuration.showBPButton = false;
 } else {
-    configuration.showBPButton = true;
+    configuration.showBPButton = false;
 }
 
 configuration.baseurls =
