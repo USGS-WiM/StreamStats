@@ -1251,7 +1251,7 @@ module StreamStats.Controllers {
             this.removeOverlayLayers('globalwatershed', true);
 
             if (this.editedBasin) {
-                this.removeGeoJson('globalwatershed'); //here
+                this.removeGeoJson('globalwatershed');
                 this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs('globalwatershed', "geojson"));
             }
 
