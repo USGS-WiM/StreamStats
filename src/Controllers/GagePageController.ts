@@ -194,6 +194,10 @@ module StreamStats.Controllers {
 
         public Close(): void {
             this.modalInstance.dismiss('cancel')
+            
+            // clear URL parameters
+            var url = document.location.href;
+            window.history.pushState({}, "", url.split("?")[0]);
         }
 
         public getGagePage() {

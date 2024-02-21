@@ -106,6 +106,8 @@ var StreamStats;
             }
             GagePageController.prototype.Close = function () {
                 this.modalInstance.dismiss('cancel');
+                var url = document.location.href;
+                window.history.pushState({}, "", url.split("?")[0]);
             };
             GagePageController.prototype.getGagePage = function () {
                 var _this_1 = this;
