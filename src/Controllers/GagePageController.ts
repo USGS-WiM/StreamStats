@@ -189,6 +189,14 @@ module StreamStats.Controllers {
                 gtag('event', 'Download', { 'Category': 'GagePage', "Type": 'Print' });
                 window.print();
             };
+
+            // Properly close modal when Esc key pressed
+            document.addEventListener("keydown", function(event) {
+                const key = event.key;
+                if (key === "Escape") {
+                    $scope.vm.Close();
+                }
+            });
         }  
         
         //Methods  

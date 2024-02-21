@@ -103,6 +103,12 @@ var StreamStats;
                     gtag('event', 'Download', { 'Category': 'GagePage', "Type": 'Print' });
                     window.print();
                 };
+                document.addEventListener("keydown", function (event) {
+                    var key = event.key;
+                    if (key === "Escape") {
+                        $scope.vm.Close();
+                    }
+                });
                 return _this_1;
             }
             GagePageController.prototype.Close = function () {
