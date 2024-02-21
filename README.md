@@ -12,7 +12,6 @@ StreamStats client application
 
 Install global dependencies
 ```bash
-npm install -g typescript
 npm install -g gulp
 npm install -g typings
 ```

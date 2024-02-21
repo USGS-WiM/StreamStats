@@ -9,6 +9,61 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [v4.19.4](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.19.4) - 2024-02-08
+
+### Added
+
+- BP informational tool tip for Drupal article
+
+### Fixed
+
+- Fixed broken links in the sidebar
+- Duplicate stream grids in the "Download Stream Grids" tab when clicking the link from the "Submit Batch" tab
+
+## [v4.19.3](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.19.3) - 2023-01-04
+
+### Added
+
+- Link to the batch processor drupal article to the batch processor modal
+
+### Changed
+
+- Typescript installation
+
+### Removed
+
+- Yellow warning text on top of the batch processor modal  
+- 'Preview' from the batch processor modal title
+
+## [v4.19.2](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.19.2) - 2023-12-11
+
+### Added
+- URL for Washington DC regional information page
+
+### Fixed
+- Batch processor allow to ignore exclude polygon on Production 
+- Batch processor not submitting when 'ignoreExcludePolys' was not defined
+
+## [v4.19.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.19.1) - 2023-12-01
+
+### Fixed
+
+- Added back .zip files to stream grid download URLs
+
+## [v4.19.0](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.19.0) - 2023-12-01
+
+### Added
+
 - Note about Batch Processor output projection
 - appConfig files for dev and test machines
 - Instructions about shapefile structure to Batch Processor Submit Batch tab
@@ -17,6 +72,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Error message in Batch Processor is Batch Processor services aren't working
 - "Start Next Batch" button to Batch Processor Manage Queue tab
 - Ability to refresh batches in Batch Processor Manage Queue tab
+- Washington, D.C. Stormwater region
 
 ### Changed
 
@@ -26,17 +82,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Batch Processor Download Stream Grids tab files now also include Exclude Polys
 - Edited basin geometry is no longer simplified
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - Latitude and Longitude columns swapped in the Elevation profile CSV export
 - Email address required for Batch Processor Batch Status tab
 - Stream Grids tab sometimes shows repeated regions
-
-### Security
 
 ## [v4.18.1](https://github.com/USGS-WiM/StreamStats/releases/tag/v4.18.1) - 2023-10-27
 

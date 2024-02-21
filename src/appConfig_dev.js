@@ -1,10 +1,10 @@
 var configuration = {};
-configuration.version = "4.18.1";
+configuration.version = "4.19.4";
 configuration.environment = 'development';
 configuration.showWarningModal = false;
 configuration.warningModalMessage = "Due to heavy demand, StreamStats is currently experiencing system interruptions. If you receive errors, please try back again later.<br><br>Thank you for your patience."
-configuration.showBPWarning = true;
-configuration.warningBPMessage = "On January 5, 2024, StreamStats will end support for the current Batch Processor (<a href='https://streamstatsags.cr.usgs.gov/ss_bp/' target='_blank'>https://streamstatsags.cr.usgs.gov/ss_bp/</a>) and replace it with the Batch Processor in this window (<a href='https://streamstats.usgs.gov/ss/?BP=submitBatch' target='_blank'>https://streamstats.usgs.gov/ss/?BP=submitBatch</a>). Complete the form below to submit a batch to the preview version of the new Batch Processor. Please note that the preview version may have errors or delays. Please email any issues or feedback to <b>streamstats@usgs.gov</b>."
+configuration.showBPWarning = false;
+configuration.warningBPMessage = ""
 configuration.manageBPQueue = false;
 if (window.location.host === 'test.streamstats.usgs.gov') {
     configuration.showBPButton = false;
@@ -269,7 +269,7 @@ configuration.regions = [
     },
     { "RegionID": "CT", "Name": "Connecticut", "Bounds": [[40.998392, -73.725237], [42.047428, -71.788249]], "Layers": {}, "Applications": ["Wateruse"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/connecticut-streamstats" },
     { "RegionID": "DE", "Name": "Delaware", "Bounds": [[38.449602, -75.791094], [39.840119, -75.045623]], "Layers": {}, "Applications": ["Localres"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/delaware-streamstats" },
-    {"RegionID": "DC", "Name": "Washington, D.C. Stormwater", "Bounds": [[38.8522, -76.9742], [38.9171, -76.8800]], "Layers":
+    {"RegionID": "DC", "Name": "Washington, D.C. Stormwater", "Bounds": [[37.970255, -79.489865], [39.725461, -75.045623]], "Layers":
         {
             "StormDrainPipes": {
                 "name": "Stormdrain",
@@ -285,7 +285,7 @@ configuration.regions = [
                 "queryProperties": { "Pipe": { "USGS_Type": "USGS Type", "USGS_SourceID_1": "USGS Source ID", "USGS_Town": "USGS Town" } }
             }
         },
-        "Applications": ["StormDrain"], "regionEnabled": true, "ScenariosAvailable": false, "URL": null
+        "Applications": ["StormDrain"], "regionEnabled": true, "ScenariosAvailable": false, "URL": "https://www.usgs.gov/streamstats/washington-dc-streamstats"
     },
     { "RegionID": "FL", "Name": "Florida", "Bounds": [[24.956376, -87.625711], [31.003157, -80.050911]], "Layers": {}, "Applications": [], "regionEnabled": false, "ScenariosAvailable": false, "URL": null },
     { "RegionID": "GA", "Name": "Georgia", "Bounds": [[30.361291, -85.60896], [35.000366, -80.894753]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/georgia-streamstats" },
