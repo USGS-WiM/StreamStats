@@ -76,7 +76,7 @@ var StreamStats;
         }());
         var GagePageController = (function (_super) {
             __extends(GagePageController, _super);
-            function GagePageController($scope, $http, modalService, modal) {
+            function GagePageController($scope, $http, modalService, modal, toaster) {
                 var _this_1 = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
                 _this_1.filteredStatGroupsChar = [];
                 _this_1.showPreferred = false;
@@ -90,6 +90,7 @@ var StreamStats;
                 $scope.vm = _this_1;
                 _this_1.modalInstance = modal;
                 _this_1.modalService = modalService;
+                _this_1.toaster = toaster;
                 _this_1.init();
                 _this_1.selectedStatisticGroups = [];
                 _this_1.selectedCitations = [];
@@ -129,6 +130,8 @@ var StreamStats;
                     _this_1.getNWISPeriodOfRecord(_this_1.gage);
                     _this_1.additionalLinkCheck(_this_1.gage.code);
                 }, function (error) {
+                    _this_1.Close();
+                    _this_1.toaster.pop("error", "Gage page could not be opened: ", error.data.message, 0);
                 }).finally(function () {
                 });
             };
@@ -420,7 +423,7 @@ var StreamStats;
                     return $text.replace('"', '""');
                 }
             };
-            GagePageController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
+            GagePageController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance', "toaster"];
             return GagePageController;
         }(WiM.Services.HTTPServiceBase));
         angular.module('StreamStats.Controllers')

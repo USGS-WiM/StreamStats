@@ -164,15 +164,17 @@ module StreamStats.Controllers {
         public NWISlat: string;
         public NWISlng: string;
         public URLsToDisplay = [];
+        public toaster: any;
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
-        constructor($scope: IGagePageControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
+        static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance', "toaster"];
+        constructor($scope: IGagePageControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance, toaster) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
             this.modalInstance = modal;
             this.modalService = modalService;
+            this.toaster = toaster;
             this.init();  
             this.selectedStatisticGroups = [];
             this.selectedCitations = [];
@@ -229,6 +231,13 @@ module StreamStats.Controllers {
                     this.additionalLinkCheck(this.gage.code);
 
                 }, (error) => {
+                    this.Close();
+                    this.toaster.pop(
+                        "error",
+                        "Gage page could not be opened: ",
+                        error.data.message,
+                        0
+                    );
                     //sm when error
                 }).finally(() => {
 
