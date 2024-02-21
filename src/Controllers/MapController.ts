@@ -134,7 +134,9 @@ module StreamStats.Controllers {
         }
     }
 
-    class MapController implements IMapController {
+    class MapController 
+        extends WiM.Services.HTTPServiceBase
+        implements IMapController {
         //Events
         //-+-+-+-+-+-+-+-+-+-+-+-
         //Properties
@@ -204,6 +206,7 @@ module StreamStats.Controllers {
         //-+-+-+-+-+-+-+-+-+-+-+-
         static $inject = ['$scope', '$compile', 'toaster', '$location', '$stateParams','leafletBoundsHelpers', 'leafletData', 'WiM.Services.SearchAPIService', 'StreamStats.Services.RegionService', 'StreamStats.Services.StudyAreaService', 'StreamStats.Services.nssService', 'StreamStats.Services.ExplorationService', 'StreamStats.Services.ProsperService', 'WiM.Event.EventManager', 'StreamStats.Services.ModalService', '$modalStack', '$http'];
         constructor(public $scope: IMapControllerScope, public $compile: IMapControllerCompile, toaster, $location: ng.ILocationService, $stateParams, leafletBoundsHelper: any, leafletData: ILeafletData, search: WiM.Services.ISearchAPIService, region: Services.IRegionService, studyArea: Services.IStudyAreaService, StatisticsGroup: Services.InssService, exploration: Services.IExplorationService, private _prosperServices: Services.IProsperService, eventManager: WiM.Event.IEventManager, private modal: Services.IModalService, private modalStack: ng.ui.bootstrap.IModalStackService, $http: ng.IHttpService) {
+            super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
             
             this.toaster = toaster;
@@ -928,77 +931,75 @@ module StreamStats.Controllers {
                         //turn off delineate flag
                         this.studyArea.doDelineateFlag = false;
 
-                        //build list of layers to query before delineate
-                        var queryString = 'visible:'
-
-                        this.regionServices.regionMapLayerList.forEach((item) => {
-                            if (item[0] == 'ExcludePolys') queryString += item[1];
-                        });
-
                         //report ga event
                         gtag('event', 'DelineationClick',{ 'Region': this.regionServices.selectedRegion.Name, 'Location': latlng });
 
                         //force map refresh
                         map.invalidateSize();
 
-                        var selectedRegionLayerName = this.regionServices.selectedRegion.RegionID + "_region";
+                        this.queryExcludePolygons(this.regionServices.selectedRegion.RegionID, latlng.lat, latlng.lng).then((response) => {
 
-                        //if there are no map layers to query, skip with warning
-                        if (queryString === 'visible:') {
-                            this.toaster.clear();
-                            this.toaster.pop("warning", "Selected State/Region does not have exlusion areas defined", "Delineating with no exclude polygon layer...", true, 0);
-                            this.startDelineate(latlng, true);
-                            //report ga event
-                            gtag('event', 'ValidatePoint',{ 'Label': 'Not advised (no point query)' });
                             this.cursorStyle = 'pointer';
-                            return;
-                        }
-                        // Get name of exclude poly layer
-                        var layerName;
-                        for(var layer in maplayers.overlays) {
-                            for(var llayer in this.layers.overlays){
-                                if(llayer === layer && this.layers.overlays[llayer].layerArray !== undefined && this.layers.overlays[llayer].layerArray[0].layerName === 'ExcludePolys'){
-                                    layerName = layer;
-                                }
-                            }
-                        };
-                        //do point validation query
-                        maplayers.overlays[layerName].identify().on(map).at(latlng).returnGeometry(false).layers(queryString).run((error: any, results: any) => {
-                            //console.log('exclusion area check: ', queryString, results); 
                             this.toaster.clear();
 
-                            //if there are no exclusion area hits
-                            if (results.features.length == 0) {
-                                //ga event
-                                gtag('event', 'ValidatePoint',{ 'Label': 'Valid' });
+                            if (response.status != 200) { // If there was an error in processing the request
 
-                                this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000)
                                 this.studyArea.checkingDelineatedPoint = false;
-
+                                this.toaster.pop('error', "There was an error checking exclusion polygons", "HTTP request error", 0);  // Warn the user
+                                this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000) // Delineate anyway
+                                gtag('event', 'ValidatePoint',{ 'Label': 'Not advised (no point query)' });
                                 this.startDelineate(latlng, false);
-                            }
 
-                            //otherwise parse exclude Codes
-                            else {
-                                this.studyArea.checkingDelineatedPoint = false;
-                                var excludeCode = results.features[0].properties.ExcludeCod;
-                                var popupMsg = results.features[0].properties.ExcludeRea;
-                                if (excludeCode == 1) {
-                                    this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", popupMsg, 0);
-                                    //ga event
-                                    gtag('event', 'ValidatePoint',{ 'Label': 'Not allowed' });
-                                }
-                                else {
-                                    this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", popupMsg, true, 0);
-                                    this.startDelineate(latlng, true, popupMsg);
-                                    //ga event
-                                    gtag('event', 'ValidatePoint',{ 'Label': 'Not advised' });
+                            } else { // If the request returned successfully (status = 200)
+
+                                var result = response.data.response[0]
+                            
+                                if (result.inExclude == false) { // If point is not in exclusion polygon
+                                    // Proceed with delineation
+                                    this.studyArea.checkingDelineatedPoint = false;
+                                    if (result.message && result.message.text != null) { // If there is a warning message (occurs if there is no exclusion polygon for this state/region)
+                                        // Warn the user
+                                        this.toaster.pop("warning", "Selected State/Region does not have exlusion areas defined", "Delineating with no exclude polygon layer...", true, 0);
+                                        gtag('event', 'ValidatePoint',{ 'Label': 'Not advised (no point query)' });
+                                    } else { // If there are no warning messages; there was an exclusion polygon layer, and the pourpoint was valid 
+                                        this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000)
+                                        gtag('event', 'ValidatePoint',{ 'Label': 'Valid' });
+                                    }
+                                    this.startDelineate(latlng, false);
+                                } else if (result.inExclude == true) { // If point is in exclusion polygon
+                                    this.studyArea.checkingDelineatedPoint = false;
+                                    if (result.type == 1) { // If point is in a hard exclusion polygon (no delineation allowed)
+                                        // Prohibit delineation
+                                        if (this.studyArea.ignoreExclusionPolygons) { // If user has selected to ignore exclusion polygons (not an option on Production)
+                                            this.toaster.pop("warning", "Delineation and flow statistic computation not allowed here", result.message.text, 0); // Warn the user
+                                            this.toaster.pop("success", "Ignoring exclusion areas", "Delineating your basin now...", 5000) // Proceed with delineation
+                                            gtag('event', 'ValidatePoint',{ 'Label': 'Invalid (exclusion polygons ignored)' });
+                                            this.startDelineate(latlng, true, result.message.text);
+                                        } else { // If exclusion polygons are being considered
+                                            // Prohibit delineation
+                                            this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", result.message.text, 0);
+                                            gtag('event', 'ValidatePoint',{ 'Label': 'Not allowed' });
+                                        }
+                                    } else { // If point is in a soft exclusion polygon (delineation allowed)
+                                        // Warn the user
+                                        this.toaster.pop("warning", "Warning", result.message.text, true, 0);
+                                        gtag('event', 'ValidatePoint',{ 'Label': 'Not advised' });
+                                        this.startDelineate(latlng, true, result.message.text);
+                                    }
+                                    // TODO in future issue: add more types of exlusion polygons
                                 }
                             }
+                        }, (error) => { // If there was an error in processing the request
+                            this.studyArea.checkingDelineatedPoint = false;
+                            this.toaster.pop('error', "There was an error checking exclusion polygons", "HTTP request error", 0);  // Warn the user
+                            this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000) // Delineate anyway
+                            gtag('event', 'ValidatePoint',{ 'Label': 'Not advised (no point query)' });
+                            this.startDelineate(latlng, false);
+                        }).finally(() => {  
 
-                            this.cursorStyle = 'pointer';
                         });
                     }
+                    
                 });
             });
         }
@@ -1821,6 +1822,32 @@ module StreamStats.Controllers {
             }//next variable
             return layeridList;
         }
+        private queryExcludePolygons(region: string, lat: number, lng: number): ng.IPromise<any> {
+
+            var excludePolygonQuery = {
+                "region": region,
+                "points": [
+                    {
+                    "lat": lat,
+                    "long": lng
+                    }
+                ]
+            }
+            
+            var url = configuration.baseurls.PourPointServices + configuration.queryparams["PourPointServicesExcludePolygon"]
+            var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.POST, "json", angular.toJson(excludePolygonQuery));
+            
+            return this.Execute(request)
+                .then(
+                    (response: any) => {
+                        return response;
+                    },(error) => {
+                        return error;
+                    }
+                )
+                .finally(() => {});
+        }
+
         private startDelineate(latlng: any, isInExclusionArea?: boolean, excludeReason?: string) {
             //console.log('in startDelineate', latlng);
 

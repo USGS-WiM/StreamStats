@@ -25,46 +25,44 @@ var StreamStats;
                 $scope.vm = _this;
                 _this.http = $http;
                 _this.modalService = modal;
-                _this.getFreshdeskCreds();
                 _this.studyAreaService = studyArea;
-                _this.newArticleCount = 0;
                 _this.environment = configuration.environment;
                 _this.AppVersion = configuration.version;
                 _this.cloud = configuration.cloud;
+                _this.showBatchButton = configuration.showBPButton;
+                _this.checkURLParams();
+                if (configuration.showWarningModal) {
+                    _this.openWarningMessage();
+                }
                 return _this;
             }
-            NavbarController.prototype.checkActiveNews = function () {
-                var _this = this;
-                console.log("Checking for active news articles");
-                var headers = {
-                    "Authorization": "Basic " + btoa(this.freshdeskCreds['Token'] + ":" + 'X'),
-                };
-                var url = configuration.SupportTicketService.BaseURL + configuration.SupportTicketService.ActiveNewsFolder;
-                var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
-                this.Execute(request).then(function (response) {
-                    console.log('Successfully retrieved active news articles page');
-                    if (response.data.folder.articles.length > 0) {
-                        response.data.folder.articles.forEach(function (article) {
-                            if (_this.readCookie(article.id) == null) {
-                                console.log('New news article found: ', article);
-                                _this.newArticleCount += 1;
-                                _this.createCookie(article.id, true, 30);
-                            }
-                        });
-                        if (_this.newArticleCount > 0)
-                            _this.modalService.openModal(StreamStats.Services.SSModalType.e_about, { "tabName": "news", "regionID": '' });
+            NavbarController.prototype.checkURLParams = function () {
+                var queryString = window.location.search;
+                var urlParams = new URLSearchParams(queryString);
+                var BP = urlParams.get('BP');
+                if (BP) {
+                    if (BP == 'submitBatch') {
+                        this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "submitBatch" });
                     }
-                }, function (error) {
-                }).finally(function () {
-                });
+                    if (BP == 'batchStatus') {
+                        var email = urlParams.get('email');
+                        if (email) {
+                            this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "batchStatus", "urlParams": email });
+                        }
+                        else {
+                            this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "batchStatus" });
+                        }
+                    }
+                    if (BP == 'streamGrid') {
+                        this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "streamGrid" });
+                    }
+                    if (BP == 'manageQueue') {
+                        this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "manageQueue" });
+                    }
+                }
             };
-            NavbarController.prototype.getFreshdeskCreds = function () {
-                var self = this;
-                this.http.get('./data/secrets.json').then(function (response) {
-                    self.studyAreaService.freshdeskCredentials = response.data;
-                    self.freshdeskCreds = response.data;
-                    self.checkActiveNews();
-                });
+            NavbarController.prototype.openBatchProcessor = function () {
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor);
             };
             NavbarController.prototype.openReport = function () {
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_report);
@@ -74,6 +72,9 @@ var StreamStats;
             };
             NavbarController.prototype.openHelp = function () {
                 this.modalService.openModal(StreamStats.Services.SSModalType.e_help);
+            };
+            NavbarController.prototype.openWarningMessage = function () {
+                this.modalService.openModal(StreamStats.Services.SSModalType.e_warningmessage);
             };
             NavbarController.prototype.readCookie = function (name) {
                 var nameEQ = name + "=";

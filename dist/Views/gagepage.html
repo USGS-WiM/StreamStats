@@ -1,4 +1,4 @@
-<!-- Modal -->
+﻿<!-- Modal -->
 <div id="print-content">
     <div class="modal-header">
         <button class="close hidden-print"
@@ -216,7 +216,7 @@
                                         <tr>
                                         <th scope="row">Station Name</th>
                                         <td>{{vm.gage.name}}</td>
-                                        </tr>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -233,16 +233,34 @@
                                 <label for="dischargeEnd"> End Date:</label>
                                 <input type="date" style="width:12%" id="dischargeEnd" ng-value="vm.extremes.max">&nbsp;
                                 <button ng-click="vm.dateRangePicker()" >Load Date Range</button><br>
-                                <input type="checkbox" ng-if="vm.formattedPeakDates.length > 0" id="togglePeaks" name="togglePeaks" ng-model="vm.peaksOnYear" ng-change="vm.togglePeakYear()" checked>
-                                <label for="togglePeaks" ng-if="vm.formattedPeakDates.length > 0">Plot Annual Streamflow Peaks on Latest Year</label>
-                                &nbsp;&nbsp;<input type="checkbox" ng-if="vm.containsNegatives() === false" id="logScale" name="logScale" ng-model="vm.logScale" ng-change="vm.toggleLogLinear()" checked>
-                                <label for="logScale" ng-if="vm.containsNegatives() === false"> Log Scale&nbsp;&nbsp;</label>
+                                <input type="checkbox" ng-if="vm.formattedPeakDates.length > 0" id="togglePeaks" name="togglePeaks" ng-checked="vm.peaksOnYear == true" ng-model="vm.peaksOnYear" ng-change="vm.togglePeakYear()" checked>
+                                <label for="togglePeaks" ng-if="vm.formattedPeakDates.length > 0">Plot Annual Streamflow Peaks on Water Year: </label>
+                                <select id='date-dropdown' style="width:6%; text-align-last:center; margin-top: 5px; margin-bottom: 5px" ng-model="vm.selectedYear" ng-options="year for year in vm.allYears" ng-change="vm.choosePeakYear()" ng-disabled="vm.peaksOnYear == false"></select>
+                                &nbsp;&nbsp;<input type="checkbox" ng-disabled="vm.containsNegatives() === true" id="logScale" name="logScale" ng-model="vm.logScale" ng-change="vm.toggleLogLinear()" checked>
+                                <label for="logScale"> Log Scale&nbsp;&nbsp;</label>
                                 <button ng-click="vm.resetZoom()">Reset Zoom</button><br>
                                 <input type="checkbox" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" id="toggleFloodStats" name="toggleFloodStats" ng-model="vm.showFloodStats" ng-change="vm.toggleFloodStats()" checked>
-                                <label for="toggleFloodStats" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" > Show Flood Statistics:</label>
-                                <select id="gageFloodStatsSelect" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0 " style="width:31%; text-align-last:center; margin-top: 5px;" name="gageFloodStatsSelect" ng-model="vm.selectedFloodFreqStats" ng-options="floodFreqStat.name for floodFreqStat in vm.allFloodFreqStats" ng-change="vm.chooseFloodStats()" ng-disabled="vm.showFloodStats == false"></select><br>              
-                            </div>
-                            </div>
+                                <label for="toggleFloodStats" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" > Show Streamgage Statistics:</label>
+                                <select id="gageFloodStatsSelect" ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0 " style="width:31%; text-align-last:center; margin-top: 5px;" name="gageFloodStatsSelect" ng-model="vm.selectedFloodFreqStats" ng-options="floodFreqStat.name for floodFreqStat in vm.allFloodFreqStats" ng-change="vm.chooseFloodStats()" ng-disabled="vm.showFloodStats == false"></select>
+                                <div class="data-sources">
+                                    <label ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0" >
+                                    Statistics are computed using at-site streamgage data or estimated using record extension or regional estimation methods. Please see the Gage Information tab for more detailed information.<br>
+                                    </label>
+                                    Data: 
+                                    <a ng-if="vm.formattedPeakDates.length > 0" href="{{vm.peakFlowURL}}">NWIS Annual Peak Streamflow,</a>
+                                    <label ng-if="vm.formattedPeakDates.length === 0">NWIS Annual Peak Streamflow (Not Available),</label>
+                                    <a ng-if="vm.formattedDailyFlow.length > 0" href="{{vm.dailyFlowURL}}">NWIS Mean Daily Streamflow,</a>
+                                    <label ng-if="vm.formattedDailyFlow.length === 0">NWIS Mean Daily Streamflow (Not Available),</label>
+                                    <a ng-if="vm.formattedFloodFreq.length > 0 || vm.formattedAltFloodFreq.length > 0 " href="{{vm.floodStatsURL}}">USGS Flood Frequency Statistics,</a>
+                                    <label ng-if="vm.formattedFloodFreq.length === 0 && vm.formattedAltFloodFreq.length === 0 ">USGS Flood Frequency Statistics (Not Available),</label>
+                                    <a ng-if="vm.formattedInstFlow.length > 0" href="{{vm.instFlowURL}}">NWIS Instantaneous Streamflow,</a>
+                                    <label ng-if="vm.formattedInstFlow.length === 0">NWIS Instantaneous Streamflow (Not Available),</label>
+                                    <a ng-if="vm.formattedP90to100.length > 0" href="{{vm.percentileURL}}">NWIS Mean Daily Percentile Streamflow,</a>
+                                    <label ng-if="vm.formattedP90to100.length === 0">NWIS Mean Daily Percentile Streamflow (Not Available),</label>
+                                    <a ng-if="vm.NWSforecast !== undefined" href="{{vm.forecastURL}}">NWS Forecasted Streamflow</a>
+                                    <label ng-if="vm.NWSforecast === undefined">NWS Forecasted Streamflow (Not Available)</label>
+                                </div>
+                        </div>
                     </center>
                     <center>
                         <div ng-if="!vm.heatChartConfig" class="panel panel-default reportSpinner">
@@ -250,6 +268,11 @@
                         </div>
                         <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.heatChartConfig">
                             <highchart id="chart2" config="vm.heatChartConfig"></highchart>
+                            <div class="data-sources">
+                                Data: 
+                                <a ng-if="vm.formattedDailyFlow.length > 0" href="{{vm.dailyFlowURL}}">NWIS Mean Daily Streamflow</a>
+                                <label ng-if="vm.formattedDailyFlow.length === 0">NWIS Mean Daily Streamflow (Not Available)</label>
+                            </div>
                         </div>
                     </center> 
                     <center>
@@ -270,50 +293,60 @@
                             <!-- Start Sliders -->
                             <div class="slider-container">
                                 <div class="slider-wrapper">
-                                  <span class="slider-text">Plot USGS Measurements Between Months</span>
-                                  <rzslider class="rzSlider" rz-slider-model="vm.startMonth" rz-slider-high="vm.endMonth" rz-slider-options="vm.monthSliderOptions"></rzslider>
-                                  <span id="months2show"></span>
+                                    <span class="slider-text">Plot USGS Measurements Between Months</span>
+                                    <rzslider class="rzSlider" rz-slider-model="vm.startMonth" rz-slider-high="vm.endMonth" rz-slider-options="vm.monthSliderOptions"></rzslider>
+                                    <span id="months2show"></span>
                                 </div>
                                 <div class="slider-wrapper">
-                                  <span class="slider-text">Plot USGS Measurements Between Years</span>
-                                  <rzslider class="rzSlider" rz-slider-model="vm.startYear" rz-slider-high="vm.endYear" rz-slider-options="vm.yearSliderOptions"></rzslider>
-                                  <span id="years2show"></span>
+                                    <span class="slider-text">Plot USGS Measurements Between Years</span>
+                                    <rzslider class="rzSlider" rz-slider-model="vm.startYear" rz-slider-high="vm.endYear" rz-slider-options="vm.yearSliderOptions"></rzslider>
+                                    <span id="years2show"></span>
                                 </div>
-                              </div>
-                              
+                            </div>
+                            
                             <!-- End Sliders -->
 
                             <!-- Start Legend -->
                             <div ng-show="vm.USGSMeasuredAgeQualityData === 'age'" class="ageQualityLegend" ng-style="{'left': vm.logScaleDischarge ? '222px' : '680px', 'bottom': vm.logScaleDischarge ? '200px' : '220px'}">
                                 <div class="ageQualityLegend-item">
-                                  <span style="color: red;">Most Recent Measurement</span>
+                                    <span style="color: red;">Most Recent Measurement</span>
                             </div>
                             <div class="ageQualityLegend-item">
-                                  <span style="color: orange;">Measurements in the Last Year</span>
+                                <span style="color: orange;">Measurements in the Last Year</span>
                             </div>
                             <div class="ageQualityLegend-item">
-                                  <span style="color: #0000cdcc;">Newer -&nbsp</span><span style="color: #0000cd4d;">Older Measurements</span>
+                                <span style="color: #0000cdcc;">Newer -&nbsp</span><span style="color: #0000cd4d;">Older Measurements</span>
                                 </div>
                             </div>
-                              
+                            
                             <div ng-show="vm.USGSMeasuredAgeQualityData === 'quality'" class="ageQualityLegend" ng-style="{'left': vm.logScaleDischarge ? '222px' : '680px', 'bottom': vm.logScaleDischarge ? '200px' : '220px'}">
                                 <div class="ageQualityLegend-item">
-                                  <span style="color:#2ED017;">Excellent - Good</span>
+                                    <span style="color:#2ED017;">Excellent - Good</span>
                             </div>
                             <div class="ageQualityLegend-item">
-                                  <span style="color:#E7F317;">Fair</span>
+                                <span style="color:#E7F317;">Fair</span>
                             </div>
                             <div class="ageQualityLegend-item">
-                                  <span style="color: #FFA200;">Poor</span>
+                                <span style="color: #FFA200;">Poor</span>
                             </div>
                             </div>
                             <!-- End Legend -->
 
                             <highchart id="chart3" config="vm.dischargeChartConfig"></highchart>
+                            <div class="data-sources">
+                                Data: 
+                                <a ng-if="vm.dischargeObj.length > 5" href="{{vm.ratingURL}}">NWIS Rating Curve,</a>
+                                <label ng-if="5 > vm.dischargeObj.length">NWIS Rating Curve (Not Available),</label>
+                                <a ng-if="vm.error === false" href="{{vm.measuredURL}}">USGS Measured River Stage,</a>
+                                <label ng-if="vm.error === true">USGS Measured River Stage (Not Available),</label>
+                                <a ng-if="vm.formattedDischargePeakDates.length > 0" href="{{vm.peakFlowURL}}">NWIS Annual Peak Streamflow</a>
+                                <label ng-if="vm.formattedDischargePeakDates.length === 0">NWIS Annual Peak Streamflow (Not Available)</label>
+                            </div>
                         </div>
 
                         </center> 
                     </div>
+                    
                 </div>
             </div>
         </div>

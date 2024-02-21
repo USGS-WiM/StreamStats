@@ -9,7 +9,7 @@ configuration.manageBPQueue = false;
 if (window.location.host === 'test.streamstats.usgs.gov') {
     configuration.showBPButton = false;
 } else {
-    configuration.showBPButton = false;
+    configuration.showBPButton = true;
 }
 
 configuration.baseurls =
@@ -61,8 +61,8 @@ configuration.queryparams =
         'SSComputeParams': '/streamstatsservices/parameters.json?rcode={0}&workspaceID={1}&includeparameters={2}',
         'SSavailableFeatures': '/streamstatsservices/features.json?workspaceID={0}',
         'SSfeatures': '/streamstatsservices/features.geojson?workspaceID={0}&crs={1}&includefeatures={2}&simplify=false',
-        'SSStateLayers': '/arcgis/rest/services/StreamStats/stateServices/MapServer',
-        'SSNationalLayers': '/arcgis/rest/services/StreamStats/nationalLayers/MapServer',
+        'SSStateLayers': '/arcgis/rest/services/StreamStats/stateServices_test/MapServer',
+        'SSNationalLayers': '/arcgis/rest/services/StreamStats/nationalLayers_test/MapServer',
         'SSBatchProcessorBatch': '/batch',
         'SSBatchProcessorBatchPause': '/pauseBatch?batchID={0}',
         'SSBatchProcessorBatchStatus': '/batch/?emailAddress={0}',
@@ -72,7 +72,7 @@ configuration.queryparams =
         'SSBatchProcessorReorderBatch': '/batch/order',
         'SSBatchProcessorStatusMessages': '/status/',
         'SSBatchProcessorStreamGrids': '/streamgrids/',
-        'SSBatchProcessorSubmitBatch': '/batch',
+        'SSBatchProcessorSubmitBatch': '/batch',  
         'SSBatchProcessorRefreshBatch': '/batch/{0}/refresh?deleteCurrentData={1}',
         'SSBatchProcessorStartWorker': '/worker',
         'regionService': '/arcgis/rest/services/ss_studyAreas_prod/MapServer/identify',
@@ -84,8 +84,6 @@ configuration.queryparams =
         'WateruseSourceCSV': '/summary/bysource?year={0}&endyear={1}&includePermits={2}&computeReturns={3}&computeDomestic={4}',
         'WateruseConfig': '/regions/{0}/config',
         'coordinatedReachQueryService': '/arcgis/rest/services/coordinatedreaches/{0}/MapServer/0/query?geometry={1},{2},{3},{4}&geometryType=esriGeometryEnvelope&inSR={5}&spatialRel=esriSpatialRelIntersects&outFields={6}&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
-        'NHDQueryService': '/nhd/MapServer/6',
-        'WBDQueryService': '/wbd/MapServer/4',
         'StormRunoffTR55': '/TR55/GetResult?area={0}&precip={1}&crvnum={2}&pdur={3}',
         'StormRunoffRationalMethod': '/RationalMethod?area={0}&precipint={1}&rcoeff={2}&pdur={3}',
         'ProsperPredictions': '/rest/services/Catalog/5c5204e4e4b0708288fb42e2/MapServer',
@@ -106,11 +104,6 @@ configuration.queryparams =
         'GageStatsServicesNearest': '/stations/Nearest?lat={0}&lon={1}&radius={2}&geojson=false&includeStats=true',
         'GageStatsServicesNetwork': '/stations/Network?lat={0}&lon={1}&distance={2}&includeStats=true&geojson=false',
         'GageStatsServicesBounds': '/stations/Bounds?xmin={0}&xmax={1}&ymin={2}&ymax={3}&geojson=true',
-        'SCStormRunoffBohman1989' : '/ruralhydrographbohman1989',
-        'SCStormRunoffBohman1992' : '/urbanhydrographbohman1992',
-        'SCStormRunoffSyntheticUnitHydrograph': '/calculatemissingparametersSCSUH',
-        'SCStormRunoffSyntheticUnitComputerGraphResults': '/scsyntheticunithydrograph',
-        'SCStormRunoffPRF': '/prf',
         'FlowAnywhereEstimates': '/models/FLA/estimate?state={0}',
         'FlowAnywhereGages': '/arcgis/rest/services/IowaStreamEst/FlowAnywhere/MapServer/1/query?geometry={0},{1}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=regions_local.Region_Agg,reference_gages.site_id,reference_gages.site_name,reference_gages.da_gis_mi2,reference_gages.da_pub_mi2,reference_gages.lat_dd_nad,reference_gages.long_dd_na&returnGeometry=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&f=pjson',
         'Regions': '/regions/',
@@ -606,34 +599,9 @@ configuration.regions = [
                         "f": "image"
                     },
                     "queryProperties": { "Regulation Points": { "NAME": "NID ID Number" } }
-                },
-                "NHD_Streams": {
-                    "name": "NHD Streams",
-                    "url": "https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/6",
-                    "type": 'agsFeature',
-                    "visible": true,
-                    "hidden": true, // do not show in legend
-                    "layerOptions": {
-                        style: { color: '#50b4c4', opacity: 0, weight: 3 },
-                        "minZoom": 15,
-                        "queryDistance": 100
-                    },
-                    "layerArray": [{
-                        note: "This overrides the ESRI legend",
-                        "layerName": "NHD Streams",
-                        "legend": [{
-                            "contentType": "image/png",
-                            "imageData": "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAADFJREFUOI1jYaAyYBk1cNTAwWKg57Zj/6lh2HYvK0bauHC7lxUjVQ2kJhg1cNRAMgAABzkFjcbj6G8AAAAASUVORK5CYII=",
-                            "label": ""
-                        }]
-                    }],
-                    "queryProperties": { "NHD Streams": { 
-                        "GNIS_ID": "GNIS ID",
-                        "GNIS_NAME": "GNIS Name"
-                    }}
                 }
             },
-        "Applications": ["Regulation", "SCStormRunoff", "HydrologicFeatures"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/south-carolina-streamstats"
+        "Applications": ["Regulation"], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/south-carolina-streamstats"
     },
     { "RegionID": "SD", "Name": "South Dakota", "Bounds": [[42.488459, -104.061036], [45.943547, -96.439394]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/south-dakota-streamstats" },
     { "RegionID": "TN", "Name": "Tennessee", "Bounds": [[34.988759, -90.305448], [36.679683, -81.652272]], "Layers": {}, "Applications": [], "regionEnabled": true, "ScenariosAvailable": true, "URL": "https://www.usgs.gov/streamstats/tennessee-streamstats-0" },

@@ -61,6 +61,7 @@ var StreamStats;
                 _this.loadingDrainageArea = false;
                 _this.extensionResultsChanged = 0;
                 _this.flowAnywhereData = null;
+                _this.ignoreExclusionPolygons = false;
                 _this.modalservices = modal;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
@@ -139,17 +140,6 @@ var StreamStats;
                         return null;
                     else
                         return this.selectedStudyArea.NSS_Extensions;
-                },
-                enumerable: false,
-                configurable: true
-            });
-            Object.defineProperty(StudyAreaService.prototype, "freshdeskCredentials", {
-                get: function () {
-                    return this._freshdeskCreds;
-                },
-                set: function (val) {
-                    if (this._freshdeskCreds != val)
-                        this._freshdeskCreds = val;
                 },
                 enumerable: false,
                 configurable: true
