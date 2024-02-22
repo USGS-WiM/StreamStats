@@ -40,6 +40,8 @@ var StreamStats;
                 var queryString = window.location.search;
                 var urlParams = new URLSearchParams(queryString);
                 var BP = urlParams.get('BP');
+                var gage = urlParams.get('gage');
+                var tab = urlParams.get('tab');
                 if (BP) {
                     if (BP == 'submitBatch') {
                         this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "submitBatch" });
@@ -59,6 +61,17 @@ var StreamStats;
                     if (BP == 'manageQueue') {
                         this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "manageQueue" });
                     }
+                }
+                else if (gage) {
+                    if (tab && tab == 'plots') {
+                        this.modalService.openModal(StreamStats.Services.SSModalType.e_gagepage, { "siteid": gage, "tabName": "GageAnalysisPlots" });
+                    }
+                    else {
+                        this.modalService.openModal(StreamStats.Services.SSModalType.e_gagepage, { "siteid": gage, "tabName": "GageInformation" });
+                    }
+                }
+                else if (tab) {
+                    history.replaceState(null, null, "?");
                 }
             };
             NavbarController.prototype.openBatchProcessor = function () {

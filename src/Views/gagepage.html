@@ -9,8 +9,8 @@
     </div> 
     <div class="modal-body"> 
         <ul class="nav nav-tabs wateruseTabs hidden-print">
-            <li ng-class="{'active': vm.SelectedTab == 2}"><a ng-click="vm.SelectedTab=2">Gage Analysis Plots</a></li>
-            <li ng-class="{'active': vm.SelectedTab == 1}"><a ng-click="vm.SelectedTab=1">Gage Information</a></li>
+            <li ng-class="{'active': vm.SelectedTab == 2}"><a ng-click="vm.selectGagePageTab('GageAnalysisPlots')">Gage Analysis Plots</a></li>
+            <li ng-class="{'active': vm.SelectedTab == 1}"><a ng-click="vm.selectGagePageTab('GageInformation')">Gage Information</a></li>
         </ul>
         <div id="printArea">
             <!-- Gage Information Tab -->

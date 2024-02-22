@@ -69,6 +69,8 @@ module StreamStats.Controllers {
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
             const BP = urlParams.get('BP')
+            const gage = urlParams.get('gage')
+            const tab = urlParams.get('tab')
             if (BP) {
                 if (BP == 'submitBatch') { // open submit batch processor page
                     this.modalService.openModal(Services.SSModalType.e_batchprocessor, { "tabName": "submitBatch"});
@@ -87,6 +89,19 @@ module StreamStats.Controllers {
                 if (BP == 'manageQueue') { // open queue batch processor page
                     this.modalService.openModal(Services.SSModalType.e_batchprocessor, { "tabName": "manageQueue"});
                 }
+            } else if (gage) {
+                // Open gage page
+                if (tab && tab == 'plots') {
+                    // Open plots tab of gage page
+                    this.modalService.openModal(Services.SSModalType.e_gagepage, { "siteid": gage, "tabName": "GageAnalysisPlots" });
+                } else {
+                    // Open info tab of gage page
+                    this.modalService.openModal(Services.SSModalType.e_gagepage, { "siteid": gage, "tabName": "GageInformation" });
+                }
+            } else if (tab) {
+                // The tab parameter by itself is meaningless
+                // If there were no BP nor gage parameters, clear the url parameters
+                history.replaceState(null, null, "?");
             }
         }
         public openBatchProcessor(): void {

@@ -176,6 +176,7 @@ module StreamStats.Controllers {
         public NWISlat: string;
         public NWISlng: string;
         public URLsToDisplay = [];
+        public toaster: any;
 
         private _selectedTab: GagePageTab;
         public get SelectedTab(): GagePageTab {
@@ -286,7 +287,6 @@ module StreamStats.Controllers {
 
         //Constructor
         //-+-+-+-+-+-+-+-+-+-+-+-
-        static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
         chartConfig: {  chart: {height: number, width: number, zooming: {type: string}, panning: boolean, panKey: string, events: {load: Function}},
                         title: { text: string, align: string},
                         time: { useUTC: false, timezone: string},
@@ -319,12 +319,14 @@ module StreamStats.Controllers {
                         yAxis: { title: {text: string}, custom: { allowNegativeLog: boolean}},
                         colorAxis: { type: string, min: number, max: number, stops: any[], startOnTick: boolean, endOnTick: boolean, labels: {format: string}, allowNegativeLog: boolean}
                         series: { name: string, pixelSpacing: number[], borderWidth: number, borderColor: string, type: string, data: number[], tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number}[]; };
-            constructor($scope: IGagePageControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance) {
+        static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance', "toaster"];
+        constructor($scope: IGagePageControllerScope, $http: ng.IHttpService, modalService: Services.IModalService, modal:ng.ui.bootstrap.IModalServiceInstance, toaster) {
             super($http, configuration.baseurls.StreamStats);
             $scope.vm = this;
             this.modalInstance = modal;
             this.modalService = modalService;
-            this.init(); 
+            this.toaster = toaster;
+            this.init();  
             this.selectedStatisticGroups = [];
             this.selectedCitations = [];
             this.selectedFloodFreqStats = [];
@@ -343,6 +345,13 @@ module StreamStats.Controllers {
                 window.print();
             };
 
+            // Properly close modal when Esc key pressed
+            document.addEventListener("keydown", function(event) {
+                const key = event.key;
+                if (key === "Escape") {
+                    $scope.vm.Close();
+                }
+            });
         }  
         
         //Methods  
@@ -350,6 +359,25 @@ module StreamStats.Controllers {
 
         public Close(): void {
             this.modalInstance.dismiss('cancel')
+            
+            // clear URL parameters
+            var url = document.location.href;
+            window.history.pushState({}, "", url.split("?")[0]);
+        }
+
+        // switch between tabs in gage page modal & update URL parameters
+        public selectGagePageTab(tabname: string): void {
+            var queryParams = new URLSearchParams(window.location.search);
+            
+            if (tabname == "GageInformation") {
+                queryParams.set("tab", "info");
+                this.SelectedTab = GagePageTab.GageInformation;
+            } else if (tabname == "GageAnalysisPlots") {
+                queryParams.set("tab", "plots");
+                this.SelectedTab = GagePageTab.GageAnalysisPlots;
+            }
+    
+            history.replaceState(null, null, "?" + queryParams.toString());
         }
 
 
@@ -358,6 +386,11 @@ module StreamStats.Controllers {
 
             //instantiate gage
             this.gage = new GageInfo(this.modalService.modalOptions.siteid);
+
+            // set url parameters
+            var queryParams = new URLSearchParams(window.location.search);
+            queryParams.set("gage", this.modalService.modalOptions.siteid);
+            history.replaceState(null, null, "?" + queryParams.toString());
                     
             var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.gage.code;
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
@@ -378,6 +411,13 @@ module StreamStats.Controllers {
                     this.additionalLinkCheck(this.gage.code);
 
                 }, (error) => {
+                    this.Close();
+                    this.toaster.pop(
+                        "error",
+                        "Gage page could not be opened: ",
+                        error.data.message,
+                        0
+                    );
                     //sm when error
                 }).finally(() => {
                 }
@@ -4336,7 +4376,18 @@ public createDailyRasterPlot(): void {
             this.AppVersion = configuration.version;
             this.getGagePage();
             this.getGagePlots();
-            this.SelectedTab = GagePageTab.GageInformation;
+
+            // Open the correct tab based on URL parameters
+            if (this.modalService.modalOptions && this.modalService.modalOptions.tabName) {
+                if (this.modalService.modalOptions.tabName == "GageInformation") { // If tab=info
+                    this.selectGagePageTab("GageInformation");
+                } else if (this.modalService.modalOptions.tabName == "GageAnalysisPlots") { // If tab=plots
+                    this.selectGagePageTab("GageAnalysisPlots");
+                }
+            } else {
+                // If no "tab" URL parameter
+                this.selectGagePageTab("GageInformation");
+            }
         }
 
         private convertDateToString(date) {

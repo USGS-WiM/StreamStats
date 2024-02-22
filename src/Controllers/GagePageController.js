@@ -76,7 +76,7 @@ var StreamStats;
         }());
         var GagePageController = (function (_super) {
             __extends(GagePageController, _super);
-            function GagePageController($scope, $http, modalService, modal) {
+            function GagePageController($scope, $http, modalService, modal, toaster) {
                 var _this_1 = _super.call(this, $http, configuration.baseurls.StreamStats) || this;
                 _this_1.filteredStatGroupsChar = [];
                 _this_1.showPreferred = false;
@@ -156,6 +156,7 @@ var StreamStats;
                 $scope.vm = _this_1;
                 _this_1.modalInstance = modal;
                 _this_1.modalService = modalService;
+                _this_1.toaster = toaster;
                 _this_1.init();
                 _this_1.selectedStatisticGroups = [];
                 _this_1.selectedCitations = [];
@@ -173,6 +174,12 @@ var StreamStats;
                     gtag('event', 'Download', { 'Category': 'GagePage', "Type": 'Print' });
                     window.print();
                 };
+                document.addEventListener("keydown", function (event) {
+                    var key = event.key;
+                    if (key === "Escape") {
+                        $scope.vm.Close();
+                    }
+                });
                 return _this_1;
             }
             Object.defineProperty(GagePageController.prototype, "SelectedTab", {
@@ -189,10 +196,27 @@ var StreamStats;
             });
             GagePageController.prototype.Close = function () {
                 this.modalInstance.dismiss('cancel');
+                var url = document.location.href;
+                window.history.pushState({}, "", url.split("?")[0]);
+            };
+            GagePageController.prototype.selectGagePageTab = function (tabname) {
+                var queryParams = new URLSearchParams(window.location.search);
+                if (tabname == "GageInformation") {
+                    queryParams.set("tab", "info");
+                    this.SelectedTab = GagePageTab.GageInformation;
+                }
+                else if (tabname == "GageAnalysisPlots") {
+                    queryParams.set("tab", "plots");
+                    this.SelectedTab = GagePageTab.GageAnalysisPlots;
+                }
+                history.replaceState(null, null, "?" + queryParams.toString());
             };
             GagePageController.prototype.getGagePage = function () {
                 var _this_1 = this;
                 this.gage = new GageInfo(this.modalService.modalOptions.siteid);
+                var queryParams = new URLSearchParams(window.location.search);
+                queryParams.set("gage", this.modalService.modalOptions.siteid);
+                history.replaceState(null, null, "?" + queryParams.toString());
                 var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.gage.code;
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
@@ -207,6 +231,8 @@ var StreamStats;
                     _this_1.getNWISPeriodOfRecord(_this_1.gage);
                     _this_1.additionalLinkCheck(_this_1.gage.code);
                 }, function (error) {
+                    _this_1.Close();
+                    _this_1.toaster.pop("error", "Gage page could not be opened: ", error.data.message, 0);
                 }).finally(function () {
                 });
             };
@@ -3938,7 +3964,17 @@ var StreamStats;
                 this.AppVersion = configuration.version;
                 this.getGagePage();
                 this.getGagePlots();
-                this.SelectedTab = GagePageTab.GageInformation;
+                if (this.modalService.modalOptions && this.modalService.modalOptions.tabName) {
+                    if (this.modalService.modalOptions.tabName == "GageInformation") {
+                        this.selectGagePageTab("GageInformation");
+                    }
+                    else if (this.modalService.modalOptions.tabName == "GageAnalysisPlots") {
+                        this.selectGagePageTab("GageAnalysisPlots");
+                    }
+                }
+                else {
+                    this.selectGagePageTab("GageInformation");
+                }
             };
             GagePageController.prototype.convertDateToString = function (date) {
                 var yyyy = date.getFullYear().toString();
@@ -3973,7 +4009,7 @@ var StreamStats;
                     return $text.replace('"', '""');
                 }
             };
-            GagePageController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance'];
+            GagePageController.$inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance', "toaster"];
             return GagePageController;
         }(WiM.Services.HTTPServiceBase));
         var GagePageTab;

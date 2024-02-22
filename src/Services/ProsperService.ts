@@ -160,7 +160,7 @@ module StreamStats.Services {
         }
         private loadAvailablePredictions():void {
             try {
-            this.toaster.pop('wait', "Loading Available Prosper Predictions", "Please wait...", 0);
+            var prosperLoadToast = this.toaster.pop('wait', "Loading Available Prosper Predictions", "Please wait...", 0);
             var url = configuration.queryparams['ProsperPredictions'] +"/legend?f=pjson";
 
             var request: WiM.Services.Helpers.RequestInfo =
@@ -182,7 +182,7 @@ module StreamStats.Services {
                         this.DisplayedPrediction = this.AvailablePredictions[0];
                     }
 
-                    this.toaster.clear();
+                    this.toaster.clear(prosperLoadToast);
 
                 }, (error) => {
                     //sm when complete

@@ -1432,6 +1432,15 @@ module StreamStats.Controllers {
       if (configuration.showBPWarning) {
         this.warningMessage = configuration.warningBPMessage;
       }
+
+      // Properly close modal when Esc key pressed
+      var self = this;
+      document.addEventListener("keydown", function(event) {
+        const key = event.key;
+        if (key === "Escape") {
+            self.Close();
+        }
+      });
     }
 
     private checkArrayForObj(arr, obj): number {
