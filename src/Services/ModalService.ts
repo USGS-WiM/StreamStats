@@ -209,6 +209,7 @@ module StreamStats.Services {
                             controller: 'StreamStats.Controllers.BatchProcessorController',
                             size: 'lg',
                             backdropClass: 'backdropZ',
+                            backdrop: 'static',
                             windowClass: 'windowZ',
                         };
 

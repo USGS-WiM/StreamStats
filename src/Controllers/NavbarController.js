@@ -40,6 +40,7 @@ var StreamStats;
                 var queryString = window.location.search;
                 var urlParams = new URLSearchParams(queryString);
                 var BP = urlParams.get('BP');
+                var gage = urlParams.get('gage');
                 if (BP) {
                     if (BP == 'submitBatch') {
                         this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "submitBatch" });
@@ -59,6 +60,9 @@ var StreamStats;
                     if (BP == 'manageQueue') {
                         this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "manageQueue" });
                     }
+                }
+                else if (gage) {
+                    this.modalService.openModal(StreamStats.Services.SSModalType.e_gagepage, { "siteid": gage });
                 }
             };
             NavbarController.prototype.openBatchProcessor = function () {
