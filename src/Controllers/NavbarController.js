@@ -41,6 +41,7 @@ var StreamStats;
                 var urlParams = new URLSearchParams(queryString);
                 var BP = urlParams.get('BP');
                 var gage = urlParams.get('gage');
+                var tab = urlParams.get('tab');
                 if (BP) {
                     if (BP == 'submitBatch') {
                         this.modalService.openModal(StreamStats.Services.SSModalType.e_batchprocessor, { "tabName": "submitBatch" });
@@ -62,13 +63,15 @@ var StreamStats;
                     }
                 }
                 else if (gage) {
-                    var tab = urlParams.get('tab');
                     if (tab && tab == 'plots') {
                         this.modalService.openModal(StreamStats.Services.SSModalType.e_gagepage, { "siteid": gage, "tabName": "GageAnalysisPlots" });
                     }
                     else {
                         this.modalService.openModal(StreamStats.Services.SSModalType.e_gagepage, { "siteid": gage, "tabName": "GageInformation" });
                     }
+                }
+                else if (tab) {
+                    history.replaceState(null, null, "?");
                 }
             };
             NavbarController.prototype.openBatchProcessor = function () {
