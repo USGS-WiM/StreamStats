@@ -199,6 +199,18 @@ var StreamStats;
                 var url = document.location.href;
                 window.history.pushState({}, "", url.split("?")[0]);
             };
+            GagePageController.prototype.selectGagePageTab = function (tabname) {
+                var queryParams = new URLSearchParams(window.location.search);
+                if (tabname == "GageInformation") {
+                    queryParams.set("tab", "info");
+                    this.SelectedTab = GagePageTab.GageInformation;
+                }
+                else if (tabname == "GageAnalysisPlots") {
+                    queryParams.set("tab", "plots");
+                    this.SelectedTab = GagePageTab.GageAnalysisPlots;
+                }
+                history.replaceState(null, null, "?" + queryParams.toString());
+            };
             GagePageController.prototype.getGagePage = function () {
                 var _this_1 = this;
                 this.gage = new GageInfo(this.modalService.modalOptions.siteid);
@@ -3952,7 +3964,17 @@ var StreamStats;
                 this.AppVersion = configuration.version;
                 this.getGagePage();
                 this.getGagePlots();
-                this.SelectedTab = GagePageTab.GageInformation;
+                if (this.modalService.modalOptions && this.modalService.modalOptions.tabName) {
+                    if (this.modalService.modalOptions.tabName == "GageInformation") {
+                        this.selectGagePageTab("GageInformation");
+                    }
+                    else if (this.modalService.modalOptions.tabName == "GageAnalysisPlots") {
+                        this.selectGagePageTab("GageAnalysisPlots");
+                    }
+                }
+                else {
+                    this.selectGagePageTab("GageInformation");
+                }
             };
             GagePageController.prototype.convertDateToString = function (date) {
                 var yyyy = date.getFullYear().toString();

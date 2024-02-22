@@ -62,7 +62,13 @@ var StreamStats;
                     }
                 }
                 else if (gage) {
-                    this.modalService.openModal(StreamStats.Services.SSModalType.e_gagepage, { "siteid": gage });
+                    var tab = urlParams.get('tab');
+                    if (tab && tab == 'plots') {
+                        this.modalService.openModal(StreamStats.Services.SSModalType.e_gagepage, { "siteid": gage, "tabName": "GageAnalysisPlots" });
+                    }
+                    else {
+                        this.modalService.openModal(StreamStats.Services.SSModalType.e_gagepage, { "siteid": gage, "tabName": "GageInformation" });
+                    }
                 }
             };
             NavbarController.prototype.openBatchProcessor = function () {

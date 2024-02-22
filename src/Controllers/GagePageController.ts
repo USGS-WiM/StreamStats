@@ -365,6 +365,21 @@ module StreamStats.Controllers {
             window.history.pushState({}, "", url.split("?")[0]);
         }
 
+        // switch between tabs in gage page modal & update URL parameters
+        public selectGagePageTab(tabname: string): void {
+            var queryParams = new URLSearchParams(window.location.search);
+            
+            if (tabname == "GageInformation") {
+                queryParams.set("tab", "info");
+                this.SelectedTab = GagePageTab.GageInformation;
+            } else if (tabname == "GageAnalysisPlots") {
+                queryParams.set("tab", "plots");
+                this.SelectedTab = GagePageTab.GageAnalysisPlots;
+            }
+    
+            history.replaceState(null, null, "?" + queryParams.toString());
+        }
+
 
         // Gage Information methods
         public getGagePage() {
@@ -4361,7 +4376,18 @@ public createDailyRasterPlot(): void {
             this.AppVersion = configuration.version;
             this.getGagePage();
             this.getGagePlots();
-            this.SelectedTab = GagePageTab.GageInformation;
+
+            // Open the correct tab based on URL parameters
+            if (this.modalService.modalOptions && this.modalService.modalOptions.tabName) {
+                if (this.modalService.modalOptions.tabName == "GageInformation") { // If tab=info
+                    this.selectGagePageTab("GageInformation");
+                } else if (this.modalService.modalOptions.tabName == "GageAnalysisPlots") { // If tab=plots
+                    this.selectGagePageTab("GageAnalysisPlots");
+                }
+            } else {
+                // If no "tab" URL parameter
+                this.selectGagePageTab("GageInformation");
+            }
         }
 
         private convertDateToString(date) {

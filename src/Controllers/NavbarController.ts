@@ -89,7 +89,15 @@ module StreamStats.Controllers {
                     this.modalService.openModal(Services.SSModalType.e_batchprocessor, { "tabName": "manageQueue"});
                 }
             } else if (gage) {
-                this.modalService.openModal(Services.SSModalType.e_gagepage, { "siteid": gage });
+                // Open gage page
+                const tab = urlParams.get('tab')
+                if (tab && tab == 'plots') {
+                    // Open plots tab of gage page
+                    this.modalService.openModal(Services.SSModalType.e_gagepage, { "siteid": gage, "tabName": "GageAnalysisPlots" });
+                } else {
+                    // Open info tab of gage page
+                    this.modalService.openModal(Services.SSModalType.e_gagepage, { "siteid": gage, "tabName": "GageInformation" });
+                }
             }
         }
         public openBatchProcessor(): void {
