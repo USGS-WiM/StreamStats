@@ -22,6 +22,7 @@ var StreamStats;
         Services.onSelectedStudyParametersLoaded = "onSelectedStudyParametersLoaded";
         Services.onStudyAreaReset = "onStudyAreaReset";
         Services.onEditClick = "onEditClick";
+        Services.onEditBasinStartClick = "onEditBasinStartClick";
         Services.onAdditionalFeaturesLoaded = "onAdditionalFeaturesLoaded";
         Services.onRegressionLoaded = "onRegressionLoaded";
         var StudyAreaEventArgs = (function (_super) {
@@ -62,6 +63,7 @@ var StreamStats;
                 _this.extensionResultsChanged = 0;
                 _this.flowAnywhereData = null;
                 _this.ignoreExclusionPolygons = false;
+                _this.editedBasin = false;
                 _this.modalservices = modal;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
                 eventManager.AddEvent(Services.onSelectedStudyAreaChanged);
@@ -77,6 +79,7 @@ var StreamStats;
                     _this.onNSSExtensionResultsChanged(sender, e);
                 }));
                 eventManager.AddEvent(Services.onEditClick);
+                eventManager.AddEvent(Services.onEditBasinStartClick);
                 _this._studyAreaList = [];
                 _this.toaster = toaster;
                 _this.clearStudyArea();
@@ -283,8 +286,12 @@ var StreamStats;
                     return;
                 }
             };
+            StudyAreaService.prototype.enterEditBasinInterface = function () {
+                this.eventManager.RaiseEvent(Services.onEditBasinStartClick, this, WiM.Event.EventArgs.Empty);
+            };
             StudyAreaService.prototype.loadEditedStudyBoundary = function () {
                 var _this = this;
+                this.editedBasin = true;
                 this.toaster.pop("wait", "Loading Edited Basin", "Please wait...", 0);
                 this.canUpdate = false;
                 var url = configuration.baseurls['StreamStatsServices'] + configuration.queryparams['SSeditBasin'].format('geojson', this.selectedStudyArea.RegionID, this.selectedStudyArea.WorkspaceID, this.selectedStudyArea.Pourpoint.crs.toString());
@@ -819,7 +826,9 @@ var StreamStats;
                     else {
                         tolerance = 0.01;
                     }
-                    this.toaster.pop('warning', "Displaying simplified Basin.", "See FAQ for more information.", 0);
+                    if (!this.editedBasin) {
+                        this.toaster.pop('warning', "Displaying simplified Basin.", "See FAQ for more information.", 0);
+                    }
                     return turf.simplify(feature, { tolerance: tolerance, highQuality: false, mutate: true });
                 }
                 catch (e) {

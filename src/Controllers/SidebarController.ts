@@ -383,6 +383,10 @@ module StreamStats.Controllers {
             }
         }
 
+        public clickEditBasin() {
+            this.studyAreaService.enterEditBasinInterface();
+        }
+
         public submitBasinEdits() {
             //ga event
             var latLong = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + ',' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5);
