@@ -280,32 +280,29 @@
                             &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
                         </div>
                         <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.dischargeChartConfig">
-
-                            <input type="checkbox" ng-if="vm.formattedDischargePeakDates.length > 0" id="logScaleDischarge" name="logScaleDischarge" ng-model="vm.logScaleDischarge" ng-change="vm.toggleLogLinearDischarge()">
-                            <label for="logScaleDischarge" ng-if="vm.formattedDischargePeakDates.length > 0"> Log Scale</label>
-
-                            <input type="radio" ng-if="vm.error == false" id="ageData" name="toggleDischargeData" ng-model="vm.USGSMeasuredAgeQualityData" value="age" ng-change="vm.updateChart()"> 
-                            <label for="ageData" ng-if="vm.error == false">  Age</label>
-                
-                            <input type="radio" ng-if="vm.error == false" id="qualityData" name="USGSMeasuredAgeQualityData" ng-model="vm.USGSMeasuredAgeQualityData" value="quality" ng-change="vm.toggleDischargeData('quality')"> 
-                            <label for="qualityData" ng-if="vm.error == false"> Quality</label>
-
                             <!-- Start Sliders -->
                             <div class="slider-container">
                                 <div class="slider-wrapper">
                                     <span class="slider-text">Plot USGS Measurements Between Months</span>
                                     <rzslider class="rzSlider" rz-slider-model="vm.startMonth" rz-slider-high="vm.endMonth" rz-slider-options="vm.monthSliderOptions"></rzslider>
-                                    <span id="months2show"></span>
+                                    <span id="months2show" style="margin-bottom: 10px;"></span>
                                 </div>
                                 <div class="slider-wrapper">
                                     <span class="slider-text">Plot USGS Measurements Between Years</span>
                                     <rzslider class="rzSlider" rz-slider-model="vm.startYear" rz-slider-high="vm.endYear" rz-slider-options="vm.yearSliderOptions"></rzslider>
-                                    <span id="years2show"></span>
+                                    <span id="years2show" style="margin-bottom: 10px;"></span>
                                 </div>
                             </div>
-                            
                             <!-- End Sliders -->
+                            <input type="checkbox" ng-if="vm.formattedDischargePeakDates.length > 0" id="logScaleDischarge" name="logScaleDischarge" ng-model="vm.logScaleDischarge" ng-change="vm.toggleLogLinearDischarge()" style="vertical-align: middle">
+                            <label for="logScaleDischarge" ng-if="vm.formattedDischargePeakDates.length > 0"> Log Scale</label>
 
+                            <input type="radio" ng-if="vm.error == false" id="ageData" name="toggleDischargeData" ng-model="vm.USGSMeasuredAgeQualityData" value="age" ng-change="vm.updateChart()" style="vertical-align: middle"> 
+                            <label for="ageData" ng-if="vm.error == false">  Age</label>
+                
+                            <input type="radio" ng-if="vm.error == false" id="qualityData" name="USGSMeasuredAgeQualityData" ng-model="vm.USGSMeasuredAgeQualityData" value="quality" ng-change="vm.toggleDischargeData('quality')" style="vertical-align: middle"> 
+                            <label for="qualityData" ng-if="vm.error == false"> Quality</label>
+                            
                             <!-- Start Legend -->
                             <div ng-show="vm.USGSMeasuredAgeQualityData === 'age'" class="ageQualityLegend" ng-style="{'left': vm.logScaleDischarge ? '222px' : '680px', 'bottom': vm.logScaleDischarge ? '200px' : '220px'}">
                                 <div class="ageQualityLegend-item">
@@ -331,7 +328,7 @@
                             </div>
                             </div>
                             <!-- End Legend -->
-
+                            
                             <highchart id="chart3" config="vm.dischargeChartConfig"></highchart>
                             <div class="data-sources">
                                 Data: 

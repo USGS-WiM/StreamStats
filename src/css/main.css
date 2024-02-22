@@ -1100,7 +1100,8 @@ div.leaflet-top > .elevation {
 	    }
 
         .ageQualityLegend {
-            position: absolute;
+            position: flex;
+            display: inline-block;
             bottom: 220px;
             left: 680px;
             background-color: white;
@@ -1110,6 +1111,10 @@ div.leaflet-top > .elevation {
             font-size: 13px;
             font-weight: bold;
             z-index: 100;
+            width: 230px;
+            margin-left: 150px;
+            margin-top: 10px;
+            margin-bottom: 10px
           }
           
           .ageQualityLegend-item {
@@ -1571,7 +1576,7 @@ Batch processor modal
 .slider-container {
     display: flex;
     justify-content: space-between;
-    width: 100%;
+    width: 90%;
     padding: 0 20%;
 }
 
