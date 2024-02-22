@@ -224,9 +224,14 @@ var StreamStats;
                 this.delineateByLine = false;
                 this.eventManager.RaiseEvent(Services.onStudyAreaReset, this, WiM.Event.EventArgs.Empty);
             };
+            StudyAreaService.prototype.findLongestArray = function (arrays) {
+                return arrays.reduce(function (longestArray, currentArray) {
+                    return currentArray.length > longestArray.length ? currentArray : longestArray;
+                }, []);
+            };
             StudyAreaService.prototype.loadStudyBoundary = function () {
                 return __awaiter(this, void 0, void 0, function () {
-                    var regionID, url, url, request, delineations, features, index, _i, _a, point, url, request, i, result, featuresToMerge, union, i, bbox;
+                    var regionID, url, url, request, delineations, features, index, _i, _a, point, url, request, i, result, featuresToMerge, union, i, longestCoordinates, bbox;
                     var _this = this;
                     return __generator(this, function (_b) {
                         switch (_b.label) {
@@ -327,6 +332,10 @@ var StreamStats;
                                 result = _b.sent();
                                 if (result) {
                                     result.features.forEach(function (feature) {
+                                        if (feature['id'] == 'globalwatershed') {
+                                            var longestCoordinates = [_this.findLongestArray(feature.geometry["coordinates"])];
+                                            feature.geometry["coordinates"] = longestCoordinates;
+                                        }
                                         feature['id'] = feature['id'] + String(index);
                                         feature.properties.WorkspaceID = result.workspaceID;
                                         features.push(feature);
@@ -354,6 +363,8 @@ var StreamStats;
                                         union = featuresToMerge[0];
                                         for (i = 1; i < featuresToMerge.length; i++) {
                                             union = turf.union(union, featuresToMerge[i]);
+                                            longestCoordinates = [this.findLongestArray(union.geometry["coordinates"])];
+                                            union.geometry["coordinates"] = longestCoordinates;
                                         }
                                         console.log(union);
                                     }

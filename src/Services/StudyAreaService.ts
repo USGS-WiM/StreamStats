@@ -307,6 +307,12 @@ module StreamStats.Services {
             this.eventManager.RaiseEvent(Services.onStudyAreaReset, this, WiM.Event.EventArgs.Empty);
         }
 
+        private findLongestArray(arrays) {
+            return arrays.reduce((longestArray, currentArray) => {
+                return currentArray.length > longestArray.length ? currentArray : longestArray;
+            }, []);
+        }
+
         public async loadStudyBoundary() {
 
             this.toaster.pop("wait", "Delineating Basin", "Please wait...", 0);
@@ -427,6 +433,12 @@ module StreamStats.Services {
                         })
                         if (result) {
                             result.features.forEach((feature) => {
+                                if (feature['id'] == 'globalwatershed') {
+                                    // If this is a globalwatershed polygon, only use the longest set of coordinates
+                                    // Problematic multi-part polygons caused by geometric self-intersections will be ignored
+                                    var longestCoordinates = [this.findLongestArray(feature.geometry["coordinates"])];
+                                    feature.geometry["coordinates"] = longestCoordinates
+                                }
                                 feature['id'] = feature['id'] + String(index)
                                 feature.properties.WorkspaceID = result.workspaceID;
                                 features.push(feature)
@@ -451,6 +463,10 @@ module StreamStats.Services {
                         var union = featuresToMerge[0];
                         for (let i=1; i< featuresToMerge.length; i++) {
                             union = turf.union(union, featuresToMerge[i]);
+                             // If this is a globalwatershed polygon, only use the longest set of coordinates
+                            // Problematic multi-part polygons caused by geometric self-intersections will be ignored
+                            var longestCoordinates = [this.findLongestArray(union.geometry["coordinates"])];
+                            union.geometry["coordinates"] = longestCoordinates
                         }
                         console.log(union)
                     } catch(e) {
