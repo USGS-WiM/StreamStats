@@ -901,7 +901,7 @@ module StreamStats.Controllers {
                             totalDistance += one.distanceTo(two);
                         }
                           
-                        if (totalDistance > 4023.36) { // line is longer than 2.5 miles
+                        if (totalDistance > 4828.03) { // line is longer than 3.0 miles
                             this.studyArea.resetDelineationButtons();
                             map.removeLayer(this.delineationLine)
                             // remove listeners
@@ -909,7 +909,7 @@ module StreamStats.Controllers {
                             map.off("draw:created", lineStop);
                             this.drawControl.disable();
                             // throw error
-                            this.toaster.pop("error", "Error", "Delineation not possible. Line must be shorter than 2.5 miles.", 0);
+                            this.toaster.pop("error", "Error", "Delineation not possible. Line must be shorter than 3.0 miles.", 0);
                             throw new Error;
                         } else {
                             // remove listeners

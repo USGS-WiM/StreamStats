@@ -651,13 +651,13 @@ var StreamStats;
                                 var two = L.latLng(coordinates[i]);
                                 totalDistance += one.distanceTo(two);
                             }
-                            if (totalDistance > 4023.36) {
+                            if (totalDistance > 4828.03) {
                                 _this.studyArea.resetDelineationButtons();
                                 map.removeLayer(_this.delineationLine);
                                 map.off("draw:drawvertex", lineStart);
                                 map.off("draw:created", lineStop);
                                 _this.drawControl.disable();
-                                _this.toaster.pop("error", "Error", "Delineation not possible. Line must be shorter than 2.5 miles.", 0);
+                                _this.toaster.pop("error", "Error", "Delineation not possible. Line must be shorter than 3.0 miles.", 0);
                                 throw new Error;
                             }
                             else {
