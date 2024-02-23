@@ -280,6 +280,40 @@
                             &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
                         </div>
                         <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.dischargeChartConfig">
+                            <input type="checkbox" ng-if="vm.formattedDischargePeakDates.length > 0" id="logScaleDischarge" name="logScaleDischarge" ng-model="vm.logScaleDischarge" ng-change="vm.toggleLogLinearDischarge()" >
+                            <label for="logScaleDischarge" ng-if="vm.formattedDischargePeakDates.length > 0"> Log Scale</label>
+
+                            <div class="ageQualityLegend">
+                            <input type="radio" ng-if="vm.error == false" id="ageData" name="toggleDischargeData" ng-model="vm.USGSMeasuredAgeQualityData" value="age" ng-change="vm.updateChart()" > 
+                            <label for="ageData"  style="float: left; padding-right: 10px;" ng-if="vm.error == false">  Age</label>
+                
+                            <input type="radio" ng-if="vm.error == false" id="qualityData" name="USGSMeasuredAgeQualityData" ng-model="vm.USGSMeasuredAgeQualityData" value="quality" ng-change="vm.toggleDischargeData('quality')" > 
+                            <label for="qualityData"  style="float: left" ng-if="vm.error == false"> Quality</label><br>
+                            <!-- Start Legend -->
+                            <div ng-show="vm.USGSMeasuredAgeQualityData === 'age'"  style="clear:left" ng-style="{'left': vm.logScaleDischarge ? '222px' : '680px', 'bottom': vm.logScaleDischarge ? '200px' : '220px'}">
+                                <div class="ageQualityLegend-item">
+                                    <span style="color: red;">Most Recent Measurement</span>
+                            </div>
+                            <div class="ageQualityLegend-item">
+                                <span style="color: orange;">Measurements in the Last Year</span>
+                            </div>
+                            <div class="ageQualityLegend-item">
+                                <span style="color: #0000cdcc;">Newer -&nbsp</span><span style="color: #0000cd4d;">Older Measurements</span>
+                                </div>
+                            </div>
+                            
+                            <div ng-show="vm.USGSMeasuredAgeQualityData === 'quality'"  style="clear:left" ng-style="{'left': vm.logScaleDischarge ? '222px' : '680px', 'bottom': vm.logScaleDischarge ? '200px' : '220px'}">
+                                <div class="ageQualityLegend-item">
+                                    <span style="color:#2ED017;">Excellent - Good</span>
+                            </div>
+                            <div class="ageQualityLegend-item">
+                                <span style="color:#E7F317;">Fair</span>
+                            </div>
+                            <div class="ageQualityLegend-item">
+                                <span style="color: #FFA200;">Poor</span>
+                            </div>
+                            </div>
+                            <!-- End Legend -->
                             <!-- Start Sliders -->
                             <div class="slider-container">
                                 <div class="slider-wrapper">
@@ -294,41 +328,8 @@
                                 </div>
                             </div>
                             <!-- End Sliders -->
-                            <input type="checkbox" ng-if="vm.formattedDischargePeakDates.length > 0" id="logScaleDischarge" name="logScaleDischarge" ng-model="vm.logScaleDischarge" ng-change="vm.toggleLogLinearDischarge()" style="vertical-align: middle">
-                            <label for="logScaleDischarge" ng-if="vm.formattedDischargePeakDates.length > 0"> Log Scale</label>
-
-                            <input type="radio" ng-if="vm.error == false" id="ageData" name="toggleDischargeData" ng-model="vm.USGSMeasuredAgeQualityData" value="age" ng-change="vm.updateChart()" style="vertical-align: middle"> 
-                            <label for="ageData" ng-if="vm.error == false">  Age</label>
-                
-                            <input type="radio" ng-if="vm.error == false" id="qualityData" name="USGSMeasuredAgeQualityData" ng-model="vm.USGSMeasuredAgeQualityData" value="quality" ng-change="vm.toggleDischargeData('quality')" style="vertical-align: middle"> 
-                            <label for="qualityData" ng-if="vm.error == false"> Quality</label>
                             
-                            <!-- Start Legend -->
-                            <div ng-show="vm.USGSMeasuredAgeQualityData === 'age'" class="ageQualityLegend" ng-style="{'left': vm.logScaleDischarge ? '222px' : '680px', 'bottom': vm.logScaleDischarge ? '200px' : '220px'}">
-                                <div class="ageQualityLegend-item">
-                                    <span style="color: red;">Most Recent Measurement</span>
-                            </div>
-                            <div class="ageQualityLegend-item">
-                                <span style="color: orange;">Measurements in the Last Year</span>
-                            </div>
-                            <div class="ageQualityLegend-item">
-                                <span style="color: #0000cdcc;">Newer -&nbsp</span><span style="color: #0000cd4d;">Older Measurements</span>
-                                </div>
-                            </div>
-                            
-                            <div ng-show="vm.USGSMeasuredAgeQualityData === 'quality'" class="ageQualityLegend" ng-style="{'left': vm.logScaleDischarge ? '222px' : '680px', 'bottom': vm.logScaleDischarge ? '200px' : '220px'}">
-                                <div class="ageQualityLegend-item">
-                                    <span style="color:#2ED017;">Excellent - Good</span>
-                            </div>
-                            <div class="ageQualityLegend-item">
-                                <span style="color:#E7F317;">Fair</span>
-                            </div>
-                            <div class="ageQualityLegend-item">
-                                <span style="color: #FFA200;">Poor</span>
-                            </div>
-                            </div>
-                            <!-- End Legend -->
-                            
+                        </div>
                             <highchart id="chart3" config="vm.dischargeChartConfig"></highchart>
                             <div class="data-sources">
                                 Data: 
