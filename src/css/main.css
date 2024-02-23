@@ -1101,7 +1101,7 @@ div.leaflet-top > .elevation {
 
         .ageQualityLegend {
             position: flex;
-            display: inline-block;
+            /* display: inline-block; */
             bottom: 220px;
             left: 680px;
             background-color: white;
@@ -1111,16 +1111,29 @@ div.leaflet-top > .elevation {
             font-size: 13px;
             font-weight: bold;
             z-index: 100;
-            width: 230px;
-            margin-left: 150px;
+            margin-left: 50px;
             margin-top: 10px;
             margin-bottom: 10px
-          }
-          
-          .ageQualityLegend-item {
+        }
+        
+        .ageQualityLegend-item {
             display: flex;
             align-items: center;
-          }
+        }
+
+        .age-quality-container {
+            display: flex;
+            /* justify-content: space-between; */
+            width: 80%;
+            margin: auto;
+            padding: 0 20%;
+        }
+
+        .age-quality-wrapper {
+            justify-content: left;
+            float: left
+
+        }
 
 
     /*
