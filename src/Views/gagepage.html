@@ -284,9 +284,9 @@
                             <!-- Plot Options  put this whole line in a div and float left or right-->
                             <div class="age-quality-container">
                                 <div >
-                                    <br>
+                                    <br style="line-height: 25px" />
                             <input type="checkbox" ng-if="vm.formattedDischargePeakDates.length > 0" id="logScaleDischarge" name="logScaleDischarge" ng-model="vm.logScaleDischarge" ng-change="vm.toggleLogLinearDischarge()" >
-                            <label for="logScaleDischarge" ng-if="vm.formattedDischargePeakDates.length > 0"> Log Scale</label><br><br>
+                            <label for="logScaleDischarge" ng-if="vm.formattedDischargePeakDates.length > 0"> Log Scale</label><br>
                             <input type="radio" ng-if="vm.error == false" id="ageData" name="toggleDischargeData" ng-model="vm.USGSMeasuredAgeQualityData" value="age" ng-change="vm.updateChart()" > 
                             <label for="ageData" ng-if="vm.error == false">  Age</label>
                 
@@ -327,23 +327,22 @@
                             </div>
                             </div>
                             </div>
+
                         </div>
 
                             <!-- End Legend -->
-                                                        <!-- Start Sliders -->
-                                                        <div class="slider-container">
-                                                            <div class="slider-wrapper">
-                                                                <span class="slider-text">Plot USGS Measurements Between Months</span>
-                                                                <rzslider class="rzSlider" rz-slider-model="vm.startMonth" rz-slider-high="vm.endMonth" rz-slider-options="vm.monthSliderOptions"></rzslider>
-                                                                <span id="months2show" style="margin-bottom: 10px;"></span>
-                                                            </div>
-                                                            <div class="slider-wrapper">
-                                                                <span class="slider-text">Plot USGS Measurements Between Years</span>
-                                                                <rzslider class="rzSlider" rz-slider-model="vm.startYear" rz-slider-high="vm.endYear" rz-slider-options="vm.yearSliderOptions"></rzslider>
-                                                                <span id="years2show" style="margin-bottom: 10px;"></span>
-                                                            </div>
-                                                        </div>
-                                                        <!-- End Sliders -->
+                            <div class="slider-container">
+                            <div class="slider-wrapper">
+                                <span class="slider-text">Plot USGS Measurements <br>Between Months</span>
+                                <rzslider class="rzSlider" rz-slider-model="vm.startMonth" rz-slider-high="vm.endMonth" rz-slider-options="vm.monthSliderOptions"></rzslider>
+                                <span id="months2show" style="margin-bottom: 10px;"></span>
+                            </div>
+                            <div class="slider-wrapper">
+                                <span class="slider-text">Plot USGS Measurements <br>Between Years</span>
+                                <rzslider class="rzSlider" rz-slider-model="vm.startYear" rz-slider-high="vm.endYear" rz-slider-options="vm.yearSliderOptions"></rzslider>
+                                <span id="years2show" style="margin-bottom: 10px; margin-left: 20px;"></span>
+                            </div>
+                        </div>
 
                             
                             <highchart id="chart3" config="vm.dischargeChartConfig"></highchart>
