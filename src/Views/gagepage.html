@@ -280,7 +280,7 @@
                             &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
                         </div>
                         <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.dischargeChartConfig">
-                            <div class="stagedischarge-inputs-container">
+                            <div class="stagedischarge-inputs-container" ng-if="vm.formattedDischargePeakDates.length > 0 || this.dischargeObj.length > 0 || this.measuredObj.length > 0">
                                 <!-- Begin Sliders -->
                                 <div class="slider-wrapper" ng-if="vm.error == false">
                                     <span class="slider-text">Plot USGS Measurements <br>Between Months</span>
