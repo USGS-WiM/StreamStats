@@ -280,22 +280,21 @@
                             &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
                         </div>
                         <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.dischargeChartConfig">
-
-                            <!-- Plot Options  put this whole line in a div and float left or right-->
-
-
-                            <!-- End Legend -->
-                            <div class="slider-container">
-                                <div class="slider-wrapper">
+                            <div class="stagedischarge-inputs-container">
+                                <!-- Begin Sliders -->
+                                <div class="slider-wrapper" ng-if="vm.error == false">
                                     <span class="slider-text">Plot USGS Measurements <br>Between Months</span>
-                                    <rzslider class="rzSlider" rz-slider-model="vm.startMonth" rz-slider-high="vm.endMonth" rz-slider-options="vm.monthSliderOptions"></rzslider>
+                                    <rzslider class="gageplot-slider" rz-slider-model="vm.startMonth" rz-slider-high="vm.endMonth" rz-slider-options="vm.monthSliderOptions"></rzslider>
                                     <span id="months2show" style="margin-bottom: 10px; width: 70px"></span>
                                 </div>
-                                <div class="slider-wrapper">
+                                <div class="slider-wrapper" ng-if="vm.error == false">
                                     <span class="slider-text">Plot USGS Measurements <br>Between Years</span>
-                                    <rzslider class="rzSlider" rz-slider-model="vm.startYear" rz-slider-high="vm.endYear" rz-slider-options="vm.yearSliderOptions"></rzslider>
+                                    <rzslider class="gageplot-slider" rz-slider-model="vm.startYear" rz-slider-high="vm.endYear" rz-slider-options="vm.yearSliderOptions"></rzslider>
                                     <span id="years2show" style="margin-bottom: 10px; margin-left: 20px; width: 70px;"></span>
                                 </div>
+                                <!--End Sliders -->
+
+                                <!--Begin Plot Options (log checkbox, age and quality radios)-->
                                 <div class="age-quality-container">
                                     <br style="line-height: 25px" />
                                     <input type="checkbox" ng-if="vm.formattedDischargePeakDates.length > 0" id="logScaleDischarge" name="logScaleDischarge" ng-model="vm.logScaleDischarge" ng-change="vm.toggleLogLinearDischarge()" >
@@ -305,12 +304,11 @@
                         
                                     <input type="radio" ng-if="vm.error == false" id="qualityData" name="USGSMeasuredAgeQualityData" ng-model="vm.USGSMeasuredAgeQualityData" value="quality" ng-change="vm.toggleDischargeData('quality')" > 
                                     <label for="qualityData" ng-if="vm.error == false"> Quality</label>
-                                    <!--End Plot Options -->
-        
-                                    <!-- Start Legend -->
-                                    
                                 </div>
-                                <div class="ageQualityLegend">
+                                <!--End Plot Options -->
+        
+                                <!-- Start Legend -->
+                                <div class="ageQualityLegend" ng-if="vm.error == false">
                                     <div ng-show="vm.USGSMeasuredAgeQualityData === 'age'">
                                         <span style="color: #2D3146BF; float: left;  padding-bottom: 15px; font-size: 15px;">Age:</span>
                                     </div>
@@ -341,7 +339,8 @@
                                 </div>
                                 </div>
                                 </div>
-                        </div>
+                                <!--End Legend -->
+                            </div>
 
                             
                             <highchart id="chart3" config="vm.dischargeChartConfig"></highchart>
