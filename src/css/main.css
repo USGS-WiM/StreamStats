@@ -1111,8 +1111,8 @@ div.leaflet-top > .elevation {
             font-size: 13px;
             font-weight: bold;
             z-index: 100;
-            margin-left: 30px;
-            margin-right: 30px;
+            margin-left: -10px;
+            margin-right: 20px;
             margin-top: 10px;
             margin-bottom: 10px
         }
@@ -1123,10 +1123,12 @@ div.leaflet-top > .elevation {
         }
 
         .age-quality-container {
-            display: flex;
+            /* display: flex; */
             /* justify-content: space-between; */
-            width: 95%;
-            margin: auto;
+            width: 20%;
+            margin-top: 10px;
+            margin-right: 20px;
+            margin-left: -35px;
             padding: 0 0%;
         }
 
@@ -1589,16 +1591,18 @@ Batch processor modal
 
 .slider-container {
     display: flex;
-    width: 50%;
+    width: 80%;
     padding: 0 0%;
     margin-bottom: 10px;
+    margin-top: 10px;
+    margin-left: 60px
 }
 
 .slider-wrapper {
     /* display: flex; */
     /* flex-direction: column; */
     /* align-items: center; */
-    width: 30%;
+    width: 20%;
     margin-right: 50px;
 }
 rzslider .rz-pointer {
@@ -1611,6 +1615,9 @@ rzslider .rz-pointer {
     -webkit-border-radius: 16px;
     -moz-border-radius: 16px;
     border-radius: 5;
+  }
+  rzslider .rz-pointer.rz-active:after {
+    background-color: #0db9f0;
   }
   
   rzslider .rz-bubble {
@@ -1640,6 +1647,7 @@ rzslider .rz-pointer {
 .slider-text {
     font-size: 13px;
     white-space: nowrap;
+    color: #2D3146BF;
 }
 
 #months2show, #years2show {
