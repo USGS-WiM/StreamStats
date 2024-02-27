@@ -2114,7 +2114,7 @@ var StreamStats;
                     exporting: {
                         buttons: {
                             contextButton: {
-                                menuItems: ['viewFullscreen']
+                                menuItems: ["viewFullscreen", "separator", "downloadPNG", "downloadJPEG", "downloadPDF", "downloadSVG"]
                             }
                         }
                     },
@@ -3117,6 +3117,13 @@ var StreamStats;
                             }
                         }
                     },
+                    exporting: {
+                        buttons: {
+                            contextButton: {
+                                menuItems: ["viewFullscreen", "separator", "downloadPNG", "downloadJPEG", "downloadPDF", "downloadSVG"]
+                            }
+                        }
+                    },
                     series: [
                         {
                             name: 'USGS Rating Curve',
@@ -3385,6 +3392,13 @@ var StreamStats;
                         },
                         custom: {
                             allowNegativeLog: true
+                        }
+                    },
+                    exporting: {
+                        buttons: {
+                            contextButton: {
+                                menuItems: ["viewFullscreen"]
+                            }
                         }
                     },
                     colorAxis: logOrLinear(this.dailyValuesOnly),
