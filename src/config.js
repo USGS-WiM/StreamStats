@@ -47,7 +47,7 @@ var StreamStats;
         'StreamStats.Services',
         'StreamStats.Controllers',
         'WiM.Services', 'WiM.Event', 'wim_angular', 'rzModule', 'nvd3', 'daterangepicker',
-        'angularjs-dropdown-multiselect', 
+        'angularjs-dropdown-multiselect',
         'ngSanitize',
         'highcharts-ng'
     ])

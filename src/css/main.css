@@ -1100,7 +1100,7 @@ div.leaflet-top > .elevation {
 	    }
 
         .ageQualityLegend {
-            position: absolute;
+            position: flex;
             bottom: 220px;
             left: 680px;
             background-color: white;
@@ -1110,12 +1110,30 @@ div.leaflet-top > .elevation {
             font-size: 13px;
             font-weight: bold;
             z-index: 100;
-          }
-          
-          .ageQualityLegend-item {
+            margin-left: -10px;
+            margin-right: 20px;
+            margin-top: 10px;
+            margin-bottom: 10px
+        }
+        
+        .ageQualityLegend-item {
             display: flex;
             align-items: center;
-          }
+        }
+
+        .age-quality-container {
+            width: 20%;
+            margin-top: 10px;
+            margin-right: 20px;
+            margin-left: -35px;
+            padding: 0 0%;
+        }
+
+        .age-quality-wrapper {
+            justify-content: left;
+            float: left
+
+        }
 
 
     /*
@@ -1568,23 +1586,63 @@ Batch processor modal
     padding: 0 0 0 3px !important;
 }
 
-.slider-container {
+.stagedischarge-inputs-container {
     display: flex;
-    justify-content: space-between;
-    width: 100%;
-    padding: 0 20%;
+    width: 80%;
+    padding: 0 0%;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    margin-left: 60px
 }
 
 .slider-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 30%;
+    width: 20%;
+    margin-right: 50px;
+}
+.gageplot-slider .rz-pointer {
+    top: -22px;
+    z-index: 3;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    background-color: #0db9f0;
+    -webkit-border-radius: 16px;
+    -moz-border-radius: 16px;
+    border-radius: 5;
+}
+
+.gageplot-slider .rz-pointer.rz-active:after {
+    background-color: #0db9f0;
+}
+
+.gageplot-slider .rz-bubble {
+    bottom: -15px;
+    padding: 1px 3px;
+    color: #55637d;
+    cursor: default;
+}
+
+.gageplot-slider .rz-pointer:after {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 8px;
+    height: 8px;
+    background: #0db9f0;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    content: '';
+}
+
+.gageplot-slider .rz-pointer:hover:after {
+    background-color: #0db9f0;
 }
 
 .slider-text {
-    font-size: 14px;
+    font-size: 13px;
     white-space: nowrap;
+    color: #2D3146BF;
 }
 
 #months2show, #years2show {
