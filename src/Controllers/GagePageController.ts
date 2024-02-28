@@ -310,6 +310,7 @@ module StreamStats.Controllers {
                         navigator: { enabled: boolean},  
                         xAxis: {  type: string, min: number, max: number, title: {text: string}, custom: { allowNegativeLog: Boolean }},
                         yAxis: { title: {text: string}, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
+                        exporting : { buttons: {contextButton: {menuItems: string[]}}},
                         series: { name: string; showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string,
                         data: number[], marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
         heatChartConfig: { chart: { height: number, width: number, zooming: {type: string} },
@@ -317,6 +318,7 @@ module StreamStats.Controllers {
                         subtitle: { text: string, align: string},  
                         xAxis: { type: string, min: number, max: number, tickPositions: any[], threshold: number, title: {text: string}, labels: {formatter: Function}},
                         yAxis: { title: {text: string}, custom: { allowNegativeLog: boolean}},
+                        exporting : { buttons: {contextButton: {menuItems: string[]}}},
                         colorAxis: { type: string, min: number, max: number, stops: any[], startOnTick: boolean, endOnTick: boolean, labels: {format: string}, allowNegativeLog: boolean}
                         series: { name: string, pixelSpacing: number[], borderWidth: number, borderColor: string, type: string, data: number[], tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number}[]; };
         static $inject = ['$scope', '$http', 'StreamStats.Services.ModalService', '$modalInstance', "toaster"];
@@ -2502,7 +2504,7 @@ module StreamStats.Controllers {
                 exporting: {
                     buttons: {
                         contextButton: {
-                            menuItems: ['viewFullscreen']
+                            menuItems: ["viewFullscreen", "separator", "downloadPNG", "downloadJPEG", "downloadPDF", "downloadSVG"]
                         }
                     }
                 },
@@ -3516,6 +3518,13 @@ public createDischargePlot(): void {
                 }
             }
         },
+        exporting: {
+            buttons: {
+                contextButton: {
+                    menuItems: ["viewFullscreen", "separator", "downloadPNG", "downloadJPEG", "downloadPDF", "downloadSVG"]
+                }
+            }
+        },
         series  : [
         {
             name    : 'USGS Rating Curve',
@@ -3786,6 +3795,13 @@ public createDailyRasterPlot(): void {
             },
             custom: {
                 allowNegativeLog: true
+            }
+        },
+        exporting: {
+            buttons: {
+                contextButton: {
+                    menuItems: ["viewFullscreen"]
+                }
             }
         },
         colorAxis: logOrLinear(this.dailyValuesOnly),
