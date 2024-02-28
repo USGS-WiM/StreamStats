@@ -3051,6 +3051,26 @@ var StreamStats;
                 var measuredDataMin = Math.min.apply(Math, this.measuredObj
                     .filter(function (obj) { return typeof obj.y === 'number' && !isNaN(obj.y); })
                     .map(function (obj) { return obj.y; }));
+                var peakDataMax = Math.max.apply(Math, this.formattedDischargePeakDates
+                    .filter(function (obj) { return typeof obj.y === 'number' && !isNaN(obj.y); })
+                    .map(function (obj) { return obj.y; }));
+                var peakDataMin = Math.min.apply(Math, this.formattedDischargePeakDates
+                    .filter(function (obj) { return typeof obj.y === 'number' && !isNaN(obj.y); })
+                    .map(function (obj) { return obj.y; }));
+                var yAxisMax;
+                var yAxisMin;
+                if (peakDataMax > measuredDataMax) {
+                    yAxisMax = peakDataMax;
+                }
+                else {
+                    yAxisMax = measuredDataMax;
+                }
+                if (peakDataMin < measuredDataMin) {
+                    yAxisMin = peakDataMin;
+                }
+                else {
+                    yAxisMin = measuredDataMin;
+                }
                 var self = this;
                 this.dischargeChartConfig = {
                     chart: {
@@ -3105,8 +3125,8 @@ var StreamStats;
                             if (!self.logScaleDischarge) {
                                 var positions = [];
                                 var axis = this;
-                                var min = Math.max(axis.min, measuredDataMin);
-                                var max = Math.min(axis.max, measuredDataMax);
+                                var min = Math.max(axis.min, yAxisMin);
+                                var max = Math.min(axis.max, yAxisMax);
                                 var tick = Math.floor(min) > 0 ? Math.floor(min) - 1 : 1;
                                 var maxTick = max + 2;
                                 var increment = (maxTick - tick) > 18 ? 2 : 1;
