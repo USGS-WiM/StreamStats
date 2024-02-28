@@ -3450,8 +3450,26 @@ public createDischargePlot(): void {
         .filter(obj => typeof obj.y === 'number' && !isNaN(obj.y))
         .map(obj => obj.y)
     );
-    // console.log("max3147", measuredDataMax)
-    // console.log("min3147", measuredDataMin)
+    let peakDataMax = Math.max.apply(Math, this.formattedDischargePeakDates
+        .filter(obj => typeof obj.y === 'number' && !isNaN(obj.y))
+        .map(obj => obj.y)
+    );
+    let peakDataMin = Math.min.apply(Math, this.formattedDischargePeakDates
+        .filter(obj => typeof obj.y === 'number' && !isNaN(obj.y))
+        .map(obj => obj.y)
+    );
+    let yAxisMax;
+    let yAxisMin;
+    if (peakDataMax > measuredDataMax) {
+        yAxisMax = peakDataMax;
+    } else {
+        yAxisMax = measuredDataMax;
+    }
+    if (peakDataMin < measuredDataMin) {
+        yAxisMin = peakDataMin;
+    } else {
+        yAxisMin = measuredDataMin;
+    }
     var self = this
     this.dischargeChartConfig = {
         chart: {
@@ -3506,8 +3524,8 @@ public createDischargePlot(): void {
                 if (!self.logScaleDischarge) {
                     var positions = [];
                     var axis = this;
-                    var min = Math.max(axis.min, measuredDataMin);
-                    var max = Math.min(axis.max, measuredDataMax);
+                    var min = Math.max(axis.min, yAxisMin);
+                    var max = Math.min(axis.max, yAxisMax);
                     var tick = Math.floor(min) > 0 ? Math.floor(min) - 1 : 1;
                     var maxTick = max + 2;
                     var increment = (maxTick - tick) > 18? 2 : 1;
