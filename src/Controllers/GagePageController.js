@@ -537,6 +537,7 @@ var StreamStats;
                 var _this_1 = this;
                 var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.gage.code;
                 this.floodStatsURL = url;
+                console.log('GetFloodFreqURL', url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var data = response.data;
@@ -622,6 +623,7 @@ var StreamStats;
                         }
                     } while (data.length > 0);
                     _this_1.floodFreq = AEPchartData;
+                    console.log(_this_1.floodFreq);
                     _this_1.altFloodFreq = altAEPchartData;
                     _this_1.oneDayStats = oneDayChartData;
                     _this_1.sevenDayStats = sevenDayChartData;

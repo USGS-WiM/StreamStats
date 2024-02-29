@@ -777,12 +777,31 @@ div.leaflet-top > .elevation {
             visibility: hidden;
             -webkit-print-color-adjust: exact !important;
         }
+        
         .wim-alert-warning {
             background-color: #fdb81e !important;
         }
         table .wim-warning {
             background-color: #fdb81e !important;
         }
+
+        /* gageplots formatting start*/
+        .well {
+            justify-content:center;
+            align-items:center;
+            width:1100px;
+            height:1000px;
+        }
+        .stagedischarge-inputs-container {
+            display: inline;
+        }
+
+        .gageplot-slider .rz-bar{
+            background-color: #0db9f0 !important;
+        } 
+
+        /* gageplots formatting end */
+
         .hidden-print {
             display: none !important;
         }
@@ -812,6 +831,7 @@ div.leaflet-top > .elevation {
         .modal-footer {
             border-top:0;
         }
+
         .leaflet-control-container{
             display: none!important;
         }
@@ -1605,14 +1625,14 @@ Batch processor modal
     width: 20px;
     height: 20px;
     cursor: pointer;
-    background-color: #0db9f0;
+    background-color: #0db9f0 !important;
     -webkit-border-radius: 16px;
     -moz-border-radius: 16px;
     border-radius: 5;
 }
 
 .gageplot-slider .rz-pointer.rz-active:after {
-    background-color: #0db9f0;
+    background-color: #0db9f0 !important;
 }
 
 .gageplot-slider .rz-bubble {
@@ -1628,7 +1648,7 @@ Batch processor modal
     left: 5px;
     width: 8px;
     height: 8px;
-    background: #0db9f0;
+    background: #0db9f0 !important;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
@@ -1636,7 +1656,7 @@ Batch processor modal
 }
 
 .gageplot-slider .rz-pointer:hover:after {
-    background-color: #0db9f0;
+    background-color: #0db9f0 !important;
 }
 
 .slider-text {
