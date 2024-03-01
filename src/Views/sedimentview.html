@@ -120,7 +120,7 @@
     <div class="modal-footer  hidden-print">
         <div class="btn-group">
             <button class="btn-wim-default" ng-click="vm.close()"><i class="fa fa-close"></i>&nbsp;&nbsp;Cancel</button>
-            <button ng-disabled="vm.isBusy" class="btn-wim-default" ng-click="vm.ok()"><i class="fa fa-close"></i>&nbsp;&nbsp;Ok</button>
+            <button ng-disabled="gage.StationID == vm.selectedReferenceGage.StationID" class="btn-wim-default" ng-click="vm.ok()"><i class="fa fa-close"></i>&nbsp;&nbsp;Ok</button>
         </div>
     </div>
 </div>

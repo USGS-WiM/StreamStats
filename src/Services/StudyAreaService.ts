@@ -73,7 +73,7 @@ module StreamStats.Services {
         extensionDateRange: IDateRange;
         selectedGage: any;        
         flowAnywhereData: any;
-        sedimentModelData: any;
+        sedimentModelData: ISedimentModalData;
         computeFlowAnywhereResults();
         computeRegressionEquation(regtype: string);
         updateExtensions(); 
@@ -95,6 +95,11 @@ module StreamStats.Services {
         }
         minDate?: Date;
         maxDate?: Date;
+    }
+
+    interface ISedimentModalData {
+        dateRange?: IDateRange;
+        selectedGage?: string;
     }
 
     export var onSelectedStudyAreaChanged: string = "onSelectedStudyAreaChanged";
@@ -193,6 +198,7 @@ module StreamStats.Services {
         public allIndexGages;
         public extensionResultsChanged = 0;        
         public flowAnywhereData: any = null;
+        public sedimentModelData: ISedimentModalData = null;
         public ignoreExclusionPolygons: boolean = false;
 
         //Constructor
@@ -1010,9 +1016,12 @@ module StreamStats.Services {
 
         public selectGage(gage) {
             // selects gage and adds it to gage options for qppq
-            if () {
-                do stuff 
-            } else if 
+            // if () {
+            //     do stuff 
+            // } else if {}
+
+            
+
             var sid: Array<any> = this.selectedStudyAreaExtensions.reduce((acc, val) => acc.concat(val.parameters), []).filter(f => { return (<string>(f.code)).toLowerCase() == "sid" });
             var siteList:Array<Models.IReferenceGage> = [];
             let rg = new Models.ReferenceGage(gage.properties.Code, gage.properties.Name);

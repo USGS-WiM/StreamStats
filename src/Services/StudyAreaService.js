@@ -61,6 +61,7 @@ var StreamStats;
                 _this.loadingDrainageArea = false;
                 _this.extensionResultsChanged = 0;
                 _this.flowAnywhereData = null;
+                _this.sedimentModelData = null;
                 _this.ignoreExclusionPolygons = false;
                 _this.modalservices = modal;
                 eventManager.AddEvent(Services.onSelectedStudyParametersLoaded);
@@ -693,13 +694,7 @@ var StreamStats;
                 });
             };
             StudyAreaService.prototype.selectGage = function (gage) {
-                if () {
-                    do
-                        stuff;
-                    while ();
-                }
-                else if ()
-                    var sid = this.selectedStudyAreaExtensions.reduce(function (acc, val) { return acc.concat(val.parameters); }, []).filter(function (f) { return (f.code).toLowerCase() == "sid"; });
+                var sid = this.selectedStudyAreaExtensions.reduce(function (acc, val) { return acc.concat(val.parameters); }, []).filter(function (f) { return (f.code).toLowerCase() == "sid"; });
                 var siteList = [];
                 var rg = new StreamStats.Models.ReferenceGage(gage.properties.Code, gage.properties.Name);
                 rg.Latitude_DD = gage.geometry.coordinates[0];

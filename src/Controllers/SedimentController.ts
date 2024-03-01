@@ -90,8 +90,10 @@ module StreamStats.Controllers {
         private init(): void {
             this.isBusy = false;
 
-            this.selectedReferenceGage = new Models.ReferenceGage("", ""); 
-
+            if (this.studyAreaService.sedimentModelData != null && this.studyAreaService.sedimentModelData.selectedGage == null) {
+                this.selectedReferenceGage = new Models.ReferenceGage("", ""); 
+            } 
+            
             // Load list of reference gages from Flow Anywhere Gages service
             this.referenceGageList = null;
             var lat = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
@@ -302,7 +304,9 @@ module StreamStats.Controllers {
 
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
             this.referenceGageList = []; // reset nearby gages
-            this.selectedReferenceGage.StationID = ''; // reset selected gage
+            if (this.selectedReferenceGage != null) {
+                this.selectedReferenceGage.StationID = '';
+            } // reset selected gage
             this.Execute(request).then(
                 (response: any) => {
                     this.toaster.clear();
@@ -391,7 +395,7 @@ module StreamStats.Controllers {
         }
 
         public getStyling(gage) {
-            if (gage.StationID == this.selectedReferenceGage.StationID) 
+            if (this.selectedReferenceGage !== null && gage.StationID == this.selectedReferenceGage.StationID) 
                 return {'background-color': '#ebf0f5' }
             else
                 return {'background-color': 'unset'}

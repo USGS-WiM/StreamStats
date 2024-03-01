@@ -58,7 +58,9 @@ var StreamStats;
             };
             SedimentController.prototype.init = function () {
                 this.isBusy = false;
-                this.selectedReferenceGage = new StreamStats.Models.ReferenceGage("", "");
+                if (this.studyAreaService.sedimentModelData != null && this.studyAreaService.sedimentModelData.selectedGage == null) {
+                    this.selectedReferenceGage = new StreamStats.Models.ReferenceGage("", "");
+                }
                 this.referenceGageList = null;
                 var lat = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toString();
                 var lon = this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toString();
@@ -226,7 +228,9 @@ var StreamStats;
                     url += configuration.queryparams.GageStatsServicesNetwork.format(lat, long, (this.distance * 1.60934).toFixed(0));
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json', '', headers);
                 this.referenceGageList = [];
-                this.selectedReferenceGage.StationID = '';
+                if (this.selectedReferenceGage != null) {
+                    this.selectedReferenceGage.StationID = '';
+                }
                 this.Execute(request).then(function (response) {
                     _this.toaster.clear();
                     _this.isBusy = false;
@@ -314,7 +318,7 @@ var StreamStats;
                 this.studyAreaService.selectedGage = rg;
             };
             SedimentController.prototype.getStyling = function (gage) {
-                if (gage.StationID == this.selectedReferenceGage.StationID)
+                if (this.selectedReferenceGage !== null && gage.StationID == this.selectedReferenceGage.StationID)
                     return { 'background-color': '#ebf0f5' };
                 else
                     return { 'background-color': 'unset' };
