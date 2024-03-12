@@ -300,7 +300,6 @@ module StreamStats.Controllers {
                         exporting : { buttons: {contextButton: {menuItems: string[]}}},
                         xAxis: {  type: string, events: { afterSetExtremes: Function}, gridLineWidth: number, min: number, max: number, title: {text: string}, custom: { allowNegativeLog: Boolean }},
                         yAxis: { title: {text: string}, gridLineWidth: number, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
-                        plotOptions: { series: {events: {legendItemClick: Function}}},
                         series: { name: string; showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
                                 fillOpacity: number, lineWidth: number, data: number[], linkedTo: string, visible: boolean, id: string, zIndex: number, marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
         dischargeChartConfig: {  
@@ -2479,7 +2478,7 @@ module StreamStats.Controllers {
                     squareSymbol: null,
                     labelFormatter: function() {
                     return this.name
-                    //     if (this.name === 'Shaded Daily Statistics') {
+                    //     if (this.name === 'Shaded Daily Statistics') { //leaving this here in case we want to workshop a custom legend item more in the future
                     //     return this.name + '<img src="./images/shadedLegend.png" width="15" height="15">'
                     // } else {
                     //     return this.name
@@ -2487,7 +2486,7 @@ module StreamStats.Controllers {
                 }
                 },
                 subtitle: {
-                    text: 'Click and drag to zoom in. Hold down shift key to pan.<br>AEP = Annual Exceedance Probability',
+                    text: 'Click and drag to zoom in. Hold down shift key to pan.<br>Click legend items to toggle data off and on.<br>AEP = Annual Exceedance Probability',
                     align: 'center'
                 },
                 rangeSelector: {
@@ -2513,15 +2512,9 @@ module StreamStats.Controllers {
                     type: 'datetime',
                     events: {
                         afterSetExtremes: function() {
-                            //console.log('the x axis has been resized')
-                            // let chart = $('#chart1').highcharts();
-                            // chart.showLoading('Loading...')
-                            // setTimeout(() => {
                                 self.updateShadedStats();
                                 self.updatePeaksAfterZoom();
                                 self.updateFloodStats();
-                                //chart.hideLoading();
-                            // }, 100);
                             }
                     },
                     gridLineWidth: 0,
@@ -2543,19 +2536,6 @@ module StreamStats.Controllers {
                         allowNegativeLog: true
                     },
                     plotLines: [{value: null, color: null, width: null, zIndex: null, label: {text: null}, id: 'plotlines'}]
-                },
-                plotOptions: {
-                    series: {
-                        events: {
-                            legendItemClick: function () {
-                                const visibility = this.visible ? 'visible' : 'hidden';
-                                if (!confirm('The series is currently ' +
-                                            visibility + '. Do you want to change that?')) {
-                                    return false;
-                                }
-                            }
-                        }
-                    }
                 },
                 series  : [
                 {
@@ -3507,7 +3487,7 @@ public createDischargePlot(): void {
             align: 'center'
         },
         subtitle: {
-            text: 'Click and drag in the plot area to zoom in',
+            text: 'Click and drag in the plot area to zoom in.<br>Click legend items to toggle data off and on.',
             align: 'center'
         },
         xAxis: {
@@ -3799,7 +3779,7 @@ public createDailyRasterPlot(): void {
             align: 'center'
         },
         subtitle: {
-            text: 'Click and drag in the plot area to zoom in',
+            text: 'Click and drag in the plot area to zoom in.<br>Click legend items to toggle data off and on.',
             align: 'center'
         },
         xAxis: {
@@ -4195,7 +4175,6 @@ public createDailyRasterPlot(): void {
 
         public updateFloodStats() {
             let chart = $('#chart1').highcharts();
-            console.log('called')
             let extremes = chart.xAxis[0].getExtremes();
             let min = new Date(extremes.min)
             let max = new Date(extremes.max)
@@ -4207,7 +4186,6 @@ public createDailyRasterPlot(): void {
             chart.series.forEach(series => {
                 if (series.name.includes('AEP flood')) {
                     if (series.linkedParent.name === this.selectedFloodFreqStats.name) {
-                        console.log('hitting');
                         series.update({visible: true});
                         let AEPformattedName = series.name.substring(0, series.name.length-18);
                         series.update({data: [
@@ -4234,7 +4212,6 @@ public createDailyRasterPlot(): void {
                 } 
                 if (series.name.includes('Year Low Flow')) {
                     if (series.linkedParent.name === this.selectedFloodFreqStats.name) {
-                        console.log('here');
                         series.update({visible: true});
                         let lowFlowFormattedName = series.name.replaceAll('_',' ');
                         series.update({data: [

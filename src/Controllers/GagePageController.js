@@ -2096,7 +2096,7 @@ var StreamStats;
                         }
                     },
                     subtitle: {
-                        text: 'Click and drag to zoom in. Hold down shift key to pan.<br>AEP = Annual Exceedance Probability',
+                        text: 'Click and drag to zoom in. Hold down shift key to pan.<br>Click legend items to toggle data off and on.<br>AEP = Annual Exceedance Probability',
                         align: 'center'
                     },
                     rangeSelector: {
@@ -2146,19 +2146,6 @@ var StreamStats;
                             allowNegativeLog: true
                         },
                         plotLines: [{ value: null, color: null, width: null, zIndex: null, label: { text: null }, id: 'plotlines' }]
-                    },
-                    plotOptions: {
-                        series: {
-                            events: {
-                                legendItemClick: function () {
-                                    var visibility = this.visible ? 'visible' : 'hidden';
-                                    if (!confirm('The series is currently ' +
-                                        visibility + '. Do you want to change that?')) {
-                                        return false;
-                                    }
-                                }
-                            }
-                        }
                     },
                     series: [
                         {
@@ -3107,7 +3094,7 @@ var StreamStats;
                         align: 'center'
                     },
                     subtitle: {
-                        text: 'Click and drag in the plot area to zoom in',
+                        text: 'Click and drag in the plot area to zoom in.<br>Click legend items to toggle data off and on.',
                         align: 'center'
                     },
                     xAxis: {
@@ -3396,7 +3383,7 @@ var StreamStats;
                         align: 'center'
                     },
                     subtitle: {
-                        text: 'Click and drag in the plot area to zoom in',
+                        text: 'Click and drag in the plot area to zoom in.<br>Click legend items to toggle data off and on.',
                         align: 'center'
                     },
                     xAxis: {
@@ -3790,7 +3777,6 @@ var StreamStats;
             GagePageController.prototype.updateFloodStats = function () {
                 var _this_1 = this;
                 var chart = $('#chart1').highcharts();
-                console.log('called');
                 var extremes = chart.xAxis[0].getExtremes();
                 var min = new Date(extremes.min);
                 var max = new Date(extremes.max);
@@ -3802,7 +3788,6 @@ var StreamStats;
                 chart.series.forEach(function (series) {
                     if (series.name.includes('AEP flood')) {
                         if (series.linkedParent.name === _this_1.selectedFloodFreqStats.name) {
-                            console.log('hitting');
                             series.update({ visible: true });
                             var AEPformattedName_1 = series.name.substring(0, series.name.length - 18);
                             series.update({ data: [
@@ -3830,7 +3815,6 @@ var StreamStats;
                     }
                     if (series.name.includes('Year Low Flow')) {
                         if (series.linkedParent.name === _this_1.selectedFloodFreqStats.name) {
-                            console.log('here');
                             series.update({ visible: true });
                             var lowFlowFormattedName_1 = series.name.replaceAll('_', ' ');
                             series.update({ data: [
