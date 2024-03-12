@@ -3286,6 +3286,7 @@ public chooseFloodStats() {
     let chart = $('#chart1').highcharts();
     chart.showLoading('Loading...')
     setTimeout(() => {
+        this.updateFloodStats();
         let extremes = chart.xAxis[0].getExtremes();
         let min = new Date(extremes.min)
         let max = new Date(extremes.max)
@@ -3317,7 +3318,6 @@ public chooseFloodStats() {
         }
         chart.hideLoading();
     }, 100);
-    this.updateFloodStats(); //this messes up the way the loading message works, but allows the printing to look right for some reason
 }
 
 //dropdown for choosing year to plot peaks
@@ -4195,6 +4195,7 @@ public createDailyRasterPlot(): void {
 
         public updateFloodStats() {
             let chart = $('#chart1').highcharts();
+            console.log('called')
             let extremes = chart.xAxis[0].getExtremes();
             let min = new Date(extremes.min)
             let max = new Date(extremes.max)
@@ -4206,6 +4207,7 @@ public createDailyRasterPlot(): void {
             chart.series.forEach(series => {
                 if (series.name.includes('AEP flood')) {
                     if (series.linkedParent.name === this.selectedFloodFreqStats.name) {
+                        console.log('hitting');
                         series.update({visible: true});
                         let AEPformattedName = series.name.substring(0, series.name.length-18);
                         series.update({data: [
@@ -4232,6 +4234,7 @@ public createDailyRasterPlot(): void {
                 } 
                 if (series.name.includes('Year Low Flow')) {
                     if (series.linkedParent.name === this.selectedFloodFreqStats.name) {
+                        console.log('here');
                         series.update({visible: true});
                         let lowFlowFormattedName = series.name.replaceAll('_',' ');
                         series.update({data: [
