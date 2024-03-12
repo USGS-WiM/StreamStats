@@ -800,6 +800,15 @@ div.leaflet-top > .elevation {
             background-color: #0db9f0 !important;
         } 
 
+        .highcharts-no-tooltip.highcharts-button.highcharts-reset-zoom.highcharts-button-normal {
+            color: transparent;
+            display: none !important;
+            height: 0px;
+            width: 0px
+        }
+        .highcharts-tooltip { 
+            display: none; 
+        }
         /* gageplots formatting end */
 
         .hidden-print {

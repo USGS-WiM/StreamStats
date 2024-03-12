@@ -537,7 +537,6 @@ var StreamStats;
                 var _this_1 = this;
                 var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.gage.code;
                 this.floodStatsURL = url;
-                console.log('GetFloodFreqURL', url);
                 var request = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
                 this.Execute(request).then(function (response) {
                     var data = response.data;
@@ -623,7 +622,6 @@ var StreamStats;
                         }
                     } while (data.length > 0);
                     _this_1.floodFreq = AEPchartData;
-                    console.log(_this_1.floodFreq);
                     _this_1.altFloodFreq = altAEPchartData;
                     _this_1.oneDayStats = oneDayChartData;
                     _this_1.sevenDayStats = sevenDayChartData;
@@ -2149,6 +2147,19 @@ var StreamStats;
                         },
                         plotLines: [{ value: null, color: null, width: null, zIndex: null, label: { text: null }, id: 'plotlines' }]
                     },
+                    plotOptions: {
+                        series: {
+                            events: {
+                                legendItemClick: function () {
+                                    var visibility = this.visible ? 'visible' : 'hidden';
+                                    if (!confirm('The series is currently ' +
+                                        visibility + '. Do you want to change that?')) {
+                                        return false;
+                                    }
+                                }
+                            }
+                        }
+                    },
                     series: [
                         {
                             name: 'Annual Peak Streamflow',
@@ -2895,18 +2906,18 @@ var StreamStats;
                             chart.series[index].hide();
                             chart.series[index].update({ data: [{
                                         x: new Date(minAndMax.min),
-                                        y: 5000
+                                        y: chart.series[index].processedYData[0]
                                     }, {
                                         x: new Date(minAndMax.max),
-                                        y: 5000
+                                        y: chart.series[index].processedYData[1]
                                     }
                                 ] });
                         });
                         floodSeries.show();
                     }
-                    _this_1.updateFloodStats();
                     chart.hideLoading();
                 }, 100);
+                this.updateFloodStats();
             };
             GagePageController.prototype.choosePeakYear = function () {
                 var _this_1 = this;
@@ -3790,6 +3801,7 @@ var StreamStats;
                 chart.series.forEach(function (series) {
                     if (series.name.includes('AEP flood')) {
                         if (series.linkedParent.name === _this_1.selectedFloodFreqStats.name) {
+                            series.update({ visible: true });
                             var AEPformattedName_1 = series.name.substring(0, series.name.length - 18);
                             series.update({ data: [
                                     {
@@ -3810,9 +3822,13 @@ var StreamStats;
                                     }
                                 } });
                         }
+                        else {
+                            series.update({ visible: false });
+                        }
                     }
-                    if (series.name.includes('Year Low Flow') && series.linkedParent.name === _this_1.selectedFloodFreqStats.name) {
+                    if (series.name.includes('Year Low Flow')) {
                         if (series.linkedParent.name === _this_1.selectedFloodFreqStats.name) {
+                            series.update({ visible: true });
                             var lowFlowFormattedName_1 = series.name.replaceAll('_', ' ');
                             series.update({ data: [
                                     {
@@ -3832,6 +3848,9 @@ var StreamStats;
                                         }
                                     }
                                 } });
+                        }
+                        else {
+                            series.update({ visible: false });
                         }
                     }
                 });

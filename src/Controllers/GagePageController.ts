@@ -300,6 +300,7 @@ module StreamStats.Controllers {
                         exporting : { buttons: {contextButton: {menuItems: string[]}}},
                         xAxis: {  type: string, events: { afterSetExtremes: Function}, gridLineWidth: number, min: number, max: number, title: {text: string}, custom: { allowNegativeLog: Boolean }},
                         yAxis: { title: {text: string}, gridLineWidth: number, custom: { allowNegativeLog: Boolean }, plotLines: [{value: number, color: string, width: number, zIndex: number, label: {text: string}, id: string}]},
+                        plotOptions: { series: {events: {legendItemClick: Function}}},
                         series: { name: string; showInNavigator: boolean, tooltip: { headerFormat: string, pointFormatter: Function}, turboThreshold: number; type: string, color: string, 
                                 fillOpacity: number, lineWidth: number, data: number[], linkedTo: string, visible: boolean, id: string, zIndex: number, marker: {symbol: string, radius: number}, showInLegend: boolean; }[]; };
         dischargeChartConfig: {  
@@ -792,7 +793,7 @@ module StreamStats.Controllers {
         public getFloodFreq() {
             var url = configuration.baseurls.GageStatsServices + configuration.queryparams.GageStatsServicesStations + this.gage.code;
             this.floodStatsURL = url;
-            console.log('GetFloodFreqURL', url)
+            //console.log('GetFloodFreqURL', url)
             var request: WiM.Services.Helpers.RequestInfo = new WiM.Services.Helpers.RequestInfo(url, true, WiM.Services.Helpers.methodType.GET, 'json');
             this.Execute(request).then(
                 (response: any) => {
@@ -879,7 +880,6 @@ module StreamStats.Controllers {
                         }
                 } while (data.length > 0);
                 this.floodFreq = AEPchartData;
-                console.log(this.floodFreq);
                 this.altFloodFreq = altAEPchartData;
                 this.oneDayStats = oneDayChartData;
                 this.sevenDayStats = sevenDayChartData;
@@ -2544,6 +2544,19 @@ module StreamStats.Controllers {
                     },
                     plotLines: [{value: null, color: null, width: null, zIndex: null, label: {text: null}, id: 'plotlines'}]
                 },
+                plotOptions: {
+                    series: {
+                        events: {
+                            legendItemClick: function () {
+                                const visibility = this.visible ? 'visible' : 'hidden';
+                                if (!confirm('The series is currently ' +
+                                            visibility + '. Do you want to change that?')) {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                },
                 series  : [
                 {
                     name    : 'Annual Peak Streamflow',
@@ -3293,18 +3306,18 @@ public chooseFloodStats() {
                 chart.series[index].hide();
                 chart.series[index].update({data: [{
                     x: new Date(minAndMax.min),
-                    y: 5000
+                    y: chart.series[index].processedYData[0]
                     },{
                     x: new Date(minAndMax.max),
-                    y: 5000
+                    y: chart.series[index].processedYData[1]
                     }
                 ]})
             })
             floodSeries.show();
         }
-        this.updateFloodStats();
         chart.hideLoading();
     }, 100);
+    this.updateFloodStats(); //this messes up the way the loading message works, but allows the printing to look right for some reason
 }
 
 //dropdown for choosing year to plot peaks
@@ -4193,6 +4206,7 @@ public createDailyRasterPlot(): void {
             chart.series.forEach(series => {
                 if (series.name.includes('AEP flood')) {
                     if (series.linkedParent.name === this.selectedFloodFreqStats.name) {
+                        series.update({visible: true});
                         let AEPformattedName = series.name.substring(0, series.name.length-18);
                         series.update({data: [
                             {
@@ -4212,10 +4226,13 @@ public createDailyRasterPlot(): void {
                                 }
                             } 
                         }})       
+                    } else {
+                        series.update({visible: false}); // this is solely for printing purposes, otherwise hidden series show up :/
                     }
-                }
-                if (series.name.includes('Year Low Flow') && series.linkedParent.name === this.selectedFloodFreqStats.name) {
+                } 
+                if (series.name.includes('Year Low Flow')) {
                     if (series.linkedParent.name === this.selectedFloodFreqStats.name) {
+                        series.update({visible: true});
                         let lowFlowFormattedName = series.name.replaceAll('_',' ');
                         series.update({data: [
                             {
@@ -4235,8 +4252,10 @@ public createDailyRasterPlot(): void {
                                 }
                             } 
                         }})    
+                        } else {
+                            series.update({visible: false}); // this is solely for printing purposes, otherwise series show up :/
                         }
-                    }
+                    } 
             })
         }
 
