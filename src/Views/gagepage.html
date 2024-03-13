@@ -221,12 +221,13 @@
                             </table>
                         </div>
                     </div>
+                    <div style="break-after:page"></div>
                     <div ng-if="!vm.chartConfig" class="panel panel-default reportSpinner">
                         &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
                     </div>
                     <center>
                         <div class="well well-sm" style="background-color:#EBF0F5;" ng-if="vm.chartConfig">
-                            <highchart id="chart1" config="vm.chartConfig" ng-init="vm.destroyResetZoom()"></highchart>
+                            <highchart class="highchart" id="chart1" config="vm.chartConfig" ng-init="vm.destroyResetZoom()"></highchart>
                             <div class="plot-filters">
                                 <label for="dischargeStart"> Start Date:</label>
                                 <input type="date" style="width:12%;" id="dischargeStart" ng-value="vm.extremes.min">&nbsp;
@@ -262,6 +263,7 @@
                                 </div>
                         </div>
                     </center>
+                    <div style="break-after:page"></div>
                     <center>
                         <div ng-if="!vm.heatChartConfig" class="panel panel-default reportSpinner">
                             &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
@@ -275,6 +277,7 @@
                             </div>
                         </div>
                     </center> 
+                    <div style="break-after:page"></div>
                     <center>
                         <div ng-if="!vm.dischargeChartConfig" class="panel panel-default reportSpinner">
                             &nbsp;<i class="fa fa-spinner fa-3x fa-spin loadingSpinner"></i>
@@ -317,25 +320,25 @@
                                     </div>
                                 <div ng-show="vm.USGSMeasuredAgeQualityData === 'age'"  style="clear:left; width: 230px;" ng-style="{'left': vm.logScaleDischarge ? '222px' : '680px', 'bottom': vm.logScaleDischarge ? '200px' : '220px'}">
                                     <div class="ageQualityLegend-item">
-                                        <span style="color: red;">Most Recent Measurement</span>
+                                        <span style="color: red !important;">Most Recent Measurement</span>
                                 </div>
                                 <div class="ageQualityLegend-item">
-                                    <span style="color: orange;">Measurements in the Last Year</span>
+                                    <span style="color: orange !important;">Measurements in the Last Year</span>
                                 </div>
                                 <div class="ageQualityLegend-item">
-                                    <span style="color: #0000cdcc;">Newer -&nbsp</span><span style="color: #0000cd4d;">Older Measurements</span>
+                                    <span style="color: #0000cdcc !important;">Newer -&nbsp</span><span style="color: #0000cd4d !important;">Older Measurements</span>
                                     </div>
                                 </div>
                                 
                                 <div ng-show="vm.USGSMeasuredAgeQualityData === 'quality'"  style="clear:left; width: 130px;" ng-style="{'left': vm.logScaleDischarge ? '222px' : '680px', 'bottom': vm.logScaleDischarge ? '200px' : '220px'}">
                                     <div class="ageQualityLegend-item">
-                                        <span style="color:#2ED017;">Excellent - Good</span>
+                                        <span style="color:#2ED017 !important;">Excellent - Good</span>
                                 </div>
                                 <div class="ageQualityLegend-item">
-                                    <span style="color:#E7F317;">Fair</span>
+                                    <span style="color:#E7F317 !important;">Fair</span>
                                 </div>
                                 <div class="ageQualityLegend-item">
-                                    <span style="color: #FFA200;">Poor</span>
+                                    <span style="color: #FFA200 !important;">Poor</span>
                                 </div>
                                 </div>
                                 </div>

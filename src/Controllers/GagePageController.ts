@@ -943,8 +943,9 @@ module StreamStats.Controllers {
                     .toISOString()
                     .split("T")[0];
             let url;
-            let now = new Date()
-            let today = now.getUTCFullYear() + '-' + now.getUTCMonth() + 1 + '-' + now.getUTCDate();
+            let now = new Date();
+            let month = now.getUTCMonth() + 1;
+            let today = now.getUTCFullYear() + '-' + month + '-' + now.getUTCDate();
             if (this.instFlow.length > 0) {
                 url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01&endDT=' + twoWeeksAgo;
             } else {
@@ -2478,7 +2479,7 @@ module StreamStats.Controllers {
                     squareSymbol: null,
                     labelFormatter: function() {
                     return this.name
-                    //     if (this.name === 'Shaded Daily Statistics') {
+                    //     if (this.name === 'Shaded Daily Statistics') { //leaving this here in case we want to workshop a custom legend item more in the future
                     //     return this.name + '<img src="./images/shadedLegend.png" width="15" height="15">'
                     // } else {
                     //     return this.name
@@ -2486,7 +2487,7 @@ module StreamStats.Controllers {
                 }
                 },
                 subtitle: {
-                    text: 'Click and drag to zoom in. Hold down shift key to pan.<br>AEP = Annual Exceedance Probability',
+                    text: 'Click and drag to zoom in. Hold down shift key to pan.<br>Click legend items to toggle data off and on.<br>AEP = Annual Exceedance Probability',
                     align: 'center'
                 },
                 rangeSelector: {
@@ -2512,15 +2513,9 @@ module StreamStats.Controllers {
                     type: 'datetime',
                     events: {
                         afterSetExtremes: function() {
-                            //console.log('the x axis has been resized')
-                            // let chart = $('#chart1').highcharts();
-                            // chart.showLoading('Loading...')
-                            // setTimeout(() => {
                                 self.updateShadedStats();
                                 self.updatePeaksAfterZoom();
                                 self.updateFloodStats();
-                                //chart.hideLoading();
-                            // }, 100);
                             }
                     },
                     gridLineWidth: 0,
@@ -3272,6 +3267,7 @@ public chooseFloodStats() {
     let chart = $('#chart1').highcharts();
     chart.showLoading('Loading...')
     setTimeout(() => {
+        this.updateFloodStats();
         let extremes = chart.xAxis[0].getExtremes();
         let min = new Date(extremes.min)
         let max = new Date(extremes.max)
@@ -3292,16 +3288,15 @@ public chooseFloodStats() {
                 chart.series[index].hide();
                 chart.series[index].update({data: [{
                     x: new Date(minAndMax.min),
-                    y: 5000
+                    y: chart.series[index].processedYData[0]
                     },{
                     x: new Date(minAndMax.max),
-                    y: 5000
+                    y: chart.series[index].processedYData[1]
                     }
                 ]})
             })
             floodSeries.show();
         }
-        this.updateFloodStats();
         chart.hideLoading();
     }, 100);
 }
@@ -3493,7 +3488,7 @@ public createDischargePlot(): void {
             align: 'center'
         },
         subtitle: {
-            text: 'Click and drag in the plot area to zoom in',
+            text: 'Click and drag in the plot area to zoom in.<br>Click legend items to toggle data off and on.',
             align: 'center'
         },
         xAxis: {
@@ -3785,7 +3780,7 @@ public createDailyRasterPlot(): void {
             align: 'center'
         },
         subtitle: {
-            text: 'Click and drag in the plot area to zoom in',
+            text: 'Click and drag in the plot area to zoom in.<br>Click legend items to toggle data off and on.',
             align: 'center'
         },
         xAxis: {
@@ -4192,6 +4187,7 @@ public createDailyRasterPlot(): void {
             chart.series.forEach(series => {
                 if (series.name.includes('AEP flood')) {
                     if (series.linkedParent.name === this.selectedFloodFreqStats.name) {
+                        series.update({visible: true});
                         let AEPformattedName = series.name.substring(0, series.name.length-18);
                         series.update({data: [
                             {
@@ -4211,10 +4207,13 @@ public createDailyRasterPlot(): void {
                                 }
                             } 
                         }})       
+                    } else {
+                        series.update({visible: false}); // this is solely for printing purposes, otherwise hidden series show up :/
                     }
-                }
-                if (series.name.includes('Year Low Flow') && series.linkedParent.name === this.selectedFloodFreqStats.name) {
+                } 
+                if (series.name.includes('Year Low Flow')) {
                     if (series.linkedParent.name === this.selectedFloodFreqStats.name) {
+                        series.update({visible: true});
                         let lowFlowFormattedName = series.name.replaceAll('_',' ');
                         series.update({data: [
                             {
@@ -4234,8 +4233,10 @@ public createDailyRasterPlot(): void {
                                 }
                             } 
                         }})    
+                        } else {
+                            series.update({visible: false}); // this is solely for printing purposes, otherwise series show up :/
                         }
-                    }
+                    } 
             })
         }
 

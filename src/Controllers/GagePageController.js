@@ -683,7 +683,8 @@ var StreamStats;
                     .split("T")[0];
                 var url;
                 var now = new Date();
-                var today = now.getUTCFullYear() + '-' + now.getUTCMonth() + 1 + '-' + now.getUTCDate();
+                var month = now.getUTCMonth() + 1;
+                var today = now.getUTCFullYear() + '-' + month + '-' + now.getUTCDate();
                 if (this.instFlow.length > 0) {
                     url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01&endDT=' + twoWeeksAgo;
                 }
@@ -2096,7 +2097,7 @@ var StreamStats;
                         }
                     },
                     subtitle: {
-                        text: 'Click and drag to zoom in. Hold down shift key to pan.<br>AEP = Annual Exceedance Probability',
+                        text: 'Click and drag to zoom in. Hold down shift key to pan.<br>Click legend items to toggle data off and on.<br>AEP = Annual Exceedance Probability',
                         align: 'center'
                     },
                     rangeSelector: {
@@ -2873,6 +2874,7 @@ var StreamStats;
                 var chart = $('#chart1').highcharts();
                 chart.showLoading('Loading...');
                 setTimeout(function () {
+                    _this_1.updateFloodStats();
                     var extremes = chart.xAxis[0].getExtremes();
                     var min = new Date(extremes.min);
                     var max = new Date(extremes.max);
@@ -2893,16 +2895,15 @@ var StreamStats;
                             chart.series[index].hide();
                             chart.series[index].update({ data: [{
                                         x: new Date(minAndMax.min),
-                                        y: 5000
+                                        y: chart.series[index].processedYData[0]
                                     }, {
                                         x: new Date(minAndMax.max),
-                                        y: 5000
+                                        y: chart.series[index].processedYData[1]
                                     }
                                 ] });
                         });
                         floodSeries.show();
                     }
-                    _this_1.updateFloodStats();
                     chart.hideLoading();
                 }, 100);
             };
@@ -3094,7 +3095,7 @@ var StreamStats;
                         align: 'center'
                     },
                     subtitle: {
-                        text: 'Click and drag in the plot area to zoom in',
+                        text: 'Click and drag in the plot area to zoom in.<br>Click legend items to toggle data off and on.',
                         align: 'center'
                     },
                     xAxis: {
@@ -3383,7 +3384,7 @@ var StreamStats;
                         align: 'center'
                     },
                     subtitle: {
-                        text: 'Click and drag in the plot area to zoom in',
+                        text: 'Click and drag in the plot area to zoom in.<br>Click legend items to toggle data off and on.',
                         align: 'center'
                     },
                     xAxis: {
@@ -3788,6 +3789,7 @@ var StreamStats;
                 chart.series.forEach(function (series) {
                     if (series.name.includes('AEP flood')) {
                         if (series.linkedParent.name === _this_1.selectedFloodFreqStats.name) {
+                            series.update({ visible: true });
                             var AEPformattedName_1 = series.name.substring(0, series.name.length - 18);
                             series.update({ data: [
                                     {
@@ -3808,9 +3810,13 @@ var StreamStats;
                                     }
                                 } });
                         }
+                        else {
+                            series.update({ visible: false });
+                        }
                     }
-                    if (series.name.includes('Year Low Flow') && series.linkedParent.name === _this_1.selectedFloodFreqStats.name) {
+                    if (series.name.includes('Year Low Flow')) {
                         if (series.linkedParent.name === _this_1.selectedFloodFreqStats.name) {
+                            series.update({ visible: true });
                             var lowFlowFormattedName_1 = series.name.replaceAll('_', ' ');
                             series.update({ data: [
                                     {
@@ -3830,6 +3836,9 @@ var StreamStats;
                                         }
                                     }
                                 } });
+                        }
+                        else {
+                            series.update({ visible: false });
                         }
                     }
                 });
