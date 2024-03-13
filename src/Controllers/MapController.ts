@@ -901,7 +901,7 @@ module StreamStats.Controllers {
                             totalDistance += one.distanceTo(two);
                         }
                           
-                        if (totalDistance > 4828.03) { // line is longer than 3.0 miles
+                        if (totalDistance > 16093.4) { // line is longer than 10.0 miles
                             this.studyArea.resetDelineationButtons();
                             map.removeLayer(this.delineationLine)
                             // remove listeners
@@ -909,9 +909,14 @@ module StreamStats.Controllers {
                             map.off("draw:created", lineStop);
                             this.drawControl.disable();
                             // throw error
-                            this.toaster.pop("error", "Error", "Delineation not possible. Line must be shorter than 3.0 miles.", 0);
+                            this.toaster.pop("error", "Error", "Delineation not possible. Line must be shorter than 10.0 miles.", 0);
                             throw new Error;
                         } else {
+
+                            if (totalDistance > 4828.03) { // line is longer than 3.0 miles
+                                this.toaster.pop("warning", "Long delineation line", "Delineation may take several minutes.", 0);
+                            }
+
                             // remove listeners
                             map.off("draw:drawvertex", lineStart);
                             map.off("draw:created", lineStop);
@@ -1006,13 +1011,13 @@ module StreamStats.Controllers {
             //make sure were still at level 15 or greater
             this.leafletData.getMap("mainMap").then((map: any) => {
                 this.leafletData.getLayers("mainMap").then((maplayers: any) => {
-                    if (map.getZoom() < 15) {
-                        this.toaster.pop("error", "Delineation not allowed at this zoom level", 'Please zoom in to level 15 or greater', 5000);
-                    }
+                    // if (map.getZoom() < 15) {
+                    //     this.toaster.pop("error", "Delineation not allowed at this zoom level", 'Please zoom in to level 15 or greater', 5000);
+                    // }
 
                     //good to go
-                    else {
-                        this.toaster.clear();
+                    // else {
+                        // this.toaster.clear();
                         this.studyArea.checkingDelineatedLine = true;
 
                         this.toaster.pop("info", "Information", "Validating your line...", true, 0);
@@ -1040,7 +1045,7 @@ module StreamStats.Controllers {
                                     if (point.type == 1){ 
                                         if (this.studyArea.ignoreExclusionPolygons) { // If user has selected to ignore exclusion polygons (not an option on Production)
                                             this.toaster.pop("warning", "Delineation and flow statistic computation not allowed here", point.message.text, 0); // Warn the user
-                                            this.toaster.pop("success", "Ignoring exclusion areas", "Delineating your basin now...", 5000) // Proceed with delineation
+                                            this.toaster.pop("success", "Ignoring exclusion areas", "Delineating your basins now...", 5000) // Proceed with delineation
                                             gtag('event', 'ValidatePoint',{ 'Label': 'Invalid (exclusion polygons ignored)' });
                                         } else { // If exclusion polygons are being considered
                                             // Prohibit delineation
@@ -1057,7 +1062,7 @@ module StreamStats.Controllers {
                                 }
                             });
                             if (valid) {
-                                this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
+                                this.toaster.pop("success", "Your delineation line is valid", "Delineating your basins now...", 5000);
                                 this.studyArea.checkingDelineatedLine = false;
                                 this.markers = {}
                                 var ssPoints: Array<WiM.Models.Point> = []
@@ -1085,7 +1090,7 @@ module StreamStats.Controllers {
                         }).finally(() => {
                             // this.CanContinue = true;
                         });
-                    }
+                    // }
                 });
             });
         }
