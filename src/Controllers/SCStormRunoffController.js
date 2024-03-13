@@ -626,10 +626,7 @@ var StreamStats;
                             response.data[0].regressionRegions.forEach(function (regressionregion) {
                                 if (regressionregion.code == 'GC1583' || regressionregion.code == 'GC1584' || regressionregion.code == 'GC1585' || regressionregion.code == 'GC1586') {
                                     regressionregion.results.forEach(function (result) {
-                                        console.log(_this.SelectedAEP.value);
-                                        console.log(result);
                                         if (result.code == 'U' + _this.SelectedAEP.code) {
-                                            console.log('inside');
                                             weightedAEP += (result.value * (regressionregion.percentWeight / 100.0));
                                         }
                                     });
@@ -652,10 +649,7 @@ var StreamStats;
                             response.data[0].regressionRegions.forEach(function (regressionregion) {
                                 if (regressionregion.citationID == 191) {
                                     regressionregion.results.forEach(function (result) {
-                                        console.log(_this.SelectedAEP.value);
-                                        console.log(result);
                                         if (result.code == _this.SelectedAEP.code) {
-                                            console.log('inside');
                                             weightedAEP += (result.value * (regressionregion.percentWeight / 100.0));
                                         }
                                     });

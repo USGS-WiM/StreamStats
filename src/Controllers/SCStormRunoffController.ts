@@ -827,10 +827,7 @@ module StreamStats.Controllers {
                             response.data[0].regressionRegions.forEach(regressionregion => {
                                 if (regressionregion.code == 'GC1583' || regressionregion.code == 'GC1584' || regressionregion.code == 'GC1585' || regressionregion.code == 'GC1586') {
                                     regressionregion.results.forEach(result => {
-                                        console.log(this.SelectedAEP.value)
-                                        console.log(result)
                                         if (result.code == 'U' + this.SelectedAEP.code){ // Need to add a U to code for Urban
-                                            console.log('inside')
                                             weightedAEP += (result.value * (regressionregion.percentWeight / 100.0));
                                         }
                                     })
@@ -853,10 +850,7 @@ module StreamStats.Controllers {
                             response.data[0].regressionRegions.forEach(regressionregion => {
                                 if (regressionregion.citationID == 191) { //2022, Magnitude and Frequency of Floods for Rural Streams in Georgia, South Carolina, and North Carolina, 2017--Results
                                     regressionregion.results.forEach(result => {
-                                        console.log(this.SelectedAEP.value)
-                                        console.log(result)
                                         if (result.code == this.SelectedAEP.code){
-                                            console.log('inside')
                                             weightedAEP += (result.value * (regressionregion.percentWeight / 100.0));
                                         }
                                     })
