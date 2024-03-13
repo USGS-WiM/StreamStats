@@ -47,27 +47,35 @@ var StreamStats;
                 _this.isSyntheticUHOpen = false;
                 _this.AEPOptions = [{
                         "name": "50%",
+                        "code": "PK50AEP",
                         "value": 50
                     }, {
                         "name": "20%",
+                        "code": "PK20AEP",
                         "value": 20
                     }, {
                         "name": "10%",
+                        "code": "PK10AEP",
                         "value": 10
                     }, {
                         "name": "4%",
+                        "code": "PK4AEP",
                         "value": 4
                     }, {
                         "name": "2%",
+                        "code": "PK2AEP",
                         "value": 2
                     }, {
                         "name": "1%",
+                        "code": "PK1AEP",
                         "value": 1
                     }, {
                         "name": ".5%",
+                        "code": "PK0_5AEP",
                         "value": 0.5
                     }, {
                         "name": ".2%",
+                        "code": "PK0_2AEP",
                         "value": 0.2
                     }];
                 _this.prfForm = {
@@ -618,7 +626,7 @@ var StreamStats;
                             response.data[0].regressionRegions.forEach(function (regressionregion) {
                                 if (regressionregion.code == 'GC1583' || regressionregion.code == 'GC1584' || regressionregion.code == 'GC1585' || regressionregion.code == 'GC1586') {
                                     regressionregion.results.forEach(function (result) {
-                                        if (result.name.indexOf(_this.SelectedAEP.value) !== -1) {
+                                        if (result.code == 'U' + _this.SelectedAEP.code) {
                                             weightedAEP += (result.value * (regressionregion.percentWeight / 100.0));
                                         }
                                     });
@@ -641,7 +649,7 @@ var StreamStats;
                             response.data[0].regressionRegions.forEach(function (regressionregion) {
                                 if (regressionregion.citationID == 191) {
                                     regressionregion.results.forEach(function (result) {
-                                        if (result.name.indexOf(_this.SelectedAEP.value) !== -1) {
+                                        if (result.code == _this.SelectedAEP.code) {
                                             weightedAEP += (result.value * (regressionregion.percentWeight / 100.0));
                                         }
                                     });

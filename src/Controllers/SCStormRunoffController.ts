@@ -112,27 +112,35 @@ module StreamStats.Controllers {
 
         public AEPOptions = [{
             "name": "50%",
+            "code": "PK50AEP",
             "value": 50
           }, {
             "name": "20%",
+            "code": "PK20AEP",
             "value": 20
           }, {
             "name": "10%",
+            "code": "PK10AEP",
             "value": 10
         }, {
             "name": "4%",
+            "code": "PK4AEP",
             "value": 4
         }, {
             "name": "2%",
+            "code": "PK2AEP",
             "value": 2
         }, {
             "name": "1%",
+            "code": "PK1AEP",
             "value": 1
         }, {
             "name": ".5%",
+            "code": "PK0_5AEP",
             "value": 0.5
         }, {
             "name": ".2%",
+            "code": "PK0_2AEP",
             "value": 0.2
         }];
         private _selectedAEP;
@@ -819,7 +827,7 @@ module StreamStats.Controllers {
                             response.data[0].regressionRegions.forEach(regressionregion => {
                                 if (regressionregion.code == 'GC1583' || regressionregion.code == 'GC1584' || regressionregion.code == 'GC1585' || regressionregion.code == 'GC1586') {
                                     regressionregion.results.forEach(result => {
-                                        if (result.name.indexOf(this.SelectedAEP.value) !== -1){
+                                        if (result.code == 'U' + this.SelectedAEP.code){ // Need to add a U to code for Urban
                                             weightedAEP += (result.value * (regressionregion.percentWeight / 100.0));
                                         }
                                     })
@@ -842,7 +850,7 @@ module StreamStats.Controllers {
                             response.data[0].regressionRegions.forEach(regressionregion => {
                                 if (regressionregion.citationID == 191) { //2022, Magnitude and Frequency of Floods for Rural Streams in Georgia, South Carolina, and North Carolina, 2017--Results
                                     regressionregion.results.forEach(result => {
-                                        if (result.name.indexOf(this.SelectedAEP.value) !== -1){
+                                        if (result.code == this.SelectedAEP.code){
                                             weightedAEP += (result.value * (regressionregion.percentWeight / 100.0));
                                         }
                                     })
