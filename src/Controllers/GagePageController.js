@@ -683,7 +683,8 @@ var StreamStats;
                     .split("T")[0];
                 var url;
                 var now = new Date();
-                var today = now.getUTCFullYear() + '-' + now.getUTCMonth() + 1 + '-' + now.getUTCDate();
+                var month = now.getUTCMonth() + 1;
+                var today = now.getUTCFullYear() + '-' + month + '-' + now.getUTCDate();
                 if (this.instFlow.length > 0) {
                     url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01&endDT=' + twoWeeksAgo;
                 }

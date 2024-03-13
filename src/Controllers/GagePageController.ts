@@ -943,8 +943,9 @@ module StreamStats.Controllers {
                     .toISOString()
                     .split("T")[0];
             let url;
-            let now = new Date()
-            let today = now.getUTCFullYear() + '-' + now.getUTCMonth() + 1 + '-' + now.getUTCDate();
+            let now = new Date();
+            let month = now.getUTCMonth() + 1;
+            let today = now.getUTCFullYear() + '-' + month + '-' + now.getUTCDate();
             if (this.instFlow.length > 0) {
                 url = 'https://nwis.waterservices.usgs.gov/nwis/dv/?format=json&sites=' + this.gage.code + '&parameterCd=00060&statCd=00003&startDT=1900-01-01&endDT=' + twoWeeksAgo;
             } else {
