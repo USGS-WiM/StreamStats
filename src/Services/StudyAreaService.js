@@ -580,12 +580,15 @@ var StreamStats;
                         _this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
                         throw new Error;
                     }
-                    else if (response.data.response.length > 10) {
+                    else if (response.data.response.length > 20) {
                         _this.resetDelineationButtons();
-                        _this.toaster.pop("error", "Error", "Delineation not possible. Line has more than 10 intersections with stream grid.", 0);
+                        _this.toaster.pop("error", "Error", "Delineation not possible. Line has more than 20 intersections with stream grid.", 0);
                         throw new Error('lineLength');
                     }
                     else {
+                        if (response.data.response.length > 10) {
+                            _this.toaster.pop("warning", "Large number of intersection points", "Delineation may take several minutes.", 0);
+                        }
                         return _this.checkExcludePolygon(response.data.response);
                     }
                 }, function (error) {

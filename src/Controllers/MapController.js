@@ -651,16 +651,19 @@ var StreamStats;
                                 var two = L.latLng(coordinates[i]);
                                 totalDistance += one.distanceTo(two);
                             }
-                            if (totalDistance > 4828.03) {
+                            if (totalDistance > 16093.4) {
                                 _this.studyArea.resetDelineationButtons();
                                 map.removeLayer(_this.delineationLine);
                                 map.off("draw:drawvertex", lineStart);
                                 map.off("draw:created", lineStop);
                                 _this.drawControl.disable();
-                                _this.toaster.pop("error", "Error", "Delineation not possible. Line must be shorter than 3.0 miles.", 0);
+                                _this.toaster.pop("error", "Error", "Delineation not possible. Line must be shorter than 10.0 miles.", 0);
                                 throw new Error;
                             }
                             else {
+                                if (totalDistance > 4828.03) {
+                                    _this.toaster.pop("warning", "Long delineation line", "Delineation may take several minutes.", 0);
+                                }
                                 map.off("draw:drawvertex", lineStart);
                                 map.off("draw:created", lineStop);
                                 _this.drawControl.disable();
@@ -728,68 +731,62 @@ var StreamStats;
                 var _this = this;
                 this.leafletData.getMap("mainMap").then(function (map) {
                     _this.leafletData.getLayers("mainMap").then(function (maplayers) {
-                        if (map.getZoom() < 15) {
-                            _this.toaster.pop("error", "Delineation not allowed at this zoom level", 'Please zoom in to level 15 or greater', 5000);
-                        }
-                        else {
-                            _this.toaster.clear();
-                            _this.studyArea.checkingDelineatedLine = true;
-                            _this.toaster.pop("info", "Information", "Validating your line...", true, 0);
-                            _this.cursorStyle = 'wait';
-                            _this.studyArea.doDelineateFlag = false;
-                            var queryString = 'visible:';
-                            _this.regionServices.regionMapLayerList.forEach(function (item) {
-                                if (item[0] == 'ExcludePolys')
-                                    queryString += item[1];
-                            });
-                            gtag('event', 'DelineationLine', { 'Region': _this.regionServices.selectedRegion.Name, 'Location': line });
-                            map.invalidateSize();
-                            var valid = true;
-                            _this.studyArea.lineIntersection(line).then(function (points) {
-                                points.forEach(function (point) {
-                                    if (point.inExclude == true) {
-                                        if (point.type == 1) {
-                                            if (_this.studyArea.ignoreExclusionPolygons) {
-                                                _this.toaster.pop("warning", "Delineation and flow statistic computation not allowed here", point.message.text, 0);
-                                                _this.toaster.pop("success", "Ignoring exclusion areas", "Delineating your basin now...", 5000);
-                                                gtag('event', 'ValidatePoint', { 'Label': 'Invalid (exclusion polygons ignored)' });
-                                            }
-                                            else {
-                                                _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", point.message.text, 0);
-                                                valid = false;
-                                                _this.studyArea.resetDelineationButtons();
-                                                map.removeLayer(_this.delineationLine);
-                                                gtag('event', 'ValidatePoint', { 'Label': 'Not allowed' });
-                                            }
+                        _this.studyArea.checkingDelineatedLine = true;
+                        _this.toaster.pop("info", "Information", "Validating your line...", true, 0);
+                        _this.cursorStyle = 'wait';
+                        _this.studyArea.doDelineateFlag = false;
+                        var queryString = 'visible:';
+                        _this.regionServices.regionMapLayerList.forEach(function (item) {
+                            if (item[0] == 'ExcludePolys')
+                                queryString += item[1];
+                        });
+                        gtag('event', 'DelineationLine', { 'Region': _this.regionServices.selectedRegion.Name, 'Location': line });
+                        map.invalidateSize();
+                        var valid = true;
+                        _this.studyArea.lineIntersection(line).then(function (points) {
+                            points.forEach(function (point) {
+                                if (point.inExclude == true) {
+                                    if (point.type == 1) {
+                                        if (_this.studyArea.ignoreExclusionPolygons) {
+                                            _this.toaster.pop("warning", "Delineation and flow statistic computation not allowed here", point.message.text, 0);
+                                            _this.toaster.pop("success", "Ignoring exclusion areas", "Delineating your basins now...", 5000);
+                                            gtag('event', 'ValidatePoint', { 'Label': 'Invalid (exclusion polygons ignored)' });
                                         }
                                         else {
-                                            _this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", point.message, true, 0);
+                                            _this.toaster.pop("error", "Delineation and flow statistic computation not allowed here", point.message.text, 0);
+                                            valid = false;
+                                            _this.studyArea.resetDelineationButtons();
+                                            map.removeLayer(_this.delineationLine);
+                                            gtag('event', 'ValidatePoint', { 'Label': 'Not allowed' });
                                         }
                                     }
-                                });
-                                if (valid) {
-                                    _this.toaster.pop("success", "Your clicked point is valid", "Delineating your basin now...", 5000);
-                                    _this.studyArea.checkingDelineatedLine = false;
-                                    _this.markers = {};
-                                    var ssPoints = [];
-                                    points.forEach(function (point, index) {
-                                        _this.markers[index] = {
-                                            lat: point.point.lat,
-                                            lng: point.point.long,
-                                            message: '<strong>Latitude: </strong>' + point.point.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + point.point.long.toFixed(5),
-                                            focus: false,
-                                            draggable: true
-                                        };
-                                        var latlng = new WiM.Models.Point(point.point.lat, point.point.long, '4326');
-                                        ssPoints.push(latlng);
-                                    });
-                                    _this.startDelineate(ssPoints, false, null, lineClickPoints);
+                                    else {
+                                        _this.toaster.pop("warning", "Delineation and flow statistic computation possible but not advised", point.message, true, 0);
+                                    }
                                 }
-                            }, function (error) {
-                                map.removeLayer(_this.delineationLine);
-                            }).finally(function () {
                             });
-                        }
+                            if (valid) {
+                                _this.toaster.pop("success", "Your delineation line is valid", "Delineating your basins now...", 5000);
+                                _this.studyArea.checkingDelineatedLine = false;
+                                _this.markers = {};
+                                var ssPoints = [];
+                                points.forEach(function (point, index) {
+                                    _this.markers[index] = {
+                                        lat: point.point.lat,
+                                        lng: point.point.long,
+                                        message: '<strong>Latitude: </strong>' + point.point.lat.toFixed(5) + '</br><strong>Longitude: </strong>' + point.point.long.toFixed(5),
+                                        focus: false,
+                                        draggable: true
+                                    };
+                                    var latlng = new WiM.Models.Point(point.point.lat, point.point.long, '4326');
+                                    ssPoints.push(latlng);
+                                });
+                                _this.startDelineate(ssPoints, false, null, lineClickPoints);
+                            }
+                        }, function (error) {
+                            map.removeLayer(_this.delineationLine);
+                        }).finally(function () {
+                        });
                     });
                 });
             };

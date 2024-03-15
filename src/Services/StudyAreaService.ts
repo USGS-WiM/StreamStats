@@ -739,12 +739,15 @@ module StreamStats.Services {
                     this.resetDelineationButtons();
                     this.toaster.pop("error", "Error", "Delineation not possible. Line does not intersect any streams.", 0);
                     throw new Error;
-                } else if (response.data.response.length > 10) {
+                } else if (response.data.response.length > 20) {
                     this.resetDelineationButtons();
-                    this.toaster.pop("error", "Error", "Delineation not possible. Line has more than 10 intersections with stream grid.", 0);
+                    this.toaster.pop("error", "Error", "Delineation not possible. Line has more than 20 intersections with stream grid.", 0);
 
                     throw new Error('lineLength');
                 } else {
+                    if (response.data.response.length > 10) {
+                        this.toaster.pop("warning", "Large number of intersection points", "Delineation may take several minutes.", 0);
+                    }
                     return this.checkExcludePolygon(response.data.response)
                 }
                 },(error) => {
