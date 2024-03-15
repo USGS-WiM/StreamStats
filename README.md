@@ -1,5 +1,9 @@
 ![WiM](wimlogo.png)
 
+Update, 2024-03-15: Deprecated
+
+This repository has been has moved to a different hosting platform and is no longer being actively maintained. Please see [StreamStats Repository](https://code.usgs.gov/StreamStats/clients/StreamStats/) for latest updates related to this effort.
+
 # StreamStats
 
 StreamStats client application
