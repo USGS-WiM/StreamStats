@@ -4,7 +4,7 @@
     "organization": "U.S. Geological Survey",
     "description": "StreamStats client application",
     "version": "4.19.4",
-    "status": "Production",	
+    "status": "Archival",	
 
     "permissions": {
       "usageType": "openSource",
