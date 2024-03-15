@@ -609,22 +609,42 @@ var StreamStats;
             };
             ReportController.prototype.addGeoJSON = function (LayerName, feature) {
                 if (LayerName == 'globalwatershed') {
-                    this.layers.overlays[LayerName] =
-                        {
-                            name: 'Basin Boundary',
-                            type: 'geoJSONShape',
-                            data: this.studyAreaService.simplify(angular.fromJson(angular.toJson(feature))),
-                            visible: true,
-                            layerOptions: {
-                                style: {
-                                    fillColor: "yellow",
-                                    weight: 2,
-                                    opacity: 1,
-                                    color: 'white',
-                                    fillOpacity: 0.5
+                    if (this.studyAreaService.selectedStudyArea.Disclaimers['isEdited']) {
+                        this.layers.overlays[LayerName] =
+                            {
+                                name: 'Non-Simplifed Basin Boundary',
+                                type: 'geoJSONShape',
+                                data: this.studyAreaService.simplify(angular.fromJson(angular.toJson(feature))),
+                                visible: true,
+                                layerOptions: {
+                                    style: {
+                                        fillColor: "red",
+                                        weight: 2,
+                                        opacity: 1,
+                                        color: 'white',
+                                        fillOpacity: 0.5
+                                    }
                                 }
-                            }
-                        };
+                            };
+                    }
+                    else {
+                        this.layers.overlays[LayerName] =
+                            {
+                                name: 'Basin Boundary',
+                                type: 'geoJSONShape',
+                                data: this.studyAreaService.simplify(angular.fromJson(angular.toJson(feature))),
+                                visible: true,
+                                layerOptions: {
+                                    style: {
+                                        fillColor: "yellow",
+                                        weight: 2,
+                                        opacity: 1,
+                                        color: 'white',
+                                        fillOpacity: 0.5
+                                    }
+                                }
+                            };
+                    }
                 }
                 else if (LayerName == 'globalwatershedpoint') {
                     this.layers.overlays[LayerName] = {

@@ -8,9 +8,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased](https://github.com/USGS-WiM/StreamStats/tree/dev)
 
 ### Added
+- BP informational tool tip for Drupal article
+- URL param "gage=" for opening a gage page directly
 - enabled FL on dev
-  
+
 ### Changed
+
+- BP modal cannot be closed by clicking outside modal
 
 ### Deprecated
 
@@ -81,6 +85,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Batch Processor times displayed in local time instead of UTC
 - Use SS Pourpoint ssExcludePolygon service instead of directly using state map services
 - Batch Processor Download Stream Grids tab files now also include Exclude Polys
+- Edited basin geometry is no longer simplified
 
 ### Fixed
 

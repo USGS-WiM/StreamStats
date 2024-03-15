@@ -247,6 +247,9 @@ var StreamStats;
                     this.addParameterToStudyAreaList("DRNAREA");
                 }
             };
+            SidebarController.prototype.clickEditBasin = function () {
+                this.studyAreaService.enterEditBasinInterface();
+            };
             SidebarController.prototype.submitBasinEdits = function () {
                 var latLong = this.studyAreaService.selectedStudyArea.Pourpoint.Latitude.toFixed(5) + ',' + this.studyAreaService.selectedStudyArea.Pourpoint.Longitude.toFixed(5);
                 gtag('event', 'BasinEditor', { 'Type': 'SubmitEdits', 'Location': latLong });

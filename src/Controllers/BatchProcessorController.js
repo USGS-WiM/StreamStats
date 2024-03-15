@@ -899,6 +899,13 @@ var StreamStats;
                 if (configuration.showBPWarning) {
                     this.warningMessage = configuration.warningBPMessage;
                 }
+                var self = this;
+                document.addEventListener("keydown", function (event) {
+                    var key = event.key;
+                    if (key === "Escape") {
+                        self.Close();
+                    }
+                });
             };
             BatchProcessorController.prototype.checkArrayForObj = function (arr, obj) {
                 for (var i = 0; i < arr.length; i++) {

@@ -109,7 +109,7 @@ var StreamStats;
             ProsperService.prototype.loadAvailablePredictions = function () {
                 var _this = this;
                 try {
-                    this.toaster.pop('wait', "Loading Available Prosper Predictions", "Please wait...", 0);
+                    var prosperLoadToast = this.toaster.pop('wait', "Loading Available Prosper Predictions", "Please wait...", 0);
                     var url = configuration.queryparams['ProsperPredictions'] + "/legend?f=pjson";
                     var request = new WiM.Services.Helpers.RequestInfo(url);
                     this.Execute(request).then(function (response) {
@@ -125,7 +125,7 @@ var StreamStats;
                             });
                             _this.DisplayedPrediction = _this.AvailablePredictions[0];
                         }
-                        _this.toaster.clear();
+                        _this.toaster.clear(prosperLoadToast);
                     }, function (error) {
                         _this.CanQuery = false;
                         _this.toaster.clear();

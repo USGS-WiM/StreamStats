@@ -75,6 +75,7 @@ var StreamStats;
                 _this.events = null;
                 _this.layercontrol = null;
                 _this.regionLayer = null;
+                _this.editedBasin = false;
                 _this._prosperIsActive = false;
                 _this.explorationToolsExpanded = false;
                 _this.gageLegendFix = false;
@@ -86,6 +87,15 @@ var StreamStats;
                     weight: 2,
                     opacity: 1,
                     color: 'red',
+                    fillOpacity: 0.5
+                };
+                _this.simplifiedBasinStyle = {
+                    displayName: "Basin Boundary",
+                    imagesrc: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADCCAYAAAC/i6XiAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKOSURBVHhe7dxBjoJAEEBRcO/9D+oBlElYTEwmE7XlI763kS2Ln0qlsefrYgIyp/UXiIgQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGL7+GztMq8PEDi3CZiEEBMhxEQIsW12QjsfRzJ4hzQJISZCiIkQYu/ZCe2AfJMXd0STEGIihJgIISZCiIkQYiKEmAghNuac0Lkg38w5IXw2EUJMhBATIcRECDERQkyEEBMhxEQIMRFCTIQQ8+0oPMq9o3AsIoSYCCFmJ4RX+T8hfDYRQkyEEBMhxEQIMRFCTIQQEyHERAgxEUJMhBATIcRECDERQkyEEBMhxEQIMRFCTIQQc8cMPMq9o3AsIoSYCCFmJ4R7g3e+/5iEEBMhxEQIMTvhj413APjNJISYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIzdfF+jzOZV4fduo8/pXhWSYhxEQIMRFCTIQQEyHERAgxEULsPeeE9+pzQ+eC7JhJCDERQkyEENtmJwT+ZBJCTISQmqYb05tLRBeJJLsAAAAASUVORK5CYII=",
+                    fillColor: "yellow",
+                    weight: 2,
+                    opacity: 1,
+                    color: 'white',
                     fillOpacity: 0.5
                 };
                 _this.imageryToggled = false;
@@ -121,6 +131,9 @@ var StreamStats;
                 }));
                 _this.eventManager.SubscribeToEvent(StreamStats.Services.onEditClick, new WiM.Event.EventHandler(function (sender, e) {
                     _this.basinEditor();
+                }));
+                _this.eventManager.SubscribeToEvent(StreamStats.Services.onEditBasinStartClick, new WiM.Event.EventHandler(function (sender, e) {
+                    _this.enterBasinEditMode();
                 }));
                 _this.eventManager.SubscribeToEvent(StreamStats.Services.onStudyAreaReset, new WiM.Event.EventHandler(function () {
                     _this.removeGeoJson();
@@ -725,6 +738,7 @@ var StreamStats;
                                     _this.addGeoJSON('adds', clipPolygon);
                                     gtag('event', 'BasinEditor', { 'Type': 'Add Area' });
                                     _this.studyArea.WatershedEditDecisionList.append.push(clipPolygon);
+                                    _this.editedBasin = true;
                                 }
                             }
                             if (_this.studyArea.drawControlOption == 'remove') {
@@ -735,12 +749,29 @@ var StreamStats;
                                     _this.addGeoJSON('removes', clipPolygon);
                                     gtag('event', 'BasinEditor', { 'Type': 'Remove Area' });
                                     _this.studyArea.WatershedEditDecisionList.remove.push(clipPolygon);
+                                    _this.editedBasin = true;
                                 }
                             }
                             drawnItems.clearLayers();
                         });
                     });
                 });
+            };
+            MapController.prototype.enterBasinEditMode = function () {
+                var _this = this;
+                this.studyArea.selectedStudyArea.FeatureCollection['features'].forEach(function (layer) {
+                    var item = angular.fromJson(angular.toJson(layer));
+                    var name = item.id.toLowerCase();
+                    if (name == 'globalwatershed') {
+                        _this.removeGeoJson(name);
+                        _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs('globalwatershed', "geojson", _this.simplifiedBasinStyle, false));
+                    }
+                });
+                this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs('nonsimplifiedbasin', "geojson"));
+                this.addGeoJSON('nonsimplifiedbasin', this.nonsimplifiedBasin);
+                this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs('nonsimplifiedbasin', "geojson", this.nonsimplifiedBasinStyle, true));
+                this.toaster.clear();
+                this.toaster.pop("info", "Entering Edit Basin mode", "Displaying non-simplified Basin.", 0);
             };
             MapController.prototype.checkEditIntersects = function (editType, editPolygon) {
                 var found = false;
@@ -853,11 +884,15 @@ var StreamStats;
                     return;
                 this.markers = {};
                 this.removeOverlayLayers('globalwatershed', true);
+                if (this.editedBasin) {
+                    this.removeGeoJson('globalwatershed');
+                    this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs('globalwatershed', "geojson"));
+                }
                 this.studyArea.selectedStudyArea.FeatureCollection['features'].forEach(function (layer) {
                     var item = angular.fromJson(angular.toJson(layer));
                     var name = item.id.toLowerCase();
                     _this.addGeoJSON(name, item);
-                    _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(name, "geojson", _this.geojson[name].style));
+                    _this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, _this, new WiM.Directives.LegendLayerAddedEventArgs(name, "geojson", _this.geojson[name].style, true));
                 });
                 if (this.studyArea.selectedStudyArea.FeatureCollection['bbox']) {
                     bbox = this.studyArea.selectedStudyArea.FeatureCollection['bbox'];
@@ -886,7 +921,10 @@ var StreamStats;
             };
             MapController.prototype.removeGeoJson = function (layerName) {
                 if (layerName === void 0) { layerName = ""; }
-                if (this.geojson['nonsimplifiedbasin'] == undefined && this.nonsimplifiedBasin != undefined) {
+                if (layerName == 'globalwatershed') {
+                    this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs('globalwatershed', "geojson"));
+                }
+                else if (this.geojson['nonsimplifiedbasin'] == undefined && this.nonsimplifiedBasin != undefined) {
                     this.eventManager.RaiseEvent(WiM.Directives.onLayerRemoved, this, new WiM.Directives.LegendLayerRemovedEventArgs('nonsimplifiedbasin', "geojson"));
                     this.nonsimplifiedBasin = undefined;
                 }
@@ -899,23 +937,33 @@ var StreamStats;
             };
             MapController.prototype.addGeoJSON = function (LayerName, feature) {
                 if (LayerName == 'globalwatershed') {
-                    var verticies = feature.geometry.coordinates.reduce(function (count, row) { return count + row.length; }, 0);
-                    var data = this.studyArea.simplify(angular.copy(feature));
-                    var data_verticies = data.geometry.coordinates.reduce(function (count, row) { return count + row.length; }, 0);
-                    this.geojson[LayerName] =
-                        {
-                            data: data,
-                            style: {
-                                displayName: "Basin Boundary",
-                                imagesrc: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADCCAYAAAC/i6XiAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKOSURBVHhe7dxBjoJAEEBRcO/9D+oBlElYTEwmE7XlI763kS2Ln0qlsefrYgIyp/UXiIgQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGL7+GztMq8PEDi3CZiEEBMhxEQIsW12QjsfRzJ4hzQJISZCiIkQYu/ZCe2AfJMXd0STEGIihJgIISZCiIkQYiKEmAghNuac0Lkg38w5IXw2EUJMhBATIcRECDERQkyEEBMhxEQIMRFCTIQQ8+0oPMq9o3AsIoSYCCFmJ4RX+T8hfDYRQkyEEBMhxEQIMRFCTIQQEyHERAgxEUJMhBATIcRECDERQkyEEBMhxEQIMRFCTIQQc8cMPMq9o3AsIoSYCCFmJ4R7g3e+/5iEEBMhxEQIMTvhj413APjNJISYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIzdfF+jzOZV4fduo8/pXhWSYhxEQIMRFCTIQQEyHERAgxEULsPeeE9+pzQ+eC7JhJCDERQkyEENtmJwT+ZBJCTISQmqYb05tLRBeJJLsAAAAASUVORK5CYII=",
-                                fillColor: "yellow",
-                                weight: 2,
-                                opacity: 1,
-                                color: 'white',
-                                fillOpacity: 0.5
-                            }
-                        };
-                    if (verticies != data_verticies) {
+                    if (this.editedBasin) {
+                        var data = feature;
+                        this.geojson[LayerName] =
+                            {
+                                data: data,
+                                style: this.nonsimplifiedBasinStyle
+                            };
+                    }
+                    else {
+                        var verticies = feature.geometry.coordinates.reduce(function (count, row) { return count + row.length; }, 0);
+                        var data = this.studyArea.simplify(angular.copy(feature));
+                        var data_verticies = data.geometry.coordinates.reduce(function (count, row) { return count + row.length; }, 0);
+                        this.geojson[LayerName] =
+                            {
+                                data: data,
+                                style: {
+                                    displayName: "Basin Boundary",
+                                    imagesrc: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADCCAYAAAC/i6XiAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKOSURBVHhe7dxBjoJAEEBRcO/9D+oBlElYTEwmE7XlI763kS2Ln0qlsefrYgIyp/UXiIgQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGL7+GztMq8PEDi3CZiEEBMhxEQIsW12QjsfRzJ4hzQJISZCiIkQYu/ZCe2AfJMXd0STEGIihJgIISZCiIkQYiKEmAghNuac0Lkg38w5IXw2EUJMhBATIcRECDERQkyEEBMhxEQIMRFCTIQQ8+0oPMq9o3AsIoSYCCFmJ4RX+T8hfDYRQkyEEBMhxEQIMRFCTIQQEyHERAgxEUJMhBATIcRECDERQkyEEBMhxEQIMRFCTIQQc8cMPMq9o3AsIoSYCCFmJ4R7g3e+/5iEEBMhxEQIMTvhj413APjNJISYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIiRBiIoSYCCEmQoiJEGIihJgIISZCiIkQYiKEmAghJkKIzdfF+jzOZV4fduo8/pXhWSYhxEQIMRFCTIQQEyHERAgxEULsPeeE9+pzQ+eC7JhJCDERQkyEENtmJwT+ZBJCTISQmqYb05tLRBeJJLsAAAAASUVORK5CYII=",
+                                    fillColor: "yellow",
+                                    weight: 2,
+                                    opacity: 1,
+                                    color: 'white',
+                                    fillOpacity: 0.5
+                                }
+                            };
+                    }
+                    if (this.editedBasin == false && verticies != data_verticies) {
                         this.nonsimplifiedBasin = feature;
                         this.eventManager.RaiseEvent(WiM.Directives.onLayerAdded, this, new WiM.Directives.LegendLayerAddedEventArgs('nonsimplifiedbasin', "geojson", this.nonsimplifiedBasinStyle, false));
                     }
